@@ -32,6 +32,7 @@ jobs:
             --indent-preproc-block \
             --delete-empty-lines \
             --suffix=none \
+            --ignore-exclude-errors \
             $IGNORE_LIST
 
       - name: 提交格式化后的代码
@@ -40,3 +41,9 @@ jobs:
           commit_message: "Auto format C code with astyle"
           commit_user_name: "GitHub Actions Bot"
           commit_user_email: "actions@github.com"
+
+# 本地调试建议：
+# 1. 安装 act: https://github.com/nektos/act
+# 2. 在项目根目录运行 act，模拟 GitHub Actions 执行流程
+# 3. 可用 act -l 查看支持的事件类型
+# 4. act 支持大部分常用 actions，但部分官方/第三方 actions 可能有兼容性问题
