@@ -28,7 +28,7 @@ jobs:
             --min-conditional-indent=0 \
             --max-continuation-indent=40 \
             --convert-tabs \
-            --indent-preproc-cond \
+            --indent-preproc-block \
             --delete-empty-lines \
             --suffix=none
 

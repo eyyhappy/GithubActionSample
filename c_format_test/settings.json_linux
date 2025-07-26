@@ -1,0 +1,41 @@
+{
+    "search.followSymlinks": false,
+    "git.autofetch": true,
+    "git.confirmSync": false,
+    "astyle.executable": "/usr/bin/astyle",
+    "editor.mouseWheelZoom": true,
+    "astyle.additional_languages": [
+        "h",
+        "hpp",
+        "c",
+        "cpp",
+    ],
+    "astyle.cmd_options": [
+        "--style=allman",
+        "--indent=spaces=4",
+        "--indent-switches",
+        "--indent-namespaces",
+        "--pad-oper",
+        "--indent-labels",
+        "--min-conditional-indent=0",
+        "--max-continuation-indent=40",
+        "--convert-tabs",
+        "--indent-preproc-block",
+        "--delete-empty-lines",
+        "--suffix=none",
+    ],
+    "[h]": {
+        "editor.defaultFormatter": "chiehyu.vscode-astyle"
+    },
+    "[hpp]": {
+        "editor.defaultFormatter": "chiehyu.vscode-astyle"
+    },
+    "[c]": {
+        "editor.defaultFormatter": "chiehyu.vscode-astyle"
+    },
+    "[cpp]": {
+        "editor.defaultFormatter": "chiehyu.vscode-astyle"
+    },
+    "editor.detectIndentation": false,
+    "astyle.astylerc": "",
+}
