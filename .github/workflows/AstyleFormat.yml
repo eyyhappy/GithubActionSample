@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+name: C Code Format
+on: [push, pull_request]  # 推送或PR时触发
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false  # 允许后续自动提交
+
+      - name: 安装 astyle
+        run: sudo apt-get update && sudo apt-get install -y astyle
+
+      - name: 运行 astyle 自动格式化
+        run: |
+          find . -name "*.c" -o -name "*.h" | xargs astyle \
+            --style=allman \
+            --indent=spaces=4 \
+            --indent-switches \
+            --indent-namespaces \
+            --pad-oper \
+            --indent-labels \
+            --min-conditional-indent=0 \
+            --max-continuation-indent=40 \
+            --convert-tabs \
+            --indent-preproc-cond \
+            --delete-empty-lines \
+            --suffix=none
+
+      - name: 提交格式化后的代码
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "Auto format C code with astyle"
+          commit_user_name: "GitHub Actions Bot"
+          commit_user_email: "actions@github.com"
