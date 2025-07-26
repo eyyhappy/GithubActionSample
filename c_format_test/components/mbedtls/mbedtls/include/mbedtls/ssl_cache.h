@@ -61,9 +61,9 @@ typedef struct mbedtls_ssl_cache_entry mbedtls_ssl_cache_entry;
  */
 struct mbedtls_ssl_cache_entry
 {
-#if defined(MBEDTLS_HAVE_TIME)
+    #if defined(MBEDTLS_HAVE_TIME)
     mbedtls_time_t MBEDTLS_PRIVATE(timestamp);           /*!< entry timestamp    */
-#endif
+    #endif
 
     unsigned char MBEDTLS_PRIVATE(session_id)[32];       /*!< session ID         */
     size_t MBEDTLS_PRIVATE(session_id_len);
@@ -82,9 +82,9 @@ struct mbedtls_ssl_cache_context
     mbedtls_ssl_cache_entry *MBEDTLS_PRIVATE(chain);     /*!< start of the chain     */
     int MBEDTLS_PRIVATE(timeout);                /*!< cache entry timeout    */
     int MBEDTLS_PRIVATE(max_entries);            /*!< maximum entries        */
-#if defined(MBEDTLS_THREADING_C)
+    #if defined(MBEDTLS_THREADING_C)
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);    /*!< mutex                  */
-#endif
+    #endif
 };
 
 /**

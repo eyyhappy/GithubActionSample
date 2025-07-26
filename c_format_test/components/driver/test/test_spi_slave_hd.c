@@ -61,9 +61,9 @@ typedef struct
 
 static uint32_t get_hd_flags(void)
 {
-#if !defined(SLAVE_SUPPORT_QIO)
+    #if !defined(SLAVE_SUPPORT_QIO)
     return 0;
-#endif
+    #endif
     int flag_id = rand() % 5;
     ESP_LOGI("io mode", "%d", flag_id);
     switch (flag_id)
@@ -99,9 +99,9 @@ static void init_master_hd(spi_device_handle_t* spi, const spitest_param_set_t* 
     bus_cfg.max_transfer_sz = TEST_DMA_MAX_SIZE * 30;
     bus_cfg.quadhd_io_num = PIN_NUM_HD;
     bus_cfg.quadwp_io_num = PIN_NUM_WP;
-#if defined(TEST_MASTER_GPIO_MATRIX) && CONFIG_IDF_TARGET_ESP32S2
+    #if defined(TEST_MASTER_GPIO_MATRIX) && CONFIG_IDF_TARGET_ESP32S2
     bus_cfg.flags |= SPICOMMON_BUSFLAG_GPIO_PINS;
-#endif
+    #endif
     TEST_ESP_OK(spi_bus_initialize(TEST_SPI_HOST, &bus_cfg, SPI_DMA_CH_AUTO));
     spi_device_interface_config_t dev_cfg = SPI_DEVICE_TEST_DEFAULT_CONFIG();
     dev_cfg.flags = SPI_DEVICE_HALFDUPLEX;
@@ -120,9 +120,9 @@ static void init_slave_hd(int mode, bool append_mode, const spi_slave_hd_callbac
     bus_cfg.max_transfer_sz = TEST_DMA_MAX_SIZE * 30;
     bus_cfg.quadwp_io_num = -1;
     bus_cfg.quadhd_io_num = -1;
-#ifdef TEST_SLAVE_GPIO_MATRIX
+    #ifdef TEST_SLAVE_GPIO_MATRIX
     bus_cfg.flags |= SPICOMMON_BUSFLAG_FORCE_GPIO;
-#endif
+    #endif
     spi_slave_hd_slot_config_t slave_hd_cfg = SPI_SLOT_TEST_DEFAULT_CONFIG();
     slave_hd_cfg.mode = mode;
     slave_hd_cfg.dma_chan = SPI_DMA_CH_AUTO;
@@ -243,14 +243,14 @@ static void test_hd_start(spi_device_handle_t *spi, int freq, const spitest_para
     ctx->tx_data = (spi_slave_hd_data_t)
     {
         .data = &ctx->slave_rddma_buf[pos],
-         .len = len,
+        .len = len,
     };
     esp_err_t err = spi_slave_hd_queue_trans(TEST_SLAVE_HOST, SPI_SLAVE_CHAN_TX, &ctx->tx_data, portMAX_DELAY);
     TEST_ESP_OK(err);
     ctx->rx_data = (spi_slave_hd_data_t)
     {
         .data = ctx->slave_wrdma_buf,
-         .len = TEST_DMA_MAX_SIZE,
+        .len = TEST_DMA_MAX_SIZE,
     };
     err = spi_slave_hd_queue_trans(TEST_SLAVE_HOST, SPI_SLAVE_CHAN_RX, &ctx->rx_data, portMAX_DELAY);
     TEST_ESP_OK(err);
@@ -285,7 +285,7 @@ void test_wrdma(testhd_context_t* ctx, const spitest_param_set_t *cfg, spi_devic
     ctx->rx_data = (spi_slave_hd_data_t)
     {
         .data = ctx->slave_wrdma_buf,
-         .len = TEST_DMA_MAX_SIZE,
+        .len = TEST_DMA_MAX_SIZE,
     };
     esp_err_t err = spi_slave_hd_queue_trans(TEST_SLAVE_HOST, SPI_SLAVE_CHAN_RX, &ctx->rx_data, portMAX_DELAY);
     TEST_ESP_OK(err);
@@ -311,7 +311,7 @@ void test_rddma(testhd_context_t* ctx, const spitest_param_set_t* cfg, spi_devic
     ctx->tx_data = (spi_slave_hd_data_t)
     {
         .data = &ctx->slave_rddma_buf[pos],
-         .len = len,
+        .len = len,
     };
     esp_err_t err = spi_slave_hd_queue_trans(TEST_SLAVE_HOST, SPI_SLAVE_CHAN_TX, &ctx->tx_data, portMAX_DELAY);
     TEST_ESP_OK(err);

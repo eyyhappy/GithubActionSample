@@ -51,7 +51,8 @@
 
 
 /// Transfer format in SPI mode. See section 7.3.1.1 of SD simplified spec.
-typedef struct {
+typedef struct
+{
     // These fields form the command sent from host to the card (6 bytes)
     uint8_t cmd_index : 6;
     uint8_t transmission_bit : 1;

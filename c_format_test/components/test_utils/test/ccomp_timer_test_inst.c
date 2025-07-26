@@ -33,12 +33,14 @@ typedef void (*ccomp_test_func_t)(void);
 
 static const char* TAG = "test_ccomp_timer";
 
-typedef struct {
+typedef struct
+{
     int64_t wall;
     int64_t ccomp;
 } ccomp_test_time_t;
 
-typedef struct {
+typedef struct
+{
     ccomp_test_func_t *funcs;
     size_t len;
 } ccomp_test_call_t;
@@ -104,7 +106,8 @@ static void IRAM_ATTR iram_func(void)
 
 static void IRAM_ATTR perform_calls(ccomp_test_call_t *call)
 {
-    for (int i = 0; i < call->len; i++) {
+    for (int i = 0; i < call->len; i++)
+    {
         call->funcs[i]();
     }
 }
@@ -118,36 +121,31 @@ static void IRAM_ATTR prepare_calls(int hit_rate, ccomp_test_func_t *alts, size_
 {
     assert(hit_rate <= 100);
     assert(hit_rate >= 0);
-
     int misses = (100 - hit_rate);
     int hits = hit_rate;
-
     ccomp_test_func_t *funcs = calloc(len, sizeof(ccomp_test_func_t));
-
-    for (int i = 0, h = 0, i_h = 1, m = -1, i_m = 0, l = 0; i < len; i++, h += i_h, m += i_m) {
+    for (int i = 0, h = 0, i_h = 1, m = -1, i_m = 0, l = 0; i < len; i++, h += i_h, m += i_m)
+    {
         funcs[i] = alts[l % alts_len];
-
-        if (i_m) {
+        if (i_m)
+        {
             l++;
         }
-
-        if (h >= hits) {
+        if (h >= hits)
+        {
             h = -1;
             i_h = 0;
-
             m = 0;
             i_m = 1;
         }
-
-        if (m >= misses) {
+        if (m >= misses)
+        {
             m = -1;
             i_m = 0;
-
             h = 0;
             i_h = 1;
         }
     }
-
     out->funcs = funcs;
     out->len = len;
 }
@@ -157,33 +155,29 @@ static ccomp_test_time_t IRAM_ATTR perform_test_at_hit_rate(int hit_rate)
     static portMUX_TYPE m = portMUX_INITIALIZER_UNLOCKED;
     ccomp_test_call_t calls;
     ccomp_test_func_t alts[] = {test_func1, test_func2, test_func3,
-#if TEMPORARY_DISABLED_FOR_TARGETS(ESP32)
-    test_func4, test_func5, test_func6, test_func7, test_func8, test_func9,
-#endif
-    };
-    prepare_calls(hit_rate, alts, sizeof(alts)/sizeof(alts[0]), 10000, &calls);
-
+                                #if TEMPORARY_DISABLED_FOR_TARGETS(ESP32)
+                                test_func4, test_func5, test_func6, test_func7, test_func8, test_func9,
+                                #endif
+                               };
+    prepare_calls(hit_rate, alts, sizeof(alts) / sizeof(alts[0]), 10000, &calls);
     ccomp_test_func_t f[] = {test_func1, test_func2};
-    ccomp_test_call_t cache = {
+    ccomp_test_call_t cache =
+    {
         .funcs = f,
-        .len = sizeof(f) / sizeof(f[0])};
-
+        .len = sizeof(f) / sizeof(f[0])
+    };
     portENTER_CRITICAL(&m);
-
     prepare_cache(&cache);
-
     int64_t start = esp_timer_get_time();
     ccomp_timer_start();
     perform_calls(&calls);
-    ccomp_test_time_t t = {
+    ccomp_test_time_t t =
+    {
         .ccomp = ccomp_timer_stop(),
         .wall = esp_timer_get_time() - start
     };
-
     portEXIT_CRITICAL(&m);
-
     free(calls.funcs);
-
     return t;
 }
 
@@ -192,17 +186,15 @@ static ccomp_test_time_t ccomp_test_ref_time(void)
     ccomp_test_call_t calls;
     ccomp_test_func_t alts[] = {iram_func};
     prepare_calls(0, alts, 1, 10000, &calls);
-
     int64_t start = esp_timer_get_time();
     ccomp_timer_start();
     perform_calls(&calls);
-    ccomp_test_time_t t = {
+    ccomp_test_time_t t =
+    {
         .ccomp = ccomp_timer_stop(),
         .wall = esp_timer_get_time() - start
     };
-
     free(calls.funcs);
-
     return t;
 }
 
@@ -210,21 +202,16 @@ TEST_CASE("instruction cache hit rate sweep test", "[test_utils][ccomp_timer]")
 {
     ccomp_test_time_t t_ref;
     ccomp_test_time_t t_hr;
-
     // Perform accesses on RAM. The time recorded here serves as
     // reference.
     t_ref = ccomp_test_ref_time();
-
     ESP_LOGI(TAG, "Reference Time(us): %lld", (long long)t_ref.ccomp);
-
     // Measure time at particular hit rates
     for (int i = 0; i <= 100; i += 5)
     {
         t_hr = perform_test_at_hit_rate(i);
         float error = (llabs(t_ref.ccomp - t_hr.ccomp) / (float)t_ref.wall) * 100.0f;
-
         ESP_LOGI(TAG, "Hit Rate(%%): %d    Wall Time(us): %lld    Compensated Time(us): %lld    Error(%%): %f", i, (long long)t_hr.wall, (long long)t_hr.ccomp, error);
-
         // Check if the measured time is at least within some percent of the
         // reference.
         TEST_ASSERT(error <= 5.0f);

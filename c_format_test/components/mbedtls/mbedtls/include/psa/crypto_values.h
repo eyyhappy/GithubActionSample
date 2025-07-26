@@ -2392,7 +2392,6 @@ static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
     unsigned int unused, psa_key_id_t key_id )
 {
     (void)unused;
-
     return( key_id );
 }
 
@@ -2404,7 +2403,7 @@ static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
  * \return Non-zero if the two key identifier are equal, zero otherwise.
  */
 static inline int mbedtls_svc_key_id_equal( mbedtls_svc_key_id_t id1,
-                                            mbedtls_svc_key_id_t id2 )
+        mbedtls_svc_key_id_t id2 )
 {
     return( id1 == id2 );
 }
@@ -2434,8 +2433,11 @@ static inline int mbedtls_svc_key_id_is_null( mbedtls_svc_key_id_t key )
 static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
     mbedtls_key_owner_id_t owner_id, psa_key_id_t key_id )
 {
-    return( (mbedtls_svc_key_id_t){ .MBEDTLS_PRIVATE(key_id) = key_id,
-                                    .MBEDTLS_PRIVATE(owner) = owner_id } );
+    return( (mbedtls_svc_key_id_t)
+    {
+        .MBEDTLS_PRIVATE(key_id) = key_id,
+        .MBEDTLS_PRIVATE(owner) = owner_id
+    } );
 }
 
 /** Compare two key identifiers.
@@ -2446,7 +2448,7 @@ static inline mbedtls_svc_key_id_t mbedtls_svc_key_id_make(
  * \return Non-zero if the two key identifier are equal, zero otherwise.
  */
 static inline int mbedtls_svc_key_id_equal( mbedtls_svc_key_id_t id1,
-                                            mbedtls_svc_key_id_t id2 )
+        mbedtls_svc_key_id_t id2 )
 {
     return( ( id1.MBEDTLS_PRIVATE(key_id) == id2.MBEDTLS_PRIVATE(key_id) ) &&
             mbedtls_key_owner_id_equal( id1.MBEDTLS_PRIVATE(owner), id2.MBEDTLS_PRIVATE(owner) ) );

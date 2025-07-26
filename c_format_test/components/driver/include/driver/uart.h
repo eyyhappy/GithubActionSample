@@ -39,7 +39,8 @@ extern "C" {
 /**
  * @brief UART interrupt configuration parameters for uart_intr_config function
  */
-typedef struct {
+typedef struct
+{
     uint32_t intr_enable_mask;          /*!< UART interrupt enable mask, choose from UART_XXXX_INT_ENA_M under UART_INT_ENA_REG(i), connect with bit-or operator*/
     uint8_t  rx_timeout_thresh;         /*!< UART timeout interrupt threshold (unit: time of sending one byte)*/
     uint8_t  txfifo_empty_intr_thresh;  /*!< UART TX empty interrupt threshold.*/
@@ -49,7 +50,8 @@ typedef struct {
 /**
  * @brief UART event types used in the ring buffer
  */
-typedef enum {
+typedef enum
+{
     UART_DATA,              /*!< UART data event*/
     UART_BREAK,             /*!< UART break event*/
     UART_BUFFER_FULL,       /*!< UART RX buffer full event*/
@@ -58,20 +60,21 @@ typedef enum {
     UART_PARITY_ERR,        /*!< UART RX parity event*/
     UART_DATA_BREAK,        /*!< UART TX data and break event*/
     UART_PATTERN_DET,       /*!< UART pattern detected */
-#if SOC_UART_SUPPORT_WAKEUP_INT
+    #if SOC_UART_SUPPORT_WAKEUP_INT
     UART_WAKEUP,            /*!< UART wakeup event */
-#endif
+    #endif
     UART_EVENT_MAX,         /*!< UART event max index*/
 } uart_event_type_t;
 
 /**
  * @brief Event structure used in UART event queue
  */
-typedef struct {
+typedef struct
+{
     uart_event_type_t type; /*!< UART event type */
     size_t size;            /*!< UART data size for UART_DATA event*/
     bool timeout_flag;      /*!< UART data read timeout flag for UART_DATA event (no new data received during configured RX TOUT)*/
-                            /*!< If the event is caused by FIFO-full interrupt, then there will be no event with the timeout flag before the next byte coming.*/
+    /*!< If the event is caused by FIFO-full interrupt, then there will be no event with the timeout flag before the next byte coming.*/
 } uart_event_t;
 
 typedef intr_handle_t uart_isr_handle_t;
@@ -270,7 +273,7 @@ esp_err_t uart_set_hw_flow_ctrl(uart_port_t uart_num, uart_hw_flowcontrol_t flow
  *     - ESP_OK   Success
  *     - ESP_FAIL Parameter error
  */
- esp_err_t uart_set_sw_flow_ctrl(uart_port_t uart_num, bool enable,  uint8_t rx_thresh_xon,  uint8_t rx_thresh_xoff);
+esp_err_t uart_set_sw_flow_ctrl(uart_port_t uart_num, bool enable,  uint8_t rx_thresh_xon,  uint8_t rx_thresh_xoff);
 
 /**
  * @brief Get the UART hardware flow control configuration.

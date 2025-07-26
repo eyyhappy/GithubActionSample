@@ -61,18 +61,19 @@ static int esp_aes_xts_decode_keys( const unsigned char *key,
 {
     const unsigned int half_keybits = keybits / 2;
     const unsigned int half_keybytes = half_keybits / 8;
-
-    switch ( keybits ) {
-    case 256: break;
-    case 512: break;
-    default : return ( MBEDTLS_ERR_AES_INVALID_KEY_LENGTH );
+    switch ( keybits )
+    {
+        case 256:
+            break;
+        case 512:
+            break;
+        default :
+            return ( MBEDTLS_ERR_AES_INVALID_KEY_LENGTH );
     }
-
     *key1bits = half_keybits;
     *key2bits = half_keybits;
     *key1 = &key[0];
     *key2 = &key[half_keybytes];
-
     return 0;
 }
 
@@ -83,19 +84,18 @@ int esp_aes_xts_setkey_enc( esp_aes_xts_context *ctx,
     int ret;
     const unsigned char *key1, *key2;
     unsigned int key1bits, key2bits;
-
     ret = esp_aes_xts_decode_keys( key, keybits, &key1, &key1bits,
                                    &key2, &key2bits );
-    if ( ret != 0 ) {
+    if ( ret != 0 )
+    {
         return ( ret );
     }
-
     /* Set the tweak key. Always set tweak key for the encryption mode. */
     ret = esp_aes_setkey( &ctx->tweak, key2, key2bits );
-    if ( ret != 0 ) {
+    if ( ret != 0 )
+    {
         return ( ret );
     }
-
     /* Set crypt key for encryption. */
     return esp_aes_setkey( &ctx->crypt, key1, key1bits );
 }
@@ -107,19 +107,18 @@ int esp_aes_xts_setkey_dec( esp_aes_xts_context *ctx,
     int ret;
     const unsigned char *key1, *key2;
     unsigned int key1bits, key2bits;
-
     ret = esp_aes_xts_decode_keys( key, keybits, &key1, &key1bits,
                                    &key2, &key2bits );
-    if ( ret != 0 ) {
+    if ( ret != 0 )
+    {
         return ( ret );
     }
-
     /* Set the tweak key. Always set tweak key for encryption. */
     ret = esp_aes_setkey( &ctx->tweak, key2, key2bits );
-    if ( ret != 0 ) {
+    if ( ret != 0 )
+    {
         return ( ret );
     }
-
     /* Set crypt key for decryption. */
     return esp_aes_setkey( &ctx->crypt, key1, key1bits );
 }
@@ -165,13 +164,10 @@ static void esp_gf128mul_x_ble( unsigned char r[16],
                                 const unsigned char x[16] )
 {
     uint64_t a, b, ra, rb;
-
     GET_UINT64_LE( a, x, 0 );
     GET_UINT64_LE( b, x, 8 );
-
     ra = ( a << 1 )  ^ 0x0087 >> ( 8 - ( ( b >> 63 ) << 3 ) );
     rb = ( a >> 63 ) | ( b << 1 );
-
     PUT_UINT64_LE( ra, r, 0 );
     PUT_UINT64_LE( rb, r, 8 );
 }
@@ -192,28 +188,28 @@ int esp_aes_crypt_xts( esp_aes_xts_context *ctx,
     unsigned char tweak[16];
     unsigned char prev_tweak[16];
     unsigned char tmp[16];
-
     /* Sectors must be at least 16 bytes. */
-    if ( length < 16 ) {
+    if ( length < 16 )
+    {
         return MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH;
     }
-
     /* NIST SP 80-38E disallows data units larger than 2**20 blocks. */
-    if ( length > ( 1 << 20 ) * 16 ) {
+    if ( length > ( 1 << 20 ) * 16 )
+    {
         return MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH;
     }
-
     /* Compute the tweak. */
     ret = esp_aes_crypt_ecb( &ctx->tweak, MBEDTLS_AES_ENCRYPT,
                              data_unit, tweak );
-    if ( ret != 0 ) {
+    if ( ret != 0 )
+    {
         return ( ret );
     }
-
-    while ( blocks-- ) {
+    while ( blocks-- )
+    {
         size_t i;
-
-        if ( leftover && ( mode == MBEDTLS_AES_DECRYPT ) && blocks == 0 ) {
+        if ( leftover && ( mode == MBEDTLS_AES_DECRYPT ) && blocks == 0 )
+        {
             /* We are on the last block in a decrypt operation that has
              * leftover bytes, so we need to use the next tweak for this block,
              * and this tweak for the lefover bytes. Save the current tweak for
@@ -222,63 +218,59 @@ int esp_aes_crypt_xts( esp_aes_xts_context *ctx,
             memcpy( prev_tweak, tweak, sizeof( tweak ) );
             esp_gf128mul_x_ble( tweak, tweak );
         }
-
-        for ( i = 0; i < 16; i++ ) {
+        for ( i = 0; i < 16; i++ )
+        {
             tmp[i] = input[i] ^ tweak[i];
         }
-
         ret = esp_aes_crypt_ecb( &ctx->crypt, mode, tmp, tmp );
-        if ( ret != 0 ) {
+        if ( ret != 0 )
+        {
             return ( ret );
         }
-
-        for ( i = 0; i < 16; i++ ) {
+        for ( i = 0; i < 16; i++ )
+        {
             output[i] = tmp[i] ^ tweak[i];
         }
-
         /* Update the tweak for the next block. */
         esp_gf128mul_x_ble( tweak, tweak );
-
         output += 16;
         input += 16;
     }
-
-    if ( leftover ) {
+    if ( leftover )
+    {
         /* If we are on the leftover bytes in a decrypt operation, we need to
          * use the previous tweak for these bytes (as saved in prev_tweak). */
         unsigned char *t = mode == MBEDTLS_AES_DECRYPT ? prev_tweak : tweak;
-
         /* We are now on the final part of the data unit, which doesn't divide
          * evenly by 16. It's time for ciphertext stealing. */
         size_t i;
         unsigned char *prev_output = output - 16;
-
         /* Copy ciphertext bytes from the previous block to our output for each
          * byte of cyphertext we won't steal. At the same time, copy the
          * remainder of the input for this final round (since the loop bounds
          * are the same). */
-        for ( i = 0; i < leftover; i++ ) {
+        for ( i = 0; i < leftover; i++ )
+        {
             output[i] = prev_output[i];
             tmp[i] = input[i] ^ t[i];
         }
-
         /* Copy ciphertext bytes from the previous block for input in this
          * round. */
-        for ( ; i < 16; i++ ) {
+        for ( ; i < 16; i++ )
+        {
             tmp[i] = prev_output[i] ^ t[i];
         }
-
         ret = esp_aes_crypt_ecb( &ctx->crypt, mode, tmp, tmp );
-        if ( ret != 0 ) {
+        if ( ret != 0 )
+        {
             return ret;
         }
-
         /* Write the result back to the previous block, overriding the previous
          * output we copied. */
-        for ( i = 0; i < 16; i++ ) {
+        for ( i = 0; i < 16; i++ )
+        {
             prev_output[i] = tmp[i] ^ t[i];
         }
     }
-
     return ( 0 );
 }

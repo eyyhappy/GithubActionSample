@@ -19,10 +19,12 @@ extern "C" {
 /**
  * @brief MCPWM GPIO fault configuration structure
  */
-typedef struct {
+typedef struct
+{
     int group_id; /*!< In which MCPWM group that the GPIO fault belongs to */
     int gpio_num; /*!< GPIO used by the fault signal */
-    struct {
+    struct
+    {
         uint32_t active_level: 1; /*!< On which level the fault signal is treated as active */
         uint32_t io_loop_back: 1; /*!< For debug/test, the signal output from the GPIO will be fed to the input path as well */
         uint32_t pull_up: 1;      /*!< Whether to pull up internally */
@@ -47,7 +49,8 @@ esp_err_t mcpwm_new_gpio_fault(const mcpwm_gpio_fault_config_t *config, mcpwm_fa
 /**
  * @brief MCPWM software fault configuration structure
  */
-typedef struct {
+typedef struct
+{
 } mcpwm_soft_fault_config_t;
 
 /**
@@ -89,7 +92,8 @@ esp_err_t mcpwm_soft_fault_activate(mcpwm_fault_handle_t fault);
  * @brief Group of supported MCPWM fault event callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     mcpwm_fault_event_cb_t on_fault_enter; /*!< ISR callback function that would be invoked when fault signal becomes active */
     mcpwm_fault_event_cb_t on_fault_exit;  /*!< ISR callback function that would be invoked when fault signal becomes inactive */
 } mcpwm_fault_event_callbacks_t;

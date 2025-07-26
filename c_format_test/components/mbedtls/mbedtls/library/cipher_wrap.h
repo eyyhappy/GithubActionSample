@@ -48,47 +48,47 @@ struct mbedtls_cipher_base_t
     int (*ecb_func)( void *ctx, mbedtls_operation_t mode,
                      const unsigned char *input, unsigned char *output );
 
-#if defined(MBEDTLS_CIPHER_MODE_CBC)
+    #if defined(MBEDTLS_CIPHER_MODE_CBC)
     /** Encrypt using CBC */
     int (*cbc_func)( void *ctx, mbedtls_operation_t mode, size_t length,
                      unsigned char *iv, const unsigned char *input,
                      unsigned char *output );
-#endif
+    #endif
 
-#if defined(MBEDTLS_CIPHER_MODE_CFB)
+    #if defined(MBEDTLS_CIPHER_MODE_CFB)
     /** Encrypt using CFB (Full length) */
     int (*cfb_func)( void *ctx, mbedtls_operation_t mode, size_t length, size_t *iv_off,
                      unsigned char *iv, const unsigned char *input,
                      unsigned char *output );
-#endif
+    #endif
 
-#if defined(MBEDTLS_CIPHER_MODE_OFB)
+    #if defined(MBEDTLS_CIPHER_MODE_OFB)
     /** Encrypt using OFB (Full length) */
     int (*ofb_func)( void *ctx, size_t length, size_t *iv_off,
                      unsigned char *iv,
                      const unsigned char *input,
                      unsigned char *output );
-#endif
+    #endif
 
-#if defined(MBEDTLS_CIPHER_MODE_CTR)
+    #if defined(MBEDTLS_CIPHER_MODE_CTR)
     /** Encrypt using CTR */
     int (*ctr_func)( void *ctx, size_t length, size_t *nc_off,
                      unsigned char *nonce_counter, unsigned char *stream_block,
                      const unsigned char *input, unsigned char *output );
-#endif
+    #endif
 
-#if defined(MBEDTLS_CIPHER_MODE_XTS)
+    #if defined(MBEDTLS_CIPHER_MODE_XTS)
     /** Encrypt or decrypt using XTS. */
     int (*xts_func)( void *ctx, mbedtls_operation_t mode, size_t length,
                      const unsigned char data_unit[16],
                      const unsigned char *input, unsigned char *output );
-#endif
+    #endif
 
-#if defined(MBEDTLS_CIPHER_MODE_STREAM)
+    #if defined(MBEDTLS_CIPHER_MODE_STREAM)
     /** Encrypt using STREAM */
     int (*stream_func)( void *ctx, size_t length,
                         const unsigned char *input, unsigned char *output );
-#endif
+    #endif
 
     /** Set key for encryption purposes */
     int (*setkey_enc_func)( void *ctx, const unsigned char *key,
@@ -117,14 +117,14 @@ typedef enum
 {
     MBEDTLS_CIPHER_PSA_KEY_UNSET = 0,
     MBEDTLS_CIPHER_PSA_KEY_OWNED, /* Used for PSA-based cipher contexts which */
-                                  /* use raw key material internally imported */
-                                  /* as a volatile key, and which hence need  */
-                                  /* to destroy that key when the context is  */
-                                  /* freed.                                   */
+    /* use raw key material internally imported */
+    /* as a volatile key, and which hence need  */
+    /* to destroy that key when the context is  */
+    /* freed.                                   */
     MBEDTLS_CIPHER_PSA_KEY_NOT_OWNED, /* Used for PSA-based cipher contexts   */
-                                      /* which use a key provided by the      */
-                                      /* user, and which hence will not be    */
-                                      /* destroyed when the context is freed. */
+    /* which use a key provided by the      */
+    /* user, and which hence will not be    */
+    /* destroyed when the context is freed. */
 } mbedtls_cipher_psa_key_ownership;
 
 typedef struct

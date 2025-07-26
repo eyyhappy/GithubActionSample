@@ -53,8 +53,8 @@
 
 /* If the build options we need are not enabled, compile a placeholder. */
 #if !defined(MBEDTLS_CIPHER_C) || \
-    !defined(MBEDTLS_AES_C) || !defined(MBEDTLS_GCM_C) || \
-    !defined(MBEDTLS_CHACHAPOLY_C)
+!defined(MBEDTLS_AES_C) || !defined(MBEDTLS_GCM_C) || \
+!defined(MBEDTLS_CHACHAPOLY_C)
 int main( void )
 {
     printf( "MBEDTLS_MD_C and/or "
@@ -67,7 +67,7 @@ int main( void )
 /* The real program starts here. */
 
 const char usage[] =
-"Usage: cipher_aead_demo [aes128-gcm|aes256-gcm|aes128-gcm_8|chachapoly]";
+    "Usage: cipher_aead_demo [aes128-gcm|aes256-gcm|aes128-gcm_8|chachapoly]";
 
 /* Dummy data for encryption: IV/nonce, additional data, 2-part message */
 const unsigned char iv1[12] = { 0x00 };
@@ -123,38 +123,43 @@ void print_buf( const char *title, unsigned char *buf, size_t len )
  * - outputs: context and tag length, which together hold all the information
  */
 static int aead_prepare( const char *info,
-                           mbedtls_cipher_context_t *ctx,
-                           size_t *tag_len )
+                         mbedtls_cipher_context_t *ctx,
+                         size_t *tag_len )
 {
     int ret;
-
     /* Convert arg to type + tag_len */
     mbedtls_cipher_type_t type;
-    if( strcmp( info, "aes128-gcm" ) == 0 ) {
+    if( strcmp( info, "aes128-gcm" ) == 0 )
+    {
         type = MBEDTLS_CIPHER_AES_128_GCM;
         *tag_len = 16;
-    } else if( strcmp( info, "aes256-gcm" ) == 0 ) {
+    }
+    else if( strcmp( info, "aes256-gcm" ) == 0 )
+    {
         type = MBEDTLS_CIPHER_AES_256_GCM;
         *tag_len = 16;
-    } else if( strcmp( info, "aes128-gcm_8" ) == 0 ) {
+    }
+    else if( strcmp( info, "aes128-gcm_8" ) == 0 )
+    {
         type = MBEDTLS_CIPHER_AES_128_GCM;
         *tag_len = 8;
-    } else if( strcmp( info, "chachapoly" ) == 0 ) {
+    }
+    else if( strcmp( info, "chachapoly" ) == 0 )
+    {
         type = MBEDTLS_CIPHER_CHACHA20_POLY1305;
         *tag_len = 16;
-    } else {
+    }
+    else
+    {
         puts( usage );
         return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
     }
-
     /* Prepare context for the given type */
     CHK( mbedtls_cipher_setup( ctx,
                                mbedtls_cipher_info_from_type( type ) ) );
-
     /* Import key */
     int key_len = mbedtls_cipher_get_key_bitlen( ctx );
     CHK( mbedtls_cipher_setkey( ctx, key_bytes, key_len, MBEDTLS_ENCRYPT ) );
-
 exit:
     return( ret );
 }
@@ -172,11 +177,9 @@ static void aead_info( const mbedtls_cipher_context_t *ctx, size_t tag_len )
     const char *ciph = mbedtls_cipher_info_get_name( info );
     int key_bits = mbedtls_cipher_get_key_bitlen( ctx );
     mbedtls_cipher_mode_t mode = mbedtls_cipher_get_cipher_mode( ctx );
-
     const char *mode_str = mode == MBEDTLS_MODE_GCM ? "GCM"
-                         : mode == MBEDTLS_MODE_CHACHAPOLY ? "ChachaPoly"
-                         : "???";
-
+                           : mode == MBEDTLS_MODE_CHACHAPOLY ? "ChachaPoly"
+                           : "???";
     printf( "%s, %d, %s, %u\n",
             ciph, key_bits, mode_str, (unsigned) tag_len );
 }
@@ -185,17 +188,16 @@ static void aead_info( const mbedtls_cipher_context_t *ctx, size_t tag_len )
  * Encrypt a 2-part message.
  */
 static int aead_encrypt( mbedtls_cipher_context_t *ctx, size_t tag_len,
-        const unsigned char *iv, size_t iv_len,
-        const unsigned char *ad, size_t ad_len,
-        const unsigned char *part1, size_t part1_len,
-        const unsigned char *part2, size_t part2_len )
+                         const unsigned char *iv, size_t iv_len,
+                         const unsigned char *ad, size_t ad_len,
+                         const unsigned char *part1, size_t part1_len,
+                         const unsigned char *part2, size_t part2_len )
 {
     int ret;
     size_t olen;
 #define MAX_TAG_LENGTH 16
     unsigned char out[MSG_MAX_SIZE + MAX_TAG_LENGTH];
     unsigned char *p = out;
-
     CHK( mbedtls_cipher_set_iv( ctx, iv, iv_len ) );
     CHK( mbedtls_cipher_reset( ctx ) );
     CHK( mbedtls_cipher_update_ad( ctx, ad, ad_len ) );
@@ -207,10 +209,8 @@ static int aead_encrypt( mbedtls_cipher_context_t *ctx, size_t tag_len,
     p += olen;
     CHK( mbedtls_cipher_write_tag( ctx, p, tag_len ) );
     p += tag_len;
-
     olen = p - out;
     print_buf( "out", out, olen );
-
 exit:
     return( ret );
 }
@@ -221,28 +221,21 @@ exit:
 static int aead_demo( const char *info )
 {
     int ret = 0;
-
     mbedtls_cipher_context_t ctx;
     size_t tag_len;
-
     mbedtls_cipher_init( &ctx );
-
     CHK( aead_prepare( info, &ctx, &tag_len ) );
-
     aead_info( &ctx, tag_len );
-
     CHK( aead_encrypt( &ctx, tag_len,
-                         iv1, sizeof( iv1 ), add_data1, sizeof( add_data1 ),
-                         msg1_part1, sizeof( msg1_part1 ),
-                         msg1_part2, sizeof( msg1_part2 ) ) );
+                       iv1, sizeof( iv1 ), add_data1, sizeof( add_data1 ),
+                       msg1_part1, sizeof( msg1_part1 ),
+                       msg1_part2, sizeof( msg1_part2 ) ) );
     CHK( aead_encrypt( &ctx, tag_len,
-                         iv2, sizeof( iv2 ), add_data2, sizeof( add_data2 ),
-                         msg2_part1, sizeof( msg2_part1 ),
-                         msg2_part2, sizeof( msg2_part2 ) ) );
-
+                       iv2, sizeof( iv2 ), add_data2, sizeof( add_data2 ),
+                       msg2_part1, sizeof( msg2_part1 ),
+                       msg2_part2, sizeof( msg2_part2 ) ) );
 exit:
     mbedtls_cipher_free( &ctx );
-
     return( ret );
 }
 
@@ -258,12 +251,9 @@ int main( int argc, char **argv )
         puts( usage );
         return( 1 );
     }
-
     int ret;
-
     /* Run the demo */
     CHK( aead_demo( argv[1] ) );
-
 exit:
     return( ret == 0 ? EXIT_SUCCESS : EXIT_FAILURE );
 }

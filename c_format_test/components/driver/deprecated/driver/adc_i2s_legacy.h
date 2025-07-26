@@ -17,7 +17,8 @@ extern "C" {
 /**
  * @brief ESP32 ADC DMA source selection.
  */
-typedef enum {
+typedef enum
+{
     ADC_I2S_DATA_SRC_IO_SIG = 0, /*!< I2S data from GPIO matrix signal  */
     ADC_I2S_DATA_SRC_ADC = 1,    /*!< I2S data from ADC */
 } adc_i2s_source_t;

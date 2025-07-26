@@ -42,12 +42,14 @@ which are undefined if the following flag is not defined */
  \
 })
 
-typedef enum {
+typedef enum
+{
     ESP_MBEDTLS_SSL_BUF_CACHED,
     ESP_MBEDTLS_SSL_BUF_NO_CACHED,
 } esp_mbedtls_ssl_buf_states;
 
-struct esp_mbedtls_ssl_buf {
+struct esp_mbedtls_ssl_buf
+{
     esp_mbedtls_ssl_buf_states state;
     unsigned int len;
     unsigned char buf[];

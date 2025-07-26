@@ -233,7 +233,7 @@ static void local_test_loop(const void* arg1, void* arg2)
 static spitest_param_set_t timing_pgroup[] =
 {
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "FULL_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -252,7 +252,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-#endif
+    #endif
     {
         .pset_name = "FULL_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -263,7 +263,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_tv_ns = TV_INT_CONNECT_GPIO,
     },
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "MISO_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -282,7 +282,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-#endif
+    #endif
     {
         .pset_name = "MISO_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -293,7 +293,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_tv_ns = TV_INT_CONNECT_GPIO,
     },
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "MOSI_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -312,7 +312,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-#endif
+    #endif
     {
         .pset_name = "MOSI_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,

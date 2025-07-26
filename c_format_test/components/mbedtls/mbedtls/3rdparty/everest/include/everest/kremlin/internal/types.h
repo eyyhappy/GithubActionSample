@@ -50,9 +50,10 @@ typedef __m128i FStar_UInt128_uint128;
 #elif !defined(KRML_VERIFIED_UINT128) && !defined(_MSC_VER)
 typedef unsigned __int128 FStar_UInt128_uint128;
 #else
-typedef struct FStar_UInt128_uint128_s {
-  uint64_t low;
-  uint64_t high;
+typedef struct FStar_UInt128_uint128_s
+{
+    uint64_t low;
+    uint64_t high;
 } FStar_UInt128_uint128;
 #endif
 

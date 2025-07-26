@@ -64,24 +64,28 @@ extern "C" {
 /**
  * @brief I2C initialization parameters
  */
-typedef struct{
+typedef struct
+{
     i2c_mode_t mode;     /*!< I2C mode */
     int sda_io_num;      /*!< GPIO number for I2C sda signal */
     int scl_io_num;      /*!< GPIO number for I2C scl signal */
     bool sda_pullup_en;  /*!< Internal GPIO pull mode for I2C sda signal*/
     bool scl_pullup_en;  /*!< Internal GPIO pull mode for I2C scl signal*/
 
-    union {
-        struct {
+    union
+    {
+        struct
+        {
             uint32_t clk_speed;      /*!< I2C clock frequency for master mode, (no higher than 1MHz for now) */
         } master;                    /*!< I2C master config */
-#if SOC_I2C_SUPPORT_SLAVE
-        struct {
+        #if SOC_I2C_SUPPORT_SLAVE
+        struct
+        {
             uint8_t addr_10bit_en;   /*!< I2C 10bit address mode enable for slave mode */
             uint16_t slave_addr;     /*!< I2C address for slave mode */
             uint32_t maximum_speed;  /*!< I2C expected clock speed from SCL. */
         } slave;                     /*!< I2C slave config */
-#endif // SOC_I2C_SUPPORT_SLAVE
+        #endif // SOC_I2C_SUPPORT_SLAVE
     };
     uint32_t clk_flags;              /*!< Bitwise of ``I2C_SCLK_SRC_FLAG_**FOR_DFS**`` for clk source choice*/
 } i2c_config_t;

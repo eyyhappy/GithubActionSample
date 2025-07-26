@@ -8,8 +8,8 @@
 
 // #define ESP32S3
 #ifndef RET_CODE_T
-    #define RET_CODE_T
-    typedef uint32_t ret_code_t;
+#define RET_CODE_T
+typedef uint32_t ret_code_t;
 #endif
 
 
@@ -28,36 +28,36 @@
 
 
 #ifndef BOOTLOADER_CODE
-    #include "app_fifo.h"
+#include "app_fifo.h"
 
-    #if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
-        #include "gwp_dfu_process.h"
-    #else
+#if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
+#include "gwp_dfu_process.h"
+#else
 
-        #if (defined RPC_APPLICATION_CODE)
-            #include "gwp_ble_interface.h"
-            #include "gwp_ble_tunnel.h"
+#if (defined RPC_APPLICATION_CODE)
+#include "gwp_ble_interface.h"
+#include "gwp_ble_tunnel.h"
 
-        #endif
+#endif
 
-        #define GWP_LOG_FLUSH NRF_LOG_FLUSH
-    #endif
-    #include "app_util.h"
-    #include "boards.h"
+#define GWP_LOG_FLUSH NRF_LOG_FLUSH
+#endif
+#include "app_util.h"
+#include "boards.h"
 
-    //#include "gwp_common.h"
-    //#include "gwp_error_common.h"
-    #include "sdk_errors.h"
-    #include "app_error.h"
-    #include "app_util.h"
-    #include "boards.h"
-    #include "app_timer.h"
-    #include "nrf_crypto.h"
-    #include "sdk_config.h"
-    #include "nrf_log.h"
-    #include "nrf_crypto_hkdf.h"
-    //#include "sdk_errors.h"
-    //    #include "secure_storage_api.h"//h145764
+//#include "gwp_common.h"
+//#include "gwp_error_common.h"
+#include "sdk_errors.h"
+#include "app_error.h"
+#include "app_util.h"
+#include "boards.h"
+#include "app_timer.h"
+#include "nrf_crypto.h"
+#include "sdk_config.h"
+#include "nrf_log.h"
+#include "nrf_crypto_hkdf.h"
+//#include "sdk_errors.h"
+//    #include "secure_storage_api.h"//h145764
 #endif
 
 #elif defined(STM32WB55xx)
@@ -80,20 +80,20 @@ typedef enum
 } ErrorStatus;
 
 #if   defined ( __CC_ARM )
-    #define __ASM            __asm                                      /*!< asm keyword for ARM Compiler          */
-    #define __INLINE         __inline                                   /*!< inline keyword for ARM Compiler       */
+#define __ASM            __asm                                      /*!< asm keyword for ARM Compiler          */
+#define __INLINE         __inline                                   /*!< inline keyword for ARM Compiler       */
 
 #elif defined ( __ICCARM__ )
-    #define __ASM           __asm                                       /*!< asm keyword for IAR Compiler          */
-    #define __INLINE        inline                                      /*!< inline keyword for IAR Compiler. Only available in High optimization mode! */
+#define __ASM           __asm                                       /*!< asm keyword for IAR Compiler          */
+#define __INLINE        inline                                      /*!< inline keyword for IAR Compiler. Only available in High optimization mode! */
 
 #elif defined ( __GNUC__ )
-    #define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
-    #define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
+#define __ASM            __asm                                      /*!< asm keyword for GNU Compiler          */
+#define __INLINE         inline                                     /*!< inline keyword for GNU Compiler       */
 
 #elif defined ( __TASKING__ )
-    #define __ASM            __asm                                      /*!< asm keyword for TASKING Compiler      */
-    #define __INLINE         inline                                     /*!< inline keyword for TASKING Compiler   */
+#define __ASM            __asm                                      /*!< asm keyword for TASKING Compiler      */
+#define __INLINE         inline                                     /*!< inline keyword for TASKING Compiler   */
 
 #endif
 
@@ -331,18 +331,18 @@ extern GwpFunctionPointers gwpFunctions;
 #define GWP_CRYPTO_HASH_SIZE_SHA512     (64)
 
 #ifdef NONE_SELF_CONTAIN
-    #ifndef GWP_QSPI_ENABLED
-        #define GWP_QSPI_ENABLED 0
-    #endif
+#ifndef GWP_QSPI_ENABLED
+#define GWP_QSPI_ENABLED 0
+#endif
 #else
-    #ifndef GWP_QSPI_ENABLED
-        #define GWP_QSPI_ENABLED 1
-    #endif
+#ifndef GWP_QSPI_ENABLED
+#define GWP_QSPI_ENABLED 1
+#endif
 #endif
 
 
 #if defined(STM32WB55xx)
-    #define DFU_MODULE_ENABLED
+#define DFU_MODULE_ENABLED
 #endif
 
 #endif

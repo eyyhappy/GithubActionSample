@@ -37,22 +37,21 @@ esp_err_t dac_digi_init(void)
     DAC_ENTER_CRITICAL();
     dac_hal_digi_init();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
 esp_err_t dac_digi_deinit(void)
 {
-#ifdef CONFIG_PM_ENABLE
-    if (s_dac_digi_lock) {
+    #ifdef CONFIG_PM_ENABLE
+    if (s_dac_digi_lock)
+    {
         esp_pm_lock_delete(s_dac_digi_lock);
         s_dac_digi_lock = NULL;
     }
-#endif
+    #endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_deinit();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -63,53 +62,55 @@ esp_err_t dac_digi_controller_config(const dac_digi_config_t *cfg)
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_num < 256, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_num error");
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_b > 0 && cfg->dig_clk.div_b < 64, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_b error");
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_a < 64, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_a error");
-#ifdef CONFIG_PM_ENABLE
+    #ifdef CONFIG_PM_ENABLE
     esp_err_t err;
-    if (s_dac_digi_lock == NULL) {
-        if (cfg->dig_clk.use_apll) {
+    if (s_dac_digi_lock == NULL)
+    {
+        if (cfg->dig_clk.use_apll)
+        {
             err = esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "dac_dma", &s_dac_digi_lock);
-        } else {
+        }
+        else
+        {
             err = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "dac_dma", &s_dac_digi_lock);
         }
-        if (err != ESP_OK) {
+        if (err != ESP_OK)
+        {
             s_dac_digi_lock = NULL;
             ESP_LOGE(TAG, "DAC-DMA pm lock error");
             return err;
         }
     }
-#endif //CONFIG_PM_ENABLE
-
+    #endif //CONFIG_PM_ENABLE
     DAC_ENTER_CRITICAL();
     dac_hal_digi_controller_config(cfg);
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
 esp_err_t dac_digi_start(void)
 {
-#ifdef CONFIG_PM_ENABLE
+    #ifdef CONFIG_PM_ENABLE
     ESP_RETURN_ON_FALSE(s_dac_digi_lock, ESP_FAIL, TAG, "Should start after call `dac_digi_controller_config`");
     esp_pm_lock_acquire(s_dac_digi_lock);
-#endif
+    #endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_start();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
 esp_err_t dac_digi_stop(void)
 {
-#ifdef CONFIG_PM_ENABLE
-    if (s_dac_digi_lock) {
+    #ifdef CONFIG_PM_ENABLE
+    if (s_dac_digi_lock)
+    {
         esp_pm_lock_release(s_dac_digi_lock);
     }
-#endif
+    #endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_stop();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -118,7 +119,6 @@ esp_err_t dac_digi_fifo_reset(void)
     DAC_ENTER_CRITICAL();
     dac_hal_digi_fifo_reset();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -127,6 +127,5 @@ esp_err_t dac_digi_reset(void)
     DAC_ENTER_CRITICAL();
     dac_hal_digi_reset();
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }

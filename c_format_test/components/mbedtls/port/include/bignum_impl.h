@@ -66,9 +66,9 @@ void esp_mpi_read_result_hw_op(mbedtls_mpi *Z, size_t z_words);
  *
  */
 int esp_mont_hw_op(mbedtls_mpi* Z, const mbedtls_mpi* X, const mbedtls_mpi* Y, const mbedtls_mpi* M,
-                mbedtls_mpi_uint Mprime,
-                size_t hw_words,
-                bool again);
+                   mbedtls_mpi_uint Mprime,
+                   size_t hw_words,
+                   bool again);
 
 #else
 

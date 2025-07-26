@@ -11,13 +11,14 @@
 
 typedef const char *Prims_string;
 
-typedef struct {
-  uint32_t length;
-  const char *data;
+typedef struct
+{
+    uint32_t length;
+    const char *data;
 } FStar_Bytes_bytes;
 
 typedef int32_t Prims_pos, Prims_nat, Prims_nonzero, Prims_int,
-    krml_checked_int_t;
+        krml_checked_int_t;
 
 #define RETURN_OR(x)                                                           \
   do {                                                                         \

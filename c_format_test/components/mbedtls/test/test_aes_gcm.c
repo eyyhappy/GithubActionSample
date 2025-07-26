@@ -311,7 +311,7 @@ TEST_CASE("mbedtls AES GCM", "[aes-gcm]")
         cfg.plaintext_length = length[i];
         res.expected_tag = expected_tag[i];
         res.ciphertext_last_block = expected_last_block[i],
-            aes_gcm_test(&cfg, &res, AES_GCM_TEST_CRYPT_N_TAG);
+        aes_gcm_test(&cfg, &res, AES_GCM_TEST_CRYPT_N_TAG);
         aes_gcm_test(&cfg, &res, AES_GCM_TEST_START_UPDATE_FINISH);
         free(input);
     }
@@ -439,10 +439,10 @@ TEST_CASE("mbedtls AES GCM performance, start, update, ret", "[aes-gcm]")
     // bytes/usec = MB/sec
     float mb_sec = CALL_SZ / elapsed_usec;
     printf("GCM encryption rate %.3fMB/sec\n", mb_sec);
-#ifdef CONFIG_MBEDTLS_HARDWARE_GCM
+    #ifdef CONFIG_MBEDTLS_HARDWARE_GCM
     // Don't put a hard limit on software AES performance
     TEST_PERFORMANCE_GREATER_THAN(AES_GCM_UPDATE_THROUGHPUT_MBSEC, "%.3fMB/sec", mb_sec);
-#endif
+    #endif
 }
 
 
@@ -487,10 +487,10 @@ TEST_CASE("mbedtls AES GCM performance, crypt-and-tag", "[aes-gcm]")
     // bytes/usec = MB/sec
     float mb_sec = CALL_SZ / elapsed_usec;
     printf("GCM encryption rate %.3fMB/sec\n", mb_sec);
-#ifdef CONFIG_MBEDTLS_HARDWARE_GCM
+    #ifdef CONFIG_MBEDTLS_HARDWARE_GCM
     // Don't put a hard limit on software AES performance
     TEST_PERFORMANCE_GREATER_THAN(AES_GCM_CRYPT_TAG_THROUGHPUT_MBSEC, "%.3fMB/sec", mb_sec);
-#endif
+    #endif
 }
 
 TEST_CASE("mbedtls AES GCM - Combine different IV/Key/Plaintext/AAD lengths", "[aes-gcm]")
@@ -768,7 +768,7 @@ TEST_CASE("mbedtls AES GCM - Combine different IV/Key/Plaintext/AAD lengths", "[
                     cfg.add_length = add_len[i_add];
                     res.expected_tag = expected_tag[i_key][i_iv][i_len][i_add];
                     res.ciphertext_last_block = expected_last_block[i_key][i_iv][i_len],
-                        aes_gcm_test(&cfg, &res, AES_GCM_TEST_CRYPT_N_TAG);
+                    aes_gcm_test(&cfg, &res, AES_GCM_TEST_CRYPT_N_TAG);
                     free(add);
                 }
                 free(input);

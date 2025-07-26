@@ -32,7 +32,6 @@ esp_err_t rtc_gpio_init(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_function_select(rtc_io_number_get(gpio_num), RTCIO_FUNC_RTC);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -43,7 +42,6 @@ esp_err_t rtc_gpio_deinit(gpio_num_t gpio_num)
     // Select Gpio as Digital Gpio
     rtcio_hal_function_select(rtc_io_number_get(gpio_num), RTCIO_FUNC_DIGITAL);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -53,7 +51,6 @@ esp_err_t rtc_gpio_set_level(gpio_num_t gpio_num, uint32_t level)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_set_level(rtc_io_number_get(gpio_num), level);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -71,7 +68,6 @@ esp_err_t rtc_gpio_set_drive_capability(gpio_num_t gpio_num, gpio_drive_cap_t st
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_set_drive_capability(rtc_io_number_get(gpio_num), strength);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -81,7 +77,6 @@ esp_err_t rtc_gpio_get_drive_capability(gpio_num_t gpio_num, gpio_drive_cap_t *s
     ESP_RETURN_ON_FALSE(GPIO_IS_VALID_OUTPUT_GPIO(gpio_num), ESP_ERR_INVALID_ARG, RTCIO_TAG, "Output pad only");
     ESP_RETURN_ON_FALSE(strength != NULL, ESP_ERR_INVALID_ARG, RTCIO_TAG, "GPIO drive pointer error");
     *strength = (gpio_drive_cap_t)rtcio_hal_get_drive_capability(rtc_io_number_get(gpio_num));
-
     return ESP_OK;
 }
 
@@ -91,7 +86,6 @@ esp_err_t rtc_gpio_set_direction(gpio_num_t gpio_num, rtc_gpio_mode_t mode)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_set_direction(rtc_io_number_get(gpio_num), mode);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -101,7 +95,6 @@ esp_err_t rtc_gpio_set_direction_in_sleep(gpio_num_t gpio_num, rtc_gpio_mode_t m
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_set_direction_in_sleep(rtc_io_number_get(gpio_num), mode);
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -111,7 +104,6 @@ esp_err_t rtc_gpio_pullup_en(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_pullup_enable(rtc_io_number_get(gpio_num));
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -121,7 +113,6 @@ esp_err_t rtc_gpio_pullup_dis(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_pullup_disable(rtc_io_number_get(gpio_num));
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -131,7 +122,6 @@ esp_err_t rtc_gpio_pulldown_en(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_pulldown_enable(rtc_io_number_get(gpio_num));
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -141,7 +131,6 @@ esp_err_t rtc_gpio_pulldown_dis(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_pulldown_disable(rtc_io_number_get(gpio_num));
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -173,7 +162,6 @@ esp_err_t rtc_gpio_isolate(gpio_num_t gpio_num)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_isolate(rtc_io_number_get(gpio_num));
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -182,7 +170,6 @@ esp_err_t rtc_gpio_force_hold_en_all(void)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_hold_all();
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -191,7 +178,6 @@ esp_err_t rtc_gpio_force_hold_dis_all(void)
     RTCIO_ENTER_CRITICAL();
     rtcio_hal_unhold_all();
     RTCIO_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -202,7 +188,8 @@ esp_err_t rtc_gpio_force_hold_dis_all(void)
 esp_err_t rtc_gpio_wakeup_enable(gpio_num_t gpio_num, gpio_int_type_t intr_type)
 {
     ESP_RETURN_ON_FALSE(rtc_gpio_is_valid_gpio(gpio_num), ESP_ERR_INVALID_ARG, RTCIO_TAG, "RTCIO number error");
-    if (intr_type == GPIO_INTR_POSEDGE || intr_type == GPIO_INTR_NEGEDGE || intr_type == GPIO_INTR_ANYEDGE) {
+    if (intr_type == GPIO_INTR_POSEDGE || intr_type == GPIO_INTR_NEGEDGE || intr_type == GPIO_INTR_ANYEDGE)
+    {
         return ESP_ERR_INVALID_ARG; // Dont support this mode.
     }
     RTCIO_ENTER_CRITICAL();
@@ -224,11 +211,11 @@ esp_err_t rtc_gpio_wakeup_disable(gpio_num_t gpio_num)
 
 bool rtc_gpio_is_valid_gpio(gpio_num_t gpio_num)
 {
-#if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
+    #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
     return (gpio_num < GPIO_PIN_COUNT && rtc_io_num_map[gpio_num] >= 0);
-#else
+    #else
     return false;
-#endif
+    #endif
 }
 
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED

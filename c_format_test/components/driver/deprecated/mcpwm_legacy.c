@@ -74,12 +74,14 @@ _Static_assert(SOC_MCPWM_GENERATORS_PER_OPERATOR == 2, "This driver assumes the 
         ESP_RETURN_ON_FALSE((gen) < MCPWM_GEN_MAX, ESP_ERR_INVALID_ARG, TAG, MCPWM_GEN_ERROR); \
     } while (0)
 
-typedef struct {
+typedef struct
+{
     cap_isr_cb_t fn;   // isr function
     void *args;      // isr function args
 } cap_isr_func_t;
 
-typedef struct {
+typedef struct
+{
     mcpwm_hal_context_t hal;
     portMUX_TYPE spinlock;
     _lock_t mutex_lock;
@@ -90,7 +92,8 @@ typedef struct {
     cap_isr_func_t cap_isr_func[SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER]; // handler for ISR callback, one for each cap ch
 } mcpwm_context_t;
 
-static mcpwm_context_t context[SOC_MCPWM_GROUPS] = {
+static mcpwm_context_t context[SOC_MCPWM_GROUPS] =
+{
     [0] = {
         .hal = {MCPWM_LL_GET_HW(0)},
         .spinlock = portMUX_INITIALIZER_UNLOCKED,
@@ -103,7 +106,7 @@ static mcpwm_context_t context[SOC_MCPWM_GROUPS] = {
         .mcpwm_intr_handle = NULL,
         .cap_isr_func = {[0 ... SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER - 1] = {NULL, NULL}},
     },
-#if SOC_MCPWM_GROUPS > 1
+    #if SOC_MCPWM_GROUPS > 1
     [1] = {
         .hal = {MCPWM_LL_GET_HW(1)},
         .spinlock = portMUX_INITIALIZER_UNLOCKED,
@@ -116,7 +119,7 @@ static mcpwm_context_t context[SOC_MCPWM_GROUPS] = {
         .mcpwm_intr_handle = NULL,
         .cap_isr_func = {[0 ... SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER - 1] = {NULL, NULL}},
     }
-#endif
+    #endif
 };
 
 typedef void (*mcpwm_ll_gen_set_event_action_t)(mcpwm_dev_t *mcpwm, int op, int gen, int action);
@@ -143,28 +146,34 @@ static inline void mcpwm_mutex_unlock(mcpwm_unit_t mcpwm_num)
 
 esp_err_t mcpwm_gpio_init(mcpwm_unit_t mcpwm_num, mcpwm_io_signals_t io_signal, int gpio_num)
 {
-    if (gpio_num < 0) { // ignore on minus gpio number
+    if (gpio_num < 0)   // ignore on minus gpio number
+    {
         return ESP_OK;
     }
-
     ESP_RETURN_ON_FALSE(mcpwm_num < SOC_MCPWM_GROUPS, ESP_ERR_INVALID_ARG, TAG, MCPWM_GROUP_NUM_ERROR);
     ESP_RETURN_ON_FALSE(GPIO_IS_VALID_GPIO(gpio_num), ESP_ERR_INVALID_ARG, TAG, MCPWM_GPIO_ERROR);
-
-    if (io_signal <= MCPWM2B) { // Generator output signal
+    if (io_signal <= MCPWM2B)   // Generator output signal
+    {
         ESP_RETURN_ON_FALSE(GPIO_IS_VALID_OUTPUT_GPIO(gpio_num), ESP_ERR_INVALID_ARG, TAG, MCPWM_GPIO_ERROR);
         gpio_set_direction(gpio_num, GPIO_MODE_OUTPUT);
         int operator_id = io_signal / 2;
         int generator_id = io_signal % 2;
         esp_rom_gpio_connect_out_signal(gpio_num, mcpwm_periph_signals.groups[mcpwm_num].operators[operator_id].generators[generator_id].pwm_sig, 0, 0);
-    } else if (io_signal <= MCPWM_SYNC_2) { // External sync input signal
+    }
+    else if (io_signal <= MCPWM_SYNC_2)     // External sync input signal
+    {
         gpio_set_direction(gpio_num, GPIO_MODE_INPUT);
         int gpio_sync_id = io_signal - MCPWM_SYNC_0;
         esp_rom_gpio_connect_in_signal(gpio_num, mcpwm_periph_signals.groups[mcpwm_num].gpio_synchros[gpio_sync_id].sync_sig, 0);
-    } else if (io_signal <= MCPWM_FAULT_2) { // Fault input signal
+    }
+    else if (io_signal <= MCPWM_FAULT_2)     // Fault input signal
+    {
         gpio_set_direction(gpio_num, GPIO_MODE_INPUT);
         int fault_id = io_signal - MCPWM_FAULT_0;
         esp_rom_gpio_connect_in_signal(gpio_num, mcpwm_periph_signals.groups[mcpwm_num].gpio_faults[fault_id].fault_sig, 0);
-    } else if (io_signal >= MCPWM_CAP_0 && io_signal <= MCPWM_CAP_2) { // Capture input signal
+    }
+    else if (io_signal >= MCPWM_CAP_0 && io_signal <= MCPWM_CAP_2)     // Capture input signal
+    {
         gpio_set_direction(gpio_num, GPIO_MODE_INPUT);
         int capture_id = io_signal - MCPWM_CAP_0;
         esp_rom_gpio_connect_in_signal(gpio_num, mcpwm_periph_signals.groups[mcpwm_num].captures[capture_id].cap_sig, 0);
@@ -197,7 +206,6 @@ esp_err_t mcpwm_set_pin(mcpwm_unit_t mcpwm_num, const mcpwm_pin_config_t *mcpwm_
 esp_err_t mcpwm_start(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_timer_set_start_stop_command(context[mcpwm_num].hal.dev, timer_num, MCPWM_TIMER_START_NO_STOP);
     mcpwm_critical_exit(mcpwm_num);
@@ -207,7 +215,6 @@ esp_err_t mcpwm_start(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 esp_err_t mcpwm_stop(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_timer_set_start_stop_command(context[mcpwm_num].hal.dev, timer_num, MCPWM_TIMER_STOP_EMPTY);
     mcpwm_critical_exit(mcpwm_num);
@@ -229,7 +236,6 @@ esp_err_t mcpwm_group_set_resolution(mcpwm_unit_t mcpwm_num, unsigned long int r
 esp_err_t mcpwm_timer_set_resolution(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, unsigned long int resolution)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
     int pre_scale_temp = MCPWM_GROUP_CLK_SRC_HZ / context[mcpwm_num].group_pre_scale / resolution;
     ESP_RETURN_ON_FALSE(pre_scale_temp >= 1, ESP_ERR_INVALID_ARG, TAG, "invalid resolution");
@@ -246,9 +252,7 @@ esp_err_t mcpwm_set_frequency(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, u
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
-
     mcpwm_ll_timer_update_period_at_once(hal->dev, timer_num);
     uint32_t previous_peak = mcpwm_ll_timer_get_peak(hal->dev, timer_num, false);
     int real_group_prescale = mcpwm_ll_group_get_clock_prescale(hal->dev);
@@ -266,7 +270,6 @@ esp_err_t mcpwm_set_frequency(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, u
     mcpwm_ll_operator_update_compare_at_once(hal->dev, op, 1);
     mcpwm_ll_operator_set_compare_value(hal->dev, op, 0, (uint32_t)(previous_cmp_a * scale));
     mcpwm_ll_operator_set_compare_value(hal->dev, op, 1, (uint32_t)(previous_cmp_b * scale));
-
     mcpwm_critical_exit(mcpwm_num);
     return ESP_OK;
 }
@@ -279,7 +282,6 @@ esp_err_t mcpwm_set_duty(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, mcpwm_
     const int cmp = gen;
     MCPWM_GEN_CHECK(mcpwm_num, timer_num, gen);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     uint32_t set_duty = mcpwm_ll_timer_get_peak(hal->dev, timer_num, false) * duty / 100;
     mcpwm_ll_operator_set_compare_value(hal->dev, op, cmp, set_duty);
@@ -297,7 +299,6 @@ esp_err_t mcpwm_set_duty_in_us(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, 
     const int cmp = gen;
     MCPWM_GEN_CHECK(mcpwm_num, timer_num, gen);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     int real_group_prescale = mcpwm_ll_group_get_clock_prescale(hal->dev);
     // to avid multiplication overflow, use uint64_t here
@@ -319,75 +320,96 @@ esp_err_t mcpwm_set_duty_type(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, m
     MCPWM_GEN_CHECK(mcpwm_num, timer_num, gen);
     ESP_RETURN_ON_FALSE(duty_type < MCPWM_DUTY_MODE_MAX, ESP_ERR_INVALID_ARG, TAG, MCPWM_DUTY_TYPE_ERROR);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     //the driver currently always use the comparator A for PWMxA output, and comparator B for PWMxB output
     mcpwm_critical_enter(mcpwm_num);
-    switch (mcpwm_ll_timer_get_count_mode(hal->dev, timer_num)) {
-    case MCPWM_TIMER_COUNT_MODE_UP:
-        if (duty_type == MCPWM_DUTY_MODE_0) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_GEN_ACTION_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_GEN_ACTION_KEEP);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_1) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_GEN_ACTION_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_NO_CHANGE);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
-        }
-        break;
-    case MCPWM_TIMER_COUNT_MODE_DOWN:
-        if (duty_type == MCPWM_DUTY_MODE_0) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_NO_CHANGE);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
-        } else if (duty_type == MCPWM_DUTY_MODE_1) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_NO_CHANGE);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
-        }
-        break;
-    case MCPWM_TIMER_COUNT_MODE_UP_DOWN:
-        if (duty_type == MCPWM_DUTY_MODE_0) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
-        } else if (duty_type == MCPWM_DUTY_MODE_1) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
-        } else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH) {
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
-            mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
-        }
-        break;
-    default:
-        break;
+    switch (mcpwm_ll_timer_get_count_mode(hal->dev, timer_num))
+    {
+        case MCPWM_TIMER_COUNT_MODE_UP:
+            if (duty_type == MCPWM_DUTY_MODE_0)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_GEN_ACTION_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_GEN_ACTION_KEEP);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_1)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_GEN_ACTION_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_NO_CHANGE);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            break;
+        case MCPWM_TIMER_COUNT_MODE_DOWN:
+            if (duty_type == MCPWM_DUTY_MODE_0)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_NO_CHANGE);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_1)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_NO_CHANGE);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            break;
+        case MCPWM_TIMER_COUNT_MODE_UP_DOWN:
+            if (duty_type == MCPWM_DUTY_MODE_0)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_1)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_LOW)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_LOW);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_LOW);
+            }
+            else if (duty_type == MCPWM_DUTY_MODE_FORCE_HIGH)
+            {
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_EMPTY, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_timer_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, MCPWM_TIMER_EVENT_FULL, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_DOWN, gen, MCPWM_ACTION_FORCE_HIGH);
+                mcpwm_ll_generator_set_action_on_compare_event(hal->dev, op, gen, MCPWM_TIMER_DIRECTION_UP, gen, MCPWM_ACTION_FORCE_HIGH);
+            }
+            break;
+        default:
+            break;
     }
     mcpwm_critical_exit(mcpwm_num);
     return ESP_OK;
@@ -399,11 +421,11 @@ esp_err_t mcpwm_init(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, const mcpw
     MCPWM_TIMER_ID_CHECK(mcpwm_num, op);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
     periph_module_enable(mcpwm_periph_signals.groups[mcpwm_num].module);
-    mcpwm_hal_init_config_t config = {
+    mcpwm_hal_init_config_t config =
+    {
         .group_id = mcpwm_num
     };
     mcpwm_hal_init(hal, &config);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_group_set_clock_prescale(hal->dev, context[mcpwm_num].group_pre_scale);
     mcpwm_ll_timer_set_clock_prescale(hal->dev, timer_num, context[mcpwm_num].timer_pre_scale[timer_num]);
@@ -415,19 +437,18 @@ esp_err_t mcpwm_init(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, const mcpw
     mcpwm_ll_timer_set_peak(hal->dev, timer_num, real_timer_clk_hz / mcpwm_conf->frequency, false);
     mcpwm_ll_operator_connect_timer(hal->dev, timer_num, timer_num); //the driver currently always use the timer x for operator x
     mcpwm_critical_exit(mcpwm_num);
-
     mcpwm_set_duty(mcpwm_num, timer_num, 0, mcpwm_conf->cmpr_a);
     mcpwm_set_duty(mcpwm_num, timer_num, 1, mcpwm_conf->cmpr_b);
     mcpwm_set_duty_type(mcpwm_num, timer_num, 0, mcpwm_conf->duty_mode);
     mcpwm_set_duty_type(mcpwm_num, timer_num, 1, mcpwm_conf->duty_mode);
     mcpwm_start(mcpwm_num, timer_num);
-
     return ESP_OK;
 }
 
 uint32_t mcpwm_get_frequency(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 {
-    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX) {
+    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX)
+    {
         ESP_LOGE(TAG, "Invalid MCPWM timer instance");
         return 0;
     }
@@ -444,7 +465,8 @@ uint32_t mcpwm_get_frequency(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 
 float mcpwm_get_duty(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, mcpwm_generator_t gen)
 {
-    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX || gen >= MCPWM_GEN_MAX) {
+    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX || gen >= MCPWM_GEN_MAX)
+    {
         ESP_LOGE(TAG, "Invalid MCPWM generator instance");
         return 0;
     }
@@ -459,7 +481,8 @@ float mcpwm_get_duty(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, mcpwm_gene
 
 uint32_t mcpwm_get_duty_in_us(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, mcpwm_operator_t gen)
 {
-    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX || gen >= MCPWM_GEN_MAX) {
+    if (mcpwm_num >= MCPWM_UNIT_MAX || timer_num >= MCPWM_TIMER_MAX || gen >= MCPWM_GEN_MAX)
+    {
         ESP_LOGE(TAG, "Invalid MCPWM generator instance");
         return 0;
     }
@@ -492,7 +515,6 @@ esp_err_t mcpwm_carrier_enable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_enable(context[mcpwm_num].hal.dev, op, true);
     mcpwm_critical_exit(mcpwm_num);
@@ -504,7 +526,6 @@ esp_err_t mcpwm_carrier_disable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_enable(context[mcpwm_num].hal.dev, op, false);
     mcpwm_critical_exit(mcpwm_num);
@@ -516,7 +537,6 @@ esp_err_t mcpwm_carrier_set_period(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_n
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_set_prescale(context[mcpwm_num].hal.dev, op, carrier_period + 1);
     mcpwm_critical_exit(mcpwm_num);
@@ -528,7 +548,6 @@ esp_err_t mcpwm_carrier_set_duty_cycle(mcpwm_unit_t mcpwm_num, mcpwm_timer_t tim
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_set_duty(context[mcpwm_num].hal.dev, op, carrier_duty);
     mcpwm_critical_exit(mcpwm_num);
@@ -540,7 +559,6 @@ esp_err_t mcpwm_carrier_oneshot_mode_enable(mcpwm_unit_t mcpwm_num, mcpwm_timer_
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_set_first_pulse_width(context[mcpwm_num].hal.dev, op, pulse_width + 1);
     mcpwm_critical_exit(mcpwm_num);
@@ -553,7 +571,6 @@ esp_err_t mcpwm_carrier_output_invert(mcpwm_unit_t mcpwm_num, mcpwm_timer_t time
     //the driver currently always use the timer x for operator x
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_out_invert(context[mcpwm_num].hal.dev, op, carrier_ivt_mode);
     mcpwm_critical_exit(mcpwm_num);
@@ -566,17 +583,14 @@ esp_err_t mcpwm_carrier_init(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, co
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_carrier_enable(mcpwm_num, timer_num);
     mcpwm_carrier_set_period(mcpwm_num, timer_num, carrier_conf->carrier_period);
     mcpwm_carrier_set_duty_cycle(mcpwm_num, timer_num, carrier_conf->carrier_duty);
     mcpwm_carrier_oneshot_mode_enable(mcpwm_num, timer_num, carrier_conf->pulse_width_in_os);
     mcpwm_carrier_output_invert(mcpwm_num, timer_num, carrier_conf->carrier_ivt_mode);
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_carrier_in_invert(hal->dev, op, false);
     mcpwm_critical_exit(mcpwm_num);
-
     return ESP_OK;
 }
 
@@ -588,80 +602,80 @@ esp_err_t mcpwm_deadtime_enable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num,
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     ESP_RETURN_ON_FALSE(dt_mode < MCPWM_DEADTIME_TYPE_MAX, ESP_ERR_INVALID_ARG, TAG, MCPWM_DT_ERROR);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_deadtime_enable_update_delay_on_tez(hal->dev, op, true);
     // The dead time delay unit equals to MCPWM group resolution
     mcpwm_ll_operator_set_deadtime_clock_src(hal->dev, op, MCPWM_LL_DEADTIME_CLK_SRC_GROUP);
     mcpwm_ll_deadtime_set_rising_delay(hal->dev, op, red + 1);
     mcpwm_ll_deadtime_set_falling_delay(hal->dev, op, fed + 1);
-    switch (dt_mode) {
-    case MCPWM_BYPASS_RED:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, true);     // S1=1
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
-        break;
-    case MCPWM_BYPASS_FED:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, true);     // S0=1
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
-        break;
-    case MCPWM_ACTIVE_HIGH_MODE:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
-        break;
-    case MCPWM_ACTIVE_LOW_MODE:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);   // S0=0
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);   // S1=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, true); // S2=1
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, true); // S3=1
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0); // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0); // S5=0
-        break;
-    case MCPWM_ACTIVE_HIGH_COMPLIMENT_MODE:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, true);  // S3=1
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
-        break;
-    case MCPWM_ACTIVE_LOW_COMPLIMENT_MODE:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, true);  // S2=1
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
-        break;
-    case MCPWM_ACTIVE_RED_FED_FROM_PWMXA:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
-        mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 0, true);   // S6=1
-        mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 1, false);  // S7=0
-        mcpwm_ll_deadtime_enable_deb(hal->dev, op, true);         // S8=1
-        break;
-    case MCPWM_ACTIVE_RED_FED_FROM_PWMXB:
-        mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
-        mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
-        mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 1);  // S4=1
-        mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 0, true);   // S6=1
-        mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 1, false);  // S7=0
-        mcpwm_ll_deadtime_enable_deb(hal->dev, op, true);         // S8=1
-        break;
-    default :
-        break;
+    switch (dt_mode)
+    {
+        case MCPWM_BYPASS_RED:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, true);     // S1=1
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
+            break;
+        case MCPWM_BYPASS_FED:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, true);     // S0=1
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
+            break;
+        case MCPWM_ACTIVE_HIGH_MODE:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
+            break;
+        case MCPWM_ACTIVE_LOW_MODE:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);   // S0=0
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);   // S1=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, true); // S2=1
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, true); // S3=1
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0); // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0); // S5=0
+            break;
+        case MCPWM_ACTIVE_HIGH_COMPLIMENT_MODE:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, false); // S2=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, true);  // S3=1
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
+            break;
+        case MCPWM_ACTIVE_LOW_COMPLIMENT_MODE:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, false);    // S1=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 0, true);  // S2=1
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_fed_select_generator(hal->dev, op, 0);  // S5=0
+            break;
+        case MCPWM_ACTIVE_RED_FED_FROM_PWMXA:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 0);  // S4=0
+            mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 0, true);   // S6=1
+            mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 1, false);  // S7=0
+            mcpwm_ll_deadtime_enable_deb(hal->dev, op, true);         // S8=1
+            break;
+        case MCPWM_ACTIVE_RED_FED_FROM_PWMXB:
+            mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, false);    // S0=0
+            mcpwm_ll_deadtime_invert_outpath(hal->dev, op, 1, false); // S3=0
+            mcpwm_ll_deadtime_red_select_generator(hal->dev, op, 1);  // S4=1
+            mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 0, true);   // S6=1
+            mcpwm_ll_deadtime_swap_out_path(hal->dev, op, 1, false);  // S7=0
+            mcpwm_ll_deadtime_enable_deb(hal->dev, op, true);         // S8=1
+            break;
+        default :
+            break;
     }
     mcpwm_critical_exit(mcpwm_num);
     return ESP_OK;
@@ -673,7 +687,6 @@ esp_err_t mcpwm_deadtime_disable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_deadtime_bypass_path(hal->dev, op, 1, true);     // S0
     mcpwm_ll_deadtime_bypass_path(hal->dev, op, 0, true);     // S1
@@ -692,7 +705,6 @@ esp_err_t mcpwm_fault_init(mcpwm_unit_t mcpwm_num, mcpwm_fault_input_level_t int
 {
     ESP_RETURN_ON_FALSE(mcpwm_num < SOC_MCPWM_GROUPS, ESP_ERR_INVALID_ARG, TAG, MCPWM_GROUP_NUM_ERROR);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_fault_enable_detection(hal->dev, fault_sig, true);
     mcpwm_ll_fault_set_active_level(hal->dev, fault_sig, intput_level);
@@ -704,10 +716,10 @@ esp_err_t mcpwm_fault_deinit(mcpwm_unit_t mcpwm_num, mcpwm_fault_signal_t fault_
 {
     ESP_RETURN_ON_FALSE(mcpwm_num < SOC_MCPWM_GROUPS, ESP_ERR_INVALID_ARG, TAG, MCPWM_GROUP_NUM_ERROR);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_fault_enable_detection(hal->dev, fault_sig, false);
-    for (int i = 0; i < SOC_MCPWM_OPERATORS_PER_GROUP; i++) {
+    for (int i = 0; i < SOC_MCPWM_OPERATORS_PER_GROUP; i++)
+    {
         mcpwm_ll_brake_clear_ost(hal->dev, i); // make sure operator has exit the ost fault state totally
     }
     mcpwm_critical_exit(mcpwm_num);
@@ -721,7 +733,6 @@ esp_err_t mcpwm_fault_set_cyc_mode(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_n
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, op);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_brake_enable_cbc_mode(hal->dev, op, fault_sig, true);
     mcpwm_ll_brake_enable_cbc_refresh_on_tez(hal->dev, op, true);
@@ -741,7 +752,6 @@ esp_err_t mcpwm_fault_set_oneshot_mode(mcpwm_unit_t mcpwm_num, mcpwm_timer_t tim
     const int op = timer_num;
     MCPWM_TIMER_CHECK(mcpwm_num, op);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_brake_clear_ost(hal->dev, op);
     mcpwm_ll_brake_enable_oneshot_mode(hal->dev, op, fault_sig, true);
@@ -760,21 +770,26 @@ static void MCPWM_ISR_ATTR mcpwm_default_isr_handler(void *arg)
     uint32_t intr_status = mcpwm_ll_intr_get_capture_status(curr_context->hal.dev);
     mcpwm_ll_intr_clear_capture_status(curr_context->hal.dev, intr_status);
     bool need_yield = false;
-    for (int i = 0; i < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; ++i) {
-        if ((intr_status >> i) & 0x1) {
-            if (curr_context->cap_isr_func[i].fn != NULL) {
+    for (int i = 0; i < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; ++i)
+    {
+        if ((intr_status >> i) & 0x1)
+        {
+            if (curr_context->cap_isr_func[i].fn != NULL)
+            {
                 cap_event_data_t edata;
                 edata.cap_edge = mcpwm_ll_capture_get_edge(curr_context->hal.dev, i) == MCPWM_CAP_EDGE_NEG ? MCPWM_NEG_EDGE
                                  : MCPWM_POS_EDGE;
                 edata.cap_value = mcpwm_ll_capture_get_value(curr_context->hal.dev, i);
                 if (curr_context->cap_isr_func[i].fn(curr_context->group_id, i, &edata,
-                                                     curr_context->cap_isr_func[i].args)) {
+                                                     curr_context->cap_isr_func[i].args))
+                {
                     need_yield = true;
                 }
             }
         }
     }
-    if (need_yield) {
+    if (need_yield)
+    {
         portYIELD_FROM_ISR();
     }
 }
@@ -786,11 +801,10 @@ esp_err_t mcpwm_capture_enable_channel(mcpwm_unit_t mcpwm_num, mcpwm_capture_cha
     ESP_RETURN_ON_FALSE(context[mcpwm_num].cap_isr_func[cap_channel].fn == NULL, ESP_ERR_INVALID_STATE, TAG,
                         MCPWM_CAP_EXIST_ERROR);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     // enable MCPWM module incase user don't use `mcpwm_init` at all. always increase reference count
     periph_module_enable(mcpwm_periph_signals.groups[mcpwm_num].module);
-
-    mcpwm_hal_init_config_t init_config = {
+    mcpwm_hal_init_config_t init_config =
+    {
         .group_id = mcpwm_num
     };
     mcpwm_hal_init(hal, &init_config);
@@ -805,18 +819,17 @@ esp_err_t mcpwm_capture_enable_channel(mcpwm_unit_t mcpwm_num, mcpwm_capture_cha
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_CAPTURE(cap_channel), true);
     mcpwm_ll_intr_clear_capture_status(hal->dev, 1 << cap_channel);
     mcpwm_critical_exit(mcpwm_num);
-
     mcpwm_mutex_lock(mcpwm_num);
     context[mcpwm_num].cap_isr_func[cap_channel].fn = cap_conf->capture_cb;
     context[mcpwm_num].cap_isr_func[cap_channel].args = cap_conf->user_data;
     esp_err_t ret = ESP_OK;
-    if (context[mcpwm_num].mcpwm_intr_handle == NULL) {
+    if (context[mcpwm_num].mcpwm_intr_handle == NULL)
+    {
         ret = esp_intr_alloc(mcpwm_periph_signals.groups[mcpwm_num].irq_id, MCPWM_INTR_FLAG,
                              mcpwm_default_isr_handler,
                              (void *) (context + mcpwm_num), &(context[mcpwm_num].mcpwm_intr_handle));
     }
     mcpwm_mutex_unlock(mcpwm_num);
-
     return ret;
 }
 
@@ -824,35 +837,35 @@ esp_err_t mcpwm_capture_disable_channel(mcpwm_unit_t mcpwm_num, mcpwm_capture_ch
 {
     ESP_RETURN_ON_FALSE(mcpwm_num < SOC_MCPWM_GROUPS, ESP_ERR_INVALID_ARG, TAG, MCPWM_GROUP_NUM_ERROR);
     ESP_RETURN_ON_FALSE(cap_channel < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER, ESP_ERR_INVALID_ARG, TAG, MCPWM_CAPTURE_ERROR);
-
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_capture_enable_channel(hal->dev, cap_channel, false);
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_CAPTURE(cap_channel), false);
     mcpwm_critical_exit(mcpwm_num);
-
     mcpwm_mutex_lock(mcpwm_num);
     context[mcpwm_num].cap_isr_func[cap_channel].fn = NULL;
     context[mcpwm_num].cap_isr_func[cap_channel].args = NULL;
     // if all user defined ISR callback is disabled, free the handle
     bool should_free_handle = true;
-    for (int i = 0; i < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; ++i) {
-        if (context[mcpwm_num].cap_isr_func[i].fn != NULL) {
+    for (int i = 0; i < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; ++i)
+    {
+        if (context[mcpwm_num].cap_isr_func[i].fn != NULL)
+        {
             should_free_handle = false;
             break;
         }
     }
     esp_err_t ret = ESP_OK;
-    if (should_free_handle) {
+    if (should_free_handle)
+    {
         ret = esp_intr_free(context[mcpwm_num].mcpwm_intr_handle);
-        if (ret != ESP_OK) {
+        if (ret != ESP_OK)
+        {
             ESP_LOGE(TAG, "failed to free interrupt handle");
         }
         context[mcpwm_num].mcpwm_intr_handle = NULL;
     }
     mcpwm_mutex_unlock(mcpwm_num);
-
     // always decrease reference count
     periph_module_disable(mcpwm_periph_signals.groups[mcpwm_num].module);
     return ret;
@@ -860,7 +873,8 @@ esp_err_t mcpwm_capture_disable_channel(mcpwm_unit_t mcpwm_num, mcpwm_capture_ch
 
 uint32_t MCPWM_ISR_ATTR mcpwm_capture_signal_get_value(mcpwm_unit_t mcpwm_num, mcpwm_capture_signal_t cap_sig)
 {
-    if (mcpwm_num >= MCPWM_UNIT_MAX || cap_sig >= SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER) {
+    if (mcpwm_num >= MCPWM_UNIT_MAX || cap_sig >= SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER)
+    {
         return 0;
     }
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
@@ -869,7 +883,8 @@ uint32_t MCPWM_ISR_ATTR mcpwm_capture_signal_get_value(mcpwm_unit_t mcpwm_num, m
 
 uint32_t MCPWM_ISR_ATTR mcpwm_capture_signal_get_edge(mcpwm_unit_t mcpwm_num, mcpwm_capture_signal_t cap_sig)
 {
-    if (mcpwm_num >= MCPWM_UNIT_MAX || cap_sig >= SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER) {
+    if (mcpwm_num >= MCPWM_UNIT_MAX || cap_sig >= SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER)
+    {
         return 0;
     }
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
@@ -881,18 +896,22 @@ esp_err_t mcpwm_sync_configure(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, 
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     ESP_RETURN_ON_FALSE(sync_conf->sync_sig <= MCPWM_SELECT_GPIO_SYNC2, ESP_ERR_INVALID_ARG, TAG, "invalid sync_sig");
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_timer_set_sync_phase_direction(hal->dev, timer_num, sync_conf->count_direction);
     // sync TEP with current setting
     uint32_t set_phase = 0;
     set_phase = mcpwm_ll_timer_get_peak(hal->dev, timer_num, false) * sync_conf->timer_val / 1000;
     mcpwm_ll_timer_set_sync_phase_value(hal->dev, timer_num, set_phase);
-    if (sync_conf->sync_sig == MCPWM_SELECT_NO_INPUT) {
+    if (sync_conf->sync_sig == MCPWM_SELECT_NO_INPUT)
+    {
         mcpwm_ll_timer_clear_sync_input(hal->dev, timer_num);
-    } else if (sync_conf->sync_sig <= MCPWM_SELECT_TIMER2_SYNC) {
+    }
+    else if (sync_conf->sync_sig <= MCPWM_SELECT_TIMER2_SYNC)
+    {
         mcpwm_ll_timer_set_timer_sync_input(hal->dev, timer_num, sync_conf->sync_sig - MCPWM_SELECT_TIMER0_SYNC);
-    } else {
+    }
+    else
+    {
         mcpwm_ll_timer_set_gpio_sync_input(hal->dev, timer_num, sync_conf->sync_sig - MCPWM_SELECT_GPIO_SYNC0);
     }
     mcpwm_ll_timer_enable_sync_input(hal->dev, timer_num, true);
@@ -904,7 +923,6 @@ esp_err_t mcpwm_sync_disable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
-
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_timer_enable_sync_input(hal->dev, timer_num, false);
     mcpwm_critical_exit(mcpwm_num);
@@ -914,12 +932,10 @@ esp_err_t mcpwm_sync_disable(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 esp_err_t mcpwm_timer_trigger_soft_sync(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_timer_trigger_soft_sync(hal->dev, timer_num);
     mcpwm_critical_exit(mcpwm_num);
-
     return ESP_OK;
 }
 
@@ -927,35 +943,33 @@ esp_err_t mcpwm_sync_invert_gpio_synchro(mcpwm_unit_t mcpwm_num, mcpwm_sync_sign
 {
     ESP_RETURN_ON_FALSE(sync_sig >= MCPWM_SELECT_GPIO_SYNC0 && sync_sig <= MCPWM_SELECT_GPIO_SYNC2,
                         ESP_ERR_INVALID_ARG, TAG, "invalid sync sig");
-
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
     mcpwm_critical_enter(mcpwm_num);
     mcpwm_ll_invert_gpio_sync_input(hal->dev, sync_sig - MCPWM_SELECT_GPIO_SYNC0, invert);
     mcpwm_critical_exit(mcpwm_num);
-
     return ESP_OK;
 }
 
 esp_err_t mcpwm_set_timer_sync_output(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num, mcpwm_timer_sync_trigger_t trigger)
 {
     MCPWM_TIMER_CHECK(mcpwm_num, timer_num);
-
     mcpwm_hal_context_t *hal = &context[mcpwm_num].hal;
     mcpwm_critical_enter(mcpwm_num);
-    switch (trigger) {
-    case MCPWM_SWSYNC_SOURCE_SYNCIN:
-        mcpwm_ll_timer_propagate_input_sync(hal->dev, timer_num);
-        break;
-    case MCPWM_SWSYNC_SOURCE_TEZ:
-        mcpwm_ll_timer_sync_out_on_timer_event(hal->dev, timer_num, MCPWM_TIMER_EVENT_EMPTY);
-        break;
-    case MCPWM_SWSYNC_SOURCE_TEP:
-        mcpwm_ll_timer_sync_out_on_timer_event(hal->dev, timer_num, MCPWM_TIMER_EVENT_FULL);
-        break;
-    case MCPWM_SWSYNC_SOURCE_DISABLED:
-    default:
-        mcpwm_ll_timer_disable_sync_out(hal->dev, timer_num);
-        break;
+    switch (trigger)
+    {
+        case MCPWM_SWSYNC_SOURCE_SYNCIN:
+            mcpwm_ll_timer_propagate_input_sync(hal->dev, timer_num);
+            break;
+        case MCPWM_SWSYNC_SOURCE_TEZ:
+            mcpwm_ll_timer_sync_out_on_timer_event(hal->dev, timer_num, MCPWM_TIMER_EVENT_EMPTY);
+            break;
+        case MCPWM_SWSYNC_SOURCE_TEP:
+            mcpwm_ll_timer_sync_out_on_timer_event(hal->dev, timer_num, MCPWM_TIMER_EVENT_FULL);
+            break;
+        case MCPWM_SWSYNC_SOURCE_DISABLED:
+        default:
+            mcpwm_ll_timer_disable_sync_out(hal->dev, timer_num);
+            break;
     }
     mcpwm_critical_exit(mcpwm_num);
     return ESP_OK;
@@ -970,7 +984,8 @@ static void check_mcpwm_driver_conflict(void)
     // This function was declared as weak here. The new MCPWM driver has the implementation.
     // So if the new MCPWM driver is not linked in, then `mcpwm_acquire_group_handle()` should be NULL at runtime.
     extern __attribute__((weak)) void *mcpwm_acquire_group_handle(int group_id);
-    if ((void *)mcpwm_acquire_group_handle != NULL) {
+    if ((void *)mcpwm_acquire_group_handle != NULL)
+    {
         ESP_EARLY_LOGE(TAG, "CONFLICT! driver_ng is not allowed to be used with the legacy driver");
         abort();
     }

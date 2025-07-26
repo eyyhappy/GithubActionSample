@@ -19,7 +19,8 @@ extern "C" {
  * @brief Group of supported MCPWM timer event callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     mcpwm_timer_event_cb_t on_full;  /*!< callback function when MCPWM timer counts to peak value */
     mcpwm_timer_event_cb_t on_empty; /*!< callback function when MCPWM timer counts to zero */
     mcpwm_timer_event_cb_t on_stop;  /*!< callback function when MCPWM timer stops */
@@ -28,14 +29,16 @@ typedef struct {
 /**
  * @brief MCPWM timer configuration
  */
-typedef struct {
+typedef struct
+{
     int group_id;                        /*!< Specify from which group to allocate the MCPWM timer */
     mcpwm_timer_clock_source_t clk_src;  /*!< MCPWM timer clock source */
     uint32_t resolution_hz;              /*!< Counter resolution in Hz, ranges from around 300KHz to 80MHz.
                                               The step size of each count tick equals to (1 / resolution_hz) seconds */
     mcpwm_timer_count_mode_t count_mode; /*!< Count mode */
     uint32_t period_ticks;               /*!< Number of count ticks within a period */
-    struct {
+    struct
+    {
         uint32_t update_period_on_empty: 1; /*!< Whether to update period when timer counts to zero */
         uint32_t update_period_on_sync: 1;  /*!< Whether to update period on sync event */
     } flags;                                /*!< Extra configuration flags for timer */
@@ -124,7 +127,8 @@ esp_err_t mcpwm_timer_register_event_callbacks(mcpwm_timer_handle_t timer, const
 /**
  * @brief MCPWM Timer sync phase configuration
  */
-typedef struct {
+typedef struct
+{
     mcpwm_sync_handle_t sync_src;      /*!< The sync event source. Set to NULL will disable the timer being synced by others */
     uint32_t count_value;              /*!< The count value that should lock to upon sync event */
     mcpwm_timer_direction_t direction; /*!< The count direction that should lock to upon sync event */

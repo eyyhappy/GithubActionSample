@@ -54,7 +54,6 @@ static portMUX_TYPE aes_spinlock = portMUX_INITIALIZER_UNLOCKED;
 void esp_aes_acquire_hardware( void )
 {
     portENTER_CRITICAL(&aes_spinlock);
-
     /* Enable AES hardware */
     periph_module_enable(PERIPH_AES_MODULE);
 }
@@ -63,7 +62,6 @@ void esp_aes_release_hardware( void )
 {
     /* Disable AES hardware */
     periph_module_disable(PERIPH_AES_MODULE);
-
     portEXIT_CRITICAL(&aes_spinlock);
 }
 
@@ -78,13 +76,13 @@ static int esp_aes_block(esp_aes_context *ctx, const void *input, void *output)
     uint32_t i0, i1, i2, i3;
     const uint32_t *input_words = (uint32_t *)input;
     uint32_t *output_words = (uint32_t *)output;
-
     /* If no key is written to hardware yet, either the user hasn't called
        mbedtls_aes_setkey_enc/mbedtls_aes_setkey_dec - meaning we also don't
        know which mode to use - or a fault skipped the
        key write to hardware. Treat this as a fatal error and zero the output block.
     */
-    if (ctx->key_in_hardware != ctx->key_bytes) {
+    if (ctx->key_in_hardware != ctx->key_bytes)
+    {
         bzero(output, 16);
         return MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH;
     }
@@ -92,9 +90,7 @@ static int esp_aes_block(esp_aes_context *ctx, const void *input, void *output)
     i1 = input_words[1];
     i2 = input_words[2];
     i3 = input_words[3];
-
     aes_hal_transform_block(input, output);
-
     /* Physical security check: Verify the AES accelerator actually ran, and wasn't
        skipped due to external fault injection while starting the peripheral.
 
@@ -102,14 +98,14 @@ static int esp_aes_block(esp_aes_context *ctx, const void *input, void *output)
 
        Bypassing this check requires at least one additional fault.
     */
-    if (i0 == output_words[0] && i1 == output_words[1] && i2 == output_words[2] && i3 == output_words[3]) {
+    if (i0 == output_words[0] && i1 == output_words[1] && i2 == output_words[2] && i3 == output_words[3])
+    {
         // calling zeroing functions to narrow the
         // window for a double-fault of the abort step, here
         memset(output, 0, 16);
         mbedtls_platform_zeroize(output, 16);
         abort();
     }
-
     return 0;
 }
 
@@ -128,11 +124,10 @@ int esp_internal_aes_encrypt(esp_aes_context *ctx,
                              unsigned char output[16] )
 {
     int r;
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_ENCRYPT);
@@ -157,11 +152,10 @@ int esp_internal_aes_decrypt(esp_aes_context *ctx,
                              unsigned char output[16] )
 {
     int r;
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_DECRYPT);
@@ -179,17 +173,15 @@ int esp_aes_crypt_ecb(esp_aes_context *ctx,
                       unsigned char output[16] )
 {
     int r;
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, mode);
     r = esp_aes_block(ctx, input, output);
     esp_aes_release_hardware();
-
     return r;
 }
 
@@ -208,55 +200,49 @@ int esp_aes_crypt_cbc(esp_aes_context *ctx,
     const uint32_t *input_words = (const uint32_t *)input;
     uint32_t *iv_words = (uint32_t *)iv;
     unsigned char temp[16];
-
-    if ( length % 16 ) {
+    if ( length % 16 )
+    {
         return ( ERR_ESP_AES_INVALID_INPUT_LENGTH );
     }
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, mode);
-
-
-    if ( mode == ESP_AES_DECRYPT ) {
-        while ( length > 0 ) {
+    if ( mode == ESP_AES_DECRYPT )
+    {
+        while ( length > 0 )
+        {
             memcpy(temp, input_words, 16);
             esp_aes_block(ctx, input_words, output_words);
-
             output_words[0] = output_words[0] ^ iv_words[0];
             output_words[1] = output_words[1] ^ iv_words[1];
             output_words[2] = output_words[2] ^ iv_words[2];
             output_words[3] = output_words[3] ^ iv_words[3];
-
             memcpy( iv_words, temp, 16 );
-
             input_words += 4;
             output_words += 4;
             length -= 16;
         }
-    } else { // ESP_AES_ENCRYPT
-        while ( length > 0 ) {
-
+    }
+    else     // ESP_AES_ENCRYPT
+    {
+        while ( length > 0 )
+        {
             output_words[0] = input_words[0] ^ iv_words[0];
             output_words[1] = input_words[1] ^ iv_words[1];
             output_words[2] = input_words[2] ^ iv_words[2];
             output_words[3] = input_words[3] ^ iv_words[3];
-
             esp_aes_block(ctx, output_words, output_words);
             memcpy( iv_words, output_words, 16 );
-
             input_words  += 4;
             output_words += 4;
             length -= 16;
         }
     }
-
     esp_aes_release_hardware();
-
     return 0;
 }
 
@@ -273,43 +259,41 @@ int esp_aes_crypt_cfb128(esp_aes_context *ctx,
 {
     int c;
     size_t n = *iv_off;
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_ENCRYPT);
-
-    if ( mode == ESP_AES_DECRYPT ) {
-        while ( length-- ) {
-            if ( n == 0 ) {
+    if ( mode == ESP_AES_DECRYPT )
+    {
+        while ( length-- )
+        {
+            if ( n == 0 )
+            {
                 esp_aes_block(ctx, iv, iv);
             }
-
             c = *input++;
             *output++ = (unsigned char)( c ^ iv[n] );
             iv[n] = (unsigned char) c;
-
-            n = ( n + 1 ) & 0x0F;
-        }
-    } else {
-        while ( length-- ) {
-            if ( n == 0 ) {
-                esp_aes_block(ctx, iv, iv);
-            }
-
-            iv[n] = *output++ = (unsigned char)( iv[n] ^ *input++ );
-
             n = ( n + 1 ) & 0x0F;
         }
     }
-
+    else
+    {
+        while ( length-- )
+        {
+            if ( n == 0 )
+            {
+                esp_aes_block(ctx, iv, iv);
+            }
+            iv[n] = *output++ = (unsigned char)( iv[n] ^ *input++ );
+            n = ( n + 1 ) & 0x0F;
+        }
+    }
     *iv_off = n;
-
     esp_aes_release_hardware();
-
     return 0;
 }
 
@@ -325,35 +309,29 @@ int esp_aes_crypt_cfb8(esp_aes_context *ctx,
 {
     unsigned char c;
     unsigned char ov[17];
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_ENCRYPT);
-
-
-    while ( length-- ) {
+    while ( length-- )
+    {
         memcpy( ov, iv, 16 );
         esp_aes_block(ctx, iv, iv);
-
-        if ( mode == ESP_AES_DECRYPT ) {
+        if ( mode == ESP_AES_DECRYPT )
+        {
             ov[16] = *input;
         }
-
         c = *output++ = (unsigned char)( iv[0] ^ *input++ );
-
-        if ( mode == ESP_AES_ENCRYPT ) {
+        if ( mode == ESP_AES_ENCRYPT )
+        {
             ov[16] = c;
         }
-
         memcpy( iv, ov + 1, 16 );
     }
-
     esp_aes_release_hardware();
-
     return 0;
 }
 
@@ -370,36 +348,32 @@ int esp_aes_crypt_ctr(esp_aes_context *ctx,
 {
     int c, i;
     size_t n = *nc_off;
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_ENCRYPT);
-
-
-    while ( length-- ) {
-        if ( n == 0 ) {
+    while ( length-- )
+    {
+        if ( n == 0 )
+        {
             esp_aes_block(ctx, nonce_counter, stream_block);
-
-            for ( i = 16; i > 0; i-- ) {
-                if ( ++nonce_counter[i - 1] != 0 ) {
+            for ( i = 16; i > 0; i-- )
+            {
+                if ( ++nonce_counter[i - 1] != 0 )
+                {
                     break;
                 }
             }
         }
         c = *input++;
         *output++ = (unsigned char)( c ^ stream_block[n] );
-
         n = ( n + 1 ) & 0x0F;
     }
-
     *nc_off = n;
-
     esp_aes_release_hardware();
-
     return 0;
 }
 
@@ -415,39 +389,33 @@ int esp_aes_crypt_ofb(esp_aes_context *ctx,
 {
     int ret = 0;
     size_t n;
-
     if (ctx == NULL || iv_off == NULL || iv == NULL ||
-            input == NULL || output == NULL ) {
+        input == NULL || output == NULL )
+    {
         return MBEDTLS_ERR_AES_BAD_INPUT_DATA;
     }
-
     n = *iv_off;
-
-    if (n > 15) {
+    if (n > 15)
+    {
         return (MBEDTLS_ERR_AES_BAD_INPUT_DATA);
     }
-
-    if (!valid_key_length(ctx)) {
+    if (!valid_key_length(ctx))
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
-
     esp_aes_acquire_hardware();
     ctx->key_in_hardware = 0;
     ctx->key_in_hardware = aes_hal_setkey(ctx->key, ctx->key_bytes, ESP_AES_ENCRYPT);
-
-
-    while (length--) {
-        if ( n == 0 ) {
+    while (length--)
+    {
+        if ( n == 0 )
+        {
             esp_aes_block(ctx, iv, iv);
         }
         *output++ =  *input++ ^ iv[n];
-
         n = ( n + 1 ) & 0x0F;
     }
-
     *iv_off = n;
-
     esp_aes_release_hardware();
-
     return ( ret );
 }

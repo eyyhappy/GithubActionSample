@@ -19,7 +19,8 @@
 #ifndef NIST_KW_ALT_H
 #define NIST_KW_ALT_H
 
-typedef struct {
+typedef struct
+{
     int dummy;
 } mbedtls_nist_kw_context;
 

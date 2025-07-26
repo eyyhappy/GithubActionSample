@@ -49,7 +49,6 @@ int mbedtls_aesni_has_support( unsigned int what )
 {
     static int done = 0;
     static unsigned int c = 0;
-
     if( ! done )
     {
         asm( "movl  $1, %%eax   \n\t"
@@ -59,7 +58,6 @@ int mbedtls_aesni_has_support( unsigned int what )
              : "eax", "ebx", "edx" );
         done = 1;
     }
-
     return( ( c & what ) != 0 );
 }
 
@@ -93,9 +91,9 @@ int mbedtls_aesni_has_support( unsigned int what )
  * AES-NI AES-ECB block en(de)cryption
  */
 int mbedtls_aesni_crypt_ecb( mbedtls_aes_context *ctx,
-                     int mode,
-                     const unsigned char input[16],
-                     unsigned char output[16] )
+                             int mode,
+                             const unsigned char input[16],
+                             unsigned char output[16] )
 {
     asm( "movdqu    (%3), %%xmm0    \n\t" // load input
          "movdqu    (%1), %%xmm1    \n\t" // load round key 0
@@ -104,7 +102,6 @@ int mbedtls_aesni_crypt_ecb( mbedtls_aes_context *ctx,
          "subl      $1, %0          \n\t" // normal rounds = nr - 1
          "test      %2, %2          \n\t" // mode?
          "jz        2f              \n\t" // 0 = decrypt
-
          "1:                        \n\t" // encryption loop
          "movdqu    (%1), %%xmm1    \n\t" // load round key
          AESENC     xmm1_xmm0      "\n\t" // do round
@@ -114,7 +111,6 @@ int mbedtls_aesni_crypt_ecb( mbedtls_aes_context *ctx,
          "movdqu    (%1), %%xmm1    \n\t" // load round key
          AESENCLAST xmm1_xmm0      "\n\t" // last round
          "jmp       3f              \n\t"
-
          "2:                        \n\t" // decryption loop
          "movdqu    (%1), %%xmm1    \n\t"
          AESDEC     xmm1_xmm0      "\n\t" // do round
@@ -123,14 +119,11 @@ int mbedtls_aesni_crypt_ecb( mbedtls_aes_context *ctx,
          "jnz       2b              \n\t"
          "movdqu    (%1), %%xmm1    \n\t" // load round key
          AESDECLAST xmm1_xmm0      "\n\t" // last round
-
          "3:                        \n\t"
          "movdqu    %%xmm0, (%4)    \n\t" // export output
          :
          : "r" (ctx->nr), "r" (ctx->rk), "r" (mode), "r" (input), "r" (output)
          : "memory", "cc", "xmm0", "xmm1" );
-
-
     return( 0 );
 }
 
@@ -139,22 +132,19 @@ int mbedtls_aesni_crypt_ecb( mbedtls_aes_context *ctx,
  * Based on [CLMUL-WP] algorithms 1 (with equation 27) and 5.
  */
 void mbedtls_aesni_gcm_mult( unsigned char c[16],
-                     const unsigned char a[16],
-                     const unsigned char b[16] )
+                             const unsigned char a[16],
+                             const unsigned char b[16] )
 {
     unsigned char aa[16], bb[16], cc[16];
     size_t i;
-
     /* The inputs are in big-endian order, so byte-reverse them */
     for( i = 0; i < 16; i++ )
     {
         aa[i] = a[15 - i];
         bb[i] = b[15 - i];
     }
-
     asm( "movdqu (%0), %%xmm0               \n\t" // a1:a0
          "movdqu (%1), %%xmm1               \n\t" // b1:b0
-
          /*
           * Caryless multiplication xmm2:xmm1 = xmm0 * xmm1
           * using [CLMUL-WP] algorithm 1 (p. 13).
@@ -172,7 +162,6 @@ void mbedtls_aesni_gcm_mult( unsigned char c[16],
          "pslldq $8, %%xmm3                 \n\t" // e0+f0:0
          "pxor %%xmm4, %%xmm2               \n\t" // d1:d0+e1+f1
          "pxor %%xmm3, %%xmm1               \n\t" // c1+e0+f1:c0
-
          /*
           * Now shift the result one bit to the left,
           * taking advantage of [CLMUL-WP] eq 27 (p. 20)
@@ -190,7 +179,6 @@ void mbedtls_aesni_gcm_mult( unsigned char c[16],
          "por %%xmm3, %%xmm1                \n\t" // r1<<1|r0>>63:r0<<1
          "por %%xmm4, %%xmm2                \n\t" // r3<<1|r2>>62:r2<<1
          "por %%xmm5, %%xmm2                \n\t" // r3<<1|r2>>62:r2<<1|r1>>63
-
          /*
           * Now reduce modulo the GCM polynomial x^128 + x^7 + x^2 + x + 1
           * using [CLMUL-WP] algorithm 5 (p. 20).
@@ -203,13 +191,11 @@ void mbedtls_aesni_gcm_mult( unsigned char c[16],
          "psllq $63, %%xmm3                 \n\t" // x1<<63:x0<<63 = stuff:a
          "psllq $62, %%xmm4                 \n\t" // x1<<62:x0<<62 = stuff:b
          "psllq $57, %%xmm5                 \n\t" // x1<<57:x0<<57 = stuff:c
-
          /* Step 2 (2) */
          "pxor %%xmm4, %%xmm3               \n\t" // stuff:a+b
          "pxor %%xmm5, %%xmm3               \n\t" // stuff:a+b+c
          "pslldq $8, %%xmm3                 \n\t" // a+b+c:0
          "pxor %%xmm3, %%xmm1               \n\t" // x1+a+b+c:x0 = d:x0
-
          /* Steps 3 and 4 */
          "movdqa %%xmm1,%%xmm0              \n\t" // d:x0
          "movdqa %%xmm1,%%xmm4              \n\t" // same
@@ -233,16 +219,13 @@ void mbedtls_aesni_gcm_mult( unsigned char c[16],
          "pxor %%xmm3, %%xmm0               \n\t" // e1+f1+g1:e0+f0+g0
          "pxor %%xmm1, %%xmm0               \n\t" // h1:h0
          "pxor %%xmm2, %%xmm0               \n\t" // x3+h1:x2+h0
-
          "movdqu %%xmm0, (%2)               \n\t" // done
          :
          : "r" (aa), "r" (bb), "r" (cc)
          : "memory", "cc", "xmm0", "xmm1", "xmm2", "xmm3", "xmm4", "xmm5" );
-
     /* Now byte-reverse the outputs */
     for( i = 0; i < 16; i++ )
         c[i] = cc[15 - i];
-
     return;
 }
 
@@ -250,13 +233,11 @@ void mbedtls_aesni_gcm_mult( unsigned char c[16],
  * Compute decryption round keys from encryption round keys
  */
 void mbedtls_aesni_inverse_key( unsigned char *invkey,
-                        const unsigned char *fwdkey, int nr )
+                                const unsigned char *fwdkey, int nr )
 {
     unsigned char *ik = invkey;
     const unsigned char *fk = fwdkey + 16 * nr;
-
     memcpy( ik, fk, 16 );
-
     for( fk -= 16, ik += 16; fk > fwdkey; fk -= 16, ik += 16 )
         asm( "movdqu (%0), %%xmm0       \n\t"
              AESIMC  xmm0_xmm0         "\n\t"
@@ -264,7 +245,6 @@ void mbedtls_aesni_inverse_key( unsigned char *invkey,
              :
              : "r" (fk), "r" (ik)
              : "memory", "xmm0" );
-
     memcpy( ik, fk, 16 );
 }
 
@@ -277,7 +257,6 @@ static void aesni_setkey_enc_128( unsigned char *rk,
     asm( "movdqu (%1), %%xmm0               \n\t" // copy the original key
          "movdqu %%xmm0, (%0)               \n\t" // as round key 0
          "jmp 2f                            \n\t" // skip auxiliary routine
-
          /*
           * Finish generating the next round key.
           *
@@ -300,7 +279,6 @@ static void aesni_setkey_enc_128( unsigned char *rk,
          "add $16, %0                       \n\t" // point to next round key
          "movdqu %%xmm0, (%0)               \n\t" // write it
          "ret                               \n\t"
-
          /* Main "loop" */
          "2:                                \n\t"
          AESKEYGENA xmm0_xmm1 ",0x01        \n\tcall 1b \n\t"
@@ -331,7 +309,6 @@ static void aesni_setkey_enc_192( unsigned char *rk,
          "movq %%xmm1, (%0)     \n\t"
          "add $8, %0            \n\t"
          "jmp 2f                \n\t" // skip auxiliary routine
-
          /*
           * Finish generating the next 6 quarter-keys.
           *
@@ -359,7 +336,6 @@ static void aesni_setkey_enc_192( unsigned char *rk,
          "movq %%xmm1, (%0)             \n\t"
          "add $8, %0                    \n\t"
          "ret                           \n\t"
-
          "2:                            \n\t"
          AESKEYGENA xmm1_xmm2 ",0x01    \n\tcall 1b \n\t"
          AESKEYGENA xmm1_xmm2 ",0x02    \n\tcall 1b \n\t"
@@ -369,7 +345,6 @@ static void aesni_setkey_enc_192( unsigned char *rk,
          AESKEYGENA xmm1_xmm2 ",0x20    \n\tcall 1b \n\t"
          AESKEYGENA xmm1_xmm2 ",0x40    \n\tcall 1b \n\t"
          AESKEYGENA xmm1_xmm2 ",0x80    \n\tcall 1b \n\t"
-
          :
          : "r" (rk), "r" (key)
          : "memory", "cc", "0" );
@@ -387,7 +362,6 @@ static void aesni_setkey_enc_256( unsigned char *rk,
          "movdqu 16(%1), %%xmm1         \n\t"
          "movdqu %%xmm1, (%0)           \n\t"
          "jmp 2f                        \n\t" // skip auxiliary routine
-
          /*
           * Finish generating the next two round keys.
           *
@@ -408,7 +382,6 @@ static void aesni_setkey_enc_256( unsigned char *rk,
          "pxor %%xmm2, %%xmm0               \n\t"
          "add $16, %0                       \n\t"
          "movdqu %%xmm0, (%0)               \n\t"
-
          /* Set xmm2 to stuff:Y:stuff:stuff with Y = subword( r11 )
           * and proceed to generate next round key from there */
          AESKEYGENA xmm0_xmm2 ",0x00        \n\t"
@@ -423,7 +396,6 @@ static void aesni_setkey_enc_256( unsigned char *rk,
          "add $16, %0                       \n\t"
          "movdqu %%xmm1, (%0)               \n\t"
          "ret                               \n\t"
-
          /*
           * Main "loop" - Generating one more key than necessary,
           * see definition of mbedtls_aes_context.buf
@@ -445,17 +417,23 @@ static void aesni_setkey_enc_256( unsigned char *rk,
  * Key expansion, wrapper
  */
 int mbedtls_aesni_setkey_enc( unsigned char *rk,
-                      const unsigned char *key,
-                      size_t bits )
+                              const unsigned char *key,
+                              size_t bits )
 {
     switch( bits )
     {
-        case 128: aesni_setkey_enc_128( rk, key ); break;
-        case 192: aesni_setkey_enc_192( rk, key ); break;
-        case 256: aesni_setkey_enc_256( rk, key ); break;
-        default : return( MBEDTLS_ERR_AES_INVALID_KEY_LENGTH );
+        case 128:
+            aesni_setkey_enc_128( rk, key );
+            break;
+        case 192:
+            aesni_setkey_enc_192( rk, key );
+            break;
+        case 256:
+            aesni_setkey_enc_256( rk, key );
+            break;
+        default :
+            return( MBEDTLS_ERR_AES_INVALID_KEY_LENGTH );
     }
-
     return( 0 );
 }
 

@@ -64,9 +64,12 @@ esp_pm_lock_handle_t adc_digi_arbiter_lock = NULL;
 /**
  * @brief ADC digital controller (DMA mode) conversion rules setting.
  */
-typedef struct {
-    union {
-        struct {
+typedef struct
+{
+    union
+    {
+        struct
+        {
             uint8_t atten:     2;   /*!< ADC sampling voltage attenuation configuration. Modification of attenuation affects the range of measurements.
                                          0: measurement range 0 - 800mV,
                                          1: measurement range 0 - 1100mV,
@@ -86,7 +89,8 @@ typedef struct {
 /**
  * @brief ADC digital controller (DMA mode) output data format option.
  */
-typedef enum {
+typedef enum
+{
     ADC_DIGI_FORMAT_12BIT,  /*!<ADC to DMA data format,                [15:12]-channel, [11: 0]-12 bits ADC data (`adc_digi_output_data_t`). Note: For single convert mode. */
     ADC_DIGI_FORMAT_11BIT,  /*!<ADC to DMA data format, [15]-adc unit, [14:11]-channel, [10: 0]-11 bits ADC data (`adc_digi_output_data_t`). Note: For multi or alter convert mode. */
     ADC_DIGI_FORMAT_MAX,
@@ -105,7 +109,8 @@ typedef enum {
   *     | dma output (byte)   |   +2   |   +4   |   +2   |
   *     +---------------------+--------+--------+--------+
   */
-typedef struct {
+typedef struct
+{
     uint32_t adc1_pattern_len;               /*!<Pattern table length for digital controller. Range: 0 ~ 16 (0: Don't change the pattern table setting).
                                                  The pattern table that defines the conversion rules for each SAR ADC. Each table has 16 items, in which channel selection,
                                                  resolution and attenuation are stored. When the conversion is started, the controller reads conversion rules from the
@@ -134,12 +139,15 @@ static inline void adc_ll_digi_prepare_pattern_table(adc_unit_t adc_n, uint32_t 
     uint32_t tab;
     uint8_t index = pattern_index / 4;
     uint8_t offset = (pattern_index % 4) * 8;
-    if (adc_n == ADC_UNIT_1) {
+    if (adc_n == ADC_UNIT_1)
+    {
         tab = SYSCON.saradc_sar1_patt_tab[index];   // Read old register value
         tab &= (~(0xFF000000 >> offset));           // clear old data
         tab |= ((uint32_t)pattern.val << 24) >> offset; // Fill in the new data
         SYSCON.saradc_sar1_patt_tab[index] = tab;   // Write back
-    } else { // adc_n == ADC_UNIT_2
+    }
+    else     // adc_n == ADC_UNIT_2
+    {
         tab = SYSCON.saradc_sar2_patt_tab[index];   // Read old register value
         tab &= (~(0xFF000000 >> offset));           // clear old data
         tab |= ((uint32_t)pattern.val << 24) >> offset; // Fill in the new data
@@ -150,7 +158,8 @@ static inline void adc_ll_digi_prepare_pattern_table(adc_unit_t adc_n, uint32_t 
 static void adc_digi_controller_reg_set(const adc_digi_config_t *cfg)
 {
     /* On ESP32, only support ADC1 */
-    switch (cfg->conv_mode) {
+    switch (cfg->conv_mode)
+    {
         case ADC_CONV_SINGLE_UNIT_1:
             adc_ll_digi_set_convert_mode(ADC_LL_DIGI_CONV_ONLY_ADC1);
             break;
@@ -166,23 +175,28 @@ static void adc_digi_controller_reg_set(const adc_digi_config_t *cfg)
         default:
             abort();
     }
-
-    if (cfg->conv_mode & ADC_CONV_SINGLE_UNIT_1) {
+    if (cfg->conv_mode & ADC_CONV_SINGLE_UNIT_1)
+    {
         adc_ll_set_controller(ADC_UNIT_1, ADC_LL_CTRL_DIG);
-        if (cfg->adc1_pattern_len) {
+        if (cfg->adc1_pattern_len)
+        {
             adc_ll_digi_clear_pattern_table(ADC_UNIT_1);
             adc_ll_digi_set_pattern_table_len(ADC_UNIT_1, cfg->adc1_pattern_len);
-            for (uint32_t i = 0; i < cfg->adc1_pattern_len; i++) {
+            for (uint32_t i = 0; i < cfg->adc1_pattern_len; i++)
+            {
                 adc_ll_digi_prepare_pattern_table(ADC_UNIT_1, i, cfg->adc1_pattern[i]);
             }
         }
     }
-    if (cfg->conv_mode & ADC_CONV_SINGLE_UNIT_2) {
+    if (cfg->conv_mode & ADC_CONV_SINGLE_UNIT_2)
+    {
         adc_ll_set_controller(ADC_UNIT_2, ADC_LL_CTRL_DIG);
-        if (cfg->adc2_pattern_len) {
+        if (cfg->adc2_pattern_len)
+        {
             adc_ll_digi_clear_pattern_table(ADC_UNIT_2);
             adc_ll_digi_set_pattern_table_len(ADC_UNIT_2, cfg->adc2_pattern_len);
-            for (uint32_t i = 0; i < cfg->adc2_pattern_len; i++) {
+            for (uint32_t i = 0; i < cfg->adc2_pattern_len; i++)
+            {
                 adc_ll_digi_prepare_pattern_table(ADC_UNIT_2, i, cfg->adc2_pattern[i]);
             }
         }
@@ -205,28 +219,33 @@ esp_err_t adc_set_i2s_data_source(adc_i2s_source_t src)
 extern esp_err_t adc_common_gpio_init(adc_unit_t adc_unit, adc_channel_t channel);
 esp_err_t adc_i2s_mode_init(adc_unit_t adc_unit, adc_channel_t channel)
 {
-    if (adc_unit == ADC_UNIT_1) {
+    if (adc_unit == ADC_UNIT_1)
+    {
         ADC_CHANNEL_CHECK(ADC_UNIT_1, channel);
-    } else if (adc_unit == ADC_UNIT_2) {
+    }
+    else if (adc_unit == ADC_UNIT_2)
+    {
         //ADC2 does not support DMA mode
         ADC_CHECK(false, "ADC2 not support DMA for now.", ESP_ERR_INVALID_ARG);
         ADC_CHANNEL_CHECK(ADC_UNIT_2, channel);
     }
-
     adc_digi_pattern_table_t adc1_pattern[1];
     adc_digi_pattern_table_t adc2_pattern[1];
-    adc_digi_config_t dig_cfg = {
+    adc_digi_config_t dig_cfg =
+    {
         .format = DIG_ADC_OUTPUT_FORMAT_DEFUALT,
         .conv_mode = ADC_CONV_SINGLE_UNIT_1,
     };
-
-    if (adc_unit == ADC_UNIT_1) {
+    if (adc_unit == ADC_UNIT_1)
+    {
         adc1_pattern[0].atten = DIG_ADC_ATTEN_DEFUALT;
         adc1_pattern[0].bit_width = DIG_ADC_BIT_WIDTH_DEFUALT;
         adc1_pattern[0].channel = channel;
         dig_cfg.adc1_pattern_len = 1;
         dig_cfg.adc1_pattern = adc1_pattern;
-    } else if (adc_unit == ADC_UNIT_2) {
+    }
+    else if (adc_unit == ADC_UNIT_2)
+    {
         adc2_pattern[0].atten = DIG_ADC_ATTEN_DEFUALT;
         adc2_pattern[0].bit_width = DIG_ADC_BIT_WIDTH_DEFUALT;
         adc2_pattern[0].channel = channel;
@@ -244,7 +263,6 @@ esp_err_t adc_i2s_mode_init(adc_unit_t adc_unit, adc_channel_t channel)
     adc_ll_digi_set_clk_div(ADC_HAL_DIGI_SAR_CLK_DIV_DEFAULT);
     adc_digi_controller_reg_set(&dig_cfg);
     ADC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 

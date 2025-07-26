@@ -24,7 +24,8 @@ extern "C"
 #endif
 
 /// Descriptor of data to send/receive
-typedef struct {
+typedef struct
+{
     uint8_t* data;                              ///< Buffer to send, must be DMA capable
     size_t   len;                               ///< Len of data to send/receive. For receiving the buffer length should be multiples of 4 bytes, otherwise the extra part will be truncated.
     size_t   trans_len;                         ///< For RX direction, it indicates the data actually received. For TX direction, it is meaningless.
@@ -32,7 +33,8 @@ typedef struct {
 } spi_slave_hd_data_t;
 
 /// Information of SPI Slave HD event
-typedef struct {
+typedef struct
+{
     spi_event_t          event;                 ///< Event type
     spi_slave_hd_data_t* trans;                 ///< Corresponding transaction for SPI_EV_SEND and SPI_EV_RECV events
 } spi_slave_hd_event_t;
@@ -41,13 +43,15 @@ typedef struct {
 typedef bool (*slave_cb_t)(void* arg, spi_slave_hd_event_t* event, BaseType_t* awoken);
 
 /// Channel of SPI Slave HD to do data transaction
-typedef enum {
+typedef enum
+{
     SPI_SLAVE_CHAN_TX = 0,                      ///< The output channel (RDDMA)
     SPI_SLAVE_CHAN_RX = 1,                      ///< The input channel (WRDMA)
 } spi_slave_chan_t;
 
 /// Callback configuration structure for SPI Slave HD
-typedef struct {
+typedef struct
+{
     slave_cb_t cb_buffer_tx;                    ///< Callback when master reads from shared buffer
     slave_cb_t cb_buffer_rx;                    ///< Callback when master writes to shared buffer
     slave_cb_t cb_send_dma_ready;               ///< Callback when TX data buffer is loaded to the hardware (DMA)
@@ -67,7 +71,8 @@ typedef struct {
 #define SPI_SLAVE_HD_APPEND_MODE        (1<<2)  ///< Adopt DMA append mode for transactions. In this mode, users can load(append) DMA descriptors without stopping the DMA
 
 /// Configuration structure for the SPI Slave HD driver
-typedef struct {
+typedef struct
+{
     uint8_t mode;                               /**< SPI mode, representing a pair of (CPOL, CPHA) configuration:
                                                      - 0: (0, 0)
                                                      - 1: (0, 1)

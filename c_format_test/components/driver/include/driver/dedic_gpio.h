@@ -24,10 +24,12 @@ typedef struct dedic_gpio_bundle_t *dedic_gpio_bundle_handle_t;
 /**
  * @brief Type of Dedicated GPIO bundle configuration
  */
-typedef struct {
+typedef struct
+{
     const int *gpio_array; /*!< Array of GPIO numbers, gpio_array[0] ~ gpio_array[size-1] <=> low_dedic_channel_num ~ high_dedic_channel_num */
     size_t array_size;     /*!< Number of GPIOs in gpio_array */
-    struct {
+    struct
+    {
         unsigned int in_en: 1;      /*!< Enable input */
         unsigned int in_invert: 1;  /*!< Invert input signal */
         unsigned int out_en: 1;     /*!< Enable output */
@@ -119,7 +121,8 @@ uint32_t dedic_gpio_bundle_read_in(dedic_gpio_bundle_handle_t bundle) IRAM_ATTR;
 /**
  * @brief Supported type of dedicated GPIO interrupt
  */
-typedef enum {
+typedef enum
+{
     DEDIC_GPIO_INTR_NONE,          /*!< No interrupt */
     DEDIC_GPIO_INTR_LOW_LEVEL = 2, /*!< Interrupt on low level */
     DEDIC_GPIO_INTR_HIGH_LEVEL,    /*!< Interrupt on high level */

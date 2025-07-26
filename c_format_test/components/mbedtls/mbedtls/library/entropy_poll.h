@@ -43,7 +43,7 @@ extern "C" {
  * \brief           Platform-specific entropy poll callback
  */
 int mbedtls_platform_entropy_poll( void *data,
-                           unsigned char *output, size_t len, size_t *olen );
+                                   unsigned char *output, size_t len, size_t *olen );
 #endif
 
 #if defined(MBEDTLS_ENTROPY_HARDWARE_ALT)

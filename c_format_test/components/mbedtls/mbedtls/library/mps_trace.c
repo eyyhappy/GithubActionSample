@@ -62,7 +62,6 @@ void mbedtls_mps_trace_print_msg( int id, int line, const char *format, ... )
     va_start( argp, format );
     ret = mbedtls_vsnprintf( str, MPS_TRACE_BUF_SIZE, format, argp );
     va_end( argp );
-
     if( ret >= 0 && ret < MPS_TRACE_BUF_SIZE )
     {
         str[ret] = '\0';
@@ -96,28 +95,22 @@ void mbedtls_mps_trace_indent( int level, mbedtls_mps_trace_type ty )
     {
         while( --level )
             printf( "|  " );
-
         printf( "|  " );
     }
-
     switch( ty )
     {
         case MBEDTLS_MPS_TRACE_TYPE_COMMENT:
             mbedtls_printf( "@ " );
             break;
-
         case MBEDTLS_MPS_TRACE_TYPE_CALL:
             mbedtls_printf( "+--> " );
             break;
-
         case MBEDTLS_MPS_TRACE_TYPE_ERROR:
             mbedtls_printf( "E " );
             break;
-
         case MBEDTLS_MPS_TRACE_TYPE_RETURN:
             mbedtls_printf( "< " );
             break;
-
         default:
             break;
     }

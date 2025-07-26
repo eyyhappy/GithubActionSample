@@ -28,7 +28,8 @@ extern "C" {
 /**
  * @brief i2s channel state for checking if the operation in under right driver state
  */
-typedef enum {
+typedef enum
+{
     I2S_CHAN_STATE_REGISTER,                /*!< i2s channel is registered (not initialized)  */
     I2S_CHAN_STATE_READY,                   /*!< i2s channel is disabled (initialized) */
     I2S_CHAN_STATE_RUNNING,                 /*!< i2s channel is idling (initialized and enabled) */
@@ -38,12 +39,13 @@ typedef enum {
  * @brief i2s channel level configurations
  * @note  It performs as channel handle
  */
-typedef struct {
-#if SOC_GDMA_SUPPORTED
+typedef struct
+{
+    #if SOC_GDMA_SUPPORTED
     gdma_channel_handle_t   dma_chan;       /*!< gdma channel handle */
-#else
+    #else
     intr_handle_t           dma_chan;       /*!< interrupt channel handle */
-#endif
+    #endif
     uint32_t                desc_num;       /*!< I2S DMA buffer number, it is also the number of DMA descriptor */
     uint32_t                frame_num;      /*!< I2S frame number in one DMA buffer. One frame means one-time sample data in all slots */
     uint32_t                buf_size;       /*!< dma buffer size */
@@ -58,7 +60,8 @@ typedef struct {
  * @brief i2s controller level configurations
  * @note  Both i2s rx and tx channel are under its control
  */
-typedef struct {
+typedef struct
+{
     i2s_port_t              id;             /*!< i2s port id */
     i2s_hal_context_t       hal;            /*!< hal context */
     uint32_t                chan_occupancy; /*!< channel occupancy (rx/tx) */
@@ -68,7 +71,8 @@ typedef struct {
     int                     mclk;           /*!< MCK out pin, shared by tx/rx*/
 } i2s_controller_t;
 
-struct i2s_channel_obj_t {
+struct i2s_channel_obj_t
+{
     /* Channel basic information */
     i2s_controller_t        *controller;    /*!< Parent pointer to controller object */
     i2s_comm_mode_t         mode;           /*!< i2s channel communication mode */
@@ -78,23 +82,23 @@ struct i2s_channel_obj_t {
     i2s_state_t             state;          /*!< i2s driver state. Ensuring the driver working in a correct sequence */
     /* Stored configurations */
     void                    *mode_info;     /*!< Slot, clock and gpio information of each mode */
-#if SOC_I2S_SUPPORTS_APLL
+    #if SOC_I2S_SUPPORTS_APLL
     bool                    apll_en;        /*!< Flag of wether APLL enabled */
-#endif
+    #endif
     uint32_t                active_slot;    /*!< Active slot number */
     uint32_t                total_slot;     /*!< Total slot number */
     /* Locks and queues */
     SemaphoreHandle_t       mutex;          /*!< Mutex semaphore for the channel operations */
     SemaphoreHandle_t       binary;         /*!< Binary semaphore for writing / reading / enabling / disabling */
-#if CONFIG_PM_ENABLE
+    #if CONFIG_PM_ENABLE
     esp_pm_lock_handle_t    pm_lock;        /*!< Power management lock, to avoid apb clock frequency changes while i2s is working */
-#endif
-#if CONFIG_I2S_ISR_IRAM_SAFE
+    #endif
+    #if CONFIG_I2S_ISR_IRAM_SAFE
     StaticSemaphore_t       *mutex_struct;      /*!< Static mutex struct */
     StaticSemaphore_t       *binary_struct;     /*!< Static binary struct */
     StaticQueue_t           *msg_que_struct;    /*!< Static message queue struct */
     void                    *msg_que_storage;   /*!< Static message queue storage */
-#endif
+    #endif
     QueueHandle_t           msg_queue;      /*!< Message queue handler, used for transporting data between interrupt and read/write task */
     i2s_event_callbacks_t   callbacks;      /*!< Callback functions */
     void                    *user_data;     /*!< User data for callback functions */
@@ -106,7 +110,8 @@ struct i2s_channel_obj_t {
  * @brief i2s platform level configurations
  * @note  All i2s controllers' resources are involved
  */
-typedef struct {
+typedef struct
+{
     portMUX_TYPE            spinlock;                   /*!< Platform level lock */
     i2s_controller_t        *controller[SOC_I2S_NUM];   /*!< Controller object */
     const char              *comp_name[SOC_I2S_NUM];    /*!< The component name that occupied i2s controller */

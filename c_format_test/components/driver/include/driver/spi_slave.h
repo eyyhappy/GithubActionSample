@@ -31,7 +31,8 @@ typedef void(*slave_transaction_cb_t)(spi_slave_transaction_t *trans);
 /**
  * @brief This is a configuration for a SPI host acting as a slave device.
  */
-typedef struct {
+typedef struct
+{
     int spics_io_num;               ///< CS GPIO pin for this device
     uint32_t flags;                 ///< Bitwise OR of SPI_SLAVE_* flags
     int queue_size;                 ///< Transaction queue size. This sets how many transactions can be 'in the air' (queued using spi_slave_queue_trans but not yet finished using spi_slave_get_trans_result) at the same time
@@ -66,7 +67,8 @@ typedef struct {
 /**
  * This structure describes one SPI transaction
  */
-struct spi_slave_transaction_t {
+struct spi_slave_transaction_t
+{
     size_t length;                  ///< Total data length, in bits
     size_t trans_len;               ///< Transaction data length, in bits
     const void *tx_buffer;          ///< Pointer to transmit buffer, or NULL for no MOSI phase

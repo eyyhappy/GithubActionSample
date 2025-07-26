@@ -85,9 +85,9 @@ typedef enum
 {
     MBEDTLS_ECDH_VARIANT_NONE = 0,   /*!< Implementation not defined. */
     MBEDTLS_ECDH_VARIANT_MBEDTLS_2_0,/*!< The default Mbed TLS implementation */
-#if defined(MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED)
+    #if defined(MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED)
     MBEDTLS_ECDH_VARIANT_EVEREST     /*!< Everest implementation */
-#endif
+    #endif
 } mbedtls_ecdh_variant;
 
 /**
@@ -104,9 +104,9 @@ typedef struct mbedtls_ecdh_context_mbed
     mbedtls_ecp_point MBEDTLS_PRIVATE(Q);     /*!< The public key. */
     mbedtls_ecp_point MBEDTLS_PRIVATE(Qp);    /*!< The value of the public key of the peer. */
     mbedtls_mpi MBEDTLS_PRIVATE(z);           /*!< The shared secret. */
-#if defined(MBEDTLS_ECP_RESTARTABLE)
+    #if defined(MBEDTLS_ECP_RESTARTABLE)
     mbedtls_ecp_restart_ctx MBEDTLS_PRIVATE(rs); /*!< The restart context for EC computations. */
-#endif
+    #endif
 } mbedtls_ecdh_context_mbed;
 #endif
 
@@ -119,7 +119,7 @@ typedef struct mbedtls_ecdh_context_mbed
  */
 typedef struct mbedtls_ecdh_context
 {
-#if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
+    #if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
     mbedtls_ecp_group MBEDTLS_PRIVATE(grp);   /*!< The elliptic curve used. */
     mbedtls_mpi MBEDTLS_PRIVATE(d);           /*!< The private key. */
     mbedtls_ecp_point MBEDTLS_PRIVATE(Q);     /*!< The public key. */
@@ -129,11 +129,11 @@ typedef struct mbedtls_ecdh_context
     mbedtls_ecp_point MBEDTLS_PRIVATE(Vi);    /*!< The blinding value. */
     mbedtls_ecp_point MBEDTLS_PRIVATE(Vf);    /*!< The unblinding value. */
     mbedtls_mpi MBEDTLS_PRIVATE(_d);          /*!< The previous \p d. */
-#if defined(MBEDTLS_ECP_RESTARTABLE)
+    #if defined(MBEDTLS_ECP_RESTARTABLE)
     int MBEDTLS_PRIVATE(restart_enabled);        /*!< The flag for restartable mode. */
     mbedtls_ecp_restart_ctx MBEDTLS_PRIVATE(rs); /*!< The restart context for EC computations. */
-#endif /* MBEDTLS_ECP_RESTARTABLE */
-#else
+    #endif /* MBEDTLS_ECP_RESTARTABLE */
+    #else
     uint8_t MBEDTLS_PRIVATE(point_format);       /*!< The format of point export in TLS messages
                                   as defined in RFC 4492. */
     mbedtls_ecp_group_id MBEDTLS_PRIVATE(grp_id);/*!< The elliptic curve used. */
@@ -141,20 +141,20 @@ typedef struct mbedtls_ecdh_context
     union
     {
         mbedtls_ecdh_context_mbed   MBEDTLS_PRIVATE(mbed_ecdh);
-#if defined(MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED)
+        #if defined(MBEDTLS_ECDH_VARIANT_EVEREST_ENABLED)
         mbedtls_ecdh_context_everest MBEDTLS_PRIVATE(everest_ecdh);
-#endif
+        #endif
     } MBEDTLS_PRIVATE(ctx);                      /*!< Implementation-specific context. The
                                   context in use is specified by the \c var
                                   field. */
-#if defined(MBEDTLS_ECP_RESTARTABLE)
+    #if defined(MBEDTLS_ECP_RESTARTABLE)
     uint8_t MBEDTLS_PRIVATE(restart_enabled);    /*!< The flag for restartable mode. Functions of
                                   an alternative implementation not supporting
                                   restartable mode must return
                                   MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED error
                                   if this flag is set. */
-#endif /* MBEDTLS_ECP_RESTARTABLE */
-#endif /* MBEDTLS_ECDH_LEGACY_CONTEXT */
+    #endif /* MBEDTLS_ECP_RESTARTABLE */
+    #endif /* MBEDTLS_ECDH_LEGACY_CONTEXT */
 }
 mbedtls_ecdh_context;
 
@@ -193,8 +193,8 @@ int mbedtls_ecdh_can_do( mbedtls_ecp_group_id gid );
  *                  \c MBEDTLS_MPI_XXX error code on failure.
  */
 int mbedtls_ecdh_gen_public( mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point *Q,
-                     int (*f_rng)(void *, unsigned char *, size_t),
-                     void *p_rng );
+                             int (*f_rng)(void *, unsigned char *, size_t),
+                             void *p_rng );
 
 /**
  * \brief           This function computes the shared secret.
@@ -228,9 +228,9 @@ int mbedtls_ecdh_gen_public( mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp
  *                  \c MBEDTLS_MPI_XXX error code on failure.
  */
 int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
-                         const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
-                         int (*f_rng)(void *, unsigned char *, size_t),
-                         void *p_rng );
+                                 const mbedtls_ecp_point *Q, const mbedtls_mpi *d,
+                                 int (*f_rng)(void *, unsigned char *, size_t),
+                                 void *p_rng );
 
 /**
  * \brief           This function initializes an ECDH context.
@@ -293,9 +293,9 @@ void mbedtls_ecdh_free( mbedtls_ecdh_context *ctx );
  * \return          Another \c MBEDTLS_ERR_ECP_XXX error code on failure.
  */
 int mbedtls_ecdh_make_params( mbedtls_ecdh_context *ctx, size_t *olen,
-                      unsigned char *buf, size_t blen,
-                      int (*f_rng)(void *, unsigned char *, size_t),
-                      void *p_rng );
+                              unsigned char *buf, size_t blen,
+                              int (*f_rng)(void *, unsigned char *, size_t),
+                              void *p_rng );
 
 /**
  * \brief           This function parses the ECDHE parameters in a
@@ -375,9 +375,9 @@ int mbedtls_ecdh_get_params( mbedtls_ecdh_context *ctx,
  * \return          Another \c MBEDTLS_ERR_ECP_XXX error code on failure.
  */
 int mbedtls_ecdh_make_public( mbedtls_ecdh_context *ctx, size_t *olen,
-                      unsigned char *buf, size_t blen,
-                      int (*f_rng)(void *, unsigned char *, size_t),
-                      void *p_rng );
+                              unsigned char *buf, size_t blen,
+                              int (*f_rng)(void *, unsigned char *, size_t),
+                              void *p_rng );
 
 /**
  * \brief       This function parses and processes the ECDHE payload of a
@@ -431,9 +431,9 @@ int mbedtls_ecdh_read_public( mbedtls_ecdh_context *ctx,
  * \return          Another \c MBEDTLS_ERR_ECP_XXX error code on failure.
  */
 int mbedtls_ecdh_calc_secret( mbedtls_ecdh_context *ctx, size_t *olen,
-                      unsigned char *buf, size_t blen,
-                      int (*f_rng)(void *, unsigned char *, size_t),
-                      void *p_rng );
+                              unsigned char *buf, size_t blen,
+                              int (*f_rng)(void *, unsigned char *, size_t),
+                              void *p_rng );
 
 #if defined(MBEDTLS_ECP_RESTARTABLE)
 /**

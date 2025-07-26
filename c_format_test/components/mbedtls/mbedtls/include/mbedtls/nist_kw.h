@@ -61,7 +61,8 @@ typedef enum
  * \note     The definition of this type may change in future library versions.
  *           Don't make any assumptions on this context!
  */
-typedef struct {
+typedef struct
+{
     mbedtls_cipher_context_t MBEDTLS_PRIVATE(cipher_ctx);    /*!< The cipher context used. */
 } mbedtls_nist_kw_context;
 

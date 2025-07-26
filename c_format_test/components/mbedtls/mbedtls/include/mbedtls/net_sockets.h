@@ -281,7 +281,7 @@ int mbedtls_net_send( void *ctx, const unsigned char *buf, size_t len );
  *                 requires a different strategy.
  */
 int mbedtls_net_recv_timeout( void *ctx, unsigned char *buf, size_t len,
-                      uint32_t timeout );
+                              uint32_t timeout );
 
 /**
  * \brief          Closes down the connection and free associated data

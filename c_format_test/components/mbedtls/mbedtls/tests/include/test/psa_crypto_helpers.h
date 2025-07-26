@@ -150,9 +150,9 @@ const char *mbedtls_test_helper_is_psa_leaking( void );
 
 #if defined(RECORD_PSA_STATUS_COVERAGE_LOG)
 psa_status_t mbedtls_test_record_status( psa_status_t status,
-                                         const char *func,
-                                         const char *file, int line,
-                                         const char *expr );
+        const char *func,
+        const char *file, int line,
+        const char *expr );
 
 /** Return value logging wrapper macro.
  *
@@ -213,8 +213,8 @@ psa_key_usage_t mbedtls_test_update_key_usage_flags( psa_key_usage_t usage_flags
  *  \param key_bits  Key length in number of bits.
  */
 #if defined(MBEDTLS_AES_ALT) || \
-    defined(MBEDTLS_AES_SETKEY_ENC_ALT) || \
-    defined(MBEDTLS_PSA_ACCEL_KEY_TYPE_AES)
+defined(MBEDTLS_AES_SETKEY_ENC_ALT) || \
+defined(MBEDTLS_PSA_ACCEL_KEY_TYPE_AES)
 #define MBEDTLS_TEST_HAVE_ALT_AES 1
 #else
 #define MBEDTLS_TEST_HAVE_ALT_AES 0
@@ -256,7 +256,7 @@ psa_key_usage_t mbedtls_test_update_key_usage_flags( psa_key_usage_t usage_flags
  *  \param  nonce_length    The nonce length in number of bytes.
  */
 #if defined(MBEDTLS_GCM_ALT) || \
-    defined(MBEDTLS_PSA_ACCEL_ALG_GCM)
+defined(MBEDTLS_PSA_ACCEL_ALG_GCM)
 #define MBEDTLS_TEST_HAVE_ALT_GCM  1
 #else
 #define MBEDTLS_TEST_HAVE_ALT_GCM  0

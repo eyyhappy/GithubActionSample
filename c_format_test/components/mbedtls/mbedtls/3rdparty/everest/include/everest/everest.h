@@ -37,7 +37,8 @@ typedef enum
     MBEDTLS_EVEREST_ECDH_THEIRS, /**< The key of the peer. */
 } mbedtls_everest_ecdh_side;
 
-typedef struct {
+typedef struct
+{
     mbedtls_x25519_context ctx;
 } mbedtls_ecdh_context_everest;
 

@@ -163,16 +163,16 @@ int mbedtls_gcm_setkey( mbedtls_gcm_context *ctx,
  *                  or decryption failed.
  */
 int mbedtls_gcm_crypt_and_tag( mbedtls_gcm_context *ctx,
-                       int mode,
-                       size_t length,
-                       const unsigned char *iv,
-                       size_t iv_len,
-                       const unsigned char *add,
-                       size_t add_len,
-                       const unsigned char *input,
-                       unsigned char *output,
-                       size_t tag_len,
-                       unsigned char *tag );
+                               int mode,
+                               size_t length,
+                               const unsigned char *iv,
+                               size_t iv_len,
+                               const unsigned char *add,
+                               size_t add_len,
+                               const unsigned char *input,
+                               unsigned char *output,
+                               size_t tag_len,
+                               unsigned char *tag );
 
 /**
  * \brief           This function performs a GCM authenticated decryption of a
@@ -208,15 +208,15 @@ int mbedtls_gcm_crypt_and_tag( mbedtls_gcm_context *ctx,
  *                  failed.
  */
 int mbedtls_gcm_auth_decrypt( mbedtls_gcm_context *ctx,
-                      size_t length,
-                      const unsigned char *iv,
-                      size_t iv_len,
-                      const unsigned char *add,
-                      size_t add_len,
-                      const unsigned char *tag,
-                      size_t tag_len,
-                      const unsigned char *input,
-                      unsigned char *output );
+                              size_t length,
+                              const unsigned char *iv,
+                              size_t iv_len,
+                              const unsigned char *add,
+                              size_t add_len,
+                              const unsigned char *tag,
+                              size_t tag_len,
+                              const unsigned char *input,
+                              unsigned char *output );
 
 /**
  * \brief           This function starts a GCM encryption or decryption

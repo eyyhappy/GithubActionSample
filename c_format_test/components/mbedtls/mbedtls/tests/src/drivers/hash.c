@@ -29,7 +29,7 @@
 #endif
 
 mbedtls_test_driver_hash_hooks_t
-    mbedtls_test_driver_hash_hooks = MBEDTLS_TEST_DRIVER_HASH_INIT;
+mbedtls_test_driver_hash_hooks = MBEDTLS_TEST_DRIVER_HASH_INIT;
 
 psa_status_t mbedtls_test_transparent_hash_compute(
     psa_algorithm_t alg,
@@ -37,26 +37,25 @@ psa_status_t mbedtls_test_transparent_hash_compute(
     uint8_t *hash, size_t hash_size, size_t *hash_length )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_compute(
                 alg, input, input_length,
                 hash, hash_size, hash_length );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_compute(
                 alg, input, input_length,
                 hash, hash_size, hash_length );
-#else
+        #else
         (void) alg;
         (void) input;
         (void) input_length;
@@ -64,9 +63,8 @@ psa_status_t mbedtls_test_transparent_hash_compute(
         (void) hash_size;
         (void) hash_length;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 
@@ -75,28 +73,26 @@ psa_status_t mbedtls_test_transparent_hash_setup(
     psa_algorithm_t alg )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_setup( operation, alg );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_setup( operation, alg );
-#else
+        #else
         (void) operation;
         (void) alg;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 
@@ -105,29 +101,27 @@ psa_status_t mbedtls_test_transparent_hash_clone(
     mbedtls_transparent_test_driver_hash_operation_t *target_operation )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_clone( source_operation,
-                                                   target_operation );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+                    target_operation );
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_clone( source_operation, target_operation );
-#else
+        #else
         (void) source_operation;
         (void) target_operation;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 
@@ -137,30 +131,28 @@ psa_status_t mbedtls_test_transparent_hash_update(
     size_t input_length )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_update(
                 operation, input, input_length );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_update( operation, input, input_length );
-#else
+        #else
         (void) operation;
         (void) input;
         (void) input_length;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 
@@ -171,31 +163,29 @@ psa_status_t mbedtls_test_transparent_hash_finish(
     size_t *hash_length )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_finish(
                 operation, hash, hash_size, hash_length );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_finish( operation, hash, hash_size, hash_length );
-#else
+        #else
         (void) operation;
         (void) hash;
         (void) hash_size;
         (void) hash_length;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 
@@ -203,27 +193,25 @@ psa_status_t mbedtls_test_transparent_hash_abort(
     mbedtls_transparent_test_driver_hash_operation_t *operation )
 {
     mbedtls_test_driver_hash_hooks.hits++;
-
     if( mbedtls_test_driver_hash_hooks.forced_status != PSA_SUCCESS )
     {
-         mbedtls_test_driver_hash_hooks.driver_status =
-             mbedtls_test_driver_hash_hooks.forced_status;
+        mbedtls_test_driver_hash_hooks.driver_status =
+            mbedtls_test_driver_hash_hooks.forced_status;
     }
     else
     {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
+        #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+        defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             libtestdriver1_mbedtls_psa_hash_abort( operation );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+        #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
         mbedtls_test_driver_hash_hooks.driver_status =
             mbedtls_psa_hash_abort( operation );
-#else
+        #else
         (void) operation;
         mbedtls_test_driver_hash_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+        #endif
     }
-
     return( mbedtls_test_driver_hash_hooks.driver_status );
 }
 #endif /* MBEDTLS_PSA_CRYPTO_DRIVERS && PSA_CRYPTO_DRIVER_TEST */

@@ -61,11 +61,11 @@
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_X509_CRT_PARSE_C) || !defined(MBEDTLS_FS_IO) ||  \
-    !defined(MBEDTLS_TIMING_C)
+!defined(MBEDTLS_TIMING_C)
 int main( void )
 {
     mbedtls_printf("MBEDTLS_X509_CRT_PARSE_C and/or MBEDTLS_FS_IO and/or "
-           "MBEDTLS_TIMING_C not defined.\n");
+                   "MBEDTLS_TIMING_C not defined.\n");
     mbedtls_exit( 0 );
 }
 #else
@@ -105,27 +105,24 @@ int read_certificates( const char *const *filenames )
     mbedtls_x509_crt cas;
     int ret = 0;
     const char *const *cur;
-
     mbedtls_x509_crt_init( &cas );
-
     for( cur = filenames; *cur != NULL; cur++ )
     {
         ret = mbedtls_x509_crt_parse_file( &cas, *cur );
         if( ret != 0 )
         {
-#if defined(MBEDTLS_ERROR_C) || defined(MBEDTLS_ERROR_STRERROR_DUMMY)
+            #if defined(MBEDTLS_ERROR_C) || defined(MBEDTLS_ERROR_STRERROR_DUMMY)
             char error_message[200];
             mbedtls_strerror( ret, error_message, sizeof( error_message ) );
             printf( "\n%s: -0x%04x (%s)\n",
-                    *cur, (unsigned) -ret, error_message );
-#else
+                    *cur, (unsigned) - ret, error_message );
+            #else
             printf( "\n%s: -0x%04x\n",
-                    *cur, (unsigned) -ret );
-#endif
+                    *cur, (unsigned) - ret );
+            #endif
             goto exit;
         }
     }
-
 exit:
     mbedtls_x509_crt_free( &cas );
     return( ret == 0 );
@@ -137,34 +134,28 @@ int main( int argc, char *argv[] )
     unsigned i, j;
     struct mbedtls_timing_hr_time timer;
     unsigned long ms;
-
     if( argc <= 1 )
     {
         mbedtls_printf( USAGE );
         goto exit;
     }
-
     opt.filenames = NULL;
     opt.iterations = DFL_ITERATIONS;
     opt.prime_cache = DFL_PRIME_CACHE;
-
     for( i = 1; i < (unsigned) argc; i++ )
     {
         char *p = argv[i];
         char *q = NULL;
-
         if( strcmp( p, "--" ) == 0 )
             break;
         if( ( q = strchr( p, '=' ) ) == NULL )
             break;
         *q++ = '\0';
-
         for( j = 0; p + j < q; j++ )
         {
             if( argv[i][j] >= 'A' && argv[i][j] <= 'Z' )
                 argv[i][j] |= 0x20;
         }
-
         if( strcmp( p, "iterations" ) == 0 )
         {
             opt.iterations = atoi( q );
@@ -180,14 +171,12 @@ int main( int argc, char *argv[] )
             goto exit;
         }
     }
-
     opt.filenames = (const char**) argv + i;
     if( *opt.filenames == 0 )
     {
         mbedtls_printf( "Missing list of certificate files to parse\n" );
         goto exit;
     }
-
     mbedtls_printf( "Parsing %u certificates", argc - i );
     if( opt.prime_cache )
     {
@@ -195,7 +184,6 @@ int main( int argc, char *argv[] )
             goto exit;
         mbedtls_printf( " " );
     }
-
     (void) mbedtls_timing_get_timer( &timer, 1 );
     for( i = 1; i <= opt.iterations; i++ )
     {
@@ -206,7 +194,6 @@ int main( int argc, char *argv[] )
     ms = mbedtls_timing_get_timer( &timer, 0 );
     mbedtls_printf( "\n%u iterations -> %lu ms\n", opt.iterations, ms );
     exit_code = MBEDTLS_EXIT_SUCCESS;
-
 exit:
     mbedtls_exit( exit_code );
 }

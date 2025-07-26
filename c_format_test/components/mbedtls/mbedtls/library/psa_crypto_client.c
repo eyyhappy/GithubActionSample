@@ -37,12 +37,11 @@ void psa_reset_key_attributes( psa_key_attributes_t *attributes )
 }
 
 psa_status_t psa_set_key_domain_parameters( psa_key_attributes_t *attributes,
-                                            psa_key_type_t type,
-                                            const uint8_t *data,
-                                            size_t data_length )
+        psa_key_type_t type,
+        const uint8_t *data,
+        size_t data_length )
 {
     uint8_t *copy = NULL;
-
     if( data_length != 0 )
     {
         copy = mbedtls_calloc( 1, data_length );
@@ -52,14 +51,12 @@ psa_status_t psa_set_key_domain_parameters( psa_key_attributes_t *attributes,
     }
     /* After this point, this function is guaranteed to succeed, so it
      * can start modifying `*attributes`. */
-
     if( attributes->domain_parameters != NULL )
     {
         mbedtls_free( attributes->domain_parameters );
         attributes->domain_parameters = NULL;
         attributes->domain_parameters_size = 0;
     }
-
     attributes->domain_parameters = copy;
     attributes->domain_parameters_size = data_length;
     attributes->core.type = type;

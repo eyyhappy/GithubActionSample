@@ -26,7 +26,8 @@
 #include <psa/crypto_driver_common.h>
 #include <psa/crypto.h>
 
-typedef struct {
+typedef struct
+{
     /* If non-null, on success, copy this to the output. */
     void *forced_output;
     size_t forced_output_length;
@@ -41,7 +42,7 @@ typedef struct {
 #define MBEDTLS_TEST_DRIVER_ASYMMETRIC_ENCRYPTION_INIT { NULL, 0, PSA_SUCCESS, 0 }
 
 static inline mbedtls_test_driver_asymmetric_encryption_hooks_t
-     mbedtls_test_driver_asymmetric_encryption_hooks_init( void )
+mbedtls_test_driver_asymmetric_encryption_hooks_init( void )
 {
     const mbedtls_test_driver_asymmetric_encryption_hooks_t v =
         MBEDTLS_TEST_DRIVER_ASYMMETRIC_ENCRYPTION_INIT;
@@ -49,7 +50,7 @@ static inline mbedtls_test_driver_asymmetric_encryption_hooks_t
 }
 
 extern mbedtls_test_driver_asymmetric_encryption_hooks_t
-    mbedtls_test_driver_asymmetric_encryption_hooks;
+mbedtls_test_driver_asymmetric_encryption_hooks;
 
 psa_status_t mbedtls_test_transparent_asymmetric_encrypt(
     const psa_key_attributes_t *attributes, const uint8_t *key_buffer,

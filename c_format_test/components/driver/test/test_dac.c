@@ -90,11 +90,11 @@ TEST_CASE("DAC cw generator output (RTC) check by adc", "[dac]")
         .scale = DAC_CW_SCALE_2,
         .phase = DAC_CW_PHASE_0,
         .freq = 1000,
-#if CONFIG_IDF_TARGET_ESP32
+        #if CONFIG_IDF_TARGET_ESP32
         .offset = 64,
-#elif CONFIG_IDF_TARGET_ESP32S2
+        #elif CONFIG_IDF_TARGET_ESP32S2
         .offset = 16,
-#endif
+        #endif
     };
     TEST_ESP_OK( dac_cw_generator_config(&cw) );
     TEST_ESP_OK( dac_cw_generator_enable() );

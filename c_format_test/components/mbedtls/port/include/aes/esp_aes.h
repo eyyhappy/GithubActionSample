@@ -39,7 +39,8 @@ extern "C" {
  * \brief          AES context structure
  *
  */
-typedef struct {
+typedef struct
+{
     uint8_t key_bytes;
     volatile uint8_t key_in_hardware; /* This variable is used for fault injection checks, so marked volatile to avoid optimisation */
     uint8_t key[32];
@@ -298,8 +299,8 @@ int esp_aes_crypt_ofb( esp_aes_context *ctx,
  * \return         #MBEDTLS_ERR_AES_INVALID_KEY_LENGTH on failure.
  */
 int esp_aes_xts_setkey_enc( esp_aes_xts_context *ctx,
-                                const unsigned char *key,
-                                unsigned int keybits );
+                            const unsigned char *key,
+                            unsigned int keybits );
 
 /**
  * \brief          This function prepares an XTS context for decryption and
@@ -316,8 +317,8 @@ int esp_aes_xts_setkey_enc( esp_aes_xts_context *ctx,
  * \return         #MBEDTLS_ERR_AES_INVALID_KEY_LENGTH on failure.
  */
 int esp_aes_xts_setkey_dec( esp_aes_xts_context *ctx,
-                                const unsigned char *key,
-                                unsigned int keybits );
+                            const unsigned char *key,
+                            unsigned int keybits );
 
 
 /**

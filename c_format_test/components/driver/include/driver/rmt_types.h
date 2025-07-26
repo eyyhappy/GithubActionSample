@@ -33,7 +33,8 @@ typedef struct rmt_encoder_t *rmt_encoder_handle_t;
 /**
  * @brief Type of RMT TX done event data
  */
-typedef struct {
+typedef struct
+{
     size_t num_symbols; /*!< The number of transmitted RMT symbols (only one round is counted if it's a loop transmission) */
 } rmt_tx_done_event_data_t;
 
@@ -51,7 +52,8 @@ typedef bool (*rmt_tx_done_callback_t)(rmt_channel_handle_t tx_chan, const rmt_t
 /**
  * @brief Type of RMT RX done event data
  */
-typedef struct {
+typedef struct
+{
     rmt_symbol_word_t *received_symbols; /*!< Point to the received RMT symbols */
     size_t num_symbols;                  /*!< The number of received RMT symbols */
 } rmt_rx_done_event_data_t;

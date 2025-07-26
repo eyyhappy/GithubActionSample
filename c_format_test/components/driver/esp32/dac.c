@@ -29,7 +29,6 @@ esp_err_t dac_i2s_enable(void)
     DAC_ENTER_CRITICAL();
     dac_hal_digi_enable_dma(true);
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -38,6 +37,5 @@ esp_err_t dac_i2s_disable(void)
     DAC_ENTER_CRITICAL();
     dac_hal_digi_enable_dma(false);
     DAC_EXIT_CRITICAL();
-
     return ESP_OK;
 }

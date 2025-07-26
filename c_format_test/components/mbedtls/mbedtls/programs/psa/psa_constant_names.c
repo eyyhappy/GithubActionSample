@@ -30,24 +30,21 @@ int snprintf( char *s, size_t n, const char *fmt, ... )
 {
     int ret;
     va_list argp;
-
     /* Avoid calling the invalid parameter handler by checking ourselves */
     if( s == NULL || n == 0 || fmt == NULL )
         return( -1 );
-
     va_start( argp, fmt );
-#if defined(_TRUNCATE) && !defined(__MINGW32__)
+    #if defined(_TRUNCATE) && !defined(__MINGW32__)
     ret = _vsnprintf_s( s, n, _TRUNCATE, fmt, argp );
-#else
+    #else
     ret = _vsnprintf( s, n, fmt, argp );
     if( ret < 0 || (size_t) ret == n )
     {
-        s[n-1] = '\0';
+        s[n - 1] = '\0';
         ret = -1;
     }
-#endif
+    #endif
     va_end( argp );
-
     return( ret );
 }
 #endif
@@ -57,7 +54,8 @@ static void append(char **buffer, size_t buffer_size,
                    const char *string, size_t length)
 {
     *required_size += length;
-    if (*required_size < buffer_size) {
+    if (*required_size < buffer_size)
+    {
         memcpy(*buffer, string, length);
         *buffer += length;
     }
@@ -86,10 +84,13 @@ static void append_with_curve(char **buffer, size_t buffer_size,
     const char *family_name = psa_ecc_family_name(curve);
     append(buffer, buffer_size, required_size, string, length);
     append(buffer, buffer_size, required_size, "(", 1);
-    if (family_name != NULL) {
+    if (family_name != NULL)
+    {
         append(buffer, buffer_size, required_size,
                family_name, strlen(family_name));
-    } else {
+    }
+    else
+    {
         append_integer(buffer, buffer_size, required_size,
                        "0x%02x", curve);
     }
@@ -104,10 +105,13 @@ static void append_with_group(char **buffer, size_t buffer_size,
     const char *group_name = psa_dh_family_name(group);
     append(buffer, buffer_size, required_size, string, length);
     append(buffer, buffer_size, required_size, "(", 1);
-    if (group_name != NULL) {
+    if (group_name != NULL)
+    {
         append(buffer, buffer_size, required_size,
                group_name, strlen(group_name));
-    } else {
+    }
+    else
+    {
         append_integer(buffer, buffer_size, required_size,
                        "0x%02x", group);
     }
@@ -122,10 +126,13 @@ static void append_with_alg(char **buffer, size_t buffer_size,
                             psa_algorithm_t alg)
 {
     const char *name = get_name(alg);
-    if (name != NULL) {
+    if (name != NULL)
+    {
         append(buffer, buffer_size, required_size,
                name, strlen(name));
-    } else {
+    }
+    else
+    {
         append_integer(buffer, buffer_size, required_size,
                        "0x%08lx", alg);
     }
@@ -137,14 +144,20 @@ static int psa_snprint_status(char *buffer, size_t buffer_size,
                               psa_status_t status)
 {
     const char *name = psa_strerror(status);
-    if (name == NULL) {
+    if (name == NULL)
+    {
         return snprintf(buffer, buffer_size, "%ld", (long) status);
-    } else {
+    }
+    else
+    {
         size_t length = strlen(name);
-        if (length < buffer_size) {
+        if (length < buffer_size)
+        {
             memcpy(buffer, name, length + 1);
             return (int) length;
-        } else {
+        }
+        else
+        {
             return (int) buffer_size;
         }
     }
@@ -154,14 +167,20 @@ static int psa_snprint_ecc_curve(char *buffer, size_t buffer_size,
                                  psa_ecc_family_t curve)
 {
     const char *name = psa_ecc_family_name(curve);
-    if (name == NULL) {
+    if (name == NULL)
+    {
         return snprintf(buffer, buffer_size, "0x%02x", (unsigned) curve);
-    } else {
+    }
+    else
+    {
         size_t length = strlen(name);
-        if (length < buffer_size) {
+        if (length < buffer_size)
+        {
             memcpy(buffer, name, length + 1);
             return (int) length;
-        } else {
+        }
+        else
+        {
             return (int) buffer_size;
         }
     }
@@ -171,14 +190,20 @@ static int psa_snprint_dh_group(char *buffer, size_t buffer_size,
                                 psa_dh_family_t group)
 {
     const char *name = psa_dh_family_name(group);
-    if (name == NULL) {
+    if (name == NULL)
+    {
         return snprintf(buffer, buffer_size, "0x%02x", (unsigned) group);
-    } else {
+    }
+    else
+    {
         size_t length = strlen(name);
-        if (length < buffer_size) {
+        if (length < buffer_size)
+        {
             memcpy(buffer, name, length + 1);
             return (int) length;
-        } else {
+        }
+        else
+        {
             return (int) buffer_size;
         }
     }
@@ -198,30 +223,35 @@ static void usage(const char *program_name)
     printf("  error=status          Status code (psa_status_t)\n");
 }
 
-typedef enum {
+typedef enum
+{
     TYPE_STATUS,
 } signed_value_type;
 
 int process_signed(signed_value_type type, long min, long max, char **argp)
 {
-    for (; *argp != NULL; argp++) {
+    for (; *argp != NULL; argp++)
+    {
         char buffer[200];
         char *end;
         long value = strtol(*argp, &end, 0);
-        if (*end) {
+        if (*end)
+        {
             printf("Non-numeric value: %s\n", *argp);
             return EXIT_FAILURE;
         }
-        if (value < min || (errno == ERANGE && value < 0)) {
+        if (value < min || (errno == ERANGE && value < 0))
+        {
             printf("Value too small: %s\n", *argp);
             return EXIT_FAILURE;
         }
-        if (value > max || (errno == ERANGE && value > 0)) {
+        if (value > max || (errno == ERANGE && value > 0))
+        {
             printf("Value too large: %s\n", *argp);
             return EXIT_FAILURE;
         }
-
-        switch (type) {
+        switch (type)
+        {
             case TYPE_STATUS:
                 psa_snprint_status(buffer, sizeof(buffer),
                                    (psa_status_t) value);
@@ -229,11 +259,11 @@ int process_signed(signed_value_type type, long min, long max, char **argp)
         }
         puts(buffer);
     }
-
     return EXIT_SUCCESS;
 }
 
-typedef enum {
+typedef enum
+{
     TYPE_ALGORITHM,
     TYPE_ECC_CURVE,
     TYPE_DH_GROUP,
@@ -243,20 +273,23 @@ typedef enum {
 
 int process_unsigned(unsigned_value_type type, unsigned long max, char **argp)
 {
-    for (; *argp != NULL; argp++) {
+    for (; *argp != NULL; argp++)
+    {
         char buffer[200];
         char *end;
         unsigned long value = strtoul(*argp, &end, 0);
-        if (*end) {
+        if (*end)
+        {
             printf("Non-numeric value: %s\n", *argp);
             return EXIT_FAILURE;
         }
-        if (value > max || errno == ERANGE) {
+        if (value > max || errno == ERANGE)
+        {
             printf("Value out of range: %s\n", *argp);
             return EXIT_FAILURE;
         }
-
-        switch (type) {
+        switch (type)
+        {
             case TYPE_ALGORITHM:
                 psa_snprint_algorithm(buffer, sizeof(buffer),
                                       (psa_algorithm_t) value);
@@ -280,7 +313,6 @@ int process_unsigned(unsigned_value_type type, unsigned long max, char **argp)
         }
         puts(buffer);
     }
-
     return EXIT_SUCCESS;
 }
 
@@ -293,28 +325,40 @@ int main(int argc, char *argv[])
         usage(argv[0]);
         return EXIT_FAILURE;
     }
-
-    if (!strcmp(argv[1], "error") || !strcmp(argv[1], "status")) {
+    if (!strcmp(argv[1], "error") || !strcmp(argv[1], "status"))
+    {
         /* There's no way to obtain the actual range of a signed type,
          * so hard-code it here: psa_status_t is int32_t. */
         return process_signed(TYPE_STATUS, INT32_MIN, INT32_MAX,
                               argv + 2);
-    } else if (!strcmp(argv[1], "alg") || !strcmp(argv[1], "algorithm")) {
+    }
+    else if (!strcmp(argv[1], "alg") || !strcmp(argv[1], "algorithm"))
+    {
         return process_unsigned(TYPE_ALGORITHM, (psa_algorithm_t) (-1),
                                 argv + 2);
-    } else if (!strcmp(argv[1], "curve") || !strcmp(argv[1], "ecc_curve")) {
+    }
+    else if (!strcmp(argv[1], "curve") || !strcmp(argv[1], "ecc_curve"))
+    {
         return process_unsigned(TYPE_ECC_CURVE, (psa_ecc_family_t) (-1),
                                 argv + 2);
-    } else if (!strcmp(argv[1], "group") || !strcmp(argv[1], "dh_group")) {
+    }
+    else if (!strcmp(argv[1], "group") || !strcmp(argv[1], "dh_group"))
+    {
         return process_unsigned(TYPE_DH_GROUP, (psa_dh_family_t) (-1),
                                 argv + 2);
-    } else if (!strcmp(argv[1], "type") || !strcmp(argv[1], "key_type")) {
+    }
+    else if (!strcmp(argv[1], "type") || !strcmp(argv[1], "key_type"))
+    {
         return process_unsigned(TYPE_KEY_TYPE, (psa_key_type_t) (-1),
                                 argv + 2);
-    } else if (!strcmp(argv[1], "usage") || !strcmp(argv[1], "key_usage")) {
+    }
+    else if (!strcmp(argv[1], "usage") || !strcmp(argv[1], "key_usage"))
+    {
         return process_unsigned(TYPE_KEY_USAGE, (psa_key_usage_t) (-1),
                                 argv + 2);
-    } else {
+    }
+    else
+    {
         printf("Unknown type: %s\n", argv[1]);
         return EXIT_FAILURE;
     }

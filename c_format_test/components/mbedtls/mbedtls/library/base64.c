@@ -42,69 +42,55 @@
  * Encode a buffer into base64 format
  */
 int mbedtls_base64_encode( unsigned char *dst, size_t dlen, size_t *olen,
-                   const unsigned char *src, size_t slen )
+                           const unsigned char *src, size_t slen )
 {
     size_t i, n;
     int C1, C2, C3;
     unsigned char *p;
-
     if( slen == 0 )
     {
         *olen = 0;
         return( 0 );
     }
-
     n = slen / 3 + ( slen % 3 != 0 );
-
     if( n > ( BASE64_SIZE_T_MAX - 1 ) / 4 )
     {
         *olen = BASE64_SIZE_T_MAX;
         return( MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL );
     }
-
     n *= 4;
-
     if( ( dlen < n + 1 ) || ( NULL == dst ) )
     {
         *olen = n + 1;
         return( MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL );
     }
-
     n = ( slen / 3 ) * 3;
-
     for( i = 0, p = dst; i < n; i += 3 )
     {
         C1 = *src++;
         C2 = *src++;
         C3 = *src++;
-
         *p++ = mbedtls_ct_base64_enc_char( ( C1 >> 2 ) & 0x3F );
         *p++ = mbedtls_ct_base64_enc_char( ( ( ( C1 &  3 ) << 4 ) + ( C2 >> 4 ) )
-                                        & 0x3F );
+                                           & 0x3F );
         *p++ = mbedtls_ct_base64_enc_char( ( ( ( C2 & 15 ) << 2 ) + ( C3 >> 6 ) )
-                                        & 0x3F );
+                                           & 0x3F );
         *p++ = mbedtls_ct_base64_enc_char( C3 & 0x3F );
     }
-
     if( i < slen )
     {
         C1 = *src++;
         C2 = ( ( i + 1 ) < slen ) ? *src++ : 0;
-
         *p++ = mbedtls_ct_base64_enc_char( ( C1 >> 2 ) & 0x3F );
         *p++ = mbedtls_ct_base64_enc_char( ( ( ( C1 & 3 ) << 4 ) + ( C2 >> 4 ) )
-                                        & 0x3F );
-
+                                           & 0x3F );
         if( ( i + 1 ) < slen )
-             *p++ = mbedtls_ct_base64_enc_char( ( ( C2 & 15 ) << 2 ) & 0x3F );
+            *p++ = mbedtls_ct_base64_enc_char( ( ( C2 & 15 ) << 2 ) & 0x3F );
         else *p++ = '=';
-
         *p++ = '=';
     }
-
     *olen = p - dst;
     *p = 0;
-
     return( 0 );
 }
 
@@ -112,7 +98,7 @@ int mbedtls_base64_encode( unsigned char *dst, size_t dlen, size_t *olen,
  * Decode a base64-formatted buffer
  */
 int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
-                   const unsigned char *src, size_t slen )
+                           const unsigned char *src, size_t slen )
 {
     size_t i; /* index in source */
     size_t n; /* number of digits or trailing = in source */
@@ -121,7 +107,6 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
     unsigned equals = 0;
     int spaces_present = 0;
     unsigned char *p;
-
     /* First pass: check for validity and get output length */
     for( i = n = 0; i < slen; i++ )
     {
@@ -132,25 +117,19 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
             ++i;
             spaces_present = 1;
         }
-
         /* Spaces at end of buffer are OK */
         if( i == slen )
             break;
-
         if( ( slen - i ) >= 2 &&
             src[i] == '\r' && src[i + 1] == '\n' )
             continue;
-
         if( src[i] == '\n' )
             continue;
-
         /* Space inside a line is an error */
         if( spaces_present )
             return( MBEDTLS_ERR_BASE64_INVALID_CHARACTER );
-
         if( src[i] > 127 )
             return( MBEDTLS_ERR_BASE64_INVALID_CHARACTER );
-
         if( src[i] == '=' )
         {
             if( ++equals > 2 )
@@ -165,38 +144,32 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
         }
         n++;
     }
-
     if( n == 0 )
     {
         *olen = 0;
         return( 0 );
     }
-
     /* The following expression is to calculate the following formula without
      * risk of integer overflow in n:
      *     n = ( ( n * 6 ) + 7 ) >> 3;
      */
     n = ( 6 * ( n >> 3 ) ) + ( ( 6 * ( n & 0x7 ) + 7 ) >> 3 );
     n -= equals;
-
     if( dst == NULL || dlen < n )
     {
         *olen = n;
         return( MBEDTLS_ERR_BASE64_BUFFER_TOO_SMALL );
     }
-
     equals = 0;
     for( x = 0, p = dst; i > 0; i--, src++ )
     {
         if( *src == '\r' || *src == '\n' || *src == ' ' )
             continue;
-
         x = x << 6;
         if( *src == '=' )
             ++equals;
         else
             x |= mbedtls_ct_base64_dec_value( *src );
-
         if( ++accumulated_digits == 4 )
         {
             accumulated_digits = 0;
@@ -205,9 +178,7 @@ int mbedtls_base64_decode( unsigned char *dst, size_t dlen, size_t *olen,
             if( equals <= 0 ) *p++ = MBEDTLS_BYTE_0( x );
         }
     }
-
     *olen = p - dst;
-
     return( 0 );
 }
 
@@ -237,38 +208,28 @@ int mbedtls_base64_self_test( int verbose )
     size_t len;
     const unsigned char *src;
     unsigned char buffer[128];
-
     if( verbose != 0 )
         mbedtls_printf( "  Base64 encoding test: " );
-
     src = base64_test_dec;
-
     if( mbedtls_base64_encode( buffer, sizeof( buffer ), &len, src, 64 ) != 0 ||
-         memcmp( base64_test_enc, buffer, 88 ) != 0 )
+        memcmp( base64_test_enc, buffer, 88 ) != 0 )
     {
         if( verbose != 0 )
             mbedtls_printf( "failed\n" );
-
         return( 1 );
     }
-
     if( verbose != 0 )
         mbedtls_printf( "passed\n  Base64 decoding test: " );
-
     src = base64_test_enc;
-
     if( mbedtls_base64_decode( buffer, sizeof( buffer ), &len, src, 88 ) != 0 ||
-         memcmp( base64_test_dec, buffer, 64 ) != 0 )
+        memcmp( base64_test_dec, buffer, 64 ) != 0 )
     {
         if( verbose != 0 )
             mbedtls_printf( "failed\n" );
-
         return( 1 );
     }
-
     if( verbose != 0 )
         mbedtls_printf( "passed\n\n" );
-
     return( 0 );
 }
 

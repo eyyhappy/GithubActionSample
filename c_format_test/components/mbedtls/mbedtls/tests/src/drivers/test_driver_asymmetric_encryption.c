@@ -40,37 +40,31 @@ psa_status_t mbedtls_test_transparent_asymmetric_encrypt(
     uint8_t *output, size_t output_size, size_t *output_length )
 {
     mbedtls_test_driver_asymmetric_encryption_hooks.hits++;
-
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_output != NULL )
     {
         if( output_size < mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length )
             return( PSA_ERROR_BUFFER_TOO_SMALL );
-
         memcpy( output,
                 mbedtls_test_driver_asymmetric_encryption_hooks.forced_output,
                 mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length );
         *output_length = mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length;
-
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
     }
-
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
-
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_asymmetric_encrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-#else
+    #else
     return( mbedtls_psa_asymmetric_encrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-#endif
-
+    #endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -81,37 +75,31 @@ psa_status_t mbedtls_test_transparent_asymmetric_decrypt(
     uint8_t *output, size_t output_size, size_t *output_length )
 {
     mbedtls_test_driver_asymmetric_encryption_hooks.hits++;
-
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_output != NULL )
     {
         if( output_size < mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length )
             return( PSA_ERROR_BUFFER_TOO_SMALL );
-
         memcpy( output,
                 mbedtls_test_driver_asymmetric_encryption_hooks.forced_output,
                 mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length );
         *output_length = mbedtls_test_driver_asymmetric_encryption_hooks.forced_output_length;
-
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
     }
-
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
-
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_asymmetric_decrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-#else
+    #else
     return( mbedtls_psa_asymmetric_decrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-#endif
-
+    #endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 

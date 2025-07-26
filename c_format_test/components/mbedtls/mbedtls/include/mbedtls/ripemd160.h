@@ -72,7 +72,7 @@ void mbedtls_ripemd160_free( mbedtls_ripemd160_context *ctx );
  * \param src      The context to be cloned
  */
 void mbedtls_ripemd160_clone( mbedtls_ripemd160_context *dst,
-                        const mbedtls_ripemd160_context *src );
+                              const mbedtls_ripemd160_context *src );
 
 /**
  * \brief          RIPEMD-160 context setup

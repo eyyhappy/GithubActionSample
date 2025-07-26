@@ -295,9 +295,9 @@ esp_err_t essl_spi_init_dev(essl_handle_t *out_handle, const essl_spi_config_t *
     *context = (essl_spi_context_t)
     {
         .spi = *init_config->spi,
-         .master_out.tx_buffer_size = init_config->tx_buf_size,
-                     .master_out.tx_sync_reg = init_config->tx_sync_reg,
-                                 .master_in.rx_sync_reg = init_config->rx_sync_reg
+        .master_out.tx_buffer_size = init_config->tx_buf_size,
+        .master_out.tx_sync_reg = init_config->tx_sync_reg,
+        .master_in.rx_sync_reg = init_config->rx_sync_reg
     };
     *dev = ESSL_SPI_DEFAULT_DEV_FUNC();
     dev->args = context;

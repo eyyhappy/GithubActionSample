@@ -114,8 +114,8 @@
 /** Override calloc(), free() except for case where memory allocation scheme is not set to custom */
 #ifndef CONFIG_MBEDTLS_CUSTOM_MEM_ALLOC
 #include "esp_mem.h"
-#define MBEDTLS_PLATFORM_STD_CALLOC		esp_mbedtls_mem_calloc
-#define MBEDTLS_PLATFORM_STD_FREE		esp_mbedtls_mem_free
+#define MBEDTLS_PLATFORM_STD_CALLOC     esp_mbedtls_mem_calloc
+#define MBEDTLS_PLATFORM_STD_FREE       esp_mbedtls_mem_free
 #endif
 
 /* \} name SECTION: System support */
@@ -175,11 +175,11 @@
  */
 #ifdef CONFIG_MBEDTLS_HARDWARE_MPI
 #ifdef CONFIG_MBEDTLS_LARGE_KEY_SOFTWARE_MPI
-    /* Prefer hardware and fallback to software */
-    #define MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
+/* Prefer hardware and fallback to software */
+#define MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
 #else
-    /* Hardware only mode */
-    #define MBEDTLS_MPI_EXP_MOD_ALT
+/* Hardware only mode */
+#define MBEDTLS_MPI_EXP_MOD_ALT
 #endif
 #define MBEDTLS_MPI_MUL_MPI_ALT
 #else
@@ -198,15 +198,15 @@
 
 #ifdef CONFIG_MBEDTLS_HARDWARE_ECC
 #ifdef CONFIG_MBEDTLS_ECC_OTHER_CURVES_SOFT_FALLBACK
-    /* Use hardware accelerator for SECP192R1 and SECP256R1 curves,
-     * software implementation for rest of the curves
-     */
-    #define MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
-    #define MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
+/* Use hardware accelerator for SECP192R1 and SECP256R1 curves,
+ * software implementation for rest of the curves
+ */
+#define MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
+#define MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
 #else
-    /* Only hardware accelerator support */
-    #define MBEDTLS_ECP_MUL_ALT
-    #define MBEDTLS_ECP_VERIFY_ALT
+/* Only hardware accelerator support */
+#define MBEDTLS_ECP_MUL_ALT
+#define MBEDTLS_ECP_VERIFY_ALT
 #endif
 
 #else

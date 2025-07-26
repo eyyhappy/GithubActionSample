@@ -42,13 +42,15 @@ static volatile uint32_t s_milliseconds;
 void ref_clock_init(void)
 {
     // Initialize PCNT
-    pcnt_unit_config_t unit_config = {
+    pcnt_unit_config_t unit_config =
+    {
         .high_limit = REF_CLOCK_PRESCALER_MS * 1000,
         .low_limit = -100, // any minus value is OK, in this case, we don't count down
         .flags.accum_count = true, // accumulate the counter value
     };
     TEST_ESP_OK(pcnt_new_unit(&unit_config, &s_pcnt_unit));
-    pcnt_chan_config_t chan_config = {
+    pcnt_chan_config_t chan_config =
+    {
         .edge_gpio_num = REF_CLOCK_GPIO,
         .level_gpio_num = -1,
         .flags.io_loop_back = true,
@@ -64,9 +66,9 @@ void ref_clock_init(void)
     TEST_ESP_OK(pcnt_unit_enable(s_pcnt_unit));
     // start pcnt
     TEST_ESP_OK(pcnt_unit_start(s_pcnt_unit));
-
     // Initialize RMT
-    rmt_tx_channel_config_t tx_chan_config = {
+    rmt_tx_channel_config_t tx_chan_config =
+    {
         .clk_src = RMT_CLK_SRC_REF_TICK, // REF_TICK clock source
         .gpio_num = REF_CLOCK_GPIO,
         .mem_block_symbols = 64,
@@ -76,7 +78,8 @@ void ref_clock_init(void)
     };
     TEST_ESP_OK(rmt_new_tx_channel(&tx_chan_config, &s_rmt_chan));
     // set carrier configuration
-    rmt_carrier_config_t carrier_config = {
+    rmt_carrier_config_t carrier_config =
+    {
         .duty_cycle = 0.5,
         .frequency_hz = 500 * 1000, // 500 KHz
     };
@@ -86,16 +89,17 @@ void ref_clock_init(void)
     // create a copy encoder to copy the RMT symbol into RMT HW memory
     rmt_copy_encoder_config_t encoder_config = {};
     TEST_ESP_OK(rmt_new_copy_encoder(&encoder_config, &s_rmt_encoder));
-
     // control the tx channel to output a fixed high level by constructing the following RMT symbol
     // the carrier is modulated to the high level by default, which results in a 500KHz carrier on the `REF_CLOCK_GPIO`
-    rmt_symbol_word_t data = {
+    rmt_symbol_word_t data =
+    {
         .level0 = 1,
         .duration0 = 1,
         .level1 = 1,
         .duration1 = 0,
     };
-    rmt_transmit_config_t trans_config = {
+    rmt_transmit_config_t trans_config =
+    {
         .loop_count = 0, // no loop
         .flags.eot_level = 1,
     };
@@ -110,7 +114,6 @@ void ref_clock_deinit(void)
     TEST_ESP_OK(pcnt_unit_remove_watch_point(s_pcnt_unit, REF_CLOCK_PRESCALER_MS * 1000));
     TEST_ESP_OK(pcnt_del_channel(s_pcnt_chan));
     TEST_ESP_OK(pcnt_del_unit(s_pcnt_unit));
-
     // Deinitialize RMT
     TEST_ESP_OK(rmt_disable(s_rmt_chan));
     TEST_ESP_OK(rmt_del_channel(s_rmt_chan));

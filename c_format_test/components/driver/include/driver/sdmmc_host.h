@@ -50,8 +50,9 @@ extern "C" {
 /**
  * Extra configuration for SDMMC peripheral slot
  */
-typedef struct {
-#ifdef SOC_SDMMC_USE_GPIO_MATRIX
+typedef struct
+{
+    #ifdef SOC_SDMMC_USE_GPIO_MATRIX
     gpio_num_t clk;         ///< GPIO number of CLK signal.
     gpio_num_t cmd;         ///< GPIO number of CMD signal.
     gpio_num_t d0;          ///< GPIO number of D0 signal.
@@ -62,22 +63,24 @@ typedef struct {
     gpio_num_t d5;          ///< GPIO number of D5 signal. Ignored in 1- or 4- line mode.
     gpio_num_t d6;          ///< GPIO number of D6 signal. Ignored in 1- or 4- line mode.
     gpio_num_t d7;          ///< GPIO number of D7 signal. Ignored in 1- or 4- line mode.
-#endif // SOC_SDMMC_USE_GPIO_MATRIX
-    union {
+    #endif // SOC_SDMMC_USE_GPIO_MATRIX
+    union
+    {
         gpio_num_t gpio_cd;     ///< GPIO number of card detect signal
         gpio_num_t cd;          ///< GPIO number of card detect signal; shorter name.
     };
-    union {
+    union
+    {
         gpio_num_t gpio_wp;     ///< GPIO number of write protect signal
         gpio_num_t wp;          ///< GPIO number of write protect signal; shorter name.
     };
     uint8_t width;          ///< Bus width used by the slot (might be less than the max width supported)
     uint32_t flags;         ///< Features used by this slot
 #define SDMMC_SLOT_FLAG_INTERNAL_PULLUP  BIT(0)
-        /**< Enable internal pullups on enabled pins. The internal pullups
-         are insufficient however, please make sure external pullups are
-         connected on the bus. This is for debug / example purpose only.
-         */
+    /**< Enable internal pullups on enabled pins. The internal pullups
+     are insufficient however, please make sure external pullups are
+     connected on the bus. This is for debug / example purpose only.
+     */
 } sdmmc_slot_config_t;
 
 #define SDMMC_SLOT_NO_CD      GPIO_NUM_NC     ///< indicates that card detect line is not used

@@ -63,30 +63,34 @@ esp_err_t touch_pad_isr_register(intr_handler_t fn, void *arg, touch_pad_intr_ma
 {
     ESP_RETURN_ON_FALSE(fn, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("intr_mask"));
     TOUCH_INTR_MASK_CHECK(intr_mask);
-
     uint32_t en_msk = 0;
-    if (intr_mask & TOUCH_PAD_INTR_MASK_DONE) {
+    if (intr_mask & TOUCH_PAD_INTR_MASK_DONE)
+    {
         en_msk |= RTC_CNTL_TOUCH_DONE_INT_ST_M;
     }
-    if (intr_mask & TOUCH_PAD_INTR_MASK_ACTIVE) {
+    if (intr_mask & TOUCH_PAD_INTR_MASK_ACTIVE)
+    {
         en_msk |= RTC_CNTL_TOUCH_ACTIVE_INT_ST_M;
     }
-    if (intr_mask & TOUCH_PAD_INTR_MASK_INACTIVE) {
+    if (intr_mask & TOUCH_PAD_INTR_MASK_INACTIVE)
+    {
         en_msk |= RTC_CNTL_TOUCH_INACTIVE_INT_ST_M;
     }
-    if (intr_mask & TOUCH_PAD_INTR_MASK_SCAN_DONE) {
+    if (intr_mask & TOUCH_PAD_INTR_MASK_SCAN_DONE)
+    {
         en_msk |= RTC_CNTL_TOUCH_SCAN_DONE_INT_ST_M;
     }
-    if (intr_mask & TOUCH_PAD_INTR_MASK_TIMEOUT) {
+    if (intr_mask & TOUCH_PAD_INTR_MASK_TIMEOUT)
+    {
         en_msk |= RTC_CNTL_TOUCH_TIMEOUT_INT_ST_M;
     }
-#if SOC_TOUCH_PROXIMITY_MEAS_DONE_SUPPORTED
-    if (intr_mask & TOUCH_PAD_INTR_MASK_PROXI_MEAS_DONE) {
+    #if SOC_TOUCH_PROXIMITY_MEAS_DONE_SUPPORTED
+    if (intr_mask & TOUCH_PAD_INTR_MASK_PROXI_MEAS_DONE)
+    {
         en_msk |= RTC_CNTL_TOUCH_APPROACH_LOOP_DONE_INT_ST_M;
     }
-#endif
+    #endif
     esp_err_t ret = rtc_isr_register(fn, arg, en_msk, 0);
-
     return ret;
 }
 
@@ -112,7 +116,6 @@ esp_err_t touch_pad_set_charge_discharge_times(uint16_t charge_discharge_times)
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_meas_times(charge_discharge_times);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -122,7 +125,6 @@ esp_err_t touch_pad_get_charge_discharge_times(uint16_t *charge_discharge_times)
     TOUCH_ENTER_CRITICAL();
     touch_hal_get_measure_times(charge_discharge_times);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -169,7 +171,6 @@ esp_err_t touch_pad_set_channel_mask(uint16_t enable_mask)
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_channel_mask(enable_mask);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -179,7 +180,6 @@ esp_err_t touch_pad_get_channel_mask(uint16_t *enable_mask)
     TOUCH_ENTER_CRITICAL();
     touch_hal_get_channel_mask(enable_mask);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -199,7 +199,8 @@ touch_pad_t IRAM_ATTR touch_pad_get_current_meas_channel(void)
 
 esp_err_t touch_pad_intr_enable(touch_pad_intr_mask_t int_mask)
 {
-    if (!(int_mask & TOUCH_PAD_INTR_MASK_ALL)) {
+    if (!(int_mask & TOUCH_PAD_INTR_MASK_ALL))
+    {
         return ESP_ERR_INVALID_ARG;
     }
     TOUCH_ENTER_CRITICAL_SAFE();
@@ -210,7 +211,8 @@ esp_err_t touch_pad_intr_enable(touch_pad_intr_mask_t int_mask)
 
 esp_err_t touch_pad_intr_disable(touch_pad_intr_mask_t int_mask)
 {
-    if (!(int_mask & TOUCH_PAD_INTR_MASK_ALL)) {
+    if (!(int_mask & TOUCH_PAD_INTR_MASK_ALL))
+    {
         return ESP_ERR_INVALID_ARG;
     }
     TOUCH_ENTER_CRITICAL_SAFE();
@@ -236,9 +238,12 @@ uint32_t touch_pad_read_intr_status_mask(void)
 esp_err_t touch_pad_timeout_set(bool enable, uint32_t threshold)
 {
     TOUCH_ENTER_CRITICAL();
-    if (enable) {
+    if (enable)
+    {
         touch_hal_timeout_enable();
-    } else {
+    }
+    else
+    {
         touch_hal_timeout_disable();
     }
     touch_hal_timeout_set_threshold(threshold);
@@ -266,22 +271,22 @@ esp_err_t touch_pad_timeout_resume(void)
 esp_err_t touch_pad_config(touch_pad_t touch_num)
 {
     TOUCH_CHANNEL_CHECK(touch_num);
-
     touch_pad_io_init(touch_num);
     TOUCH_ENTER_CRITICAL();
     touch_hal_config(touch_num);
     touch_hal_set_channel_mask(BIT(touch_num));
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
 esp_err_t touch_pad_init(void)
 {
-    if (rtc_touch_mux == NULL) {
+    if (rtc_touch_mux == NULL)
+    {
         rtc_touch_mux = xSemaphoreCreateMutex();
     }
-    if (rtc_touch_mux == NULL) {
+    if (rtc_touch_mux == NULL)
+    {
         return ESP_ERR_NO_MEM;
     }
     TOUCH_ENTER_CRITICAL();
@@ -359,11 +364,9 @@ esp_err_t touch_pad_filter_set_config(const touch_filter_config_t *filter_info)
     ESP_RETURN_ON_FALSE(filter_info->noise_thr <= TOUCH_NOISE_THR_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("noise"));
     ESP_RETURN_ON_FALSE(filter_info->jitter_step <= TOUCH_JITTER_STEP_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("jitter_step"));
     ESP_RETURN_ON_FALSE(filter_info->smh_lvl < TOUCH_PAD_SMOOTH_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("smooth level"));
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_filter_set_config(filter_info);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -414,8 +417,8 @@ esp_err_t touch_pad_denoise_set_config(const touch_pad_denoise_t *denoise)
     TOUCH_NULL_POINTER_CHECK(denoise, "denoise");
     ESP_RETURN_ON_FALSE(denoise->grade < TOUCH_PAD_DENOISE_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("grade"));
     ESP_RETURN_ON_FALSE(denoise->cap_level < TOUCH_PAD_DENOISE_CAP_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("cap_level"));
-
-    const touch_hal_meas_mode_t meas = {
+    const touch_hal_meas_mode_t meas =
+    {
         .slope = TOUCH_PAD_SLOPE_DEFAULT,
         .tie_opt = TOUCH_PAD_TIE_OPT_DEFAULT,
     };
@@ -423,7 +426,6 @@ esp_err_t touch_pad_denoise_set_config(const touch_pad_denoise_t *denoise)
     touch_hal_set_meas_mode(SOC_TOUCH_DENOISE_CHANNEL, &meas);
     touch_hal_denoise_set_config(denoise);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -447,7 +449,6 @@ esp_err_t touch_pad_waterproof_set_config(const touch_pad_waterproof_t *waterpro
     TOUCH_NULL_POINTER_CHECK(waterproof, "waterproof");
     ESP_RETURN_ON_FALSE(waterproof->guard_ring_pad < SOC_TOUCH_SENSOR_NUM, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("pad"));
     ESP_RETURN_ON_FALSE(waterproof->shield_driver < TOUCH_PAD_SHIELD_DRV_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("shield_driver"));
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_waterproof_set_config(waterproof);
     TOUCH_EXIT_CRITICAL();
@@ -484,9 +485,9 @@ esp_err_t touch_pad_proximity_enable(touch_pad_t touch_num, bool enabled)
 {
     esp_err_t ret = ESP_OK;
     ESP_RETURN_ON_FALSE(touch_num < TOUCH_PAD_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  "Touch channel error");
-
     TOUCH_ENTER_CRITICAL();
-    if (!touch_hal_enable_proximity(touch_num, enabled)) {
+    if (!touch_hal_enable_proximity(touch_num, enabled))
+    {
         ret = ESP_ERR_NOT_SUPPORTED;
     }
     TOUCH_EXIT_CRITICAL();
@@ -496,7 +497,6 @@ esp_err_t touch_pad_proximity_enable(touch_pad_t touch_num, bool enabled)
 esp_err_t touch_pad_proximity_set_count(touch_pad_t touch_num, uint32_t count)
 {
     ESP_RETURN_ON_FALSE(count <= TOUCH_PROXIMITY_MEAS_NUM_MAX, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("measure count"));
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_proximity_set_meas_times(count);
     TOUCH_EXIT_CRITICAL();
@@ -506,7 +506,6 @@ esp_err_t touch_pad_proximity_set_count(touch_pad_t touch_num, uint32_t count)
 esp_err_t touch_pad_proximity_get_count(touch_pad_t touch_num, uint32_t *count)
 {
     ESP_RETURN_ON_FALSE(count, ESP_ERR_INVALID_ARG, TOUCH_TAG,  TOUCH_PARAM_CHECK_STR("measure count"));
-
     TOUCH_ENTER_CRITICAL_SAFE();
     touch_hal_proximity_get_meas_times(count);
     TOUCH_EXIT_CRITICAL_SAFE();
@@ -556,7 +555,6 @@ esp_err_t touch_pad_sleep_channel_get_info(touch_pad_sleep_channel_t *slp_config
 esp_err_t touch_pad_sleep_channel_enable(touch_pad_t pad_num, bool enable)
 {
     TOUCH_CHANNEL_CHECK(pad_num);
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_sleep_channel_enable(pad_num, enable);
     TOUCH_EXIT_CRITICAL();
@@ -566,11 +564,13 @@ esp_err_t touch_pad_sleep_channel_enable(touch_pad_t pad_num, bool enable)
 esp_err_t touch_pad_sleep_channel_enable_proximity(touch_pad_t pad_num, bool enable)
 {
     TOUCH_CHANNEL_CHECK(pad_num);
-
     TOUCH_ENTER_CRITICAL();
-    if (enable) {
+    if (enable)
+    {
         touch_hal_sleep_enable_approach();
-    } else {
+    }
+    else
+    {
         touch_hal_sleep_disable_approach();
     }
     TOUCH_EXIT_CRITICAL();

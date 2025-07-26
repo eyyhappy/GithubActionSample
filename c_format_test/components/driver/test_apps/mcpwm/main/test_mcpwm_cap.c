@@ -19,38 +19,44 @@
 TEST_CASE("mcpwm_capture_install_uninstall", "[mcpwm]")
 {
     printf("install mcpwm capture timers\r\n");
-    mcpwm_capture_timer_config_t cap_timer_config = {
+    mcpwm_capture_timer_config_t cap_timer_config =
+    {
         .clk_src = MCPWM_CAPTURE_CLK_SRC_DEFAULT,
     };
     int total_cap_timers = SOC_MCPWM_GROUPS * SOC_MCPWM_CAPTURE_TIMERS_PER_GROUP;
     mcpwm_cap_timer_handle_t cap_timers[total_cap_timers];
     int k = 0;
-    for (int i = 0; i < SOC_MCPWM_GROUPS; i++) {
+    for (int i = 0; i < SOC_MCPWM_GROUPS; i++)
+    {
         cap_timer_config.group_id = i;
-        for (int j = 0; j < SOC_MCPWM_CAPTURE_TIMERS_PER_GROUP; j++) {
+        for (int j = 0; j < SOC_MCPWM_CAPTURE_TIMERS_PER_GROUP; j++)
+        {
             TEST_ESP_OK(mcpwm_new_capture_timer(&cap_timer_config, &cap_timers[k++]));
         }
         TEST_ESP_ERR(ESP_ERR_NOT_FOUND, mcpwm_new_capture_timer(&cap_timer_config, &cap_timers[0]));
     }
-
     printf("install mcpwm capture channels\r\n");
-    mcpwm_capture_channel_config_t cap_chan_config = {
+    mcpwm_capture_channel_config_t cap_chan_config =
+    {
         .gpio_num = 0,
         .prescale = 2,
         .flags.pos_edge = true,
         .flags.pull_up = true,
     };
     mcpwm_cap_channel_handle_t cap_channels[total_cap_timers][SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER];
-    for (int i = 0; i < total_cap_timers; i++) {
-        for (int j = 0; j < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; j++) {
+    for (int i = 0; i < total_cap_timers; i++)
+    {
+        for (int j = 0; j < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; j++)
+        {
             TEST_ESP_OK(mcpwm_new_capture_channel(cap_timers[i], &cap_chan_config, &cap_channels[i][j]));
         }
         TEST_ESP_ERR(ESP_ERR_NOT_FOUND, mcpwm_new_capture_channel(cap_timers[i], &cap_chan_config, &cap_channels[i][0]));
     }
-
     printf("uninstall mcpwm capture channels and timers\r\n");
-    for (int i = 0; i < total_cap_timers; i++) {
-        for (int j = 0; j < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; j++) {
+    for (int i = 0; i < total_cap_timers; i++)
+    {
+        for (int j = 0; j < SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER; j++)
+        {
             TEST_ESP_OK(mcpwm_del_capture_channel(cap_channels[i][j]));
         }
         TEST_ESP_OK(mcpwm_del_capture_timer(cap_timers[i]));
@@ -61,9 +67,12 @@ TEST_MCPWM_CALLBACK_ATTR
 static bool test_capture_callback(mcpwm_cap_channel_handle_t cap_channel, const mcpwm_capture_event_data_t *edata, void *user_data)
 {
     uint32_t *cap_value = (uint32_t *)user_data;
-    if (edata->cap_edge == MCPWM_CAP_EDGE_NEG) {
+    if (edata->cap_edge == MCPWM_CAP_EDGE_NEG)
+    {
         cap_value[1] = edata->cap_value;
-    } else {
+    }
+    else
+    {
         cap_value[0] = edata->cap_value;
     }
     return false;
@@ -73,19 +82,19 @@ TEST_CASE("mcpwm_capture_ext_gpio", "[mcpwm]")
 {
     printf("install mcpwm capture timer\r\n");
     mcpwm_cap_timer_handle_t cap_timer = NULL;
-    mcpwm_capture_timer_config_t cap_timer_config = {
+    mcpwm_capture_timer_config_t cap_timer_config =
+    {
         .clk_src = MCPWM_CAPTURE_CLK_SRC_DEFAULT,
         .group_id = 0,
     };
     TEST_ESP_OK(mcpwm_new_capture_timer(&cap_timer_config, &cap_timer));
-
     const int cap_gpio = 0;
     // put the GPIO into a preset state
     gpio_set_level(cap_gpio, 0);
-
     printf("install mcpwm capture channel\r\n");
     mcpwm_cap_channel_handle_t pps_channel;
-    mcpwm_capture_channel_config_t cap_chan_config = {
+    mcpwm_capture_channel_config_t cap_chan_config =
+    {
         .gpio_num = cap_gpio,
         .prescale = 1,
         .flags.pos_edge = true,
@@ -94,21 +103,18 @@ TEST_CASE("mcpwm_capture_ext_gpio", "[mcpwm]")
         .flags.pull_up = true,
     };
     TEST_ESP_OK(mcpwm_new_capture_channel(cap_timer, &cap_chan_config, &pps_channel));
-
     printf("install callback for capture channel\r\n");
-    mcpwm_capture_event_callbacks_t cbs = {
+    mcpwm_capture_event_callbacks_t cbs =
+    {
         .on_cap = test_capture_callback,
     };
     uint32_t cap_value[2] = {0};
     TEST_ESP_OK(mcpwm_capture_channel_register_event_callbacks(pps_channel, &cbs, cap_value));
-
     printf("enable capture channel\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_enable(pps_channel));
-
     printf("enable and start capture timer\r\n");
     TEST_ESP_OK(mcpwm_capture_timer_enable(cap_timer));
     TEST_ESP_OK(mcpwm_capture_timer_start(cap_timer));
-
     printf("simulate GPIO capture signal\r\n");
     gpio_set_level(cap_gpio, 1);
     vTaskDelay(pdMS_TO_TICKS(100));
@@ -118,7 +124,6 @@ TEST_CASE("mcpwm_capture_ext_gpio", "[mcpwm]")
     uint32_t clk_src_res;
     mcpwm_capture_timer_get_resolution(cap_timer, &clk_src_res);
     TEST_ASSERT_UINT_WITHIN(100000, clk_src_res / 10, cap_value[1] - cap_value[0]);
-
     printf("uninstall capture channel and timer\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_disable(pps_channel));
     TEST_ESP_OK(mcpwm_del_capture_channel(pps_channel));
@@ -126,7 +131,8 @@ TEST_CASE("mcpwm_capture_ext_gpio", "[mcpwm]")
     TEST_ESP_OK(mcpwm_del_capture_timer(cap_timer));
 }
 
-typedef struct {
+typedef struct
+{
     uint32_t cap_data[2];
     int cap_data_index;
 } test_soft_catch_user_data_t;
@@ -143,42 +149,38 @@ TEST_CASE("mcpwm_capture_software_catch", "[mcpwm]")
 {
     printf("install mcpwm capture timer\r\n");
     mcpwm_cap_timer_handle_t cap_timer = NULL;
-    mcpwm_capture_timer_config_t cap_timer_config = {
+    mcpwm_capture_timer_config_t cap_timer_config =
+    {
         .clk_src = MCPWM_CAPTURE_CLK_SRC_DEFAULT,
         .group_id = 0,
     };
     TEST_ESP_OK(mcpwm_new_capture_timer(&cap_timer_config, &cap_timer));
-
     printf("install mcpwm capture channel\r\n");
     mcpwm_cap_channel_handle_t cap_channel = NULL;
-    mcpwm_capture_channel_config_t cap_chan_config = {
+    mcpwm_capture_channel_config_t cap_chan_config =
+    {
         .gpio_num = -1, // don't need any GPIO, we use software to trigger a catch
         .prescale = 2,
     };
     test_soft_catch_user_data_t test_callback_data = {};
     TEST_ESP_OK(mcpwm_new_capture_channel(cap_timer, &cap_chan_config, &cap_channel));
-
     TEST_ESP_ERR(ESP_ERR_INVALID_STATE, mcpwm_capture_channel_trigger_soft_catch(cap_channel));
-
     printf("register event callback for capture channel\r\n");
-    mcpwm_capture_event_callbacks_t cbs = {
+    mcpwm_capture_event_callbacks_t cbs =
+    {
         .on_cap = soft_cap_callback,
     };
     TEST_ESP_OK(mcpwm_capture_channel_register_event_callbacks(cap_channel, &cbs, &test_callback_data));
-
     printf("enable capture channel\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_enable(cap_channel));
-
     printf("enable and start capture timer\r\n");
     TEST_ESP_OK(mcpwm_capture_timer_enable(cap_timer));
     TEST_ESP_OK(mcpwm_capture_timer_start(cap_timer));
-
     printf("trigger software catch\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_trigger_soft_catch(cap_channel));
     vTaskDelay(pdMS_TO_TICKS(10));
     TEST_ESP_OK(mcpwm_capture_channel_trigger_soft_catch(cap_channel));
     vTaskDelay(pdMS_TO_TICKS(10));
-
     // check user data
     TEST_ASSERT_EQUAL(2, test_callback_data.cap_data_index);
     uint32_t delta = test_callback_data.cap_data[1] - test_callback_data.cap_data[0];
@@ -186,7 +188,6 @@ TEST_CASE("mcpwm_capture_software_catch", "[mcpwm]")
     uint32_t clk_src_res;
     mcpwm_capture_timer_get_resolution(cap_timer, &clk_src_res);
     TEST_ASSERT_UINT_WITHIN(80000, clk_src_res / 100, delta);
-
     printf("uninstall capture channel and timer\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_disable(cap_channel));
     TEST_ESP_OK(mcpwm_capture_timer_disable(cap_timer));
@@ -204,44 +205,41 @@ static bool test_capture_after_sync_callback(mcpwm_cap_channel_handle_t cap_chan
 
 TEST_CASE("mcpwm_capture_timer_sync_phase_lock", "[mcpwm]")
 {
-    mcpwm_capture_timer_config_t cap_timer_config = {
+    mcpwm_capture_timer_config_t cap_timer_config =
+    {
         .group_id = 0,
         .clk_src = MCPWM_CAPTURE_CLK_SRC_DEFAULT,
     };
     mcpwm_cap_timer_handle_t cap_timer = NULL;
     TEST_ESP_OK(mcpwm_new_capture_timer(&cap_timer_config, &cap_timer));
-
     mcpwm_sync_handle_t soft_sync = NULL;
     mcpwm_soft_sync_config_t soft_sync_config = {};
     TEST_ESP_OK(mcpwm_new_soft_sync_src(&soft_sync_config, &soft_sync));
-
-    mcpwm_capture_timer_sync_phase_config_t sync_config = {
+    mcpwm_capture_timer_sync_phase_config_t sync_config =
+    {
         .count_value = 1000,
         .direction = MCPWM_TIMER_DIRECTION_UP,
         .sync_src = soft_sync,
     };
     TEST_ESP_OK(mcpwm_capture_timer_set_phase_on_sync(cap_timer, &sync_config));
-
     mcpwm_cap_channel_handle_t cap_channel = NULL;
-    mcpwm_capture_channel_config_t cap_chan_config = {
+    mcpwm_capture_channel_config_t cap_chan_config =
+    {
         .gpio_num = -1, // don't need any GPIO, we use software to trigger a catch
         .prescale = 1,
     };
     TEST_ESP_OK(mcpwm_new_capture_channel(cap_timer, &cap_chan_config, &cap_channel));
-
-    mcpwm_capture_event_callbacks_t cbs = {
+    mcpwm_capture_event_callbacks_t cbs =
+    {
         .on_cap = test_capture_after_sync_callback,
     };
     uint32_t cap_data;
     TEST_ESP_OK(mcpwm_capture_channel_register_event_callbacks(cap_channel, &cbs, &cap_data));
-
     printf("enable capture channel\r\n");
     TEST_ESP_OK(mcpwm_capture_channel_enable(cap_channel));
-
     TEST_ESP_OK(mcpwm_capture_channel_trigger_soft_catch(cap_channel));
     vTaskDelay(pdMS_TO_TICKS(10));
     printf("capture data before sync: %"PRIu32"\r\n", cap_data);
-
     TEST_ESP_OK(mcpwm_soft_sync_activate(soft_sync));
     TEST_ESP_OK(mcpwm_capture_channel_trigger_soft_catch(cap_channel));
     vTaskDelay(pdMS_TO_TICKS(10));

@@ -43,10 +43,10 @@
  *                          when done.
  */
 psa_status_t mbedtls_psa_ecp_load_representation( psa_key_type_t type,
-                                                  size_t curve_bits,
-                                                  const uint8_t *data,
-                                                  size_t data_length,
-                                                  mbedtls_ecp_keypair **p_ecp );
+        size_t curve_bits,
+        const uint8_t *data,
+        size_t data_length,
+        mbedtls_ecp_keypair **p_ecp );
 
 /** Import an ECP key in binary format.
  *
@@ -89,10 +89,10 @@ psa_status_t mbedtls_psa_ecp_import_key(
  * \param[out] data_length  The amount of bytes written to \p data
  */
 psa_status_t mbedtls_psa_ecp_export_key( psa_key_type_t type,
-                                         mbedtls_ecp_keypair *ecp,
-                                         uint8_t *data,
-                                         size_t data_size,
-                                         size_t *data_length );
+        mbedtls_ecp_keypair *ecp,
+        uint8_t *data,
+        size_t data_size,
+        size_t *data_length );
 
 /** Export an ECP public key or the public part of an ECP key pair in binary
  *  format.

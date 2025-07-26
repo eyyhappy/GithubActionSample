@@ -14,7 +14,8 @@ extern "C" {
 
 #include "driver/uart.h"
 
-typedef enum {
+typedef enum
+{
     UART_SELECT_READ_NOTIF,
     UART_SELECT_WRITE_NOTIF,
     UART_SELECT_ERROR_NOTIF,

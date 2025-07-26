@@ -39,7 +39,8 @@ typedef struct ir_parser_s ir_parser_t;
 * @brief Type definition of IR builder
 *
 */
-struct ir_builder_s {
+struct ir_builder_s
+{
     /**
     * @brief Period time of sending repeat code
     *
@@ -142,7 +143,8 @@ struct ir_builder_s {
 * @brief Type definition of IR parser
 *
 */
-struct ir_parser_s {
+struct ir_parser_s
+{
     /**
     * @brief Input raw data to IR parser
     *
@@ -188,7 +190,8 @@ struct ir_parser_s {
 * @brief Configuration type of IR builder
 *
 */
-typedef struct {
+typedef struct
+{
     uint32_t buffer_size; /*!< Size of the internal buffer used by IR builder */
     ir_dev_t dev_hdl;     /*!< IR device handle */
     uint32_t flags;       /*!< Flags for IR builder, different flags will enable different features */
@@ -198,7 +201,8 @@ typedef struct {
 * @brief Configuration type of IR parser
 *
 */
-typedef struct {
+typedef struct
+{
     ir_dev_t dev_hdl;   /*!< IR device handle */
     uint32_t flags;     /*!< Flags for IR parser, different flags will enable different features */
     uint32_t margin_us; /*!< Timing parameter, indicating the tolerance to environment noise */

@@ -571,8 +571,8 @@ int mbedtls_asn1_get_mpi( unsigned char **p,
  * \return      0 if successful or a specific ASN.1 or MPI error code.
  */
 int mbedtls_asn1_get_alg( unsigned char **p,
-                  const unsigned char *end,
-                  mbedtls_asn1_buf *alg, mbedtls_asn1_buf *params );
+                          const unsigned char *end,
+                          mbedtls_asn1_buf *alg, mbedtls_asn1_buf *params );
 
 /**
  * \brief       Retrieve an AlgorithmIdentifier ASN.1 sequence with NULL or no
@@ -590,8 +590,8 @@ int mbedtls_asn1_get_alg( unsigned char **p,
  * \return      0 if successful or a specific ASN.1 or MPI error code.
  */
 int mbedtls_asn1_get_alg_null( unsigned char **p,
-                       const unsigned char *end,
-                       mbedtls_asn1_buf *alg );
+                               const unsigned char *end,
+                               mbedtls_asn1_buf *alg );
 
 /**
  * \brief       Find a specific named_data entry in a sequence or list based on
@@ -604,7 +604,7 @@ int mbedtls_asn1_get_alg_null( unsigned char **p,
  * \return      NULL if not found, or a pointer to the existing entry.
  */
 const mbedtls_asn1_named_data *mbedtls_asn1_find_named_data( const mbedtls_asn1_named_data *list,
-                                       const char *oid, size_t len );
+        const char *oid, size_t len );
 
 /**
  * \brief       Free a mbedtls_asn1_named_data entry

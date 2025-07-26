@@ -28,7 +28,8 @@ typedef struct pcnt_chan_t *pcnt_channel_handle_t;
 /**
  * @brief PCNT watch event data
  */
-typedef struct {
+typedef struct
+{
     int watch_point_value;                       /*!< Watch point value that triggered the event */
     pcnt_unit_zero_cross_mode_t zero_cross_mode; /*!< Zero cross mode */
 } pcnt_watch_event_data_t;
@@ -51,17 +52,20 @@ typedef bool (*pcnt_watch_cb_t)(pcnt_unit_handle_t unit, const pcnt_watch_event_
  * @note The callbacks are all running under ISR environment
  * @note When CONFIG_PCNT_ISR_IRAM_SAFE is enabled, the callback itself and functions callbed by it should be placed in IRAM.
  */
-typedef struct {
+typedef struct
+{
     pcnt_watch_cb_t on_reach; /*!< Called when PCNT unit counter reaches any watch point */
 } pcnt_event_callbacks_t;
 
 /**
  * @brief PCNT unit configuration
  */
-typedef struct {
+typedef struct
+{
     int low_limit;  /*!< Low limitation of the count unit, should be lower than 0 */
     int high_limit; /*!< High limitation of the count unit, should be higher than 0 */
-    struct {
+    struct
+    {
         uint32_t accum_count: 1; /*!< Whether to accumulate the count value when overflows at the high/low limit */
     } flags;       /*!< Extra flags */
 } pcnt_unit_config_t;
@@ -69,10 +73,12 @@ typedef struct {
 /**
  * @brief PCNT channel configuration
  */
-typedef struct {
+typedef struct
+{
     int edge_gpio_num;  /*!< GPIO number used by the edge signal, input mode with pull up enabled. Set to -1 if unused */
     int level_gpio_num; /*!< GPIO number used by the level signal, input mode with pull up enabled. Set to -1 if unused */
-    struct {
+    struct
+    {
         uint32_t invert_edge_input: 1;   /*!< Invert the input edge signal */
         uint32_t invert_level_input: 1;  /*!< Invert the input level signal */
         uint32_t virt_edge_io_level: 1;  /*!< Virtual edge IO level, 0: low, 1: high. Only valid when edge_gpio_num is set to -1 */
@@ -84,7 +90,8 @@ typedef struct {
 /**
  * @brief PCNT glitch filter configuration
  */
-typedef struct {
+typedef struct
+{
     uint32_t max_glitch_ns; /*!< Pulse width smaller than this threshold will be treated as glitch and ignored, in the unit of ns */
 } pcnt_glitch_filter_config_t;
 

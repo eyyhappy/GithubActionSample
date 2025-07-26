@@ -104,15 +104,19 @@ static const char TAG[] = "sdio_slave";
 
 
 // sdio_slave_buf_handle_t is of type recv_desc_t*;
-typedef struct recv_desc_s {
-    union {
-        struct {
+typedef struct recv_desc_s
+{
+    union
+    {
+        struct
+        {
             // the third word, pointer to next desc, is shared with the tailq entry.
             sdio_slave_hal_recv_desc_t hal_desc;
             // when the forth word is used (not NULL), means the tailq is used, not in the receiving state.
             uint32_t not_receiving;
         };
-        struct {
+        struct
+        {
             // first 3 WORDs of this struct is defined by and compatible to the DMA link list format.
             uint32_t _reserved0;
             uint32_t _reserved1;
@@ -124,14 +128,17 @@ typedef struct recv_desc_s {
 
 typedef TAILQ_HEAD(recv_tailq_head_s, recv_desc_s) recv_tailq_t;
 
-typedef struct {
+typedef struct
+{
     sdio_slave_config_t     config;
     sdio_slave_context_t    *hal;
     intr_handle_t           intr_handle; //allocated interrupt handle
     /*------- events ---------------*/
-    union {
+    union
+    {
         SemaphoreHandle_t       events[9]; // 0-7 for gp intr
-        struct {
+        struct
+        {
             SemaphoreHandle_t   _events[8];
             SemaphoreHandle_t   recv_event; // 8 for recv
         };
@@ -186,7 +193,8 @@ static void __attribute((unused)) dump_ll(lldesc_t *queue)
 {
     int cnt = 0;
     lldesc_t *item = queue;
-    while (item != NULL) {
+    while (item != NULL)
+    {
         cnt++;
         show_ll(item);
         item = STAILQ_NEXT(item, qe);
@@ -197,17 +205,21 @@ static void __attribute((unused)) dump_ll(lldesc_t *queue)
 static inline void deinit_context(void)
 {
     context.config = (sdio_slave_config_t) {};
-    for (int i = 0; i < 9; i++) {
-        if (context.events[i] != NULL) {
+    for (int i = 0; i < 9; i++)
+    {
+        if (context.events[i] != NULL)
+        {
             vSemaphoreDelete(context.events[i]);
             context.events[i] = NULL;
         }
     }
-    if (context.ret_queue != NULL) {
+    if (context.ret_queue != NULL)
+    {
         vQueueDelete(context.ret_queue);
         context.ret_queue = NULL;
     }
-    if (context.remain_cnt != NULL) {
+    if (context.remain_cnt != NULL)
+    {
         vSemaphoreDelete(context.remain_cnt);
     }
     free(context.hal->send_desc_queue.data);
@@ -221,13 +233,12 @@ static esp_err_t init_context(const sdio_slave_config_t *config)
     SDIO_SLAVE_CHECK(*(uint32_t *)&context.config == 0, "sdio slave already initialized", ESP_ERR_INVALID_STATE);
     context = (sdio_context_t)CONTEXT_INIT_VAL;
     context.config = *config;
-
     //initialize and configure the HAL
     context.hal = (sdio_slave_context_t *)heap_caps_calloc(sizeof(sdio_slave_context_t), 1, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-    if (context.hal == NULL) {
+    if (context.hal == NULL)
+    {
         goto no_mem;
     }
-
     context.hal->sending_mode = config->sending_mode;
     context.hal->timing = config->timing;
     context.hal->no_highspeed = (config->flags & SDIO_SLAVE_FLAG_DEFAULT_SPEED) == SDIO_SLAVE_FLAG_DEFAULT_SPEED;
@@ -238,37 +249,37 @@ static esp_err_t init_context(const sdio_slave_config_t *config)
     //one item is not used.
     buf->size = SDIO_SLAVE_SEND_DESC_SIZE * (config->send_queue_size + 1);
     buf->data = (uint8_t *)heap_caps_malloc(buf->size, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT | MALLOC_CAP_DMA);
-    if (buf->data == NULL) {
+    if (buf->data == NULL)
+    {
         goto no_mem;
     }
-
     sdio_slave_hal_init(context.hal);
-
     // in theory we can queue infinite buffers in the linked list, but for multi-core reason we have to use a queue to
     // count the finished buffers.
     context.recv_event = xSemaphoreCreateCounting(UINT32_MAX, 0);
-    for (int i = 0; i < 9; i++) {
-        if (i < 8) {
+    for (int i = 0; i < 9; i++)
+    {
+        if (i < 8)
+        {
             context.events[i] = xSemaphoreCreateBinary();
         }   //for 8, already created.
-        if (context.events[i] == NULL) {
+        if (context.events[i] == NULL)
+        {
             SDIO_SLAVE_LOGE("event initialize failed");
             goto no_mem;
         }
     }
-
     context.remain_cnt = xSemaphoreCreateCounting(context.config.send_queue_size, context.config.send_queue_size);
-    if (context.remain_cnt == NULL) {
+    if (context.remain_cnt == NULL)
+    {
         goto no_mem;
     }
-
     context.ret_queue = xQueueCreate(config->send_queue_size, sizeof(void *));
-    if (context.ret_queue == NULL) {
+    if (context.ret_queue == NULL)
+    {
         goto no_mem;
     }
-
     return ESP_OK;
-
 no_mem:
     deinit_context();
     return ESP_ERR_NO_MEM;
@@ -281,12 +292,12 @@ static void configure_pin(int pin, uint32_t func, bool pullup)
     assert(pin != -1);
     uint32_t reg = GPIO_PIN_MUX_REG[pin];
     assert(reg != UINT32_MAX);
-
     PIN_INPUT_ENABLE(reg);
     gpio_hal_iomux_func_sel(reg, sdmmc_func);
     PIN_SET_DRV(reg, drive_strength);
     gpio_pulldown_dis(pin);
-    if (pullup) {
+    if (pullup)
+    {
         gpio_pullup_en(pin);
     }
 }
@@ -295,23 +306,22 @@ static inline esp_err_t sdio_slave_hw_init(sdio_slave_config_t *config)
 {
     //initialize pin
     const sdio_slave_slot_info_t *slot = &sdio_slave_slot_info[1];
-
     bool pullup = config->flags & SDIO_SLAVE_FLAG_INTERNAL_PULLUP;
     configure_pin(slot->clk_gpio, slot->func, false);   //clk doesn't need a pullup
     configure_pin(slot->cmd_gpio, slot->func, pullup);
     configure_pin(slot->d0_gpio, slot->func, pullup);
-    if ((config->flags & SDIO_SLAVE_FLAG_HOST_INTR_DISABLED) == 0) {
+    if ((config->flags & SDIO_SLAVE_FLAG_HOST_INTR_DISABLED) == 0)
+    {
         configure_pin(slot->d1_gpio, slot->func, pullup);
     }
-    if ((config->flags & SDIO_SLAVE_FLAG_DAT2_DISABLED) == 0) {
+    if ((config->flags & SDIO_SLAVE_FLAG_DAT2_DISABLED) == 0)
+    {
         configure_pin(slot->d2_gpio, slot->func, pullup);
     }
     configure_pin(slot->d3_gpio, slot->func, pullup);
-
     //enable module and config
     periph_module_reset(PERIPH_SDIO_SLAVE_MODULE);
     periph_module_enable(PERIPH_SDIO_SLAVE_MODULE);
-
     sdio_slave_hal_hw_init(context.hal);
     return ESP_OK;
 }
@@ -320,9 +330,9 @@ static void recover_pin(int pin, int sdio_func)
 {
     uint32_t reg = GPIO_PIN_MUX_REG[pin];
     assert(reg != UINT32_MAX);
-
     int func = REG_GET_FIELD(reg, MCU_SEL);
-    if (func == sdio_func) {
+    if (func == sdio_func)
+    {
         gpio_set_direction(pin, GPIO_MODE_INPUT);
         gpio_hal_iomux_func_sel(reg, PIN_FUNC_GPIO);
     }
@@ -345,21 +355,21 @@ esp_err_t sdio_slave_initialize(sdio_slave_config_t *config)
     intr_handle_t intr_handle = NULL;
     const int flags = 0;
     r = esp_intr_alloc(ETS_SLC0_INTR_SOURCE, flags, sdio_intr, NULL, &intr_handle);
-    if (r != ESP_OK) {
+    if (r != ESP_OK)
+    {
         return r;
     }
-
     r = init_context(config);
-    if (r != ESP_OK) {
+    if (r != ESP_OK)
+    {
         return r;
     }
     context.intr_handle = intr_handle;
-
     r = sdio_slave_hw_init(config);
-    if (r != ESP_OK) {
+    if (r != ESP_OK)
+    {
         return r;
     }
-
     sdio_slave_reset();
     return ESP_OK;
 }
@@ -367,18 +377,20 @@ esp_err_t sdio_slave_initialize(sdio_slave_config_t *config)
 void sdio_slave_deinit(void)
 {
     sdio_slave_hw_deinit();
-
     //unregister all buffers registered but returned (not loaded)
     recv_desc_t *temp_desc;
     recv_desc_t *desc;
-    TAILQ_FOREACH_SAFE(desc, &context.recv_reg_list, te, temp_desc) {
+    TAILQ_FOREACH_SAFE(desc, &context.recv_reg_list, te, temp_desc)
+    {
         TAILQ_REMOVE(&context.recv_reg_list, desc, te);
         free(desc);
     }
     //unregister all buffers that is loaded and not returned
-    while (1) {
+    while (1)
+    {
         desc = (recv_desc_t *)sdio_slave_hal_recv_unload_desc(context.hal);
-        if (desc == NULL) {
+        if (desc == NULL)
+        {
             break;
         }
         free(desc);
@@ -396,14 +408,13 @@ esp_err_t sdio_slave_start(void)
     sdio_slave_hostint_t intr = (sdio_slave_hostint_t)UINT32_MAX;
     sdio_slave_hal_hostint_clear(context.hal, &intr);
     ret = sdio_slave_hal_send_start(context.hal);
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         return ret;
     }
-
     critical_enter_recv();
     sdio_slave_hal_recv_start(context.hal);
     critical_exit_recv();
-
     sdio_slave_hal_set_ioready(context.hal, true);
     return ESP_OK;
 }
@@ -412,20 +423,20 @@ esp_err_t sdio_slave_reset(void)
 {
     esp_err_t err;
     err = send_flush_data();
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
-
     err = sdio_slave_hal_send_reset_counter(context.hal);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
-
     err = recv_flush_data();
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
-
     critical_enter_recv();
     sdio_slave_hal_recv_reset_counter(context.hal);
     critical_exit_recv();
@@ -455,15 +466,19 @@ static void sdio_intr_host(void *arg)
     sdio_slave_ll_slvint_t int_val;
     sdio_slave_hal_slvint_fetch_clear(context.hal, &int_val);
     portBASE_TYPE yield = pdFALSE;
-    for (int i = 0; i < 8; i++) {
-        if (BIT(i) & int_val) {
-            if (context.config.event_cb != NULL) {
+    for (int i = 0; i < 8; i++)
+    {
+        if (BIT(i) & int_val)
+        {
+            if (context.config.event_cb != NULL)
+            {
                 (*context.config.event_cb)(i);
             }
             xSemaphoreGiveFromISR(context.events[i], &yield);
         }
     }
-    if (yield) {
+    if (yield)
+    {
         portYIELD_FROM_ISR();
     }
 }
@@ -476,10 +491,12 @@ esp_err_t sdio_slave_wait_int(int pos, TickType_t wait)
 
 uint8_t sdio_slave_read_reg(int pos)
 {
-    if (pos >= 28 && pos <= 31) {
+    if (pos >= 28 && pos <= 31)
+    {
         SDIO_SLAVE_LOGW("%s: interrupt reg, for reference", __FUNCTION__);
     }
-    if (pos < 0 || pos >= 64) {
+    if (pos < 0 || pos >= 64)
+    {
         SDIO_SLAVE_LOGE("read register address wrong");
     }
     return sdio_slave_hal_host_get_reg(context.hal, pos);
@@ -487,15 +504,16 @@ uint8_t sdio_slave_read_reg(int pos)
 
 esp_err_t sdio_slave_write_reg(int pos, uint8_t reg)
 {
-    if (pos >= 28 && pos <= 31) {
+    if (pos >= 28 && pos <= 31)
+    {
         SDIO_SLAVE_LOGE("interrupt reg, please use sdio_slave_clear_int");
         return ESP_ERR_INVALID_ARG;
     }
-    if (pos < 0 || pos >= 64) {
+    if (pos < 0 || pos >= 64)
+    {
         SDIO_SLAVE_LOGE("write register address wrong");
         return ESP_ERR_INVALID_ARG;
     }
-
     portENTER_CRITICAL(&context.reg_spinlock);
     sdio_slave_hal_host_set_reg(context.hal, pos, reg);
     portEXIT_CRITICAL(&context.reg_spinlock);
@@ -545,37 +563,36 @@ static void sdio_intr_send(void *arg)
 {
     ESP_EARLY_LOGV(TAG, "intr_send");
     portBASE_TYPE yield = pdFALSE;
-
     // this interrupt is abused to get ISR invoked by app
     sdio_slave_hal_send_handle_isr_invoke(context.hal);
-
     uint32_t returned_cnt;
-    if (sdio_slave_hal_send_eof_happened(context.hal)) {
+    if (sdio_slave_hal_send_eof_happened(context.hal))
+    {
         portBASE_TYPE ret __attribute__((unused));
-
         esp_err_t err;
-        while (1) {
+        while (1)
+        {
             void *finished_arg;
             err = sdio_slave_hal_send_get_next_finished_arg(context.hal, &finished_arg, &returned_cnt);
-            if (err != ESP_OK) {
+            if (err != ESP_OK)
+            {
                 break;
             }
-
             assert(returned_cnt == 0);
             ESP_EARLY_LOGV(TAG, "end: %x", finished_arg);
             ret = xQueueSendFromISR(context.ret_queue, &finished_arg, &yield);
             assert(ret == pdTRUE);
         }
         //get_next_finished_arg returns the total amount of returned descs.
-        for (size_t i = 0; i < returned_cnt; i++) {
+        for (size_t i = 0; i < returned_cnt; i++)
+        {
             ret = xSemaphoreGiveFromISR(context.remain_cnt, &yield);
             assert(ret == pdTRUE);
         }
     }
-
     sdio_slave_hal_send_new_packet_if_exist(context.hal);
-
-    if (yield) {
+    if (yield)
+    {
         portYIELD_FROM_ISR();
     }
 }
@@ -585,19 +602,18 @@ esp_err_t sdio_slave_send_queue(uint8_t *addr, size_t len, void *arg, TickType_t
     SDIO_SLAVE_CHECK(len > 0, "len <= 0", ESP_ERR_INVALID_ARG);
     SDIO_SLAVE_CHECK(esp_ptr_dma_capable(addr) && (uint32_t)addr % 4 == 0, "buffer to send should be DMA capable and 32-bit aligned",
                      ESP_ERR_INVALID_ARG);
-
     portBASE_TYPE cnt_ret = xSemaphoreTake(context.remain_cnt, wait);
-    if (cnt_ret != pdTRUE) {
+    if (cnt_ret != pdTRUE)
+    {
         return ESP_ERR_TIMEOUT;
     }
-
     portENTER_CRITICAL(&context.write_spinlock);
     esp_err_t ret = sdio_slave_hal_send_queue(context.hal, addr, len, arg);
     portEXIT_CRITICAL(&context.write_spinlock);
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         return ret;
     }
-
     return ESP_OK;
 }
 
@@ -605,10 +621,12 @@ esp_err_t sdio_slave_send_get_finished(void **out_arg, TickType_t wait)
 {
     void *arg = NULL;
     portBASE_TYPE err = xQueueReceive(context.ret_queue, &arg, wait);
-    if (out_arg) {
+    if (out_arg)
+    {
         *out_arg = arg;
     }
-    if (err != pdTRUE) {
+    if (err != pdTRUE)
+    {
         return ESP_ERR_TIMEOUT;
     }
     return ESP_OK;
@@ -618,17 +636,17 @@ esp_err_t sdio_slave_transmit(uint8_t *addr, size_t len)
 {
     uint32_t timestamp = esp_cpu_get_cycle_count();
     uint32_t ret_stamp;
-
     esp_err_t err = sdio_slave_send_queue(addr, len, (void *)timestamp, portMAX_DELAY);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
     err = sdio_slave_send_get_finished((void **)&ret_stamp, portMAX_DELAY);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
     SDIO_SLAVE_CHECK(ret_stamp == timestamp, "already sent without return before", ESP_ERR_INVALID_STATE);
-
     return ESP_OK;
 }
 
@@ -637,27 +655,32 @@ static esp_err_t send_flush_data(void)
 {
     esp_err_t err;
     portBASE_TYPE ret __attribute__((unused));
-
-    while (1) {
+    while (1)
+    {
         void *finished_arg;
         uint32_t return_cnt = 0;
         err = sdio_slave_hal_send_flush_next_buffer(context.hal, &finished_arg, &return_cnt);
-        if (err == ESP_OK) {
+        if (err == ESP_OK)
+        {
             ret = xQueueSend(context.ret_queue, &finished_arg, portMAX_DELAY);
             assert(ret == pdTRUE);
-            for (size_t i = 0; i < return_cnt; i++) {
+            for (size_t i = 0; i < return_cnt; i++)
+            {
                 ret = xSemaphoreGive(context.remain_cnt);
                 assert(ret == pdTRUE);
             }
-        } else {
-            if (err == ESP_ERR_NOT_FOUND) {
+        }
+        else
+        {
+            if (err == ESP_ERR_NOT_FOUND)
+            {
                 err = ESP_OK;
             }
             break;
         }
     }
-
-    if (err == ESP_ERR_INVALID_STATE) {
+    if (err == ESP_ERR_INVALID_STATE)
+    {
         ESP_LOGE(TAG, "flush data when transmission started");
     }
     return err;
@@ -682,9 +705,11 @@ static inline void critical_exit_recv(void)
 // remove data, still increase the counter
 static esp_err_t recv_flush_data(void)
 {
-    while (1) {
+    while (1)
+    {
         portBASE_TYPE ret = xSemaphoreTake(context.recv_event, 0);
-        if (ret == pdFALSE) {
+        if (ret == pdFALSE)
+        {
             break;
         }
         critical_enter_recv();
@@ -698,11 +723,13 @@ static void sdio_intr_recv(void *arg)
 {
     portBASE_TYPE yield = 0;
     bool triggered = sdio_slave_hal_recv_done(context.hal);
-    while (triggered) {
+    while (triggered)
+    {
         portENTER_CRITICAL_ISR(&context.recv_spinlock);
         bool has_next_item = sdio_slave_hal_recv_has_next_item(context.hal);
         portEXIT_CRITICAL_ISR(&context.recv_spinlock);
-        if (has_next_item) {
+        if (has_next_item)
+        {
             ESP_EARLY_LOGV(TAG, "intr_recv: Give");
             xSemaphoreGiveFromISR(context.recv_event, &yield);
             continue;   //check the linked list again skip the interrupt checking
@@ -711,7 +738,8 @@ static void sdio_intr_recv(void *arg)
         // will loop until the interrupt bit is kept cleared.
         triggered = sdio_slave_hal_recv_done(context.hal);
     }
-    if (yield) {
+    if (yield)
+    {
         portYIELD_FROM_ISR();
     }
 }
@@ -721,7 +749,6 @@ esp_err_t sdio_slave_recv_load_buf(sdio_slave_buf_handle_t handle)
     recv_desc_t *desc = (recv_desc_t *)handle;
     CHECK_HANDLE_IDLE(desc);
     assert(desc->not_receiving);
-
     critical_enter_recv();
     TAILQ_REMOVE(&context.recv_reg_list, desc, te);
     desc->not_receiving = 0; //manually remove the prev link (by set not_receiving=0), to indicate this is in the queue
@@ -735,11 +762,11 @@ sdio_slave_buf_handle_t sdio_slave_recv_register_buf(uint8_t *start)
     SDIO_SLAVE_CHECK(esp_ptr_dma_capable(start) && (uint32_t)start % 4 == 0,
                      "buffer to register should be DMA capable and 32-bit aligned", NULL);
     recv_desc_t *desc = (recv_desc_t *)heap_caps_malloc(sizeof(recv_desc_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT | MALLOC_CAP_DMA);
-    if (desc == NULL) {
+    if (desc == NULL)
+    {
         SDIO_SLAVE_LOGE("cannot allocate lldesc for new buffer");
         return NULL;
     }
-
     //initially in the reg list
     sdio_slave_hal_recv_init_desc(context.hal, &desc->hal_desc, start);
     critical_enter_recv();
@@ -751,16 +778,20 @@ sdio_slave_buf_handle_t sdio_slave_recv_register_buf(uint8_t *start)
 esp_err_t sdio_slave_recv(sdio_slave_buf_handle_t *handle_ret, uint8_t **out_addr, size_t *out_len, TickType_t wait)
 {
     esp_err_t ret = sdio_slave_recv_packet(handle_ret, wait);
-    if (ret == ESP_ERR_NOT_FINISHED) {
+    if (ret == ESP_ERR_NOT_FINISHED)
+    {
         //This API was not awared of the EOF info, return ESP_OK to keep back-compatible.
         ret = ESP_OK;
     }
-    if (ret == ESP_OK) {
+    if (ret == ESP_OK)
+    {
         recv_desc_t *desc = (recv_desc_t *)(*handle_ret);
-        if (out_addr) {
+        if (out_addr)
+        {
             *out_addr = (uint8_t *)desc->hal_desc.buf;
         }
-        if (out_len) {
+        if (out_len)
+        {
             *out_len = desc->hal_desc.length;
         }
     }
@@ -771,10 +802,10 @@ esp_err_t sdio_slave_recv_packet(sdio_slave_buf_handle_t *handle_ret, TickType_t
 {
     SDIO_SLAVE_CHECK(handle_ret != NULL, "handle address cannot be 0", ESP_ERR_INVALID_ARG);
     portBASE_TYPE err = xSemaphoreTake(context.recv_event, wait);
-    if (err == pdFALSE) {
+    if (err == pdFALSE)
+    {
         return ESP_ERR_TIMEOUT;
     }
-
     esp_err_t ret = ESP_OK;
     critical_enter_recv();
     //remove from queue, add back to reg list.
@@ -782,10 +813,9 @@ esp_err_t sdio_slave_recv_packet(sdio_slave_buf_handle_t *handle_ret, TickType_t
     assert(desc != NULL && desc->hal_desc.owner == 0);
     TAILQ_INSERT_TAIL(&context.recv_reg_list, desc, te);
     critical_exit_recv();
-
     *handle_ret = (sdio_slave_buf_handle_t)desc;
-
-    if (!desc->hal_desc.eof) {
+    if (!desc->hal_desc.eof)
+    {
         ret = ESP_ERR_NOT_FINISHED;
     }
     return ret;
@@ -795,7 +825,6 @@ esp_err_t sdio_slave_recv_unregister_buf(sdio_slave_buf_handle_t handle)
 {
     recv_desc_t *desc = (recv_desc_t *)handle;
     CHECK_HANDLE_IDLE(desc); //in the queue, fail.
-
     critical_enter_recv();
     TAILQ_REMOVE(&context.recv_reg_list, desc, te);
     critical_exit_recv();
@@ -805,12 +834,13 @@ esp_err_t sdio_slave_recv_unregister_buf(sdio_slave_buf_handle_t handle)
 
 uint8_t *sdio_slave_recv_get_buf(sdio_slave_buf_handle_t handle, size_t *len_o)
 {
-    if (handle == NULL) {
+    if (handle == NULL)
+    {
         return NULL;
     }
     recv_desc_t *desc = (recv_desc_t *)handle;
-
-    if (len_o != NULL) {
+    if (len_o != NULL)
+    {
         *len_o = desc->hal_desc.length;
     }
     return (uint8_t *)desc->hal_desc.buf;

@@ -62,7 +62,7 @@ int main( void )
 
 /* For select() */
 #if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
-    !defined(EFI32)
+!defined(EFI32)
 #include <winsock2.h>
 #include <windows.h>
 #if defined(_MSC_VER)
@@ -181,7 +181,6 @@ static void exit_usage( const char *name, const char *value )
         mbedtls_printf( " unknown option or missing value: %s\n", name );
     else
         mbedtls_printf( " option %s: illegal value: %s\n", name, value );
-
     mbedtls_printf( USAGE );
     mbedtls_exit( 1 );
 }
@@ -190,26 +189,22 @@ static void get_options( int argc, char *argv[] )
 {
     int i;
     char *p, *q;
-
     opt.server_addr    = DFL_SERVER_ADDR;
     opt.server_port    = DFL_SERVER_PORT;
     opt.listen_addr    = DFL_LISTEN_ADDR;
     opt.listen_port    = DFL_LISTEN_PORT;
     opt.pack           = DFL_PACK;
     /* Other members default to 0 */
-
     opt.delay_cli_cnt = 0;
     opt.delay_srv_cnt = 0;
     memset( opt.delay_cli, 0, sizeof( opt.delay_cli ) );
     memset( opt.delay_srv, 0, sizeof( opt.delay_srv ) );
-
     for( i = 1; i < argc; i++ )
     {
         p = argv[i];
         if( ( q = strchr( p, '=' ) ) == NULL )
             exit_usage( p, NULL );
         *q++ = '\0';
-
         if( strcmp( p, "server_addr" ) == 0 )
             opt.server_addr = q;
         else if( strcmp( p, "server_port" ) == 0 )
@@ -243,7 +238,6 @@ static void get_options( int argc, char *argv[] )
             char **delay_list;
             size_t len;
             char *buf;
-
             if( strcmp( p, "delay_cli" ) == 0 )
             {
                 delay_cnt  = &opt.delay_cli_cnt;
@@ -254,14 +248,12 @@ static void get_options( int argc, char *argv[] )
                 delay_cnt  = &opt.delay_srv_cnt;
                 delay_list = opt.delay_srv;
             }
-
             if( *delay_cnt == MAX_DELAYED_HS )
             {
                 mbedtls_printf( " too many uses of %s: only %d allowed\n",
                                 p, MAX_DELAYED_HS );
                 exit_usage( p, NULL );
             }
-
             len = strlen( q );
             buf = mbedtls_calloc( 1, len + 1 );
             if( buf == NULL )
@@ -270,7 +262,6 @@ static void get_options( int argc, char *argv[] )
                 exit( 1 );
             }
             memcpy( buf, q, len + 1 );
-
             delay_list[ (*delay_cnt)++ ] = buf;
         }
         else if( strcmp( p, "drop" ) == 0 )
@@ -281,12 +272,12 @@ static void get_options( int argc, char *argv[] )
         }
         else if( strcmp( p, "pack" ) == 0 )
         {
-#if defined(MBEDTLS_TIMING_C)
+            #if defined(MBEDTLS_TIMING_C)
             opt.pack = (unsigned) atoi( q );
-#else
+            #else
             mbedtls_printf( " option pack only defined if MBEDTLS_TIMING_C is enabled\n" );
             exit( 1 );
-#endif
+            #endif
         }
         else if( strcmp( p, "mtu" ) == 0 )
         {
@@ -300,12 +291,12 @@ static void get_options( int argc, char *argv[] )
             if( opt.bad_ad < 0 || opt.bad_ad > 1 )
                 exit_usage( p, q );
         }
-#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+        #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
         else if( strcmp( p, "bad_cid" ) == 0 )
         {
             opt.bad_cid = (unsigned) atoi( q );
         }
-#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+        #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
         else if( strcmp( p, "protect_hvr" ) == 0 )
         {
             opt.protect_hvr = atoi( q );
@@ -340,38 +331,54 @@ static const char *msg_type( unsigned char *msg, size_t len )
     if( len < 1 )                           return( "Invalid" );
     switch( msg[0] )
     {
-        case MBEDTLS_SSL_MSG_CHANGE_CIPHER_SPEC:    return( "ChangeCipherSpec" );
-        case MBEDTLS_SSL_MSG_ALERT:                 return( "Alert" );
-        case MBEDTLS_SSL_MSG_APPLICATION_DATA:      return( "ApplicationData" );
-        case MBEDTLS_SSL_MSG_CID:                   return( "CID" );
-        case MBEDTLS_SSL_MSG_HANDSHAKE:             break; /* See below */
-        default:                            return( "Unknown" );
+        case MBEDTLS_SSL_MSG_CHANGE_CIPHER_SPEC:
+            return( "ChangeCipherSpec" );
+        case MBEDTLS_SSL_MSG_ALERT:
+            return( "Alert" );
+        case MBEDTLS_SSL_MSG_APPLICATION_DATA:
+            return( "ApplicationData" );
+        case MBEDTLS_SSL_MSG_CID:
+            return( "CID" );
+        case MBEDTLS_SSL_MSG_HANDSHAKE:
+            break; /* See below */
+        default:
+            return( "Unknown" );
     }
-
     if( len < 13 + 12 )                     return( "Invalid handshake" );
-
     /*
      * Our handshake message are less than 2^16 bytes long, so they should
      * have 0 as the first byte of length, frag_offset and frag_length.
      * Otherwise, assume they are encrypted.
      */
     if( msg[14] || msg[19] || msg[22] )     return( "Encrypted handshake" );
-
     switch( msg[13] )
     {
-        case MBEDTLS_SSL_HS_HELLO_REQUEST:          return( "HelloRequest" );
-        case MBEDTLS_SSL_HS_CLIENT_HELLO:           return( "ClientHello" );
-        case MBEDTLS_SSL_HS_SERVER_HELLO:           return( "ServerHello" );
-        case MBEDTLS_SSL_HS_HELLO_VERIFY_REQUEST:   return( "HelloVerifyRequest" );
-        case MBEDTLS_SSL_HS_NEW_SESSION_TICKET:     return( "NewSessionTicket" );
-        case MBEDTLS_SSL_HS_CERTIFICATE:            return( "Certificate" );
-        case MBEDTLS_SSL_HS_SERVER_KEY_EXCHANGE:    return( "ServerKeyExchange" );
-        case MBEDTLS_SSL_HS_CERTIFICATE_REQUEST:    return( "CertificateRequest" );
-        case MBEDTLS_SSL_HS_SERVER_HELLO_DONE:      return( "ServerHelloDone" );
-        case MBEDTLS_SSL_HS_CERTIFICATE_VERIFY:     return( "CertificateVerify" );
-        case MBEDTLS_SSL_HS_CLIENT_KEY_EXCHANGE:    return( "ClientKeyExchange" );
-        case MBEDTLS_SSL_HS_FINISHED:               return( "Finished" );
-        default:                            return( "Unknown handshake" );
+        case MBEDTLS_SSL_HS_HELLO_REQUEST:
+            return( "HelloRequest" );
+        case MBEDTLS_SSL_HS_CLIENT_HELLO:
+            return( "ClientHello" );
+        case MBEDTLS_SSL_HS_SERVER_HELLO:
+            return( "ServerHello" );
+        case MBEDTLS_SSL_HS_HELLO_VERIFY_REQUEST:
+            return( "HelloVerifyRequest" );
+        case MBEDTLS_SSL_HS_NEW_SESSION_TICKET:
+            return( "NewSessionTicket" );
+        case MBEDTLS_SSL_HS_CERTIFICATE:
+            return( "Certificate" );
+        case MBEDTLS_SSL_HS_SERVER_KEY_EXCHANGE:
+            return( "ServerKeyExchange" );
+        case MBEDTLS_SSL_HS_CERTIFICATE_REQUEST:
+            return( "CertificateRequest" );
+        case MBEDTLS_SSL_HS_SERVER_HELLO_DONE:
+            return( "ServerHelloDone" );
+        case MBEDTLS_SSL_HS_CERTIFICATE_VERIFY:
+            return( "CertificateVerify" );
+        case MBEDTLS_SSL_HS_CLIENT_KEY_EXCHANGE:
+            return( "ClientKeyExchange" );
+        case MBEDTLS_SSL_HS_FINISHED:
+            return( "Finished" );
+        default:
+            return( "Unknown handshake" );
     }
 }
 
@@ -381,14 +388,12 @@ static unsigned ellapsed_time( void )
 {
     static int initialized = 0;
     static struct mbedtls_timing_hr_time hires;
-
     if( initialized == 0 )
     {
         (void) mbedtls_timing_get_timer( &hires, 1 );
         initialized = 1;
         return( 0 );
     }
-
     return( mbedtls_timing_get_timer( &hires, 0 ) );
 }
 
@@ -411,30 +416,23 @@ static ctx_buffer outbuf[2];
 static int ctx_buffer_flush( ctx_buffer *buf )
 {
     int ret;
-
     mbedtls_printf( "  %05u flush    %s: %u bytes, %u datagrams, last %u ms\n",
                     ellapsed_time(), buf->description,
                     (unsigned) buf->len, buf->num_datagrams,
                     ellapsed_time() - buf->packet_lifetime );
-
     ret = mbedtls_net_send( buf->ctx, buf->data, buf->len );
-
     buf->len           = 0;
     buf->num_datagrams = 0;
-
     return( ret );
 }
 
 static unsigned ctx_buffer_time_remaining( ctx_buffer *buf )
 {
     unsigned const cur_time = ellapsed_time();
-
     if( buf->num_datagrams == 0 )
-        return( (unsigned) -1 );
-
+        return( (unsigned) - 1 );
     if( cur_time - buf->packet_lifetime >= opt.pack )
         return( 0 );
-
     return( opt.pack - ( cur_time - buf->packet_lifetime ) );
 }
 
@@ -443,32 +441,26 @@ static int ctx_buffer_append( ctx_buffer *buf,
                               size_t len )
 {
     int ret;
-
     if( len > (size_t) INT_MAX )
         return( -1 );
-
     if( len > sizeof( buf->data ) )
     {
         mbedtls_printf( "  ! buffer size %u too large (max %u)\n",
                         (unsigned) len, (unsigned) sizeof( buf->data ) );
         return( -1 );
     }
-
     if( sizeof( buf->data ) - buf->len < len )
     {
         if( ( ret = ctx_buffer_flush( buf ) ) <= 0 )
         {
-            mbedtls_printf( "ctx_buffer_flush failed with -%#04x", (unsigned int) -ret );
+            mbedtls_printf( "ctx_buffer_flush failed with -%#04x", (unsigned int) - ret );
             return( ret );
         }
     }
-
     memcpy( buf->data + buf->len, data, len );
-
     buf->len += len;
     if( ++buf->num_datagrams == 1 )
         buf->packet_lifetime = ellapsed_time();
-
     return( (int) len );
 }
 #endif /* MBEDTLS_TIMING_C */
@@ -478,7 +470,7 @@ static int dispatch_data( mbedtls_net_context *ctx,
                           size_t len )
 {
     int ret;
-#if defined(MBEDTLS_TIMING_C)
+    #if defined(MBEDTLS_TIMING_C)
     ctx_buffer *buf = NULL;
     if( opt.pack > 0 )
     {
@@ -486,18 +478,15 @@ static int dispatch_data( mbedtls_net_context *ctx,
             buf = &outbuf[0];
         else if( outbuf[1].ctx == ctx )
             buf = &outbuf[1];
-
         if( buf == NULL )
             return( -1 );
-
         return( ctx_buffer_append( buf, data, len ) );
     }
-#endif /* MBEDTLS_TIMING_C */
-
+    #endif /* MBEDTLS_TIMING_C */
     ret = mbedtls_net_send( ctx, data, len );
     if( ret < 0 )
     {
-        mbedtls_printf( "net_send returned -%#04x\n", (unsigned int) -ret );
+        mbedtls_printf( "net_send returned -%#04x\n", (unsigned int) - ret );
     }
     return( ret );
 }
@@ -514,22 +503,21 @@ typedef struct
 /* Print packet. Outgoing packets come with a reason (forward, dupl, etc.) */
 void print_packet( const packet *p, const char *why )
 {
-#if defined(MBEDTLS_TIMING_C)
+    #if defined(MBEDTLS_TIMING_C)
     if( why == NULL )
         mbedtls_printf( "  %05u dispatch %s %s (%u bytes)\n",
-                ellapsed_time(), p->way, p->type, p->len );
+                        ellapsed_time(), p->way, p->type, p->len );
     else
         mbedtls_printf( "  %05u dispatch %s %s (%u bytes): %s\n",
-                ellapsed_time(), p->way, p->type, p->len, why );
-#else
+                        ellapsed_time(), p->way, p->type, p->len, why );
+    #else
     if( why == NULL )
         mbedtls_printf( "        dispatch %s %s (%u bytes)\n",
-                p->way, p->type, p->len );
+                        p->way, p->type, p->len );
     else
         mbedtls_printf( "        dispatch %s %s (%u bytes): %s\n",
-                p->way, p->type, p->len, why );
-#endif
-
+                        p->way, p->type, p->len, why );
+    #endif
     fflush( stdout );
 }
 
@@ -545,7 +533,8 @@ void print_packet( const packet *p, const char *why )
  *
  * We want an explicit state and a place to store the packet.
  */
-typedef enum {
+typedef enum
+{
     ICH_INIT,       /* haven't seen the first ClientHello yet */
     ICH_CACHED,     /* cached the initial ClientHello */
     ICH_INJECTED,   /* ClientHello already injected, done */
@@ -558,7 +547,6 @@ int send_packet( const packet *p, const char *why )
 {
     int ret;
     mbedtls_net_context *dst = p->dst;
-
     /* save initial ClientHello? */
     if( opt.inject_clihlo != 0 &&
         inject_clihlo_state == ICH_INIT &&
@@ -567,7 +555,6 @@ int send_packet( const packet *p, const char *why )
         memcpy( &initial_clihlo, p, sizeof( packet ) );
         inject_clihlo_state = ICH_CACHED;
     }
-
     /* insert corrupted CID record? */
     if( opt.bad_cid != 0 &&
         strcmp( p->type, "CID" ) == 0 &&
@@ -575,25 +562,21 @@ int send_packet( const packet *p, const char *why )
     {
         unsigned char buf[MAX_MSG_SIZE];
         memcpy( buf, p->buf, p->len );
-
         /* The CID resides at offset 11 in the DTLS record header. */
         buf[11] ^= 1;
         print_packet( p, "modified CID" );
-
         if( ( ret = dispatch_data( dst, buf, p->len ) ) <= 0 )
         {
             mbedtls_printf( "  ! dispatch returned %d\n", ret );
             return( ret );
         }
     }
-
     /* insert corrupted ApplicationData record? */
     if( opt.bad_ad &&
         strcmp( p->type, "ApplicationData" ) == 0 )
     {
         unsigned char buf[MAX_MSG_SIZE];
         memcpy( buf, p->buf, p->len );
-
         if( p->len <= 13 )
         {
             mbedtls_printf( "  ! can't corrupt empty AD record" );
@@ -603,52 +586,44 @@ int send_packet( const packet *p, const char *why )
             ++buf[13];
             print_packet( p, "corrupted" );
         }
-
         if( ( ret = dispatch_data( dst, buf, p->len ) ) <= 0 )
         {
             mbedtls_printf( "  ! dispatch returned %d\n", ret );
             return( ret );
         }
     }
-
     print_packet( p, why );
     if( ( ret = dispatch_data( dst, p->buf, p->len ) ) <= 0 )
     {
         mbedtls_printf( "  ! dispatch returned %d\n", ret );
         return( ret );
     }
-
     /* Don't duplicate Application Data, only handshake covered */
     if( opt.duplicate != 0 &&
         strcmp( p->type, "ApplicationData" ) != 0 &&
         rand() % opt.duplicate == 0 )
     {
         print_packet( p, "duplicated" );
-
         if( ( ret = dispatch_data( dst, p->buf, p->len ) ) <= 0 )
         {
             mbedtls_printf( "  ! dispatch returned %d\n", ret );
             return( ret );
         }
     }
-
     /* Inject ClientHello after first ApplicationData */
     if( opt.inject_clihlo != 0 &&
         inject_clihlo_state == ICH_CACHED &&
         strcmp( p->type, "ApplicationData" ) == 0 )
     {
         print_packet( &initial_clihlo, "injected" );
-
         if( ( ret = dispatch_data( dst, initial_clihlo.buf,
-                                        initial_clihlo.len ) ) <= 0 )
+                                   initial_clihlo.len ) ) <= 0 )
         {
             mbedtls_printf( "  ! dispatch returned %d\n", ret );
             return( ret );
         }
-
         inject_clihlo_state = ICH_INJECTED;
     }
-
     return( 0 );
 }
 
@@ -666,7 +641,6 @@ void delay_packet( packet *delay )
 {
     if( prev_len == MAX_DELAYED_MSG )
         return;
-
     memcpy( &prev[prev_len++], delay, sizeof( packet ) );
 }
 
@@ -680,7 +654,6 @@ int send_delayed()
         if( ret != 0 )
             return( ret );
     }
-
     clear_pending();
     return( 0 );
 }
@@ -709,26 +682,21 @@ int handle_message( const char *way,
     int ret;
     packet cur;
     size_t id;
-
     uint8_t delay_idx;
     char ** delay_list;
     uint8_t delay_list_len;
-
     /* receive packet */
     if( ( ret = mbedtls_net_recv( src, cur.buf, sizeof( cur.buf ) ) ) <= 0 )
     {
         mbedtls_printf( "  ! mbedtls_net_recv returned %d\n", ret );
         return( ret );
     }
-
     cur.len  = ret;
     cur.type = msg_type( cur.buf, cur.len );
     cur.way  = way;
     cur.dst  = dst;
     print_packet( &cur, NULL );
-
     id = cur.len % sizeof( held );
-
     if( strcmp( way, "S <- C" ) == 0 )
     {
         delay_list     = opt.delay_cli;
@@ -739,27 +707,22 @@ int handle_message( const char *way,
         delay_list     = opt.delay_srv;
         delay_list_len = opt.delay_srv_cnt;
     }
-
     /* Check if message type is in the list of messages
      * that should be delayed */
     for( delay_idx = 0; delay_idx < delay_list_len; delay_idx++ )
     {
         if( delay_list[ delay_idx ] == NULL )
             continue;
-
         if( strcmp( delay_list[ delay_idx ], cur.type ) == 0 )
         {
             /* Delay message */
             delay_packet( &cur );
-
             /* Remove entry from list */
             mbedtls_free( delay_list[delay_idx] );
             delay_list[delay_idx] = NULL;
-
             return( 0 );
         }
     }
-
     /* do we want to drop, delay, or forward it? */
     if( ( opt.mtu != 0 &&
           cur.len > (unsigned) opt.mtu ) ||
@@ -793,13 +756,11 @@ int handle_message( const char *way,
         /* forward and possibly duplicate */
         if( ( ret = send_packet( &cur, "forwarded" ) ) != 0 )
             return( ret );
-
         /* send previously delayed messages if any */
         ret = send_delayed();
         if( ret != 0 )
             return( ret );
     }
-
     return( 0 );
 }
 
@@ -808,24 +769,17 @@ int main( int argc, char *argv[] )
     int ret = 1;
     int exit_code = MBEDTLS_EXIT_FAILURE;
     uint8_t delay_idx;
-
     mbedtls_net_context listen_fd, client_fd, server_fd;
-
-#if defined( MBEDTLS_TIMING_C )
+    #if defined( MBEDTLS_TIMING_C )
     struct timeval tm;
-#endif
-
+    #endif
     struct timeval *tm_ptr = NULL;
-
     int nb_fds;
     fd_set read_fds;
-
     mbedtls_net_init( &listen_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_net_init( &server_fd );
-
     get_options( argc, argv );
-
     /*
      * Decisions to drop/delay/duplicate packets are pseudo-random: dropping
      * exactly 1 in N packets would lead to problems when a flight has exactly
@@ -836,110 +790,91 @@ int main( int argc, char *argv[] )
      */
     if( opt.seed == 0 )
     {
-#if defined(MBEDTLS_HAVE_TIME)
+        #if defined(MBEDTLS_HAVE_TIME)
         opt.seed = (unsigned int) mbedtls_time( NULL );
-#else
+        #else
         opt.seed = 1;
-#endif /* MBEDTLS_HAVE_TIME */
+        #endif /* MBEDTLS_HAVE_TIME */
         mbedtls_printf( "  . Pseudo-random seed: %u\n", opt.seed );
     }
-
     srand( opt.seed );
-
     /*
      * 0. "Connect" to the server
      */
     mbedtls_printf( "  . Connect to server on UDP/%s/%s ...",
-            opt.server_addr, opt.server_port );
+                    opt.server_addr, opt.server_port );
     fflush( stdout );
-
     if( ( ret = mbedtls_net_connect( &server_fd, opt.server_addr, opt.server_port,
-                             MBEDTLS_NET_PROTO_UDP ) ) != 0 )
+                                     MBEDTLS_NET_PROTO_UDP ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_connect returned %d\n\n", ret );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 1. Setup the "listening" UDP socket
      */
     mbedtls_printf( "  . Bind on UDP/%s/%s ...",
-            opt.listen_addr, opt.listen_port );
+                    opt.listen_addr, opt.listen_port );
     fflush( stdout );
-
     if( ( ret = mbedtls_net_bind( &listen_fd, opt.listen_addr, opt.listen_port,
-                          MBEDTLS_NET_PROTO_UDP ) ) != 0 )
+                                  MBEDTLS_NET_PROTO_UDP ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_bind returned %d\n\n", ret );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 2. Wait until a client connects
      */
 accept:
     mbedtls_net_free( &client_fd );
-
     mbedtls_printf( "  . Waiting for a remote connection ..." );
     fflush( stdout );
-
     if( ( ret = mbedtls_net_accept( &listen_fd, &client_fd,
                                     NULL, 0, NULL ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_net_accept returned %d\n\n", ret );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 3. Forward packets forever (kill the process to terminate it)
      */
     clear_pending();
     memset( held, 0, sizeof( held ) );
-
     nb_fds = client_fd.fd;
     if( nb_fds < server_fd.fd )
         nb_fds = server_fd.fd;
     if( nb_fds < listen_fd.fd )
         nb_fds = listen_fd.fd;
     ++nb_fds;
-
-#if defined(MBEDTLS_TIMING_C)
+    #if defined(MBEDTLS_TIMING_C)
     if( opt.pack > 0 )
     {
         outbuf[0].ctx = &server_fd;
         outbuf[0].description = "S <- C";
         outbuf[0].num_datagrams = 0;
         outbuf[0].len = 0;
-
         outbuf[1].ctx = &client_fd;
         outbuf[1].description = "S -> C";
         outbuf[1].num_datagrams = 0;
         outbuf[1].len = 0;
     }
-#endif /* MBEDTLS_TIMING_C */
-
+    #endif /* MBEDTLS_TIMING_C */
     while( 1 )
     {
-#if defined(MBEDTLS_TIMING_C)
+        #if defined(MBEDTLS_TIMING_C)
         if( opt.pack > 0 )
         {
             unsigned max_wait_server, max_wait_client, max_wait;
             max_wait_server = ctx_buffer_time_remaining( &outbuf[0] );
             max_wait_client = ctx_buffer_time_remaining( &outbuf[1] );
-
-            max_wait = (unsigned) -1;
-
+            max_wait = (unsigned) - 1;
             if( max_wait_server == 0 )
                 ctx_buffer_flush( &outbuf[0] );
             else
                 max_wait = max_wait_server;
-
             if( max_wait_client == 0 )
                 ctx_buffer_flush( &outbuf[1] );
             else
@@ -947,12 +882,10 @@ accept:
                 if( max_wait_client < max_wait )
                     max_wait = max_wait_client;
             }
-
-            if( max_wait != (unsigned) -1 )
+            if( max_wait != (unsigned) - 1 )
             {
                 tm.tv_sec  = max_wait / 1000;
                 tm.tv_usec = ( max_wait % 1000 ) * 1000;
-
                 tm_ptr = &tm;
             }
             else
@@ -960,62 +893,50 @@ accept:
                 tm_ptr = NULL;
             }
         }
-#endif /* MBEDTLS_TIMING_C */
-
+        #endif /* MBEDTLS_TIMING_C */
         FD_ZERO( &read_fds );
         FD_SET( server_fd.fd, &read_fds );
         FD_SET( client_fd.fd, &read_fds );
         FD_SET( listen_fd.fd, &read_fds );
-
         if( ( ret = select( nb_fds, &read_fds, NULL, NULL, tm_ptr ) ) < 0 )
         {
             perror( "select" );
             goto exit;
         }
-
         if( FD_ISSET( listen_fd.fd, &read_fds ) )
             goto accept;
-
         if( FD_ISSET( client_fd.fd, &read_fds ) )
         {
             if( ( ret = handle_message( "S <- C",
                                         &server_fd, &client_fd ) ) != 0 )
                 goto accept;
         }
-
         if( FD_ISSET( server_fd.fd, &read_fds ) )
         {
             if( ( ret = handle_message( "S -> C",
                                         &client_fd, &server_fd ) ) != 0 )
                 goto accept;
         }
-
     }
-
     exit_code = MBEDTLS_EXIT_SUCCESS;
-
 exit:
-
-#ifdef MBEDTLS_ERROR_C
+    #ifdef MBEDTLS_ERROR_C
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
-        mbedtls_printf( "Last error was: -0x%04X - %s\n\n", (unsigned int) -ret, error_buf );
+        mbedtls_printf( "Last error was: -0x%04X - %s\n\n", (unsigned int) - ret, error_buf );
         fflush( stdout );
     }
-#endif
-
+    #endif
     for( delay_idx = 0; delay_idx < MAX_DELAYED_HS; delay_idx++ )
     {
         mbedtls_free( opt.delay_cli[delay_idx] );
         mbedtls_free( opt.delay_srv[delay_idx] );
     }
-
     mbedtls_net_free( &client_fd );
     mbedtls_net_free( &server_fd );
     mbedtls_net_free( &listen_fd );
-
     mbedtls_exit( exit_code );
 }
 

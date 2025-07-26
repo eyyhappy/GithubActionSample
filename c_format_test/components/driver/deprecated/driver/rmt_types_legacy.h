@@ -27,9 +27,12 @@ extern "C" {
 /**
  * @brief Definition of RMT item
  */
-typedef struct {
-    union {
-        struct {
+typedef struct
+{
+    union
+    {
+        struct
+        {
             uint32_t duration0 : 15; /*!< Duration of level0 */
             uint32_t level0 : 1;     /*!< Level of the first part */
             uint32_t duration1 : 15; /*!< Duration of level1 */
@@ -44,8 +47,10 @@ typedef struct {
 /**
  * @brief RMT hardware memory layout
  */
-typedef struct {
-    struct {
+typedef struct
+{
+    struct
+    {
         volatile rmt_item32_t data32[SOC_RMT_MEM_WORDS_PER_CHANNEL];
     } chan[SOC_RMT_CHANNELS_PER_GROUP];
 } rmt_mem_t;
@@ -54,24 +59,26 @@ typedef struct {
 /**
  * @brief RMT channel ID
  */
-typedef enum {
+typedef enum
+{
     RMT_CHANNEL_0,  /*!< RMT channel number 0 */
     RMT_CHANNEL_1,  /*!< RMT channel number 1 */
     RMT_CHANNEL_2,  /*!< RMT channel number 2 */
     RMT_CHANNEL_3,  /*!< RMT channel number 3 */
-#if SOC_RMT_CHANNELS_PER_GROUP > 4
+    #if SOC_RMT_CHANNELS_PER_GROUP > 4
     RMT_CHANNEL_4,  /*!< RMT channel number 4 */
     RMT_CHANNEL_5,  /*!< RMT channel number 5 */
     RMT_CHANNEL_6,  /*!< RMT channel number 6 */
     RMT_CHANNEL_7,  /*!< RMT channel number 7 */
-#endif
+    #endif
     RMT_CHANNEL_MAX /*!< Number of RMT channels */
 } rmt_channel_t;
 
 /**
  * @brief RMT Internal Memory Owner
  */
-typedef enum {
+typedef enum
+{
     RMT_MEM_OWNER_TX, /*!< RMT RX mode, RMT transmitter owns the memory block*/
     RMT_MEM_OWNER_RX, /*!< RMT RX mode, RMT receiver owns the memory block*/
     RMT_MEM_OWNER_MAX,
@@ -91,7 +98,8 @@ typedef int rmt_source_clk_t;
  *
  * @note We highly recommended to use MEM mode not FIFO mode since there will be some gotcha in FIFO mode.
  */
-typedef enum {
+typedef enum
+{
     RMT_DATA_MODE_FIFO, /*<! RMT memory access in FIFO mode */
     RMT_DATA_MODE_MEM,  /*<! RMT memory access in memory mode */
     RMT_DATA_MODE_MAX,
@@ -100,7 +108,8 @@ typedef enum {
 /**
  * @brief RMT Channel Working Mode (TX or RX)
  */
-typedef enum {
+typedef enum
+{
     RMT_MODE_TX, /*!< RMT TX mode */
     RMT_MODE_RX, /*!< RMT RX mode */
     RMT_MODE_MAX
@@ -110,7 +119,8 @@ typedef enum {
  * @brief RMT Idle Level
  *
  */
-typedef enum {
+typedef enum
+{
     RMT_IDLE_LEVEL_LOW,  /*!< RMT TX idle level: low Level */
     RMT_IDLE_LEVEL_HIGH, /*!< RMT TX idle level: high Level */
     RMT_IDLE_LEVEL_MAX,
@@ -119,7 +129,8 @@ typedef enum {
 /**
  * @brief RMT Carrier Level
  */
-typedef enum {
+typedef enum
+{
     RMT_CARRIER_LEVEL_LOW,  /*!< RMT carrier wave is modulated for low Level output */
     RMT_CARRIER_LEVEL_HIGH, /*!< RMT carrier wave is modulated for high Level output */
     RMT_CARRIER_LEVEL_MAX
@@ -128,7 +139,8 @@ typedef enum {
 /**
  * @brief RMT Channel Status
  */
-typedef enum {
+typedef enum
+{
     RMT_CHANNEL_UNINIT, /*!< RMT channel uninitialized */
     RMT_CHANNEL_IDLE,   /*!< RMT channel status idle */
     RMT_CHANNEL_BUSY,   /*!< RMT channel status busy */
@@ -137,21 +149,23 @@ typedef enum {
 /**
  * @brief Data struct of RMT channel status
  */
-typedef struct {
+typedef struct
+{
     rmt_channel_status_t status[RMT_CHANNEL_MAX]; /*!< Store the current status of each channel */
 } rmt_channel_status_result_t;
 
 /**
  * @brief Data struct of RMT TX configure parameters
  */
-typedef struct {
+typedef struct
+{
     uint32_t carrier_freq_hz;          /*!< RMT carrier frequency */
     rmt_carrier_level_t carrier_level; /*!< Level of the RMT output, when the carrier is applied */
     rmt_idle_level_t idle_level;       /*!< RMT idle level */
     uint8_t carrier_duty_percent;      /*!< RMT carrier duty (%) */
-#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     uint32_t loop_count;               /*!< Maximum loop count */
-#endif
+    #endif
     bool carrier_en;                   /*!< RMT carrier enable */
     bool loop_en;                      /*!< Enable sending RMT items in a loop */
     bool idle_output_en;               /*!< RMT idle level output enable */
@@ -160,29 +174,32 @@ typedef struct {
 /**
  * @brief Data struct of RMT RX configure parameters
  */
-typedef struct {
+typedef struct
+{
     uint16_t idle_threshold;     /*!< RMT RX idle threshold */
     uint8_t filter_ticks_thresh; /*!< RMT filter tick number */
     bool filter_en;              /*!< RMT receiver filter enable */
-#if SOC_RMT_SUPPORT_RX_DEMODULATION
+    #if SOC_RMT_SUPPORT_RX_DEMODULATION
     bool rm_carrier;                   /*!< RMT receiver remove carrier enable */
     uint32_t carrier_freq_hz;          /*!< RMT carrier frequency */
     uint8_t carrier_duty_percent;      /*!< RMT carrier duty (%) */
     rmt_carrier_level_t carrier_level; /*!< The level to remove the carrier */
-#endif
+    #endif
 } rmt_rx_config_t;
 
 /**
  * @brief Data struct of RMT configure parameters
  */
-typedef struct {
+typedef struct
+{
     rmt_mode_t rmt_mode;   /*!< RMT mode: transmitter or receiver */
     rmt_channel_t channel; /*!< RMT channel */
     gpio_num_t gpio_num;   /*!< RMT GPIO number */
     uint8_t clk_div;       /*!< RMT channel counter divider */
     uint8_t mem_block_num; /*!< RMT memory block number */
     uint32_t flags;        /*!< RMT channel extra configurations, OR'd with RMT_CHANNEL_FLAGS_[*] */
-    union {
+    union
+    {
         rmt_tx_config_t tx_config; /*!< RMT TX parameter */
         rmt_rx_config_t rx_config; /*!< RMT RX parameter */
     };
@@ -243,7 +260,8 @@ typedef void (*rmt_tx_end_fn_t)(rmt_channel_t channel, void *arg);
 /**
  * @brief Structure encapsulating a RMT TX end callback
  */
-typedef struct {
+typedef struct
+{
     rmt_tx_end_fn_t function; /*!< Function which is called on RMT TX end */
     void *arg;                /*!< Optional argument passed to function */
 } rmt_tx_end_callback_t;

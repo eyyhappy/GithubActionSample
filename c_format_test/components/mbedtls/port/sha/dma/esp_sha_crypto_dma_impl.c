@@ -16,9 +16,7 @@ esp_err_t esp_sha_dma_start(const lldesc_t *input)
 {
     crypto_dma_ll_set_mode(CRYPTO_DMA_SHA);
     crypto_dma_ll_reset();
-
     crypto_dma_ll_outlink_set((intptr_t)input);
     crypto_dma_ll_outlink_start();
-
     return ESP_OK;
 }

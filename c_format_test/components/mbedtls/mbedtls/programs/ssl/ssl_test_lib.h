@@ -42,18 +42,18 @@
 
 #undef HAVE_RNG
 #if defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG) &&         \
-    ( defined(MBEDTLS_USE_PSA_CRYPTO) ||                \
-      defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG) )
+( defined(MBEDTLS_USE_PSA_CRYPTO) ||                \
+  defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG) )
 #define HAVE_RNG
 #elif defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
 #define HAVE_RNG
 #elif defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_HMAC_DRBG_C) &&     \
-    ( defined(MBEDTLS_SHA256_C) || defined(MBEDTLS_SHA512_C) )
+( defined(MBEDTLS_SHA256_C) || defined(MBEDTLS_SHA512_C) )
 #define HAVE_RNG
 #endif
 
 #if !defined(MBEDTLS_NET_C) ||                              \
-    !defined(MBEDTLS_SSL_TLS_C)
+!defined(MBEDTLS_SSL_TLS_C)
 #define MBEDTLS_SSL_TEST_IMPOSSIBLE                         \
     "MBEDTLS_NET_C and/or "                                 \
     "MBEDTLS_SSL_TLS_C not defined."
@@ -163,18 +163,18 @@ mbedtls_time_t dummy_constant_time( mbedtls_time_t* time );
  */
 typedef struct
 {
-#if defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
+    #if defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
     unsigned char dummy;
-#else /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
+    #else /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
     mbedtls_entropy_context entropy;
-#if defined(MBEDTLS_CTR_DRBG_C)
+    #if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_context drbg;
-#elif defined(MBEDTLS_HMAC_DRBG_C)
+    #elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_context drbg;
-#else
+    #else
 #error "No DRBG available"
-#endif
-#endif /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
+    #endif
+    #endif /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
 } rng_context_t;
 
 /** Initialize the RNG.
@@ -289,9 +289,9 @@ int delayed_send( void *ctx, const unsigned char *buf, size_t len );
  * (Used in event-driven IO mode).
  */
 int idle( mbedtls_net_context *fd,
-#if defined(MBEDTLS_TIMING_C)
+          #if defined(MBEDTLS_TIMING_C)
           mbedtls_timing_delay_context *timer,
-#endif
+          #endif
           int idle_reason );
 
 #if defined(MBEDTLS_TEST_HOOKS)

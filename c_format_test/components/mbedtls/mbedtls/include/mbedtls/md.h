@@ -1,10 +1,10 @@
- /**
- * \file md.h
- *
- * \brief This file contains the generic message-digest wrapper.
- *
- * \author Adriaan de Jong <dejong@fox-it.com>
- */
+/**
+* \file md.h
+*
+* \brief This file contains the generic message-digest wrapper.
+*
+* \author Adriaan de Jong <dejong@fox-it.com>
+*/
 /*
  *  Copyright The Mbed TLS Contributors
  *  SPDX-License-Identifier: Apache-2.0
@@ -52,8 +52,9 @@ extern "C" {
  *            stronger message digests instead.
  *
  */
-typedef enum {
-    MBEDTLS_MD_NONE=0,    /**< None. */
+typedef enum
+{
+    MBEDTLS_MD_NONE = 0,  /**< None. */
     MBEDTLS_MD_MD5,       /**< The MD5 message digest. */
     MBEDTLS_MD_SHA1,      /**< The SHA-1 message digest. */
     MBEDTLS_MD_SHA224,    /**< The SHA-224 message digest. */
@@ -148,7 +149,7 @@ const mbedtls_md_info_t *mbedtls_md_info_from_type( mbedtls_md_type_t md_type );
  * \return          \c NULL if \p ctx is \c NULL.
  */
 const mbedtls_md_info_t *mbedtls_md_info_from_ctx(
-                                        const mbedtls_md_context_t *ctx );
+    const mbedtls_md_context_t *ctx );
 
 /**
  * \brief           This function initializes a message-digest context without
@@ -330,7 +331,7 @@ int mbedtls_md_finish( mbedtls_md_context_t *ctx, unsigned char *output );
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_md( const mbedtls_md_info_t *md_info, const unsigned char *input, size_t ilen,
-        unsigned char *output );
+                unsigned char *output );
 
 #if defined(MBEDTLS_FS_IO)
 /**
@@ -375,7 +376,7 @@ int mbedtls_md_file( const mbedtls_md_info_t *md_info, const char *path,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_md_hmac_starts( mbedtls_md_context_t *ctx, const unsigned char *key,
-                    size_t keylen );
+                            size_t keylen );
 
 /**
  * \brief           This function feeds an input buffer into an ongoing HMAC
@@ -398,7 +399,7 @@ int mbedtls_md_hmac_starts( mbedtls_md_context_t *ctx, const unsigned char *key,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_md_hmac_update( mbedtls_md_context_t *ctx, const unsigned char *input,
-                    size_t ilen );
+                            size_t ilen );
 
 /**
  * \brief           This function finishes the HMAC operation, and writes
@@ -463,8 +464,8 @@ int mbedtls_md_hmac_reset( mbedtls_md_context_t *ctx );
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_md_hmac( const mbedtls_md_info_t *md_info, const unsigned char *key, size_t keylen,
-                const unsigned char *input, size_t ilen,
-                unsigned char *output );
+                     const unsigned char *input, size_t ilen,
+                     unsigned char *output );
 
 /* Internal use */
 MBEDTLS_CHECK_RETURN_TYPICAL

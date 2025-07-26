@@ -51,7 +51,8 @@ typedef void(*transaction_cb_t)(spi_transaction_t *trans);
 /**
  * @brief This is a configuration for a SPI slave device that is connected to one of the SPI buses.
  */
-typedef struct {
+typedef struct
+{
     uint8_t command_bits;           ///< Default amount of bits in command phase (0-16), used when ``SPI_TRANS_VARIABLE_CMD`` is not used, otherwise ignored.
     uint8_t address_bits;           ///< Default amount of bits in address phase (0-64), used when ``SPI_TRANS_VARIABLE_ADDR`` is not used, otherwise ignored.
     uint8_t dummy_bits;             ///< Amount of dummy bits to insert between address and data phase
@@ -112,7 +113,8 @@ typedef struct {
 /**
  * This structure describes one SPI transaction. The descriptor should not be modified until the transaction finishes.
  */
-struct spi_transaction_t {
+struct spi_transaction_t
+{
     uint32_t flags;                 ///< Bitwise OR of SPI_TRANS_* flags
     uint16_t cmd;                   /**< Command data, of which the length is set in the ``command_bits`` of spi_device_interface_config_t.
                                       *
@@ -129,11 +131,13 @@ struct spi_transaction_t {
     size_t length;                  ///< Total data length, in bits
     size_t rxlength;                ///< Total data length received, should be not greater than ``length`` in full-duplex mode (0 defaults this to the value of ``length``).
     void *user;                     ///< User-defined variable. Can be used to store eg transaction ID.
-    union {
+    union
+    {
         const void *tx_buffer;      ///< Pointer to transmit buffer, or NULL for no MOSI phase
         uint8_t tx_data[4];         ///< If SPI_TRANS_USE_TXDATA is set, data set here is sent directly from this variable.
     };
-    union {
+    union
+    {
         void *rx_buffer;            ///< Pointer to receive buffer, or NULL for no MISO phase. Written by 4 bytes-unit if DMA is used.
         uint8_t rx_data[4];         ///< If SPI_TRANS_USE_RXDATA is set, data is received directly to this variable
     };
@@ -143,7 +147,8 @@ struct spi_transaction_t {
  * This struct is for SPI transactions which may change their address and command length.
  * Please do set the flags in base to ``SPI_TRANS_VARIABLE_CMD_ADR`` to use the bit length here.
  */
-typedef struct {
+typedef struct
+{
     struct spi_transaction_t base;  ///< Transaction data, so that pointer to spi_transaction_t can be converted into spi_transaction_ext_t
     uint8_t command_bits;           ///< The command length in this transaction, in bits.
     uint8_t address_bits;           ///< The address length in this transaction, in bits.

@@ -18,9 +18,11 @@ extern "C" {
 /**
  * @brief MCPWM operator configuration
  */
-typedef struct {
+typedef struct
+{
     int group_id; /*!< Specify from which group to allocate the MCPWM operator */
-    struct {
+    struct
+    {
         uint32_t update_gen_action_on_tez: 1;  /*!< Whether to update generator action when timer counts to zero */
         uint32_t update_gen_action_on_tep: 1;  /*!< Whether to update generator action when timer counts to peak */
         uint32_t update_gen_action_on_sync: 1; /*!< Whether to update generator action on sync event */
@@ -70,10 +72,12 @@ esp_err_t mcpwm_operator_connect_timer(mcpwm_oper_handle_t oper, mcpwm_timer_han
 /**
  * @brief MCPWM brake configuration structure
  */
-typedef struct {
+typedef struct
+{
     mcpwm_fault_handle_t fault;             /*!< Which fault causes the operator to brake */
     mcpwm_operator_brake_mode_t brake_mode; /*!< Brake mode */
-    struct {
+    struct
+    {
         uint32_t cbc_recover_on_tez: 1; /*!< Recovery CBC brake state on tez event */
         uint32_t cbc_recover_on_tep: 1; /*!< Recovery CBC brake state on tep event */
     } flags;                            /*!< Extra flags for brake configuration */
@@ -111,7 +115,8 @@ esp_err_t mcpwm_operator_recover_from_fault(mcpwm_oper_handle_t oper, mcpwm_faul
  * @brief Group of supported MCPWM operator event callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     mcpwm_brake_event_cb_t on_brake_cbc; /*!< callback function when mcpwm operator brakes in CBC */
     mcpwm_brake_event_cb_t on_brake_ost; /*!< callback function when mcpwm operator brakes in OST */
 } mcpwm_operator_event_callbacks_t;
@@ -134,11 +139,13 @@ esp_err_t mcpwm_operator_register_event_callbacks(mcpwm_oper_handle_t oper, cons
 /**
  * @brief MCPWM carrier configuration structure
  */
-typedef struct {
+typedef struct
+{
     uint32_t frequency_hz;            /*!< Carrier frequency in Hz */
     uint32_t first_pulse_duration_us; /*!< The duration of the first PWM pulse, in us */
     float duty_cycle;                 /*!< Carrier duty cycle */
-    struct {
+    struct
+    {
         uint32_t invert_before_modulate: 1; /*!< Invert the raw signal */
         uint32_t invert_after_modulate: 1;  /*!< Invert the modulated signal */
     } flags;                                /*!< Extra flags for carrier configuration */

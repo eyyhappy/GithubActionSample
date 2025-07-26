@@ -25,7 +25,8 @@
 #if defined(PSA_CRYPTO_DRIVER_TEST)
 #include <psa/crypto_driver_common.h>
 
-typedef struct {
+typedef struct
+{
     /* If non-null, on success, copy this to the output. */
     void *forced_output;
     size_t forced_output_length;
@@ -38,17 +39,17 @@ typedef struct {
 
 #define MBEDTLS_TEST_DRIVER_SIGNATURE_INIT { NULL, 0, PSA_SUCCESS, 0 }
 static inline mbedtls_test_driver_signature_hooks_t
-    mbedtls_test_driver_signature_hooks_init( void )
+mbedtls_test_driver_signature_hooks_init( void )
 {
     const mbedtls_test_driver_signature_hooks_t
-        v = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
+    v = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
     return( v );
 }
 
 extern mbedtls_test_driver_signature_hooks_t
-    mbedtls_test_driver_signature_sign_hooks;
+mbedtls_test_driver_signature_sign_hooks;
 extern mbedtls_test_driver_signature_hooks_t
-    mbedtls_test_driver_signature_verify_hooks;
+mbedtls_test_driver_signature_verify_hooks;
 
 psa_status_t mbedtls_test_transparent_signature_sign_message(
     const psa_key_attributes_t *attributes,

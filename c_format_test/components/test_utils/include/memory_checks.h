@@ -16,7 +16,8 @@ extern "C" {
 /**
  * @brief Leak for components
  */
-typedef enum {
+typedef enum
+{
     ESP_COMP_LEAK_GENERAL = 0,  /**< Leak by default */
     ESP_COMP_LEAK_LWIP,         /**< Leak for LWIP */
     ESP_COMP_LEAK_NVS,          /**< Leak for NVS */
@@ -26,7 +27,8 @@ typedef enum {
 /**
  * @brief Type of a leak threshold
  */
-typedef enum {
+typedef enum
+{
     ESP_LEAK_TYPE_WARNING = 0,  /**< Warning level of leak */
     ESP_LEAK_TYPE_CRITICAL,     /**< Critical level of leak */
     ESP_LEAK_TYPE_MAX,          /**< Max number of leak levels for all components/levels */

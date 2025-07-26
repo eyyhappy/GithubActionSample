@@ -141,9 +141,7 @@ static inline psa_status_t psa_lock_key_slot( psa_key_slot_t *slot )
 {
     if( slot->lock_count >= SIZE_MAX )
         return( PSA_ERROR_CORRUPTION_DETECTED );
-
     slot->lock_count++;
-
     return( PSA_SUCCESS );
 }
 
@@ -180,7 +178,7 @@ psa_status_t psa_unlock_key_slot( psa_key_slot_t *slot );
 static inline int psa_key_lifetime_is_external( psa_key_lifetime_t lifetime )
 {
     return( PSA_KEY_LIFETIME_GET_LOCATION( lifetime )
-                != PSA_KEY_LOCATION_LOCAL_STORAGE );
+            != PSA_KEY_LOCATION_LOCAL_STORAGE );
 }
 
 /** Validate a key's location.

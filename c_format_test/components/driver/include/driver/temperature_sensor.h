@@ -25,7 +25,8 @@ typedef struct temperature_sensor_obj_t *temperature_sensor_handle_t;
  * @note If you see the log `the boundary you gave cannot meet the range of internal temperature sensor`. You may need to refer to
  *       predefined range listed doc ``api-reference/peripherals/Temperature sensor``.
  */
-typedef struct {
+typedef struct
+{
     int range_min;   /**< the minimum value of the temperature you want to test */
     int range_max;   /**< the maximum value of the temperature you want to test */
     temperature_sensor_clk_src_t clk_src;  /**< the clock source of the temperature sensor. */

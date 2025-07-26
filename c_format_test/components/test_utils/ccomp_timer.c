@@ -28,34 +28,33 @@ static const char TAG[] = "ccomp_timer";
 esp_err_t ccomp_timer_start(void)
 {
     esp_err_t err = ESP_OK;
-
     ccomp_timer_impl_lock();
-    if (ccomp_timer_impl_is_init()) {
-        if (ccomp_timer_impl_is_active()) {
+    if (ccomp_timer_impl_is_init())
+    {
+        if (ccomp_timer_impl_is_active())
+        {
             err = ESP_ERR_INVALID_STATE;
         }
     }
-    else {
+    else
+    {
         err = ccomp_timer_impl_init();
     }
     ccomp_timer_impl_unlock();
-
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         goto fail;
     }
-
     err = ccomp_timer_impl_reset();
-
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         goto fail;
     }
-
     err = ccomp_timer_impl_start();
-
-    if (err == ESP_OK) {
+    if (err == ESP_OK)
+    {
         return ESP_OK;
     }
-
 fail:
     ESP_LOGE(TAG, "Unable to start performance timer");
     return err;
@@ -65,28 +64,26 @@ int64_t IRAM_ATTR ccomp_timer_stop(void)
 {
     esp_err_t err = ESP_OK;
     ccomp_timer_impl_lock();
-    if (!ccomp_timer_impl_is_active()) {
+    if (!ccomp_timer_impl_is_active())
+    {
         err = ESP_ERR_INVALID_STATE;
     }
     ccomp_timer_impl_unlock();
-
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         goto fail;
     }
-
     err = ccomp_timer_impl_stop();
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         goto fail;
     }
-
     int64_t t = ccomp_timer_get_time();
-
     err = ccomp_timer_impl_deinit();
-
-    if (err == ESP_OK && t != -1) {
+    if (err == ESP_OK && t != -1)
+    {
         return t;
     }
-
 fail:
     ESP_LOGE(TAG, "Unable to stop performance timer");
     return -1;

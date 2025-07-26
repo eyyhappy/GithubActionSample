@@ -15,17 +15,18 @@ extern "C" {
  * @brief ADC resolution setting option.
  * @note  Only used in single read mode
  */
-typedef enum {
-#if CONFIG_IDF_TARGET_ESP32
+typedef enum
+{
+    #if CONFIG_IDF_TARGET_ESP32
     ADC_WIDTH_BIT_9  = 9, /*!< ADC capture width is 9Bit. */
     ADC_WIDTH_BIT_10 = 10, /*!< ADC capture width is 10Bit. */
     ADC_WIDTH_BIT_11 = 11, /*!< ADC capture width is 11Bit. */
     ADC_WIDTH_BIT_12 = 12, /*!< ADC capture width is 12Bit. */
-#elif SOC_ADC_RTC_MAX_BITWIDTH == 12
+    #elif SOC_ADC_RTC_MAX_BITWIDTH == 12
     ADC_WIDTH_BIT_12 = 12, /*!< ADC capture width is 12Bit. */
-#elif SOC_ADC_RTC_MAX_BITWIDTH == 13
+    #elif SOC_ADC_RTC_MAX_BITWIDTH == 13
     ADC_WIDTH_BIT_13 = 13, /*!< ADC capture width is 13Bit. */
-#endif
+    #endif
     ADC_WIDTH_MAX,
 } adc_bits_width_t;
 
@@ -36,7 +37,8 @@ typedef enum {
 #define ADC_WIDTH_BIT_DEFAULT    (ADC_WIDTH_MAX-1)
 
 #if CONFIG_IDF_TARGET_ESP32
-typedef enum {
+typedef enum
+{
     ADC1_CHANNEL_0 = 0, /*!< ADC1 channel 0 is GPIO36 */
     ADC1_CHANNEL_1,     /*!< ADC1 channel 1 is GPIO37 */
     ADC1_CHANNEL_2,     /*!< ADC1 channel 2 is GPIO38 */
@@ -48,7 +50,8 @@ typedef enum {
     ADC1_CHANNEL_MAX,
 } adc1_channel_t;
 #elif CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
-typedef enum {
+typedef enum
+{
     ADC1_CHANNEL_0 = 0, /*!< ADC1 channel 0 is GPIO1  */
     ADC1_CHANNEL_1,     /*!< ADC1 channel 1 is GPIO2  */
     ADC1_CHANNEL_2,     /*!< ADC1 channel 2 is GPIO3  */
@@ -62,7 +65,8 @@ typedef enum {
     ADC1_CHANNEL_MAX,
 } adc1_channel_t;
 #elif CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C2 || CONFIG_IDF_TARGET_ESP32H2
-typedef enum {
+typedef enum
+{
     ADC1_CHANNEL_0 = 0, /*!< ADC1 channel 0 is GPIO0 */
     ADC1_CHANNEL_1,     /*!< ADC1 channel 1 is GPIO1 */
     ADC1_CHANNEL_2,     /*!< ADC1 channel 2 is GPIO2 */
@@ -73,7 +77,8 @@ typedef enum {
 #endif // CONFIG_IDF_TARGET_*
 
 #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
-typedef enum {
+typedef enum
+{
     ADC2_CHANNEL_0 = 0, /*!< ADC2 channel 0 is GPIO4  (ESP32), GPIO11 (ESP32-S2) */
     ADC2_CHANNEL_1,     /*!< ADC2 channel 1 is GPIO0  (ESP32), GPIO12 (ESP32-S2) */
     ADC2_CHANNEL_2,     /*!< ADC2 channel 2 is GPIO2  (ESP32), GPIO13 (ESP32-S2) */
@@ -87,7 +92,8 @@ typedef enum {
     ADC2_CHANNEL_MAX,
 } adc2_channel_t;
 #elif CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C2 || CONFIG_IDF_TARGET_ESP32H2
-typedef enum {
+typedef enum
+{
     ADC2_CHANNEL_0 = 0, /*!< ADC2 channel 0 is GPIO5 */
     ADC2_CHANNEL_MAX,
 } adc2_channel_t;
@@ -102,7 +108,8 @@ typedef enum {
 /**
  * @brief ADC DMA driver configuration
  */
-typedef struct adc_digi_init_config_s {
+typedef struct adc_digi_init_config_s
+{
     uint32_t max_store_buf_size;    ///< Max length of the converted data that driver can store before they are processed.
     uint32_t conv_num_each_intr;    ///< Bytes of data that can be converted in 1 interrupt. This should be in multiples of `SOC_ADC_DIGI_DATA_BYTES_PER_CONV`.
     uint32_t adc1_chan_mask;        ///< Channel list of ADC1 to be initialized.
@@ -112,7 +119,8 @@ typedef struct adc_digi_init_config_s {
 /**
  * @brief ADC digital controller settings
  */
-typedef struct {
+typedef struct
+{
     bool conv_limit_en;                     ///< Suggest leaving it empty, this parameter has been deprecated
     uint32_t conv_limit_num;                ///< suggest leaving it empty, this parameter has been deprecated
     uint32_t pattern_num;                   ///< Number of ADC channels that will be used

@@ -34,21 +34,25 @@ static esp_err_t mcpwm_timer_register_to_group(mcpwm_timer_t *timer, int group_i
 {
     mcpwm_group_t *group = mcpwm_acquire_group_handle(group_id);
     ESP_RETURN_ON_FALSE(group, ESP_ERR_NO_MEM, TAG, "no mem for group (%d)", group_id);
-
     int timer_id = -1;
     portENTER_CRITICAL(&group->spinlock);
-    for (int i = 0; i < SOC_MCPWM_TIMERS_PER_GROUP; i++) {
-        if (!group->timers[i]) {
+    for (int i = 0; i < SOC_MCPWM_TIMERS_PER_GROUP; i++)
+    {
+        if (!group->timers[i])
+        {
             timer_id = i;
             group->timers[i] = timer;
             break;
         }
     }
     portEXIT_CRITICAL(&group->spinlock);
-    if (timer_id < 0) {
+    if (timer_id < 0)
+    {
         mcpwm_release_group_handle(group);
         group = NULL;
-    } else {
+    }
+    else
+    {
         timer->group = group;
         timer->timer_id = timer_id;
     }
@@ -60,21 +64,21 @@ static void mcpwm_timer_unregister_from_group(mcpwm_timer_t *timer)
 {
     mcpwm_group_t *group = timer->group;
     int timer_id = timer->timer_id;
-
     portENTER_CRITICAL(&group->spinlock);
     group->timers[timer_id] = NULL;
     portEXIT_CRITICAL(&group->spinlock);
-
     // timer has a reference on group, release it now
     mcpwm_release_group_handle(group);
 }
 
 static esp_err_t mcpwm_timer_destory(mcpwm_timer_t *timer)
 {
-    if (timer->intr) {
+    if (timer->intr)
+    {
         ESP_RETURN_ON_ERROR(esp_intr_free(timer->intr), TAG, "uninstall interrupt service failed");
     }
-    if (timer->group) {
+    if (timer->group)
+    {
         mcpwm_timer_unregister_from_group(timer);
     }
     free(timer);
@@ -83,18 +87,16 @@ static esp_err_t mcpwm_timer_destory(mcpwm_timer_t *timer)
 
 esp_err_t mcpwm_new_timer(const mcpwm_timer_config_t *config, mcpwm_timer_handle_t *ret_timer)
 {
-#if CONFIG_MCPWM_ENABLE_DEBUG_LOG
+    #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-#endif
+    #endif
     esp_err_t ret = ESP_OK;
     mcpwm_timer_t *timer = NULL;
     ESP_GOTO_ON_FALSE(config && ret_timer, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
     ESP_GOTO_ON_FALSE(config->group_id < SOC_MCPWM_GROUPS && config->group_id >= 0, ESP_ERR_INVALID_ARG,
                       err, TAG, "invalid group ID:%d", config->group_id);
-
     timer = heap_caps_calloc(1, sizeof(mcpwm_timer_t), MCPWM_MEM_ALLOC_CAPS);
     ESP_GOTO_ON_FALSE(timer, ESP_ERR_NO_MEM, err, TAG, "no mem for timer");
-
     ESP_GOTO_ON_ERROR(mcpwm_timer_register_to_group(timer, config->group_id), err, TAG, "register timer failed");
     mcpwm_group_t *group = timer->group;
     int group_id = group->group_id;
@@ -108,14 +110,15 @@ esp_err_t mcpwm_new_timer(const mcpwm_timer_config_t *config, mcpwm_timer_handle
     uint32_t prescale = group->resolution_hz / config->resolution_hz;
     mcpwm_ll_timer_set_clock_prescale(hal->dev, timer_id, prescale);
     timer->resolution_hz = group->resolution_hz / prescale;
-    if (timer->resolution_hz != config->resolution_hz) {
+    if (timer->resolution_hz != config->resolution_hz)
+    {
         ESP_LOGW(TAG, "adjust timer resolution to %"PRIu32"Hz", timer->resolution_hz);
     }
-
     // set the peak tickes that the timer can reach to
     timer->count_mode = config->count_mode;
     uint32_t peak_ticks = config->period_ticks;
-    if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_UP_DOWN) {
+    if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_UP_DOWN)
+    {
         peak_ticks /= 2; // in symmetric mode, peak_ticks = period_ticks / 2
     }
     timer->peak_ticks = peak_ticks;
@@ -125,7 +128,6 @@ esp_err_t mcpwm_new_timer(const mcpwm_timer_config_t *config, mcpwm_timer_handle
     // what time is allowed to update the period
     mcpwm_ll_timer_enable_update_period_on_sync(hal->dev, timer_id, config->flags.update_period_on_sync);
     mcpwm_ll_timer_enable_update_period_on_tez(hal->dev, timer_id, config->flags.update_period_on_empty);
-
     // fill in other timer specific members
     timer->spinlock = (portMUX_TYPE)portMUX_INITIALIZER_UNLOCKED;
     timer->fsm = MCPWM_TIMER_FSM_INIT;
@@ -133,9 +135,9 @@ esp_err_t mcpwm_new_timer(const mcpwm_timer_config_t *config, mcpwm_timer_handle
     ESP_LOGD(TAG, "new timer(%d,%d) at %p, resolution:%"PRIu32"Hz, peak:%"PRIu32", count_mod:%c",
              group_id, timer_id, timer, timer->resolution_hz, timer->peak_ticks, "SUDB"[timer->count_mode]);
     return ESP_OK;
-
 err:
-    if (timer) {
+    if (timer)
+    {
         mcpwm_timer_destory(timer);
     }
     return ret;
@@ -150,13 +152,11 @@ esp_err_t mcpwm_del_timer(mcpwm_timer_handle_t timer)
     mcpwm_group_t *group = timer->group;
     int timer_id = timer->timer_id;
     mcpwm_hal_context_t *hal = &group->hal;
-
     // disable and clear the pending interrupt
     portENTER_CRITICAL(&group->spinlock);
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_TIMER_MASK(timer_id), false);
     mcpwm_ll_intr_clear_status(hal->dev, MCPWM_LL_EVENT_TIMER_MASK(timer_id));
     portEXIT_CRITICAL(&group->spinlock);
-
     ESP_LOGD(TAG, "del timer (%d,%d)", group->group_id, timer_id);
     // recycle memory resource
     ESP_RETURN_ON_ERROR(mcpwm_timer_destory(timer), TAG, "destory timer failed");
@@ -170,38 +170,39 @@ esp_err_t mcpwm_timer_register_event_callbacks(mcpwm_timer_handle_t timer, const
     int group_id = group->group_id;
     int timer_id = timer->timer_id;
     mcpwm_hal_context_t *hal = &group->hal;
-
-#if CONFIG_MCWPM_ISR_IRAM_SAFE
-    if (cbs->on_empty) {
+    #if CONFIG_MCWPM_ISR_IRAM_SAFE
+    if (cbs->on_empty)
+    {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_empty), ESP_ERR_INVALID_ARG, TAG, "on_empty callback not in IRAM");
     }
-    if (cbs->on_full) {
+    if (cbs->on_full)
+    {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_full), ESP_ERR_INVALID_ARG, TAG, "on_full callback not in IRAM");
     }
-    if (cbs->on_stop) {
+    if (cbs->on_stop)
+    {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_stop), ESP_ERR_INVALID_ARG, TAG, "on_stop callback not in IRAM");
     }
-    if (user_data) {
+    if (user_data)
+    {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-#endif
-
+    #endif
     // lazy install interrupt service
-    if (!timer->intr) {
+    if (!timer->intr)
+    {
         ESP_RETURN_ON_FALSE(timer->fsm == MCPWM_TIMER_FSM_INIT, ESP_ERR_INVALID_STATE, TAG, "timer not in init state");
         int isr_flags = MCPWM_INTR_ALLOC_FLAG;
         ESP_RETURN_ON_ERROR(esp_intr_alloc_intrstatus(mcpwm_periph_signals.groups[group_id].irq_id, isr_flags,
                             (uint32_t)mcpwm_ll_intr_get_status_reg(hal->dev), MCPWM_LL_EVENT_TIMER_MASK(timer_id),
                             mcpwm_timer_default_isr, timer, &timer->intr), TAG, "install interrupt service for timer failed");
     }
-
     // enable/disable interrupt events
     portENTER_CRITICAL(&group->spinlock);
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_TIMER_FULL(timer_id), cbs->on_full != NULL);
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_TIMER_EMPTY(timer_id), cbs->on_empty != NULL);
     mcpwm_ll_intr_enable(hal->dev, MCPWM_LL_EVENT_TIMER_STOP(timer_id), cbs->on_stop != NULL);
     portEXIT_CRITICAL(&group->spinlock);
-
     timer->on_stop = cbs->on_stop;
     timer->on_full = cbs->on_full;
     timer->on_empty = cbs->on_empty;
@@ -215,7 +216,6 @@ esp_err_t mcpwm_timer_get_phase(mcpwm_timer_handle_t timer, uint32_t *count_valu
     mcpwm_group_t *group = timer->group;
     int timer_id = timer->timer_id;
     mcpwm_hal_context_t *hal = &group->hal;
-
     portENTER_CRITICAL(&timer->spinlock);
     *count_value = mcpwm_ll_timer_get_count_value(hal->dev, timer_id);
     *direction = mcpwm_ll_timer_get_count_direction(hal->dev, timer_id);
@@ -228,10 +228,12 @@ esp_err_t mcpwm_timer_enable(mcpwm_timer_handle_t timer)
     ESP_RETURN_ON_FALSE(timer, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(timer->fsm == MCPWM_TIMER_FSM_INIT, ESP_ERR_INVALID_STATE, TAG, "timer not in init state");
     mcpwm_group_t *group = timer->group;
-    if (timer->intr) {
+    if (timer->intr)
+    {
         ESP_RETURN_ON_ERROR(esp_intr_enable(timer->intr), TAG, "enable interrupt failed");
     }
-    if (group->pm_lock) {
+    if (group->pm_lock)
+    {
         ESP_RETURN_ON_ERROR(esp_pm_lock_acquire(group->pm_lock), TAG, "acquire pm lock failed");
     }
     timer->fsm = MCPWM_TIMER_FSM_ENABLE;
@@ -243,10 +245,12 @@ esp_err_t mcpwm_timer_disable(mcpwm_timer_handle_t timer)
     ESP_RETURN_ON_FALSE(timer, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(timer->fsm == MCPWM_TIMER_FSM_ENABLE, ESP_ERR_INVALID_STATE, TAG, "timer not in enable state");
     mcpwm_group_t *group = timer->group;
-    if (timer->intr) {
+    if (timer->intr)
+    {
         ESP_RETURN_ON_ERROR(esp_intr_disable(timer->intr), TAG, "disable interrupt failed");
     }
-    if (group->pm_lock) {
+    if (group->pm_lock)
+    {
         ESP_RETURN_ON_ERROR(esp_pm_lock_release(group->pm_lock), TAG, "acquire pm lock failed");
     }
     timer->fsm = MCPWM_TIMER_FSM_INIT;
@@ -258,7 +262,6 @@ esp_err_t mcpwm_timer_start_stop(mcpwm_timer_handle_t timer, mcpwm_timer_start_s
     ESP_RETURN_ON_FALSE(timer, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(timer->fsm == MCPWM_TIMER_FSM_ENABLE, ESP_ERR_INVALID_STATE, TAG, "timer not in enable state");
     mcpwm_group_t *group = timer->group;
-
     portENTER_CRITICAL_SAFE(&timer->spinlock);
     mcpwm_ll_timer_set_start_stop_command(group->hal.dev, timer->timer_id, command);
     portEXIT_CRITICAL_SAFE(&timer->spinlock);
@@ -275,53 +278,66 @@ esp_err_t mcpwm_timer_set_phase_on_sync(mcpwm_timer_handle_t timer, const mcpwm_
     mcpwm_sync_handle_t sync_source = config->sync_src;
     // check if the sync direction is valid
     bool valid_direction = true;
-    if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_UP) {
+    if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_UP)
+    {
         valid_direction = config->direction == MCPWM_TIMER_DIRECTION_UP;
-    } else if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_DOWN) {
+    }
+    else if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_DOWN)
+    {
         valid_direction = config->direction == MCPWM_TIMER_DIRECTION_DOWN;
-    } else if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_PAUSE) {
+    }
+    else if (timer->count_mode == MCPWM_TIMER_COUNT_MODE_PAUSE)
+    {
         valid_direction = false;
-    } else {
+    }
+    else
+    {
         valid_direction = true;
     }
     ESP_RETURN_ON_FALSE(valid_direction, ESP_ERR_INVALID_ARG, TAG, "invalid sync direction");
-
     // enable sync feature and set sync phase
-    if (sync_source) {
+    if (sync_source)
+    {
         ESP_RETURN_ON_FALSE(config->count_value < MCPWM_LL_MAX_COUNT_VALUE, ESP_ERR_INVALID_ARG, TAG, "invalid sync count value");
-        switch (sync_source->type) {
-        case MCPWM_SYNC_TYPE_TIMER: {
-            ESP_RETURN_ON_FALSE(group == sync_source->group, ESP_ERR_INVALID_ARG, TAG, "timer and sync source are not in the same group");
-            mcpwm_timer_sync_src_t *timer_sync_src = __containerof(sync_source, mcpwm_timer_sync_src_t, base);
-            mcpwm_ll_timer_set_timer_sync_input(hal->dev, timer_id, timer_sync_src->timer->timer_id);
-            ESP_LOGD(TAG, "enable sync to timer (%d,%d) for timer (%d,%d)",
-                     group_id, timer_sync_src->timer->timer_id, group_id, timer_id);
-            break;
-        }
-        case MCPWM_SYNC_TYPE_GPIO: {
-            ESP_RETURN_ON_FALSE(group == sync_source->group, ESP_ERR_INVALID_ARG, TAG, "timer and sync source are not in the same group");
-            mcpwm_gpio_sync_src_t *gpio_sync_src = __containerof(sync_source, mcpwm_gpio_sync_src_t, base);
-            mcpwm_ll_timer_set_gpio_sync_input(hal->dev, timer_id, gpio_sync_src->sync_id);
-            ESP_LOGD(TAG, "enable sync to gpio (%d) for timer (%d,%d)",
-                     gpio_sync_src->gpio_num, group_id, timer_id);
-            break;
-        }
-        case MCPWM_SYNC_TYPE_SOFT: {
-            mcpwm_soft_sync_src_t *soft_sync = __containerof(sync_source, mcpwm_soft_sync_src_t, base);
-            if (soft_sync->soft_sync_from == MCPWM_SOFT_SYNC_FROM_TIMER && soft_sync->timer != timer) {
-                ESP_RETURN_ON_FALSE(false, ESP_ERR_INVALID_STATE, TAG, "soft sync already used by another timer");
+        switch (sync_source->type)
+        {
+            case MCPWM_SYNC_TYPE_TIMER:
+            {
+                ESP_RETURN_ON_FALSE(group == sync_source->group, ESP_ERR_INVALID_ARG, TAG, "timer and sync source are not in the same group");
+                mcpwm_timer_sync_src_t *timer_sync_src = __containerof(sync_source, mcpwm_timer_sync_src_t, base);
+                mcpwm_ll_timer_set_timer_sync_input(hal->dev, timer_id, timer_sync_src->timer->timer_id);
+                ESP_LOGD(TAG, "enable sync to timer (%d,%d) for timer (%d,%d)",
+                         group_id, timer_sync_src->timer->timer_id, group_id, timer_id);
+                break;
             }
-            soft_sync->soft_sync_from = MCPWM_SOFT_SYNC_FROM_TIMER;
-            soft_sync->timer = timer;
-            soft_sync->base.group = group;
-            break;
+            case MCPWM_SYNC_TYPE_GPIO:
+            {
+                ESP_RETURN_ON_FALSE(group == sync_source->group, ESP_ERR_INVALID_ARG, TAG, "timer and sync source are not in the same group");
+                mcpwm_gpio_sync_src_t *gpio_sync_src = __containerof(sync_source, mcpwm_gpio_sync_src_t, base);
+                mcpwm_ll_timer_set_gpio_sync_input(hal->dev, timer_id, gpio_sync_src->sync_id);
+                ESP_LOGD(TAG, "enable sync to gpio (%d) for timer (%d,%d)",
+                         gpio_sync_src->gpio_num, group_id, timer_id);
+                break;
+            }
+            case MCPWM_SYNC_TYPE_SOFT:
+            {
+                mcpwm_soft_sync_src_t *soft_sync = __containerof(sync_source, mcpwm_soft_sync_src_t, base);
+                if (soft_sync->soft_sync_from == MCPWM_SOFT_SYNC_FROM_TIMER && soft_sync->timer != timer)
+                {
+                    ESP_RETURN_ON_FALSE(false, ESP_ERR_INVALID_STATE, TAG, "soft sync already used by another timer");
+                }
+                soft_sync->soft_sync_from = MCPWM_SOFT_SYNC_FROM_TIMER;
+                soft_sync->timer = timer;
+                soft_sync->base.group = group;
+                break;
+            }
         }
-        }
-
         mcpwm_ll_timer_set_sync_phase_direction(hal->dev, timer_id, config->direction);
         mcpwm_ll_timer_set_sync_phase_value(hal->dev, timer_id, config->count_value);
         mcpwm_ll_timer_enable_sync_input(hal->dev, timer_id, true);
-    } else { // disable sync feature
+    }
+    else     // disable sync feature
+    {
         mcpwm_ll_timer_enable_sync_input(hal->dev, timer_id, false);
         ESP_LOGD(TAG, "disable sync for timer (%d,%d)", group_id, timer_id);
     }
@@ -337,40 +353,46 @@ static void IRAM_ATTR mcpwm_timer_default_isr(void *args)
     bool need_yield = false;
     uint32_t status = mcpwm_ll_intr_get_status(hal->dev);
     mcpwm_ll_intr_clear_status(hal->dev, status & MCPWM_LL_EVENT_TIMER_MASK(timer_id));
-
-    mcpwm_timer_event_data_t edata = {
+    mcpwm_timer_event_data_t edata =
+    {
         .direction = mcpwm_ll_timer_get_count_direction(hal->dev, timer_id),
         .count_value = mcpwm_ll_timer_get_count_value(hal->dev, timer_id),
     };
-
-    if (status & MCPWM_LL_EVENT_TIMER_STOP(timer_id)) {
+    if (status & MCPWM_LL_EVENT_TIMER_STOP(timer_id))
+    {
         mcpwm_timer_event_cb_t cb = timer->on_stop;
-        if (cb) {
-            if (cb(timer, &edata, timer->user_data)) {
+        if (cb)
+        {
+            if (cb(timer, &edata, timer->user_data))
+            {
                 need_yield = true;
             }
         }
     }
-
-    if (status & MCPWM_LL_EVENT_TIMER_FULL(timer_id)) {
+    if (status & MCPWM_LL_EVENT_TIMER_FULL(timer_id))
+    {
         mcpwm_timer_event_cb_t cb = timer->on_full;
-        if (cb) {
-            if (cb(timer, &edata, timer->user_data)) {
+        if (cb)
+        {
+            if (cb(timer, &edata, timer->user_data))
+            {
                 need_yield = true;
             }
         }
     }
-
-    if (status & MCPWM_LL_EVENT_TIMER_EMPTY(timer_id)) {
+    if (status & MCPWM_LL_EVENT_TIMER_EMPTY(timer_id))
+    {
         mcpwm_timer_event_cb_t cb = timer->on_empty;
-        if (cb) {
-            if (cb(timer, &edata, timer->user_data)) {
+        if (cb)
+        {
+            if (cb(timer, &edata, timer->user_data))
+            {
                 need_yield = true;
             }
         }
     }
-
-    if (need_yield) {
+    if (need_yield)
+    {
         portYIELD_FROM_ISR();
     }
 }

@@ -175,7 +175,8 @@ typedef struct spi_bus_lock_t spi_bus_lock_t;
 #define DEV_PEND_MASK(dev)  ((dev)->mask & PEND_MASK)
 #define DEV_BG_MASK(dev)    ((dev)->mask & BG_MASK)
 
-struct spi_bus_lock_t {
+struct spi_bus_lock_t
+{
     /**
      * The core of the lock. These bits are status of the lock, which should be always available.
      * No intermediate status is allowed. This is realized by atomic operations, mainly
@@ -211,7 +212,8 @@ struct spi_bus_lock_t {
     uint32_t            new_req;        ///< Last int_req when `spi_bus_lock_bg_start` is called. Debug use.
 };
 
-struct spi_bus_lock_dev_t {
+struct spi_bus_lock_dev_t
+{
     SemaphoreHandle_t   semphr;     ///< Binray semaphore to notify the device it claimed the bus
     spi_bus_lock_t*     parent;     ///< Pointer to parent spi_bus_lock_t
     uint32_t            mask;       ///< Bitwise OR-ed mask of the REQ, PEND, LOCK bits of this device
@@ -334,24 +336,27 @@ IRAM_ATTR static inline void bg_enable(spi_bus_lock_t* lock)
 SPI_MASTER_ATTR static inline void req_core(spi_bus_lock_dev_t *dev_handle)
 {
     spi_bus_lock_t *lock = dev_handle->parent;
-
     // Though `acquired_dev` is critical resource, `dev_handle == lock->acquired_dev`
     // is a stable statement unless `acquire_start` or `acquire_end` is called by current
     // device.
-    if (dev_handle == lock->acquiring_dev){
+    if (dev_handle == lock->acquiring_dev)
+    {
         // Set the REQ bit and check BG bits if we are the acquiring processor.
         // If the BG bits were not active before, invoke the BG again.
-
         // Avoid competitive risk against the `clear_pend_core`, `acq_dev_bg_active` should be set before
         // setting REQ bit.
         lock->acq_dev_bg_active = true;
         uint32_t status = lock_status_fetch_set(lock, DEV_REQ_MASK(dev_handle));
-        if ((status & DEV_BG_MASK(dev_handle)) == 0) {
+        if ((status & DEV_BG_MASK(dev_handle)) == 0)
+        {
             bg_enable(lock); //acquiring processor passed to BG
         }
-    } else {
+    }
+    else
+    {
         uint32_t status = lock_status_fetch_set(lock, DEV_REQ_MASK(dev_handle));
-        if (status == 0) {
+        if (status == 0)
+        {
             bg_enable(lock); //acquiring processor passed to BG
         }
     }
@@ -361,18 +366,18 @@ SPI_MASTER_ATTR static inline void req_core(spi_bus_lock_dev_t *dev_handle)
 SPI_MASTER_ISR_ATTR static inline bool acquire_core(spi_bus_lock_dev_t *dev_handle)
 {
     spi_bus_lock_t* lock = dev_handle->parent;
-
     //For this critical section, search `@note 1` in this file, to know details
     portENTER_CRITICAL_SAFE(&s_spinlock);
     uint32_t status = lock_status_fetch_set(lock, dev_handle->mask & LOCK_MASK);
     portEXIT_CRITICAL_SAFE(&s_spinlock);
-
     // Check all bits except WEAK_BG
-    if ((status & (BG_MASK | LOCK_MASK)) == 0) {
+    if ((status & (BG_MASK | LOCK_MASK)) == 0)
+    {
         //succeed at once
         lock->acquiring_dev = dev_handle;
         BUS_LOCK_DEBUG_EXECUTE_CHECK(!lock->acq_dev_bg_active);
-        if (status & WEAK_BG_FLAG) {
+        if (status & WEAK_BG_FLAG)
+        {
             //Mainly to disable the cache (Weak_BG), that is not able to disable itself
             bg_disable(lock);
         }
@@ -410,26 +415,29 @@ schedule_core(spi_bus_lock_t *lock, uint32_t status, spi_bus_lock_dev_t **out_de
     uint32_t lock_bits = (status & LOCK_MASK) >> LOCK_SHIFT;
     uint32_t bg_bits = status & BG_MASK;
     bg_bits = ((bg_bits >> REQ_SHIFT) | (bg_bits >> PENDING_SHIFT)) & REQ_MASK;
-
     bool bg_yield;
-    if (lock_bits) {
+    if (lock_bits)
+    {
         int dev_id = mask_get_id(lock_bits);
         desired_dev = (spi_bus_lock_dev_t *)atomic_load(&lock->dev[dev_id]);
         BUS_LOCK_DEBUG_EXECUTE_CHECK(desired_dev);
-
         lock->acquiring_dev = desired_dev;
         bg_yield = ((bg_bits & desired_dev->mask) == 0);
         lock->acq_dev_bg_active = !bg_yield;
-    } else {
+    }
+    else
+    {
         lock->acq_dev_bg_active = false;
-        if (bg_bits) {
+        if (bg_bits)
+        {
             int dev_id = mask_get_id(bg_bits);
             desired_dev = (spi_bus_lock_dev_t *)atomic_load(&lock->dev[dev_id]);
             BUS_LOCK_DEBUG_EXECUTE_CHECK(desired_dev);
-
             lock->acquiring_dev = NULL;
             bg_yield = false;
-        } else {
+        }
+        else
+        {
             desired_dev = NULL;
             lock->acquiring_dev = NULL;
             bg_yield = true;
@@ -444,18 +452,21 @@ IRAM_ATTR static inline void acquire_end_core(spi_bus_lock_dev_t *dev_handle)
 {
     spi_bus_lock_t* lock = dev_handle->parent;
     spi_bus_lock_dev_t* desired_dev = NULL;
-
     //For this critical section, search `@note 1` in this file, to know details
     portENTER_CRITICAL_SAFE(&s_spinlock);
     uint32_t status = lock_status_clear(lock, dev_handle->mask & LOCK_MASK);
     bool invoke_bg = !schedule_core(lock, status, &desired_dev);
     portEXIT_CRITICAL_SAFE(&s_spinlock);
-
-    if (invoke_bg) {
+    if (invoke_bg)
+    {
         bg_enable(lock);
-    } else if (desired_dev) {
+    }
+    else if (desired_dev)
+    {
         resume_dev(desired_dev);
-    } else if (status & WEAK_BG_FLAG) {
+    }
+    else if (status & WEAK_BG_FLAG)
+    {
         bg_enable(lock);
     }
 }
@@ -465,11 +476,11 @@ IRAM_ATTR static inline void acquire_end_core(spi_bus_lock_dev_t *dev_handle)
 SPI_MASTER_ISR_ATTR static inline void update_pend_core(spi_bus_lock_t *lock, uint32_t status)
 {
     uint32_t active_req_bits = status & REQ_MASK;
-#if PENDING_SHIFT > REQ_SHIFT
+    #if PENDING_SHIFT > REQ_SHIFT
     uint32_t pending_mask = active_req_bits << (PENDING_SHIFT - REQ_SHIFT);
-#else
+    #else
     uint32_t pending_mask = active_req_bits >> (REQ_SHIFT - PENDING_SHIFT);
-#endif
+    #endif
     // We have to set the PEND bits and then clear the REQ bits, since BG bits are using bitwise OR logic,
     // this will not influence the effectiveness of the BG bits of every device.
     lock_status_fetch_set(lock, pending_mask);
@@ -485,15 +496,17 @@ SPI_MASTER_ISR_ATTR static inline bool clear_pend_core(spi_bus_lock_dev_t *dev_h
     spi_bus_lock_t *lock = dev_handle->parent;
     uint32_t pend_mask = DEV_PEND_MASK(dev_handle);
     BUS_LOCK_DEBUG_EXECUTE_CHECK(lock_status_fetch(lock) & pend_mask);
-
     uint32_t status = lock_status_clear(lock, pend_mask);
-
-    if (lock->acquiring_dev == dev_handle) {
+    if (lock->acquiring_dev == dev_handle)
+    {
         finished = ((status & DEV_REQ_MASK(dev_handle)) == 0);
-        if (finished) {
+        if (finished)
+        {
             lock->acq_dev_bg_active = false;
         }
-    } else {
+    }
+    else
+    {
         finished = (status == 0);
     }
     return finished;
@@ -516,9 +529,12 @@ SPI_MASTER_ISR_ATTR static inline bool bg_entry_core(spi_bus_lock_t *lock)
      * To avoid this, interrupt is disabled here, and re-enabled later if required. (c) -> (d) -> (a) -> (b) -> revert (c) if !d
      */
     bg_disable(lock);
-    if (lock->in_isr) {
+    if (lock->in_isr)
+    {
         return false;
-    } else {
+    }
+    else
+    {
         lock->in_isr = true;
         return true;
     }
@@ -531,29 +547,36 @@ SPI_MASTER_ISR_ATTR static inline bool bg_entry_core(spi_bus_lock_t *lock)
 SPI_MASTER_ISR_ATTR static inline bool bg_exit_core(spi_bus_lock_t *lock, bool wip, BaseType_t *do_yield)
 {
     //See comments in `bg_entry_core`, re-enable interrupt disabled in entry if we do need the interrupt
-    if (wip) {
+    if (wip)
+    {
         bg_enable(lock);
         BUS_LOCK_DEBUG_EXECUTE_CHECK(!lock->acquiring_dev || lock->acq_dev_bg_active);
         return true;
     }
-
     bool ret;
     uint32_t status = lock_status_fetch(lock);
-    if (lock->acquiring_dev) {
-        if (status & DEV_BG_MASK(lock->acquiring_dev)) {
+    if (lock->acquiring_dev)
+    {
+        if (status & DEV_BG_MASK(lock->acquiring_dev))
+        {
             BUS_LOCK_DEBUG_EXECUTE_CHECK(lock->acq_dev_bg_active);
             ret = false;
-        } else {
+        }
+        else
+        {
             // The request may happen any time, even after we fetched the status.
             // The value of `acq_dev_bg_active` is random.
             resume_dev_in_isr(lock->acquiring_dev, do_yield);
             ret = true;
         }
-    } else {
+    }
+    else
+    {
         BUS_LOCK_DEBUG_EXECUTE_CHECK(!lock->acq_dev_bg_active);
         ret = !(status & BG_MASK);
     }
-    if (ret) {
+    if (ret)
+    {
         //when successfully exit, but no transaction done, mark BG as inactive
         lock->in_isr = false;
     }
@@ -568,7 +591,6 @@ IRAM_ATTR static inline void dev_wait_prepare(spi_bus_lock_dev_t *dev_handle)
 SPI_MASTER_ISR_ATTR static inline esp_err_t dev_wait(spi_bus_lock_dev_t *dev_handle, TickType_t wait)
 {
     BaseType_t ret = xSemaphoreTake(dev_handle->semphr, wait);
-
     if (ret == pdFALSE) return ESP_ERR_TIMEOUT;
     return ESP_OK;
 }
@@ -579,23 +601,23 @@ SPI_MASTER_ISR_ATTR static inline esp_err_t dev_wait(spi_bus_lock_dev_t *dev_han
 esp_err_t spi_bus_init_lock(spi_bus_lock_handle_t *out_lock, const spi_bus_lock_config_t *config)
 {
     spi_bus_lock_t* lock = (spi_bus_lock_t*)calloc(sizeof(spi_bus_lock_t), 1);
-    if (lock == NULL) {
+    if (lock == NULL)
+    {
         return ESP_ERR_NO_MEM;
     }
-
     lock_status_init(lock);
     lock->acquiring_dev = NULL;
     lock->last_dev = NULL;
     lock->periph_cs_num = config->cs_num;
     lock->host_id = config->host_id;
-
     *out_lock = lock;
     return ESP_OK;
 }
 
 void spi_bus_deinit_lock(spi_bus_lock_handle_t lock)
 {
-    for (int i = 0; i < DEV_NUM_MAX; i++) {
+    for (int i = 0; i < DEV_NUM_MAX; i++)
+    {
         assert(atomic_load(&lock->dev[i]) == (intptr_t)NULL);
     }
     free(lock);
@@ -603,22 +625,29 @@ void spi_bus_deinit_lock(spi_bus_lock_handle_t lock)
 
 static int try_acquire_free_dev(spi_bus_lock_t *lock, bool cs_required)
 {
-    if (cs_required) {
+    if (cs_required)
+    {
         int i;
-        for (i = 0; i < lock->periph_cs_num; i++) {
+        for (i = 0; i < lock->periph_cs_num; i++)
+        {
             intptr_t null = (intptr_t) NULL;
             //use 1 to occupy the slot, actual setup comes later
-            if (atomic_compare_exchange_strong(&lock->dev[i], &null, (intptr_t) 1)) {
+            if (atomic_compare_exchange_strong(&lock->dev[i], &null, (intptr_t) 1))
+            {
                 break;
             }
         }
-        return ((i == lock->periph_cs_num)? -1: i);
-    } else {
+        return ((i == lock->periph_cs_num) ? -1 : i);
+    }
+    else
+    {
         int i;
-        for (i = DEV_NUM_MAX - 1; i >= 0; i--) {
+        for (i = DEV_NUM_MAX - 1; i >= 0; i--)
+        {
             intptr_t null = (intptr_t) NULL;
             //use 1 to occupy the slot, actual setup comes later
-            if (atomic_compare_exchange_strong(&lock->dev[i], &null, (intptr_t) 1)) {
+            if (atomic_compare_exchange_strong(&lock->dev[i], &null, (intptr_t) 1))
+            {
                 break;
             }
         }
@@ -632,20 +661,20 @@ esp_err_t spi_bus_lock_register_dev(spi_bus_lock_handle_t lock, spi_bus_lock_dev
     if (lock == NULL) return ESP_ERR_INVALID_ARG;
     int id = try_acquire_free_dev(lock, config->flags & SPI_BUS_LOCK_DEV_FLAG_CS_REQUIRED);
     if (id == -1) return ESP_ERR_NOT_SUPPORTED;
-
     spi_bus_lock_dev_t* dev_lock = (spi_bus_lock_dev_t*)heap_caps_calloc(sizeof(spi_bus_lock_dev_t), 1, MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
-    if (dev_lock == NULL) {
+    if (dev_lock == NULL)
+    {
         return ESP_ERR_NO_MEM;
     }
     dev_lock->semphr = xSemaphoreCreateBinary();
-    if (dev_lock->semphr == NULL) {
+    if (dev_lock->semphr == NULL)
+    {
         free(dev_lock);
         atomic_store(&lock->dev[id], (intptr_t)NULL);
         return ESP_ERR_NO_MEM;
     }
     dev_lock->parent = lock;
     dev_lock->mask = DEV_MASK(id);
-
     ESP_LOGV(TAG, "device registered on bus %d slot %d.", lock->host_id, id);
     atomic_store(&lock->dev[id], (intptr_t)dev_lock);
     *out_dev_handle = dev_lock;
@@ -655,17 +684,14 @@ esp_err_t spi_bus_lock_register_dev(spi_bus_lock_handle_t lock, spi_bus_lock_dev
 void spi_bus_lock_unregister_dev(spi_bus_lock_dev_handle_t dev_handle)
 {
     int id = dev_lock_get_id(dev_handle);
-
     spi_bus_lock_t* lock = dev_handle->parent;
     BUS_LOCK_DEBUG_EXECUTE_CHECK(atomic_load(&lock->dev[id]) == (intptr_t)dev_handle);
-
     if (lock->last_dev == dev_handle) lock->last_dev = NULL;
-
     atomic_store(&lock->dev[id], (intptr_t)NULL);
-    if (dev_handle->semphr) {
+    if (dev_handle->semphr)
+    {
         vSemaphoreDelete(dev_handle->semphr);
     }
-
     free(dev_handle);
 }
 
@@ -688,7 +714,7 @@ void spi_bus_lock_set_bg_control(spi_bus_lock_handle_t lock, bg_ctrl_func_t bg_e
 
 IRAM_ATTR int spi_bus_lock_get_dev_id(spi_bus_lock_dev_handle_t dev_handle)
 {
-    return (dev_handle? dev_lock_get_id(dev_handle): -1);
+    return (dev_handle ? dev_lock_get_id(dev_handle) : -1);
 }
 
 //will be called when cache disabled
@@ -696,10 +722,11 @@ IRAM_ATTR bool spi_bus_lock_touch(spi_bus_lock_dev_handle_t dev_handle)
 {
     spi_bus_lock_dev_t* last_dev = dev_handle->parent->last_dev;
     dev_handle->parent->last_dev = dev_handle;
-    if (last_dev != dev_handle) {
-        int last_dev_id = (last_dev? dev_lock_get_id(last_dev): -1);
+    if (last_dev != dev_handle)
+    {
+        int last_dev_id = (last_dev ? dev_lock_get_id(last_dev) : -1);
         ESP_DRAM_LOGV(TAG, "SPI dev changed from %d to %d",
-                    last_dev_id, dev_lock_get_id(dev_handle));
+                      last_dev_id, dev_lock_get_id(dev_handle));
     }
     return (dev_handle != last_dev);
 }
@@ -710,26 +737,22 @@ IRAM_ATTR bool spi_bus_lock_touch(spi_bus_lock_dev_handle_t dev_handle)
 IRAM_ATTR esp_err_t spi_bus_lock_acquire_start(spi_bus_lock_dev_t *dev_handle, TickType_t wait)
 {
     LOCK_CHECK(wait == portMAX_DELAY, "timeout other than portMAX_DELAY not supported", ESP_ERR_INVALID_ARG);
-
     spi_bus_lock_t* lock = dev_handle->parent;
-
     // Clear the semaphore before checking
     dev_wait_prepare(dev_handle);
-    if (!acquire_core(dev_handle)) {
+    if (!acquire_core(dev_handle))
+    {
         //block until becoming the acquiring processor (help by previous acquiring processor)
         esp_err_t err = dev_wait(dev_handle, wait);
         //TODO: add timeout handling here.
         if (err != ESP_OK) return err;
     }
-
     ESP_DRAM_LOGV(TAG, "dev %d acquired.", dev_lock_get_id(dev_handle));
     BUS_LOCK_DEBUG_EXECUTE_CHECK(lock->acquiring_dev == dev_handle);
-
     //When arrives at here, requests of this device should already be handled
     uint32_t status = lock_status_fetch(lock);
     (void) status;
     BUS_LOCK_DEBUG_EXECUTE_CHECK((status & DEV_BG_MASK(dev_handle)) == 0);
-
     return ESP_OK;
 }
 
@@ -738,9 +761,7 @@ IRAM_ATTR esp_err_t spi_bus_lock_acquire_end(spi_bus_lock_dev_t *dev_handle)
     //release the bus
     spi_bus_lock_t* lock = dev_handle->parent;
     LOCK_CHECK(lock->acquiring_dev == dev_handle, "Cannot release a lock that hasn't been acquired.", ESP_ERR_INVALID_STATE);
-
     acquire_end_core(dev_handle);
-
     ESP_LOGV(TAG, "dev %d released.", dev_lock_get_id(dev_handle));
     return ESP_OK;
 }
@@ -774,20 +795,20 @@ IRAM_ATTR esp_err_t spi_bus_lock_wait_bg_done(spi_bus_lock_dev_handle_t dev_hand
     spi_bus_lock_t *lock = dev_handle->parent;
     LOCK_CHECK(lock->acquiring_dev == dev_handle, "Cannot wait for a device that is not acquired", ESP_ERR_INVALID_STATE);
     LOCK_CHECK(wait == portMAX_DELAY, "timeout other than portMAX_DELAY not supported", ESP_ERR_INVALID_ARG);
-
     // If no BG bits active, skip quickly. This is ensured by `spi_bus_lock_wait_bg_done`
     // cannot be executed with `bg_request` on the same device concurrently.
-    if (lock_status_fetch(lock) & DEV_BG_MASK(dev_handle)) {
+    if (lock_status_fetch(lock) & DEV_BG_MASK(dev_handle))
+    {
         // Clear the semaphore before checking
         dev_wait_prepare(dev_handle);
-        if (lock_status_fetch(lock) & DEV_BG_MASK(dev_handle)) {
+        if (lock_status_fetch(lock) & DEV_BG_MASK(dev_handle))
+        {
             //block until becoming the acquiring processor (help by previous acquiring processor)
             esp_err_t err = dev_wait(dev_handle, wait);
             //TODO: add timeout handling here.
             if (err != ESP_OK) return err;
         }
     }
-
     BUS_LOCK_DEBUG_EXECUTE_CHECK(!lock->acq_dev_bg_active);
     BUS_LOCK_DEBUG_EXECUTE_CHECK((lock_status_fetch(lock) & DEV_BG_MASK(dev_handle)) == 0);
     return ESP_OK;
@@ -801,7 +822,7 @@ SPI_MASTER_ISR_ATTR bool spi_bus_lock_bg_clear_req(spi_bus_lock_dev_t *dev_handl
 }
 
 SPI_MASTER_ISR_ATTR bool spi_bus_lock_bg_check_dev_acq(spi_bus_lock_t *lock,
-                                                       spi_bus_lock_dev_handle_t *out_dev_lock)
+        spi_bus_lock_dev_handle_t *out_dev_lock)
 {
     BUS_LOCK_DEBUG_EXECUTE_CHECK(!lock->acquiring_dev);
     uint32_t status = lock_status_fetch(lock);
@@ -813,13 +834,15 @@ SPI_MASTER_ISR_ATTR bool spi_bus_lock_bg_check_dev_req(spi_bus_lock_dev_t *dev_l
     spi_bus_lock_t* lock = dev_lock->parent;
     uint32_t status = lock_status_fetch(lock);
     uint32_t dev_status = status & dev_lock->mask;
-
     // move REQ bits of all device to corresponding PEND bits.
     // To reduce executing time, only done when the REQ bit of the calling device is set.
-    if (dev_status & REQ_MASK) {
+    if (dev_status & REQ_MASK)
+    {
         update_pend_core(lock, status);
         return true;
-    } else {
+    }
+    else
+    {
         return dev_status & PEND_MASK;
     }
 }
@@ -836,7 +859,8 @@ SPI_MASTER_ISR_ATTR bool spi_bus_lock_bg_req_exist(spi_bus_lock_t *lock)
 #if CONFIG_SPI_FLASH_SHARE_SPI1_BUS
 static spi_bus_lock_dev_t lock_main_flash_dev;
 
-static spi_bus_lock_t main_spi_bus_lock = {
+static spi_bus_lock_t main_spi_bus_lock =
+{
     /*
      * the main bus cache is permanently required, this flag is set here and never clear so that the
      * cache will always be enabled if acquiring devices yield.
@@ -857,7 +881,8 @@ esp_err_t spi_bus_lock_init_main_bus(void)
 
 static StaticSemaphore_t main_flash_semphr;
 
-static spi_bus_lock_dev_t lock_main_flash_dev = {
+static spi_bus_lock_dev_t lock_main_flash_dev =
+{
     .semphr = NULL,
     .parent = &main_spi_bus_lock,
     .mask = DEV_MASK(0),
@@ -867,7 +892,8 @@ const spi_bus_lock_dev_handle_t g_spi_lock_main_flash_dev = &lock_main_flash_dev
 esp_err_t spi_bus_lock_init_main_dev(void)
 {
     g_spi_lock_main_flash_dev->semphr = xSemaphoreCreateBinaryStatic(&main_flash_semphr);
-    if (g_spi_lock_main_flash_dev->semphr == NULL) {
+    if (g_spi_lock_main_flash_dev->semphr == NULL)
+    {
         return ESP_ERR_NO_MEM;
     }
     return ESP_OK;

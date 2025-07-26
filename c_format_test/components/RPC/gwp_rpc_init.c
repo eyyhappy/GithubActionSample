@@ -152,14 +152,14 @@ static bool verify_cert_authentication(uint8_t *cert_buf, uint32_t cert_len)
     }
     else
     {
-#ifdef GWP_PRODUCTION
+        #ifdef GWP_PRODUCTION
         GWP_LOG_INFO("Initialize product CA in verify_cert_authentication");
         ret_code = gwpFunctions.x509CrtVerify (cert_buf, cert_len, product_ca_data, strlen((const char *)product_ca_data) + 1, NULL, 0);
-#else
+        #else
         //ret_code = gwp_x509_crt_verify(cert_buf,cert_len,hon_ca_data,strlen((const char *)hon_ca_data)+1,NULL,0);
 //        gwpFunctions.rngVectorGenerate
         ret_code = gwpFunctions.x509CrtVerify(cert_buf, cert_len, ca_data, strlen((const char *)ca_data) + 1, NULL, 0);
-#endif //GWP_PRODUCTION
+        #endif //GWP_PRODUCTION
         if(ret_code != GWP_SUCCESS)
         {
             return false;
@@ -174,12 +174,12 @@ ret_code_t gwp_init_cmd_get_seq(uint8_t * result, uint16_t *out_len)
     ret_code_t ret_code = GWP_SUCCESS;
     VERIFY_TRUE((*out_len >= SEQ_SIZE), RPC_ERROR_MEMORY_OUT);
     memset(init_random, 0, sizeof(init_random));
-#ifdef DEBUG_RPC_PROTOCOL
+    #ifdef DEBUG_RPC_PROTOCOL
     const uint8_t fix_iv[16] = {0x51, 0xf2, 0xff, 0x13, 0x23, 0x77, 0x6a, 0x49, 0x6f, 0x36, 0x58, 0xa7, 0xd4, 0xcd, 0x99, 0xf8};
     memcpy((uint8_t *)&gwp_rpc.pdu_seq, fix_iv, sizeof(gwp_rpc.pdu_seq));
-#else
+    #else
     ret_code = gwpFunctions.rngVectorGenerate((uint8_t *)&gwp_rpc.pdu_seq, sizeof(gwp_rpc.pdu_seq));
-#endif /* DEBUG_RPC_PROTOCOL */
+    #endif /* DEBUG_RPC_PROTOCOL */
     if(ret_code != GWP_SUCCESS)
     {
         return ret_code;
@@ -194,10 +194,10 @@ extern uint8_t salt_key_all[8];
 ret_code_t gwp_init_cmd_check_device_random(rpc_frame_t *rpc_frame, uint8_t * result, uint16_t *out_len)
 {
     ret_code_t ret_code = GWP_SUCCESS;
-#ifndef RPC_TOOL_PYTHON_SUPPORT
+    #ifndef RPC_TOOL_PYTHON_SUPPORT
     int i;
     uint8_t verify_data[4] = {0x47, 0x57, 0x50, 0x0a}; //"GWP"
-#endif
+    #endif
     VERIFY_TRUE((*out_len >= SEQ_SIZE), RPC_ERROR_MEMORY_OUT);
     if(gwp_rpc.rpc_init_status != INIT_CHECK_DEVICE)
     {
@@ -212,12 +212,12 @@ ret_code_t gwp_init_cmd_check_device_random(rpc_frame_t *rpc_frame, uint8_t * re
     {
         return RPC_ERROR_FRAME_SIZE;
     }
-#ifndef RPC_TOOL_PYTHON_SUPPORT
+    #ifndef RPC_TOOL_PYTHON_SUPPORT
     for(i = 0; i < SEQ_SIZE; i++)
     {
         result[i] = rpc_frame->u.payload_init.payload[i] ^ verify_data[i];
     }
-#else
+    #else
     size_t result_length = 32; //SEQ_SIZE;  gwpFunctions.rngVectorGenerate
     ret_code = gwpFunctions.hash256Calculate(rpc_frame->u.payload_init.payload, SEQ_SIZE, result, &result_length);
     if(ret_code != GWP_SUCCESS)
@@ -225,7 +225,7 @@ ret_code_t gwp_init_cmd_check_device_random(rpc_frame_t *rpc_frame, uint8_t * re
     memcpy(salt_key, rpc_frame->u.payload_init.payload, 4); //save 4bytes random number
     memcpy(&salt_key_all[0], rpc_frame->u.payload_init.payload, 4); //save 4bytes random number
     print_hex(salt_key_all, sizeof(salt_key_all), "salt_key_all");
-#endif
+    #endif
     *out_len = 32;
     gwp_rpc.rpc_init_status = INIT_CHECK_CERT_HASH;
     return ret_code;
@@ -254,13 +254,13 @@ ret_code_t gwp_init_cmd_check_cert_hash(rpc_frame_t *rpc_frame, uint8_t * result
     memset(cert_hash_buf, 0, sizeof(cert_hash_buf));
     memcpy(cert_hash_buf, rpc_frame->u.payload_init.payload, sizeof(cert_hash_buf));
     //read out certificate
-#if defined(NRF52840_XXAA)
+    #if defined(NRF52840_XXAA)
     gwp_read_cert(cert, sizeof(cert), &cert_size);
-#elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
+    #elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
 //  gwp_read_cert(cert, sizeof(cert), &cert_size);
-#else
+    #else
 #error "Architecture not set."
-#endif
+    #endif
     if(cert_size == 0 || cert_size > MAX_CERT_SIZE )
     {
         *result = FAIL;
@@ -324,17 +324,17 @@ ret_code_t gwp_init_cmd_send_cert(rpc_frame_t *rpc_frame, uint8_t * result, uint
         {
             memcpy(cert, cert_tmp_info.cert_payload, cert_tmp_info.cert_size);
             cert_size = cert_tmp_info.cert_size;
-#if defined(NRF52840_XXAA)
-#ifndef CONFIG_GWP_ECCHIP_SUPPORT
+            #if defined(NRF52840_XXAA)
+            #ifndef CONFIG_GWP_ECCHIP_SUPPORT
             gwp_write_cert(cert_tmp_info.cert_payload, cert_tmp_info.cert_size);
-#endif
-#elif defined(STM32WB55xx)  || defined(CONFIG_IDF_TARGET_ESP32S3)
+            #endif
+            #elif defined(STM32WB55xx)  || defined(CONFIG_IDF_TARGET_ESP32S3)
 //#ifndef CONFIG_GWP_ECCHIP_SUPPORT
 //            gwp_write_cert(cert_tmp_info.cert_payload, cert_tmp_info.cert_size);
 //#endif
-#else
+            #else
 #error "Architecture not set."
-#endif
+            #endif
             *result = SUCCESS;
             gwp_rpc.rpc_init_status = INIT_GET_RANDOM;
         }
@@ -367,15 +367,15 @@ ret_code_t gwp_init_cmd_get_random(rpc_frame_t *rpc_frame, uint8_t * result, uin
         return RPC_ERROR_FRAME_SEQ;
     }
     gwp_rpc.pdu_seq ++;
-#ifdef DEBUG_RPC_PROTOCOL
+    #ifdef DEBUG_RPC_PROTOCOL
     const uint8_t fix_iv[16] = {0x51, 0xf2, 0xff, 0x13, 0x23, 0x77, 0x6a, 0x49, 0x6f, 0x36, 0x58, 0xa7, 0xd4, 0xcd, 0x99, 0xf8};
     memcpy(init_random, fix_iv, INIT_RANDOM_SIZE);
-#else
+    #else
 //    gwpFunctions
     ret_code = gwpFunctions.rngVectorGenerate(init_random, INIT_RANDOM_SIZE);
     print_hex(init_random, sizeof(init_random), "init_random");
     print_hex(salt_key_all, sizeof(salt_key_all), "salt_key_all");
-#endif /* DEBUG_RPC_PROTOCOL */
+    #endif /* DEBUG_RPC_PROTOCOL */
     if(ret_code != GWP_SUCCESS)
     {
         return ret_code;
@@ -453,20 +453,20 @@ ret_code_t gwp_init_cmd_probe_gwp_capacity(rpc_frame_t *rpc_frame, uint8_t * res
 //    {
 //        return ret_code;
 //    }
-#ifdef CONFIG_GWP_ECCHIP_SUPPORT
+    #ifdef CONFIG_GWP_ECCHIP_SUPPORT
     ins_rpc_info.gwp_auth_cap = 1;
-#endif
+    #endif
     ins_rpc_info.gwp_wireless_cap = 0x01;
-#if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
+    #if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
     ins_rpc_info.run_stage = 0;
-#else
+    #else
     ins_rpc_info.run_stage = 1;
-#endif
-#ifdef NONE_SELF_CONTAIN
+    #endif
+    #ifdef NONE_SELF_CONTAIN
     ins_rpc_info.self_contain = 0;
-#else
+    #else
     ins_rpc_info.self_contain = 1;
-#endif
+    #endif
     memcpy(result, &ins_rpc_info, sizeof(ins_rpc_info));
     *out_len = sizeof(ins_rpc_info);
     gwp_rpc.rpc_init_status = INIT_CHECK_DEVICE;

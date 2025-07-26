@@ -31,7 +31,8 @@
 #include "hal/touch_sensor_types.h"
 #include "hal/touch_sensor_hal.h"
 
-typedef struct {
+typedef struct
+{
     esp_timer_handle_t timer;
     uint16_t filtered_val[TOUCH_PAD_MAX];
     uint16_t raw_val[TOUCH_PAD_MAX];
@@ -81,9 +82,12 @@ esp_err_t touch_pad_isr_register(intr_handler_t fn, void *arg)
 
 static uint32_t _touch_filter_iir(uint32_t in_now, uint32_t out_last, uint32_t k)
 {
-    if (k == 0) {
+    if (k == 0)
+    {
         return in_now;
-    } else {
+    }
+    else
+    {
         uint32_t out_now = (in_now + (k - 1) * out_last) / k;
         return out_now;
     }
@@ -98,15 +102,17 @@ esp_err_t touch_pad_set_filter_read_cb(filter_cb_t read_cb)
 static void touch_pad_filter_cb(void *arg)
 {
     static uint32_t s_filtered_temp[TOUCH_PAD_MAX] = {0};
-
-    if (s_touch_pad_filter == NULL || rtc_touch_mux == NULL) {
+    if (s_touch_pad_filter == NULL || rtc_touch_mux == NULL)
+    {
         return;
     }
     uint16_t val = 0;
     touch_fsm_mode_t mode;
     touch_pad_get_fsm_mode(&mode);
-    for (int i = 0; i < TOUCH_PAD_MAX; i++) {
-        if ((s_touch_pad_init_bit >> i) & 0x1) {
+    for (int i = 0; i < TOUCH_PAD_MAX; i++)
+    {
+        if ((s_touch_pad_init_bit >> i) & 0x1)
+        {
             _touch_pad_read(i, &val, mode);
             s_touch_pad_filter->raw_val[i] = val;
             s_filtered_temp[i] = s_filtered_temp[i] == 0 ? ((uint32_t)val << TOUCH_PAD_SHIFT_DEFAULT) : s_filtered_temp[i];
@@ -115,7 +121,8 @@ static void touch_pad_filter_cb(void *arg)
             s_touch_pad_filter->filtered_val[i] = (s_filtered_temp[i] + TOUCH_PAD_SHIFT_ROUND_DEFAULT) >> TOUCH_PAD_SHIFT_DEFAULT;
         }
     }
-    if (s_filter_cb) {
+    if (s_filter_cb)
+    {
         //return the raw data and filtered data.
         s_filter_cb(s_touch_pad_filter->raw_val, s_touch_pad_filter->filtered_val);
     }
@@ -143,7 +150,6 @@ esp_err_t touch_pad_set_measurement_clock_cycles(uint16_t clock_cycle)
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_meas_time(clock_cycle);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -153,7 +159,6 @@ esp_err_t touch_pad_get_measurement_clock_cycles(uint16_t *clock_cycle)
     TOUCH_ENTER_CRITICAL();
     touch_hal_get_meas_time(clock_cycle);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -210,12 +215,10 @@ esp_err_t touch_pad_set_group_mask(uint16_t set1_mask, uint16_t set2_mask, uint1
     ESP_RETURN_ON_FALSE((set1_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch set1 bitmask error");
     ESP_RETURN_ON_FALSE((set2_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch set2 bitmask error");
     ESP_RETURN_ON_FALSE((en_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch work_en bitmask error");
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_group_mask(set1_mask, set2_mask);
     touch_hal_set_channel_mask(en_mask);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -228,7 +231,6 @@ esp_err_t touch_pad_get_group_mask(uint16_t *set1_mask, uint16_t *set2_mask, uin
     touch_hal_get_channel_mask(en_mask);
     touch_hal_get_group_mask(set1_mask, set2_mask);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -237,7 +239,6 @@ esp_err_t touch_pad_clear_group_mask(uint16_t set1_mask, uint16_t set2_mask, uin
     ESP_RETURN_ON_FALSE((set1_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch set1 bitmask error");
     ESP_RETURN_ON_FALSE((set2_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch set2 bitmask error");
     ESP_RETURN_ON_FALSE((en_mask <= TOUCH_PAD_BIT_MASK_ALL), ESP_ERR_INVALID_ARG, TOUCH_TAG,  "touch work_en bitmask error");
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_clear_channel_mask(en_mask);
     touch_hal_clear_group_mask(set1_mask, set2_mask);
@@ -285,10 +286,13 @@ esp_err_t touch_pad_config(touch_pad_t touch_num, uint16_t threshold)
     touch_hal_set_threshold(touch_num, threshold);
     TOUCH_EXIT_CRITICAL();
     touch_pad_get_fsm_mode(&mode);
-    if (TOUCH_FSM_MODE_SW == mode) {
+    if (TOUCH_FSM_MODE_SW == mode)
+    {
         touch_pad_clear_group_mask((1 << touch_num), (1 << touch_num), (1 << touch_num));
         s_touch_pad_init_bit |= (1 << touch_num);
-    } else if (TOUCH_FSM_MODE_TIMER == mode) {
+    }
+    else if (TOUCH_FSM_MODE_TIMER == mode)
+    {
         uint16_t sleep_time = 0;
         uint16_t meas_cycle = 0;
         uint32_t wait_time_ms = 0;
@@ -297,14 +301,15 @@ esp_err_t touch_pad_config(touch_pad_t touch_num, uint16_t threshold)
         touch_pad_set_group_mask((1 << touch_num), (1 << touch_num), (1 << touch_num));
         touch_pad_get_measurement_interval(&sleep_time);
         touch_pad_get_measurement_clock_cycles(&meas_cycle);
-
         //If the FSM mode is 'TOUCH_FSM_MODE_TIMER', The data will be ready after one measurement cycle
         //after this function is executed, otherwise, the "touch_value" by "touch_pad_read" is 0.
         wait_time_ms = sleep_time / (rtc_clk_freq / 1000) + meas_cycle / (SOC_CLK_RC_FAST_FREQ_APPROX / 1000);
         wait_tick = wait_time_ms / portTICK_PERIOD_MS;
         vTaskDelay(wait_tick ? wait_tick : 1);
         s_touch_pad_init_bit |= (1 << touch_num);
-    } else {
+    }
+    else
+    {
         return ESP_FAIL;
     }
     return ESP_OK;
@@ -312,14 +317,16 @@ esp_err_t touch_pad_config(touch_pad_t touch_num, uint16_t threshold)
 
 esp_err_t touch_pad_init(void)
 {
-#ifdef CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
+    #ifdef CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
     ESP_LOGE(TOUCH_TAG, "Touch Pad can't work because it provides current to external XTAL");
     return ESP_ERR_NOT_SUPPORTED;
-#endif // CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
-    if (rtc_touch_mux == NULL) {
+    #endif // CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
+    if (rtc_touch_mux == NULL)
+    {
         rtc_touch_mux = xSemaphoreCreateMutex();
     }
-    if (rtc_touch_mux == NULL) {
+    if (rtc_touch_mux == NULL)
+    {
         return ESP_FAIL;
     }
     TOUCH_ENTER_CRITICAL();
@@ -333,8 +340,10 @@ esp_err_t touch_pad_deinit(void)
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_FAIL, TOUCH_TAG,  "Touch pad not initialized");
     esp_err_t ret = ESP_OK;
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
-    if (s_touch_pad_filter) {
-        if (s_touch_pad_filter->timer) {
+    if (s_touch_pad_filter)
+    {
+        if (s_touch_pad_filter->timer)
+        {
             ESP_GOTO_ON_ERROR(esp_timer_stop(s_touch_pad_filter->timer), err, TOUCH_TAG, "failed to stop the timer");
             ESP_GOTO_ON_ERROR(esp_timer_delete(s_touch_pad_filter->timer), err, TOUCH_TAG, "failed to delete the timer");
             s_touch_pad_filter->timer = NULL;
@@ -358,19 +367,25 @@ err:
 static esp_err_t _touch_pad_read(touch_pad_t touch_num, uint16_t *touch_value, touch_fsm_mode_t mode)
 {
     esp_err_t res = ESP_OK;
-    if (TOUCH_FSM_MODE_SW == mode) {
+    if (TOUCH_FSM_MODE_SW == mode)
+    {
         touch_pad_set_group_mask((1 << touch_num), (1 << touch_num), (1 << touch_num));
         touch_pad_sw_start();
         while (!touch_hal_meas_is_done()) {};
         *touch_value = touch_hal_read_raw_data(touch_num);
         touch_pad_clear_group_mask((1 << touch_num), (1 << touch_num), (1 << touch_num));
-    } else if (TOUCH_FSM_MODE_TIMER == mode) {
+    }
+    else if (TOUCH_FSM_MODE_TIMER == mode)
+    {
         while (!touch_hal_meas_is_done()) {};
         *touch_value = touch_hal_read_raw_data(touch_num);
-    } else {
+    }
+    else
+    {
         res = ESP_FAIL;
     }
-    if (*touch_value == 0) {
+    if (*touch_value == 0)
+    {
         res = ESP_ERR_INVALID_STATE;
     }
     return res;
@@ -381,7 +396,6 @@ esp_err_t touch_pad_read(touch_pad_t touch_num, uint16_t *touch_value)
     TOUCH_CHANNEL_CHECK(touch_num);
     TOUCH_NULL_POINTER_CHECK(touch_value, "touch_value");
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_FAIL, TOUCH_TAG,  "Touch pad not initialized");
-
     esp_err_t res = ESP_OK;
     touch_fsm_mode_t mode;
     touch_pad_get_fsm_mode(&mode);
@@ -398,7 +412,8 @@ IRAM_ATTR esp_err_t touch_pad_read_raw_data(touch_pad_t touch_num, uint16_t *tou
     TOUCH_NULL_POINTER_CHECK(touch_value, "touch_value");
     ESP_RETURN_ON_FALSE(s_touch_pad_filter, ESP_FAIL, TOUCH_TAG,  "Touch pad filter not initialized");
     *touch_value = s_touch_pad_filter->raw_val[touch_num];
-    if (*touch_value == 0) {
+    if (*touch_value == 0)
+    {
         return ESP_ERR_INVALID_STATE;
     }
     return ESP_OK;
@@ -411,7 +426,8 @@ IRAM_ATTR esp_err_t touch_pad_read_filtered(touch_pad_t touch_num, uint16_t *tou
     TOUCH_NULL_POINTER_CHECK(touch_value, "touch_value");
     ESP_RETURN_ON_FALSE(s_touch_pad_filter, ESP_FAIL, TOUCH_TAG,  "Touch pad filter not initialized");
     *touch_value = (s_touch_pad_filter->filtered_val[touch_num]);
-    if (*touch_value == 0) {
+    if (*touch_value == 0)
+    {
         return ESP_ERR_INVALID_STATE;
     }
     return ESP_OK;
@@ -422,7 +438,6 @@ esp_err_t touch_pad_set_filter_period(uint32_t new_period_ms)
     ESP_RETURN_ON_FALSE(s_touch_pad_filter, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad filter not initialized");
     ESP_RETURN_ON_FALSE(new_period_ms > 0, ESP_ERR_INVALID_ARG, TOUCH_TAG,  "Touch pad filter period error");
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad not initialized");
-
     esp_err_t ret = ESP_OK;
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
     ESP_GOTO_ON_ERROR(esp_timer_stop(s_touch_pad_filter->timer), err, TOUCH_TAG, "failed to stop the timer");
@@ -438,12 +453,14 @@ esp_err_t touch_pad_get_filter_period(uint32_t *p_period_ms)
     ESP_RETURN_ON_FALSE(s_touch_pad_filter, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad filter not initialized");
     TOUCH_NULL_POINTER_CHECK(p_period_ms, "p_period_ms");
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad not initialized");
-
     esp_err_t ret = ESP_OK;
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
-    if (s_touch_pad_filter) {
+    if (s_touch_pad_filter)
+    {
         *p_period_ms = s_touch_pad_filter->period;
-    } else {
+    }
+    else
+    {
         ESP_LOGE(TOUCH_TAG, "Touch pad filter deleted");
         ret = ESP_ERR_INVALID_STATE;
     }
@@ -455,15 +472,17 @@ esp_err_t touch_pad_filter_start(uint32_t filter_period_ms)
 {
     ESP_RETURN_ON_FALSE(filter_period_ms >= portTICK_PERIOD_MS, ESP_ERR_INVALID_ARG, TOUCH_TAG,  "Touch pad filter period error");
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad not initialized");
-
     esp_err_t ret = ESP_OK;
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
-    if (s_touch_pad_filter == NULL) {
+    if (s_touch_pad_filter == NULL)
+    {
         s_touch_pad_filter = (touch_pad_filter_t *) calloc(1, sizeof(touch_pad_filter_t));
         ESP_GOTO_ON_FALSE(s_touch_pad_filter, ESP_ERR_NO_MEM, err_no_mem, TOUCH_TAG, "no memory for filter");
     }
-    if (s_touch_pad_filter->timer == NULL) {
-        esp_timer_create_args_t timer_cfg = {
+    if (s_touch_pad_filter->timer == NULL)
+    {
+        esp_timer_create_args_t timer_cfg =
+        {
             .callback = touch_pad_filter_cb,
             .arg = NULL,
             .dispatch_method = ESP_TIMER_TASK,
@@ -477,10 +496,8 @@ esp_err_t touch_pad_filter_start(uint32_t filter_period_ms)
         ESP_GOTO_ON_ERROR(esp_timer_start_periodic(s_touch_pad_filter->timer, filter_period_ms * 1000),
                           err_timer_start, TOUCH_TAG, "failed to start the filter timer");
     }
-
     xSemaphoreGive(rtc_touch_mux);
     return ret;
-
 err_timer_start:
     esp_timer_delete(s_touch_pad_filter->timer);
 err_timer_create:
@@ -497,7 +514,8 @@ esp_err_t touch_pad_filter_stop(void)
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad not initialized");
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
     esp_err_t ret = esp_timer_stop(s_touch_pad_filter->timer);
-    if (ret != ESP_OK) {
+    if (ret != ESP_OK)
+    {
         ESP_LOGE(TOUCH_TAG, "failed to stop the timer");
     }
     xSemaphoreGive(rtc_touch_mux);
@@ -510,7 +528,8 @@ esp_err_t touch_pad_filter_delete(void)
     ESP_RETURN_ON_FALSE(rtc_touch_mux, ESP_ERR_INVALID_STATE, TOUCH_TAG,  "Touch pad not initialized");
     esp_err_t ret = ESP_OK;
     xSemaphoreTake(rtc_touch_mux, portMAX_DELAY);
-    if (s_touch_pad_filter->timer) {
+    if (s_touch_pad_filter->timer)
+    {
         ESP_GOTO_ON_ERROR(esp_timer_stop(s_touch_pad_filter->timer), err, TOUCH_TAG, "failed to stop the timer");
         ESP_GOTO_ON_ERROR(esp_timer_delete(s_touch_pad_filter->timer), err, TOUCH_TAG, "failed to delete the timer");
         s_touch_pad_filter->timer = NULL;

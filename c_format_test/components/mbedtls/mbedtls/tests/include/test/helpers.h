@@ -33,7 +33,7 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_THREADING_C) && defined(MBEDTLS_THREADING_PTHREAD) && \
-    defined(MBEDTLS_TEST_HOOKS)
+defined(MBEDTLS_TEST_HOOKS)
 #define MBEDTLS_TEST_MUTEX_USAGE
 #endif
 
@@ -75,9 +75,9 @@ typedef struct
     unsigned long step;
     char line1[76];
     char line2[76];
-#if defined(MBEDTLS_TEST_MUTEX_USAGE)
+    #if defined(MBEDTLS_TEST_MUTEX_USAGE)
     const char *mutex_usage_error;
-#endif
+    #endif
 }
 mbedtls_test_info_t;
 extern mbedtls_test_info_t mbedtls_test_info;

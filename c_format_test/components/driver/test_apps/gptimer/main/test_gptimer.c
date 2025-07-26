@@ -21,38 +21,43 @@
 
 TEST_CASE("gptimer_set_get_raw_count", "[gptimer]")
 {
-    gptimer_config_t config = {
+    gptimer_config_t config =
+    {
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
         .resolution_hz = 1 * 1000 * 1000,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&config, &timers[i]));
     }
-
     TEST_ASSERT_EQUAL(ESP_ERR_NOT_FOUND, gptimer_new_timer(&config, &timers[0]));
     unsigned long long get_value = 0;
     printf("check gptimer initial count value\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_get_raw_count(timers[i], &get_value));
         TEST_ASSERT_EQUAL(0, get_value);
     }
     unsigned long long set_values[] = {100, 500, 666};
-    for (size_t j = 0; j < sizeof(set_values) / sizeof(set_values[0]); j++) {
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (size_t j = 0; j < sizeof(set_values) / sizeof(set_values[0]); j++)
+    {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             printf("set raw count to %llu for gptimer %d\r\n", set_values[j], i);
             TEST_ESP_OK(gptimer_set_raw_count(timers[i], set_values[j]));
         }
         vTaskDelay(pdMS_TO_TICKS(10));
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_get_raw_count(timers[i], &get_value));
             printf("get raw count of gptimer %d: %llu\r\n", i, get_value);
             TEST_ASSERT_EQUAL(set_values[j], get_value);
         }
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
 }
@@ -60,67 +65,79 @@ TEST_CASE("gptimer_set_get_raw_count", "[gptimer]")
 TEST_CASE("gptimer_wallclock_with_various_clock_sources", "[gptimer]")
 {
     gptimer_clock_source_t test_clk_srcs[] = SOC_GPTIMER_CLKS;
-
     // test with various clock sources
-    for (size_t i = 0; i < sizeof(test_clk_srcs) / sizeof(test_clk_srcs[0]); i++) {
-        gptimer_config_t timer_config = {
+    for (size_t i = 0; i < sizeof(test_clk_srcs) / sizeof(test_clk_srcs[0]); i++)
+    {
+        gptimer_config_t timer_config =
+        {
             .clk_src = test_clk_srcs[i],
             .direction = GPTIMER_COUNT_UP,
             .resolution_hz = 1 * 1000 * 1000,
         };
         gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
         }
         // start timer before enable should fail
         TEST_ESP_ERR(ESP_ERR_INVALID_STATE, gptimer_start(timers[0]));
         printf("enable timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_enable(timers[i]));
         }
         printf("start timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_start(timers[i]));
         }
         vTaskDelay(pdMS_TO_TICKS(20)); // 20ms = 20_000 ticks
         unsigned long long value = 0;
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_get_raw_count(timers[i], &value));
             TEST_ASSERT_UINT_WITHIN(1000, 20000, value);
         }
         printf("stop timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_stop(timers[i]));
         }
         printf("check whether timers have stopped\r\n");
         vTaskDelay(pdMS_TO_TICKS(20));
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_get_raw_count(timers[i], &value));
             printf("get raw count of gptimer %d: %llu\r\n", i, value);
             TEST_ASSERT_UINT_WITHIN(1000, 20000, value);
         }
         printf("restart timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_start(timers[i]));
         }
         vTaskDelay(pdMS_TO_TICKS(20));
         printf("stop timers again\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_stop(timers[i]));
         }
         printf("check whether timers have stopped\r\n");
         vTaskDelay(pdMS_TO_TICKS(20));
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_get_raw_count(timers[i], &value));
             printf("get raw count of gptimer %d: %llu\r\n", i, value);
             TEST_ASSERT_UINT_WITHIN(2000, 40000, value);
         }
         printf("disable timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_disable(timers[i]));
         }
         printf("delete timers\r\n");
-        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+        for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+        {
             TEST_ESP_OK(gptimer_del_timer(timers[i]));
         }
     }
@@ -139,24 +156,25 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_alarm_stop_callback(gptimer_ha
 TEST_CASE("gptimer_stop_on_alarm", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-
-    gptimer_event_callbacks_t cbs = {
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_alarm_stop_callback,
     };
     gptimer_alarm_config_t alarm_config = {};
-
     printf("start timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         alarm_config.alarm_count = 100000 * (i + 1);
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
@@ -164,38 +182,41 @@ TEST_CASE("gptimer_stop_on_alarm", "[gptimer]")
         TEST_ESP_OK(gptimer_start(timers[i]));
         printf("alarm value for gptimer %d: %llu\r\n", i, alarm_config.alarm_count);
     }
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     }
-
     printf("check whether the timers have stopped in the ISR\r\n");
     vTaskDelay(pdMS_TO_TICKS(20));
     unsigned long long value = 0;
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_get_raw_count(timers[i], &value));
         printf("get raw count of gptimer %d: %llu\r\n", i, value);
         TEST_ASSERT_UINT_WITHIN(40, 100000 * (i + 1), value);
     }
-
     printf("restart timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         alarm_config.alarm_count = 100000 * (i + 1);
         // reset counter value to zero
         TEST_ESP_OK(gptimer_set_raw_count(timers[i], 0));
         TEST_ESP_OK(gptimer_start(timers[i]));
     }
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     }
     printf("check whether the timers have stopped in the ISR\r\n");
     vTaskDelay(pdMS_TO_TICKS(20));
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_get_raw_count(timers[i], &value));
         printf("get raw count of gptimer %d: %llu\r\n", i, value);
         TEST_ASSERT_UINT_WITHIN(40, 100000 * (i + 1), value);
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
@@ -215,28 +236,30 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_alarm_reload_callback(gptimer_
 TEST_CASE("gptimer_auto_reload_on_alarm", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-
-    gptimer_event_callbacks_t cbs = {
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_alarm_reload_callback,
     };
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .reload_count = 100,
         .alarm_count = 100000,
         .flags.auto_reload_on_alarm = true,
     };
-
     printf("start timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
         TEST_ESP_OK(gptimer_enable(timers[i]));
@@ -248,8 +271,8 @@ TEST_CASE("gptimer_auto_reload_on_alarm", "[gptimer]")
         TEST_ESP_ERR(ESP_ERR_INVALID_STATE, gptimer_del_timer(timers[i]));
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
@@ -268,27 +291,29 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_alarm_normal_callback(gptimer_
 TEST_CASE("gptimer_one_shot_alarm", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-
-    gptimer_event_callbacks_t cbs = {
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_alarm_normal_callback,
     };
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .reload_count = 0,
         .alarm_count = 100000, // 100ms
     };
-
     printf("start timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
         TEST_ESP_OK(gptimer_enable(timers[i]));
@@ -302,16 +327,16 @@ TEST_CASE("gptimer_one_shot_alarm", "[gptimer]")
         TEST_ASSERT_UINT_WITHIN(1000, 1100000, value); // 1100000 = 100ms alarm + 1s delay
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
     printf("restart timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_start(timers[i]));
         // alarm should be triggered immediately as the counter value has across the target alarm value already
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, 0));
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
@@ -322,7 +347,8 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_alarm_update_callback(gptimer_
     TaskHandle_t task_handle = (TaskHandle_t)user_data;
     BaseType_t high_task_wakeup;
     esp_rom_printf("alarm isr count=%llu\r\n", edata->count_value);
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .alarm_count = edata->count_value + 100000, // alarm in next 100ms again
     };
     gptimer_set_alarm_action(timer, &alarm_config);
@@ -333,25 +359,28 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_alarm_update_callback(gptimer_
 TEST_CASE("gptimer_update_alarm_dynamically", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-
-    gptimer_event_callbacks_t cbs = {
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_alarm_update_callback,
     };
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .alarm_count = 100000, // initial alarm count, 100ms
     };
     printf("start timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
         TEST_ESP_OK(gptimer_enable(timers[i]));
@@ -364,9 +393,9 @@ TEST_CASE("gptimer_update_alarm_dynamically", "[gptimer]")
         // check there won't be more interrupts triggered than expected
         TEST_ASSERT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(500)));
     }
-
     printf("restart timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_start(timers[i]));
         // check the alarm event for multiple times
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(500)));
@@ -376,8 +405,8 @@ TEST_CASE("gptimer_update_alarm_dynamically", "[gptimer]")
         // check there won't be more interrupts triggered than expected
         TEST_ASSERT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(500)));
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
@@ -397,28 +426,30 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_count_down_reload_alarm_callba
 TEST_CASE("gptimer_count_down_reload", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_DOWN,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
         TEST_ESP_OK(gptimer_set_raw_count(timers[i], 200000));
     }
-
-    gptimer_event_callbacks_t cbs = {
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_count_down_reload_alarm_callback,
     };
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .reload_count = 200000, // 200ms
         .alarm_count = 0,
         .flags.auto_reload_on_alarm = true,
     };
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
         TEST_ESP_OK(gptimer_enable(timers[i]));
@@ -428,17 +459,17 @@ TEST_CASE("gptimer_count_down_reload", "[gptimer]")
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
     printf("restart gptimer with previous configuration\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_start(timers[i]));
         // check twice, as it's a period event
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }
@@ -457,25 +488,28 @@ TEST_ALARM_CALLBACK_ATTR static bool test_gptimer_overflow_reload_callback(gptim
 TEST_CASE("gptimer_overflow", "[gptimer]")
 {
     TaskHandle_t task_handle =  xTaskGetCurrentTaskHandle();
-
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .resolution_hz = 1 * 1000 * 1000,
         .clk_src = GPTIMER_CLK_SRC_DEFAULT,
         .direction = GPTIMER_COUNT_UP,
     };
     gptimer_handle_t timers[SOC_TIMER_GROUP_TOTAL_TIMERS];
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-#if SOC_TIMER_GROUP_COUNTER_BIT_WIDTH == 64
+    #if SOC_TIMER_GROUP_COUNTER_BIT_WIDTH == 64
     uint64_t reload_at = UINT64_MAX - 100000;
-#else
+    #else
     uint64_t reload_at = (1ULL << SOC_TIMER_GROUP_COUNTER_BIT_WIDTH) - 100000;
-#endif
-    gptimer_event_callbacks_t cbs = {
+    #endif
+    gptimer_event_callbacks_t cbs =
+    {
         .on_alarm = test_gptimer_overflow_reload_callback,
     };
-    gptimer_alarm_config_t alarm_config = {
+    gptimer_alarm_config_t alarm_config =
+    {
         .reload_count = reload_at,
         .alarm_count = 100000, // 100ms
         .flags.auto_reload_on_alarm = true,
@@ -483,7 +517,8 @@ TEST_CASE("gptimer_overflow", "[gptimer]")
     // The counter should start from [COUNTER_MAX-100000] and overflows to [0] and continue, then reached to alarm value [100000], reloaded to [COUNTER_MAX-100000] automatically
     // thus the period should be 200ms
     printf("start timers\r\n");
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_set_alarm_action(timers[i], &alarm_config));
         TEST_ESP_OK(gptimer_register_event_callbacks(timers[i], &cbs, task_handle));
         // we start from the reload value
@@ -493,8 +528,8 @@ TEST_CASE("gptimer_overflow", "[gptimer]")
         TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(400)));
         TEST_ESP_OK(gptimer_stop(timers[i]));
     }
-
-    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++) {
+    for (int i = 0; i < SOC_TIMER_GROUP_TOTAL_TIMERS; i++)
+    {
         TEST_ESP_OK(gptimer_disable(timers[i]));
         TEST_ESP_OK(gptimer_del_timer(timers[i]));
     }

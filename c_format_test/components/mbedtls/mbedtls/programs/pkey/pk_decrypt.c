@@ -31,8 +31,8 @@
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_BIGNUM_C) && defined(MBEDTLS_PK_PARSE_C) && \
-    defined(MBEDTLS_FS_IO) && defined(MBEDTLS_ENTROPY_C) && \
-    defined(MBEDTLS_CTR_DRBG_C)
+defined(MBEDTLS_FS_IO) && defined(MBEDTLS_ENTROPY_C) && \
+defined(MBEDTLS_CTR_DRBG_C)
 #include "mbedtls/error.h"
 #include "mbedtls/pk.h"
 #include "mbedtls/entropy.h"
@@ -43,13 +43,13 @@
 #endif
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_PK_PARSE_C) ||  \
-    !defined(MBEDTLS_FS_IO) || !defined(MBEDTLS_ENTROPY_C) || \
-    !defined(MBEDTLS_CTR_DRBG_C)
+!defined(MBEDTLS_FS_IO) || !defined(MBEDTLS_ENTROPY_C) || \
+!defined(MBEDTLS_CTR_DRBG_C)
 int main( void )
 {
     mbedtls_printf("MBEDTLS_BIGNUM_C and/or MBEDTLS_PK_PARSE_C and/or "
-           "MBEDTLS_FS_IO and/or MBEDTLS_ENTROPY_C and/or "
-           "MBEDTLS_CTR_DRBG_C not defined.\n");
+                   "MBEDTLS_FS_IO and/or MBEDTLS_ENTROPY_C and/or "
+                   "MBEDTLS_CTR_DRBG_C not defined.\n");
     mbedtls_exit( 0 );
 }
 #else
@@ -69,46 +69,36 @@ int main( int argc, char *argv[] )
     unsigned char buf[512];
     const char *pers = "mbedtls_pk_decrypt";
     ((void) argv);
-
     mbedtls_pk_init( &pk );
     mbedtls_entropy_init( &entropy );
     mbedtls_ctr_drbg_init( &ctr_drbg );
-
     memset(result, 0, sizeof( result ) );
-
     if( argc != 2 )
     {
         mbedtls_printf( "usage: mbedtls_pk_decrypt <key_file>\n" );
-
-#if defined(_WIN32)
+        #if defined(_WIN32)
         mbedtls_printf( "\n" );
-#endif
-
+        #endif
         goto exit;
     }
-
     mbedtls_printf( "\n  . Seeding the random number generator..." );
     fflush( stdout );
-
     if( ( ret = mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func,
                                        &entropy, (const unsigned char *) pers,
                                        strlen( pers ) ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_ctr_drbg_seed returned -0x%04x\n",
-                        (unsigned int) -ret );
+                        (unsigned int) - ret );
         goto exit;
     }
-
     mbedtls_printf( "\n  . Reading private key from '%s'", argv[1] );
     fflush( stdout );
-
     if( ( ret = mbedtls_pk_parse_keyfile( &pk, argv[1], "",
-                    mbedtls_ctr_drbg_random, &ctr_drbg ) ) != 0 )
+                                          mbedtls_ctr_drbg_random, &ctr_drbg ) ) != 0 )
     {
-        mbedtls_printf( " failed\n  ! mbedtls_pk_parse_keyfile returned -0x%04x\n", (unsigned int) -ret );
+        mbedtls_printf( " failed\n  ! mbedtls_pk_parse_keyfile returned -0x%04x\n", (unsigned int) - ret );
         goto exit;
     }
-
     /*
      * Extract the RSA encrypted value from the text file
      */
@@ -118,51 +108,40 @@ int main( int argc, char *argv[] )
         ret = 1;
         goto exit;
     }
-
     i = 0;
     while( fscanf( f, "%02X", (unsigned int*) &c ) > 0 &&
            i < (int) sizeof( buf ) )
     {
         buf[i++] = (unsigned char) c;
     }
-
     fclose( f );
-
     /*
      * Decrypt the encrypted RSA data and print the result.
      */
     mbedtls_printf( "\n  . Decrypting the encrypted data" );
     fflush( stdout );
-
     if( ( ret = mbedtls_pk_decrypt( &pk, buf, i, result, &olen, sizeof(result),
-                            mbedtls_ctr_drbg_random, &ctr_drbg ) ) != 0 )
+                                    mbedtls_ctr_drbg_random, &ctr_drbg ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_pk_decrypt returned -0x%04x\n",
-                        (unsigned int) -ret );
+                        (unsigned int) - ret );
         goto exit;
     }
-
     mbedtls_printf( "\n  . OK\n\n" );
-
     mbedtls_printf( "The decrypted result is: '%s'\n\n", result );
-
     exit_code = MBEDTLS_EXIT_SUCCESS;
-
 exit:
-
     mbedtls_pk_free( &pk );
     mbedtls_entropy_free( &entropy );
     mbedtls_ctr_drbg_free( &ctr_drbg );
-
-#if defined(MBEDTLS_ERROR_C)
+    #if defined(MBEDTLS_ERROR_C)
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         mbedtls_strerror( ret, (char *) buf, sizeof( buf ) );
         mbedtls_printf( "  !  Last error was: %s\n", buf );
     }
-#endif
-
+    #endif
     mbedtls_exit( exit_code );
 }
 #endif /* MBEDTLS_BIGNUM_C && MBEDTLS_PK_PARSE_C && MBEDTLS_FS_IO &&
-          MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C */
+MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C */

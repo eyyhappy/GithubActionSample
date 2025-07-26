@@ -26,8 +26,8 @@
 #if !defined(MBEDTLS_TIMING_ALT)
 
 #if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
-    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
-    !defined(__HAIKU__) && !defined(__midipix__)
+!defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
+!defined(__HAIKU__) && !defined(__midipix__)
 #error "This module only works on Unix and Windows, see MBEDTLS_TIMING_C in mbedtls_config.h"
 #endif
 
@@ -80,7 +80,6 @@ struct _hr_time
 unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int reset )
 {
     struct _hr_time *t = (struct _hr_time *) val;
-
     if( reset )
     {
         QueryPerformanceCounter( &t->start );
@@ -103,7 +102,6 @@ unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int 
 unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int reset )
 {
     struct _hr_time *t = (struct _hr_time *) val;
-
     if( reset )
     {
         gettimeofday( &t->start, NULL );
@@ -115,7 +113,7 @@ unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int 
         struct timeval now;
         gettimeofday( &now, NULL );
         delta = ( now.tv_sec  - t->start.tv_sec  ) * 1000ul
-              + ( now.tv_usec - t->start.tv_usec ) / 1000;
+                + ( now.tv_usec - t->start.tv_usec ) / 1000;
         return( delta );
     }
 }
@@ -128,10 +126,8 @@ unsigned long mbedtls_timing_get_timer( struct mbedtls_timing_hr_time *val, int 
 void mbedtls_timing_set_delay( void *data, uint32_t int_ms, uint32_t fin_ms )
 {
     mbedtls_timing_delay_context *ctx = (mbedtls_timing_delay_context *) data;
-
     ctx->int_ms = int_ms;
     ctx->fin_ms = fin_ms;
-
     if( fin_ms != 0 )
         (void) mbedtls_timing_get_timer( &ctx->timer, 1 );
 }
@@ -143,18 +139,13 @@ int mbedtls_timing_get_delay( void *data )
 {
     mbedtls_timing_delay_context *ctx = (mbedtls_timing_delay_context *) data;
     unsigned long elapsed_ms;
-
     if( ctx->fin_ms == 0 )
         return( -1 );
-
     elapsed_ms = mbedtls_timing_get_timer( &ctx->timer, 0 );
-
     if( elapsed_ms >= ctx->fin_ms )
         return( 2 );
-
     if( elapsed_ms >= ctx->int_ms )
         return( 1 );
-
     return( 0 );
 }
 
@@ -162,7 +153,7 @@ int mbedtls_timing_get_delay( void *data )
  * Get the final delay.
  */
 uint32_t mbedtls_timing_get_final_delay(
-                                      const mbedtls_timing_delay_context *data )
+    const mbedtls_timing_delay_context *data )
 {
     return( data->fin_ms );
 }

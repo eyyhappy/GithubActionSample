@@ -46,12 +46,10 @@ int main( int argc, char *argv[] )
         mbedtls_printf( USAGE, argv[0] );
         return( MBEDTLS_EXIT_FAILURE );
     }
-
     if( strcmp( argv[1], "-l" ) == 0 )
     {
         list_config();
         return( 0 );
     }
-
     return( query_config( argv[1] ) );
 }

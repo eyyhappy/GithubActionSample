@@ -22,7 +22,8 @@ static const char *TAG = "rc5_builder";
         }                                                                         \
     } while (0)
 
-typedef struct {
+typedef struct
+{
     ir_builder_t parent;
     uint32_t buffer_size;
     uint32_t cursor;
@@ -93,27 +94,39 @@ static esp_err_t rc5_builder_make_end(ir_builder_t *builder)
 static esp_err_t rc5_build_frame(ir_builder_t *builder, uint32_t address, uint32_t command)
 {
     rc5_builder_t *rc5_builder = __containerof(builder, rc5_builder_t, parent);
-    if (rc5_builder->flags & IR_TOOLS_FLAGS_PROTO_EXT) {
+    if (rc5_builder->flags & IR_TOOLS_FLAGS_PROTO_EXT)
+    {
         // RC5-extended protocol uses S2 bit as a 7th command bit (MSB of a command)
-        if (command > 63) {
+        if (command > 63)
+        {
             rc5_builder->s2_bit = true;
-        } else {
+        }
+        else
+        {
             rc5_builder->s2_bit = false;
         }
     }
     builder->make_head(builder);
     // MSB -> LSB
-    for (int i = 4; i >= 0; i--) {
-        if (address & (1 << i)) {
+    for (int i = 4; i >= 0; i--)
+    {
+        if (address & (1 << i))
+        {
             builder->make_logic1(builder);
-        } else {
+        }
+        else
+        {
             builder->make_logic0(builder);
         }
     }
-    for (int i = 5; i >= 0; i--) {
-        if (command & (1 << i)) {
+    for (int i = 5; i >= 0; i--)
+    {
+        if (command & (1 << i))
+        {
             builder->make_logic1(builder);
-        } else {
+        }
+        else
+        {
             builder->make_logic0(builder);
         }
     }
@@ -151,17 +164,15 @@ ir_builder_t *ir_builder_rmt_new_rc5(const ir_builder_config_t *config)
     ir_builder_t *ret = NULL;
     RC5_CHECK(config, "rc5 configuration can't be null", err, NULL);
     RC5_CHECK(config->buffer_size, "buffer size can't be zero", err, NULL);
-
     uint32_t builder_size = sizeof(rc5_builder_t) + config->buffer_size * sizeof(rmt_item32_t);
     rc5_builder_t *rc5_builder = calloc(1, builder_size);
     RC5_CHECK(rc5_builder, "request memory for rc5_builder failed", err, NULL);
-
     rc5_builder->buffer_size = config->buffer_size;
     rc5_builder->flags = config->flags;
-    if (config->flags & IR_TOOLS_FLAGS_INVERSE) {
+    if (config->flags & IR_TOOLS_FLAGS_INVERSE)
+    {
         rc5_builder->inverse = true;
     }
-
     uint32_t counter_clk_hz = 0;
     RC5_CHECK(rmt_get_counter_clock((rmt_channel_t)config->dev_hdl, &counter_clk_hz) == ESP_OK,
               "get rmt counter clock failed", err, NULL);

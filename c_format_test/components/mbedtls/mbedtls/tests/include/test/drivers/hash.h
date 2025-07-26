@@ -25,7 +25,8 @@
 #if defined(PSA_CRYPTO_DRIVER_TEST)
 #include <psa/crypto_driver_common.h>
 
-typedef struct {
+typedef struct
+{
     /* If not PSA_SUCCESS, return this error code instead of processing the
      * function call. */
     psa_status_t forced_status;
@@ -37,7 +38,7 @@ typedef struct {
 
 #define MBEDTLS_TEST_DRIVER_HASH_INIT { 0, 0, 0 }
 static inline mbedtls_test_driver_hash_hooks_t
-    mbedtls_test_driver_hash_hooks_init( void )
+mbedtls_test_driver_hash_hooks_init( void )
 {
     const mbedtls_test_driver_hash_hooks_t v = MBEDTLS_TEST_DRIVER_HASH_INIT;
     return( v );

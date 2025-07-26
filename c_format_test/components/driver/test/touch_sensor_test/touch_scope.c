@@ -182,17 +182,17 @@ int test_tp_print_to_scope(float *data, unsigned char channel_num)
     }
     else
     {
-#if ROM_UART_DRIVER_ENABLE
+        #if ROM_UART_DRIVER_ENABLE
         esp_rom_uart_tx_wait_idle(uart_num);   // Default print uart mumber is 0.
         for(int i = 0; i < out_len; i++)
         {
             esp_rom_uart_tx_one_char(out_data[i]);
         }
         return out_len;
-#else
+        #else
         uart_wait_tx_done(uart_num, portMAX_DELAY);
         return uart_write_bytes(uart_num, (const char *)out_data, out_len);
-#endif
+        #endif
     }
 }
 
@@ -217,13 +217,13 @@ int test_tp_print_to_scope(float *data, unsigned char channel_num)
   */
 esp_err_t test_tp_scope_debug_init(uint8_t uart_num, int tx_io_num, int rx_io_num, int baud_rate)
 {
-#if ROM_UART_DRIVER_ENABLE
+    #if ROM_UART_DRIVER_ENABLE
     esp_rom_uart_tx_wait_idle(0);   // Default print uart mumber is 0.
     if(uart_num != 0)
     {
         esp_rom_uart_set_as_console(uart_num);
     }
-#else
+    #else
     if(uart_used == uart_num)
     {
         return ESP_FAIL;
@@ -250,6 +250,6 @@ esp_err_t test_tp_scope_debug_init(uint8_t uart_num, int tx_io_num, int rx_io_nu
                  UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE);
     uart_driver_install(uart_num, 1024, 2048, 0, NULL, 0);
     uart_used = uart_num;
-#endif
+    #endif
     return ESP_OK;
 }

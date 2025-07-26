@@ -101,7 +101,7 @@ typedef struct mbedtls_hmac_drbg_context
     int (*MBEDTLS_PRIVATE(f_entropy))(void *, unsigned char *, size_t); /*!< entropy function */
     void *MBEDTLS_PRIVATE(p_entropy);            /*!< context for the entropy function        */
 
-#if defined(MBEDTLS_THREADING_C)
+    #if defined(MBEDTLS_THREADING_C)
     /* Invariant: the mutex is initialized if and only if
      * md_ctx->md_info != NULL. This means that the mutex is initialized
      * during the initial seeding in mbedtls_hmac_drbg_seed() or
@@ -111,7 +111,7 @@ typedef struct mbedtls_hmac_drbg_context
      * and do not access the mutex directly in application code.
      */
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);
-#endif
+    #endif
 } mbedtls_hmac_drbg_context;
 
 /**
@@ -197,11 +197,11 @@ void mbedtls_hmac_drbg_init( mbedtls_hmac_drbg_context *ctx );
  *                      if the call to \p f_entropy failed.
  */
 int mbedtls_hmac_drbg_seed( mbedtls_hmac_drbg_context *ctx,
-                    const mbedtls_md_info_t * md_info,
-                    int (*f_entropy)(void *, unsigned char *, size_t),
-                    void *p_entropy,
-                    const unsigned char *custom,
-                    size_t len );
+                            const mbedtls_md_info_t * md_info,
+                            int (*f_entropy)(void *, unsigned char *, size_t),
+                            void *p_entropy,
+                            const unsigned char *custom,
+                            size_t len );
 
 /**
  * \brief               Initialisation of simplified HMAC_DRBG (never reseeds).
@@ -232,8 +232,8 @@ int mbedtls_hmac_drbg_seed( mbedtls_hmac_drbg_context *ctx,
  *                      memory to allocate context data.
  */
 int mbedtls_hmac_drbg_seed_buf( mbedtls_hmac_drbg_context *ctx,
-                        const mbedtls_md_info_t * md_info,
-                        const unsigned char *data, size_t data_len );
+                                const mbedtls_md_info_t * md_info,
+                                const unsigned char *data, size_t data_len );
 
 /**
  * \brief               This function turns prediction resistance on or off.
@@ -249,7 +249,7 @@ int mbedtls_hmac_drbg_seed_buf( mbedtls_hmac_drbg_context *ctx,
  * \param resistance    #MBEDTLS_HMAC_DRBG_PR_ON or #MBEDTLS_HMAC_DRBG_PR_OFF.
  */
 void mbedtls_hmac_drbg_set_prediction_resistance( mbedtls_hmac_drbg_context *ctx,
-                                          int resistance );
+        int resistance );
 
 /**
  * \brief               This function sets the amount of entropy grabbed on each
@@ -261,7 +261,7 @@ void mbedtls_hmac_drbg_set_prediction_resistance( mbedtls_hmac_drbg_context *ctx
  * \param len           The amount of entropy to grab, in bytes.
  */
 void mbedtls_hmac_drbg_set_entropy_len( mbedtls_hmac_drbg_context *ctx,
-                                size_t len );
+                                        size_t len );
 
 /**
  * \brief               Set the reseed interval.
@@ -276,7 +276,7 @@ void mbedtls_hmac_drbg_set_entropy_len( mbedtls_hmac_drbg_context *ctx,
  * \param interval      The reseed interval.
  */
 void mbedtls_hmac_drbg_set_reseed_interval( mbedtls_hmac_drbg_context *ctx,
-                                    int interval );
+        int interval );
 
 /**
  * \brief               This function updates the state of the HMAC_DRBG context.
@@ -323,7 +323,7 @@ int mbedtls_hmac_drbg_update( mbedtls_hmac_drbg_context *ctx,
  *                      if a call to the entropy function failed.
  */
 int mbedtls_hmac_drbg_reseed( mbedtls_hmac_drbg_context *ctx,
-                      const unsigned char *additional, size_t len );
+                              const unsigned char *additional, size_t len );
 
 /**
  * \brief   This function updates an HMAC_DRBG instance with additional
@@ -357,9 +357,9 @@ int mbedtls_hmac_drbg_reseed( mbedtls_hmac_drbg_context *ctx,
  *                      \p add_len > #MBEDTLS_HMAC_DRBG_MAX_INPUT.
  */
 int mbedtls_hmac_drbg_random_with_add( void *p_rng,
-                               unsigned char *output, size_t output_len,
-                               const unsigned char *additional,
-                               size_t add_len );
+                                       unsigned char *output, size_t output_len,
+                                       const unsigned char *additional,
+                                       size_t add_len );
 
 /**
  * \brief   This function uses HMAC_DRBG to generate random data.

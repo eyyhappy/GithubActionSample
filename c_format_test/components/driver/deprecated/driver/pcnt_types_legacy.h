@@ -24,7 +24,8 @@ typedef intr_handle_t pcnt_isr_handle_t;
 /**
  * @brief PCNT port number, the max port number is (PCNT_PORT_MAX - 1).
  */
-typedef enum {
+typedef enum
+{
     PCNT_PORT_0,   /*!< PCNT port 0 */
     PCNT_PORT_MAX, /*!< PCNT port max */
 } pcnt_port_t;
@@ -32,24 +33,26 @@ typedef enum {
 /**
  * @brief Selection of all available PCNT units
  */
-typedef enum {
+typedef enum
+{
     PCNT_UNIT_0, /*!< PCNT unit 0 */
     PCNT_UNIT_1, /*!< PCNT unit 1 */
     PCNT_UNIT_2, /*!< PCNT unit 2 */
     PCNT_UNIT_3, /*!< PCNT unit 3 */
-#if SOC_PCNT_UNITS_PER_GROUP > 4
+    #if SOC_PCNT_UNITS_PER_GROUP > 4
     PCNT_UNIT_4, /*!< PCNT unit 4 */
     PCNT_UNIT_5, /*!< PCNT unit 5 */
     PCNT_UNIT_6, /*!< PCNT unit 6 */
     PCNT_UNIT_7, /*!< PCNT unit 7 */
-#endif
+    #endif
     PCNT_UNIT_MAX,
 } pcnt_unit_t;
 
 /**
  * @brief Selection of channels available for a single PCNT unit
  */
-typedef enum {
+typedef enum
+{
     PCNT_CHANNEL_0, /*!< PCNT channel 0 */
     PCNT_CHANNEL_1, /*!< PCNT channel 1 */
     PCNT_CHANNEL_MAX,
@@ -58,7 +61,8 @@ typedef enum {
 /**
  * @brief Selection of counter's events the may trigger an interrupt
  */
-typedef enum {
+typedef enum
+{
     PCNT_EVT_THRES_1 = 1 << 2, /*!< PCNT watch point event: threshold1 value event */
     PCNT_EVT_THRES_0 = 1 << 3, /*!< PCNT watch point event: threshold0 value event */
     PCNT_EVT_L_LIM = 1 << 4,   /*!< PCNT watch point event: Minimum counter value */
@@ -90,7 +94,8 @@ typedef pcnt_channel_edge_action_t pcnt_count_mode_t;
 /**
  * @brief Pulse Counter configuration for a single channel
  */
-typedef struct {
+typedef struct
+{
     int pulse_gpio_num;          /*!< Pulse input GPIO number, if you want to use GPIO16, enter pulse_gpio_num = 16, a negative value will be ignored */
     int ctrl_gpio_num;           /*!< Control signal input GPIO number, a negative value will be ignored */
     pcnt_ctrl_mode_t lctrl_mode; /*!< PCNT low control mode */

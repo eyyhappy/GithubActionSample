@@ -22,20 +22,23 @@ extern "C" {
  * @note When CONFIG_RMT_ISR_IRAM_SAFE is enabled, the callback itself and functions called by it should be placed in IRAM.
  *       The variables used in the function should be in the SRAM as well.
  */
-typedef struct {
+typedef struct
+{
     rmt_tx_done_callback_t on_trans_done; /*!< Event callback, invoked when transmission is finished */
 } rmt_tx_event_callbacks_t;
 
 /**
  * @brief RMT TX channel specific configuration
  */
-typedef struct {
+typedef struct
+{
     int gpio_num;               /*!< GPIO number used by RMT TX channel. Set to -1 if unused */
     rmt_clock_source_t clk_src; /*!< Clock source of RMT TX channel, channels in the same group must use the same clock source */
     uint32_t resolution_hz;     /*!< Channel clock resolution, in Hz */
     size_t mem_block_symbols;   /*!< Size of memory block, in number of `rmt_symbol_word_t`, must be an even */
     size_t trans_queue_depth;   /*!< Depth of internal transfer queue, increase this value can support more transfers pending in the background */
-    struct {
+    struct
+    {
         uint32_t invert_out: 1;   /*!< Whether to invert the RMT channel signal before output to GPIO pad */
         uint32_t with_dma: 1;     /*!< If set, the driver will allocate an RMT channel with DMA capability */
         uint32_t io_loop_back: 1; /*!< The signal output from the GPIO will be fed to the input path as well */
@@ -46,9 +49,11 @@ typedef struct {
 /**
  * @brief RMT transmit specific configuration
  */
-typedef struct {
+typedef struct
+{
     int loop_count; /*!< Specify the times of transmission in a loop, -1 means transmitting in an infinite loop */
-    struct {
+    struct
+    {
         uint32_t eot_level : 1; /*!< Set the output level for the "End Of Transmission" */
     } flags;                    /*!< Transmit config flags */
 } rmt_transmit_config_t;
@@ -56,7 +61,8 @@ typedef struct {
 /**
  * @brief Synchronous manager configuration
  */
-typedef struct {
+typedef struct
+{
     const rmt_channel_handle_t *tx_channel_array; /*!< Array of TX channels that are about to be managed by a synchronous controller */
     size_t array_size;                            /*!< Size of the `tx_channel_array` */
 } rmt_sync_manager_config_t;

@@ -18,32 +18,35 @@ extern "C" {
 /**
  * @brief I2S controller port number, the max port number is (SOC_I2S_NUM -1).
  */
-typedef enum {
+typedef enum
+{
     I2S_NUM_0 = 0,                 /*!< I2S controller port 0 */
-#if SOC_I2S_NUM > 1
+    #if SOC_I2S_NUM > 1
     I2S_NUM_1 = 1,                 /*!< I2S controller port 1 */
-#endif
+    #endif
     I2S_NUM_AUTO,                  /*!< Select whichever port is available */
 } i2s_port_t;
 
 /**
  * @brief I2S controller communication mode
  */
-typedef enum {
+typedef enum
+{
     I2S_COMM_MODE_STD,              /*!< I2S controller using standard communication mode, support philips/MSB/PCM format */
-#if SOC_I2S_SUPPORTS_PDM
+    #if SOC_I2S_SUPPORTS_PDM
     I2S_COMM_MODE_PDM,              /*!< I2S controller using PDM communication mode, support PDM output or input */
-#endif
-#if SOC_I2S_SUPPORTS_TDM
+    #endif
+    #if SOC_I2S_SUPPORTS_TDM
     I2S_COMM_MODE_TDM,              /*!< I2S controller using TDM communication mode, support up to 16 slots per frame */
-#endif
+    #endif
     I2S_COMM_MODE_NONE,             /*!< Unspecified I2S controller mode */
 } i2s_comm_mode_t;
 
 /**
  * @brief The multiple of mclk to sample rate
  */
-typedef enum {
+typedef enum
+{
     I2S_MCLK_MULTIPLE_128       = 128,     /*!< mclk = sample_rate * 128 */
     I2S_MCLK_MULTIPLE_256       = 256,     /*!< mclk = sample_rate * 256 */
     I2S_MCLK_MULTIPLE_384       = 384,     /*!< mclk = sample_rate * 384 */
@@ -53,7 +56,8 @@ typedef enum {
 /**
  * @brief Event structure used in I2S event queue
  */
-typedef struct {
+typedef struct
+{
     void                *data;  /**< The pointer of DMA buffer that just finished sending or receiving for `on_recv` and `on_sent` callback
                                   *  NULL for `on_recv_q_ovf` and `on_send_q_ovf` callback
                                   */

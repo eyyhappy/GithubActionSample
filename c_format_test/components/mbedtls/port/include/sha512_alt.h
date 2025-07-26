@@ -35,7 +35,8 @@ extern "C" {
 
 #if SOC_SHA_SUPPORT_PARALLEL_ENG
 
-typedef enum {
+typedef enum
+{
     ESP_MBEDTLS_SHA512_UNUSED, /* first block hasn't been processed yet */
     ESP_MBEDTLS_SHA512_HARDWARE, /* using hardware SHA engine */
     ESP_MBEDTLS_SHA512_SOFTWARE, /* using software SHA */
@@ -44,7 +45,8 @@ typedef enum {
 /**
  * \brief          SHA-512 context structure
  */
-typedef struct {
+typedef struct
+{
     uint64_t total[2];          /*!< number of bytes processed  */
     uint64_t state[8];          /*!< intermediate digest state  */
     unsigned char buffer[128];  /*!< data block being processed */
@@ -54,7 +56,8 @@ typedef struct {
 
 #elif SOC_SHA_SUPPORT_DMA || SOC_SHA_SUPPORT_RESUME
 
-typedef enum {
+typedef enum
+{
     ESP_SHA512_STATE_INIT,
     ESP_SHA512_STATE_IN_PROCESS
 } esp_sha512_state;
@@ -62,7 +65,8 @@ typedef enum {
 /**
  * \brief          SHA-512 context structure
  */
-typedef struct {
+typedef struct
+{
     uint64_t total[2];          /*!< number of bytes processed  */
     uint64_t state[8];          /*!< intermediate digest state  */
     unsigned char buffer[128];  /*!< data block being processed */

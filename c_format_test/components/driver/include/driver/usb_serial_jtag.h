@@ -19,7 +19,8 @@ extern "C" {
  *
  * @note  tx_buffer_size and rx_buffer_size must be > 0
  */
-typedef struct {
+typedef struct
+{
     uint32_t tx_buffer_size;                    /* Size of the buffer (in bytes) for the TX direction */
     uint32_t rx_buffer_size;                    /* Size of the buffer (in bytes) for the RX direction */
 } usb_serial_jtag_driver_config_t;

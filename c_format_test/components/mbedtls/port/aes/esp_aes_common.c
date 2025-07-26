@@ -31,11 +31,9 @@
 bool valid_key_length(const esp_aes_context *ctx)
 {
     bool valid_len = (ctx->key_bytes == AES_128_KEY_BYTES) || (ctx->key_bytes == AES_256_KEY_BYTES);
-
-#if SOC_AES_SUPPORT_AES_192
+    #if SOC_AES_SUPPORT_AES_192
     valid_len |= ctx->key_bytes == AES_192_KEY_BYTES;
-#endif
-
+    #endif
     return valid_len;
 }
 
@@ -47,10 +45,10 @@ void esp_aes_init( esp_aes_context *ctx )
 
 void esp_aes_free( esp_aes_context *ctx )
 {
-    if ( ctx == NULL ) {
+    if ( ctx == NULL )
+    {
         return;
     }
-
     bzero( ctx, sizeof( esp_aes_context ) );
 }
 
@@ -61,12 +59,14 @@ void esp_aes_free( esp_aes_context *ctx )
 int esp_aes_setkey( esp_aes_context *ctx, const unsigned char *key,
                     unsigned int keybits )
 {
-#if !SOC_AES_SUPPORT_AES_192
-    if (keybits == 192) {
+    #if !SOC_AES_SUPPORT_AES_192
+    if (keybits == 192)
+    {
         return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
     }
-#endif
-    if (keybits != 128 && keybits != 192 && keybits != 256) {
+    #endif
+    if (keybits != 128 && keybits != 192 && keybits != 256)
+    {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
     }
     ctx->key_bytes = keybits / 8;

@@ -31,22 +31,17 @@ static int esp_mbedtls_ecp_point_multiply(const mbedtls_ecp_group *grp, mbedtls_
     int ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     uint8_t x_tmp[MAX_SIZE];
     uint8_t y_tmp[MAX_SIZE];
-
     ecc_point_t p_pt = {0};
     ecc_point_t r_pt = {0};
-
     p_pt.len = grp->pbits / 8;
-
     memcpy(&p_pt.x, P->X.p, mbedtls_mpi_size(&P->X));
     memcpy(&p_pt.y, P->Y.p, mbedtls_mpi_size(&P->Y));
-
     ret = esp_ecc_point_multiply(&p_pt, (uint8_t *)m->p, &r_pt, false);
-
-    for (int i = 0; i < MAX_SIZE; i++) {
+    for (int i = 0; i < MAX_SIZE; i++)
+    {
         x_tmp[MAX_SIZE - i - 1] = r_pt.x[i];
         y_tmp[MAX_SIZE - i - 1] = r_pt.y[i];
     }
-
     mbedtls_mpi_read_binary(&R->X, x_tmp, MAX_SIZE);
     mbedtls_mpi_read_binary(&R->Y, y_tmp, MAX_SIZE);
     mbedtls_mpi_lset(&R->Z, 1);
@@ -54,19 +49,19 @@ static int esp_mbedtls_ecp_point_multiply(const mbedtls_ecp_group *grp, mbedtls_
 }
 
 int ecp_mul_restartable_internal( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
-             mbedtls_ecp_restart_ctx *rs_ctx )
+                                  const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+                                  int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+                                  mbedtls_ecp_restart_ctx *rs_ctx )
 {
     int ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-    if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1) {
-#if defined(MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK)
+    if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1)
+    {
+        #if defined(MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK)
         return ecp_mul_restartable_internal_soft(grp, R, m, P, f_rng, p_rng, rs_ctx);
-#else
+        #else
         return ret;
-#endif
+        #endif
     }
-
     MBEDTLS_MPI_CHK( esp_mbedtls_ecp_point_multiply(grp, R, m, P) );
 cleanup:
     return( ret );
@@ -81,33 +76,30 @@ int mbedtls_ecp_check_pubkey( const mbedtls_ecp_group *grp,
 {
     int res;
     ecc_point_t point;
-
-    if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1) {
-#if defined(MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK)
+    if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1)
+    {
+        #if defined(MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK)
         return mbedtls_ecp_check_pubkey_soft(grp, pt);
-#else
+        #else
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-#endif
+        #endif
     }
-
     ECP_VALIDATE_RET( grp != NULL );
     ECP_VALIDATE_RET( pt  != NULL );
-
     /* Must use affine coordinates */
     if( mbedtls_mpi_cmp_int( &pt->Z, 1 ) != 0 )
         return( MBEDTLS_ERR_ECP_INVALID_KEY );
-
     mbedtls_platform_zeroize((void *)&point, sizeof(ecc_point_t));
-
     memcpy(&point.x, pt->X.p, mbedtls_mpi_size(&pt->X));
     memcpy(&point.y, pt->Y.p, mbedtls_mpi_size(&pt->Y));
-
     point.len = grp->pbits / 8;
-
     res = esp_ecc_point_verify(&point);
-    if (res == 1) {
+    if (res == 1)
+    {
         return 0;
-    } else {
+    }
+    else
+    {
         return MBEDTLS_ERR_ECP_INVALID_KEY;
     }
 }

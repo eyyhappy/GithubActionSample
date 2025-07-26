@@ -72,7 +72,7 @@ static void test_bignum_mult_variant(const char *a_str, const char *b_str, const
     }
     mbedtls_mpi_write_string(&X, 16, x_buf, sizeof(x_buf) - 1, &x_buf_len);
     TEST_ASSERT_EQUAL_STRING_MESSAGE(e_str, x_buf, "mbedtls_mpi_mul_mpi result wrong");
-#ifdef CONFIG_MBEDTLS_HARDWARE_MPI
+    #ifdef CONFIG_MBEDTLS_HARDWARE_MPI
     mbedtls_mpi M;
     /* if mod_bits arg is set, also do a esp_mpi_mul_mod() call */
     if (mod_bits > 0 && mod_bits <= SOC_RSA_MAX_BIT_LEN)
@@ -87,7 +87,7 @@ static void test_bignum_mult_variant(const char *a_str, const char *b_str, const
         TEST_ASSERT_EQUAL_STRING_MESSAGE(e_str, x_buf, "esp_mpi_mul_mpi_mod result wrong");
         mbedtls_mpi_free(&M);
     }
-#endif
+    #endif
     mbedtls_mpi_free(&A);
     mbedtls_mpi_free(&B);
     mbedtls_mpi_free(&X);

@@ -41,8 +41,10 @@ typedef struct
 } ccomp_timer_status_t;
 
 // Each core has its independent timer
-ccomp_timer_status_t s_status[] = {
-    (ccomp_timer_status_t){
+ccomp_timer_status_t s_status[] =
+{
+    (ccomp_timer_status_t)
+    {
         .i_ovfl = 0,
         .d_ovfl = 0,
         .ccount = 0,
@@ -50,7 +52,8 @@ ccomp_timer_status_t s_status[] = {
         .state = PERF_TIMER_UNINIT,
         .intr_handle = NULL,
     },
-    (ccomp_timer_status_t){
+    (ccomp_timer_status_t)
+    {
         .i_ovfl = 0,
         .d_ovfl = 0,
         .ccount = 0,
@@ -64,11 +67,15 @@ static portMUX_TYPE s_lock = portMUX_INITIALIZER_UNLOCKED;
 
 static void IRAM_ATTR update_ccount(void)
 {
-    if (s_status[xPortGetCoreID()].state == PERF_TIMER_ACTIVE) {
+    if (s_status[xPortGetCoreID()].state == PERF_TIMER_ACTIVE)
+    {
         int64_t new_ccount = xthal_get_ccount();
-        if (new_ccount > s_status[xPortGetCoreID()].last_ccount) {
+        if (new_ccount > s_status[xPortGetCoreID()].last_ccount)
+        {
             s_status[xPortGetCoreID()].ccount += new_ccount - s_status[xPortGetCoreID()].last_ccount;
-        } else {
+        }
+        else
+        {
             // CCOUNT has wrapped around
             s_status[xPortGetCoreID()].ccount += new_ccount + (UINT32_MAX - s_status[xPortGetCoreID()].last_ccount);
         }
@@ -79,7 +86,8 @@ static void IRAM_ATTR update_ccount(void)
 static void inline update_overflow(int id, int *cnt)
 {
     uint32_t pmstat = eri_read(ERI_PERFMON_PMSTAT0 + id * sizeof(int32_t));
-    if (pmstat & PMSTAT_OVFL) {
+    if (pmstat & PMSTAT_OVFL)
+    {
         *cnt += 1;
         // Clear overflow and PerfMonInt asserted bits. The only valid bits in PMSTAT is the ones we're trying to clear. So it should be
         // ok to just modify the whole register.
@@ -97,16 +105,16 @@ static void set_perfmon_interrupt(bool enable)
 {
     uint32_t d_pmctrl = eri_read(ERI_PERFMON_PMCTRL0 + D_STALL_COUNTER_ID * sizeof(int32_t));
     uint32_t i_pmctrl = eri_read(ERI_PERFMON_PMCTRL0 + I_STALL_COUNTER_ID * sizeof(int32_t));
-
-    if (enable) {
+    if (enable)
+    {
         d_pmctrl |= PMCTRL_INTEN;
         i_pmctrl |= PMCTRL_INTEN;
     }
-    else {
+    else
+    {
         d_pmctrl &= ~PMCTRL_INTEN;
         i_pmctrl &= ~PMCTRL_INTEN;
     }
-
     eri_write(ERI_PERFMON_PMCTRL0 + D_STALL_COUNTER_ID * sizeof(int32_t), d_pmctrl);
     eri_write(ERI_PERFMON_PMCTRL0 + I_STALL_COUNTER_ID * sizeof(int32_t), i_pmctrl);
 }
@@ -116,19 +124,17 @@ esp_err_t ccomp_timer_impl_init(void)
 {
     // Keep track of how many times each counter has overflowed.
     esp_err_t err = esp_intr_alloc(ETS_INTERNAL_PROFILING_INTR_SOURCE, 0,
-                         perf_counter_overflow_handler, NULL, &s_status[xPortGetCoreID()].intr_handle);
-
-    if (err != ESP_OK) {
+                                   perf_counter_overflow_handler, NULL, &s_status[xPortGetCoreID()].intr_handle);
+    if (err != ESP_OK)
+    {
         return err;
     }
-
     xtensa_perfmon_init(D_STALL_COUNTER_ID,
                         XTPERF_CNT_D_STALL,
                         XTPERF_MASK_D_STALL_BUSY, 0, -1);
     xtensa_perfmon_init(I_STALL_COUNTER_ID,
                         XTPERF_CNT_I_STALL,
                         XTPERF_MASK_I_STALL_BUSY, 0, -1);
-
     set_perfmon_interrupt(true);
     s_status[xPortGetCoreID()].state = PERF_TIMER_IDLE;
     return ESP_OK;
@@ -137,13 +143,11 @@ esp_err_t ccomp_timer_impl_init(void)
 esp_err_t ccomp_timer_impl_deinit(void)
 {
     set_perfmon_interrupt(false);
-
     esp_err_t err = esp_intr_free(s_status[xPortGetCoreID()].intr_handle);
-
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         return err;
     }
-
     s_status[xPortGetCoreID()].intr_handle = NULL;
     s_status[xPortGetCoreID()].state = PERF_TIMER_UNINIT;
     return ESP_OK;

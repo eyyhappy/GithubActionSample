@@ -32,7 +32,8 @@
 
 static QueueHandle_t pcnt_evt_queue = NULL;
 
-typedef struct {
+typedef struct
+{
     int zero_times;
     int h_limit;
     int l_limit;
@@ -56,7 +57,8 @@ static void pcnt_test_io_config(int ctrl_level)
  * */
 static void produce_pulse(void)
 {
-    ledc_timer_config_t ledc_timer = {
+    ledc_timer_config_t ledc_timer =
+    {
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .timer_num  = LEDC_TIMER_1,
         .duty_resolution = LEDC_TIMER_14_BIT,
@@ -64,8 +66,8 @@ static void produce_pulse(void)
         .clk_cfg = LEDC_AUTO_CLK,
     };
     ESP_ERROR_CHECK(ledc_timer_config(&ledc_timer));
-
-    ledc_channel_config_t ledc_channel = {
+    ledc_channel_config_t ledc_channel =
+    {
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .channel = LEDC_CHANNEL_1,
         .timer_sel = LEDC_TIMER_1,
@@ -83,13 +85,15 @@ static void IRAM_ATTR pcnt_intr_handler(void *arg)
     int i;
     uint32_t status;
     BaseType_t port_status = pdFALSE;
-
-    for (i = 0; i < SOC_PCNT_UNITS_PER_GROUP; i++) {
-        if (intr_status & (BIT(i))) {
+    for (i = 0; i < SOC_PCNT_UNITS_PER_GROUP; i++)
+    {
+        if (intr_status & (BIT(i)))
+        {
             status = PCNT.status_unit[i].val;
             PCNT.int_clr.val = BIT(i);
             xQueueSendFromISR(pcnt_evt_queue, &status, &port_status);
-            if (port_status == pdTRUE) {
+            if (port_status == pdTRUE)
+            {
                 portYIELD_FROM_ISR();
             }
         }
@@ -102,33 +106,42 @@ static void event_calculate(event_times *event)
     int times = 0;
     BaseType_t port_status;
     uint32_t status = 0;
-    while (times < 10) {
+    while (times < 10)
+    {
         port_status = xQueueReceive(pcnt_evt_queue, &status, 1001 / portTICK_PERIOD_MS);
-        if (port_status == pdTRUE) {
+        if (port_status == pdTRUE)
+        {
             event->filter_time++;
             TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
             printf("Current counter value :%d\n", test_counter);
-            if (status & PCNT_EVT_THRES_1) {
+            if (status & PCNT_EVT_THRES_1)
+            {
                 printf("THRES1 EVT\n");
                 event->h_threshold++;
             }
-            if (status & PCNT_EVT_THRES_0) {
+            if (status & PCNT_EVT_THRES_0)
+            {
                 printf("THRES0 EVT\n");
                 event->l_threshold++;
             }
-            if (status & PCNT_EVT_L_LIM) {
+            if (status & PCNT_EVT_L_LIM)
+            {
                 printf("L_LIM EVT\n");
                 event->l_limit++;
             }
-            if (status & PCNT_EVT_H_LIM) {
+            if (status & PCNT_EVT_H_LIM)
+            {
                 printf("H_LIM EVT\n");
                 event->h_limit++;
             }
-            if (status & PCNT_EVT_ZERO) {
+            if (status & PCNT_EVT_ZERO)
+            {
                 printf("ZERO EVT\n");
                 event->zero_times++;
             }
-        } else {
+        }
+        else
+        {
             TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
             printf("Current counter value :%d\n", test_counter);
         }
@@ -162,7 +175,8 @@ static void count_mode_test(gpio_num_t ctl_io)
 {
     int16_t test_counter;
     //produce pulse, 100HZ
-    ledc_timer_config_t ledc_timer = {
+    ledc_timer_config_t ledc_timer =
+    {
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .timer_num  = LEDC_TIMER_1,
         .duty_resolution = LEDC_TIMER_10_BIT,
@@ -170,8 +184,8 @@ static void count_mode_test(gpio_num_t ctl_io)
         .clk_cfg = LEDC_AUTO_CLK,
     };
     ledc_timer_config(&ledc_timer);
-
-    ledc_channel_config_t ledc_channel = {
+    ledc_channel_config_t ledc_channel =
+    {
         .speed_mode = LEDC_LOW_SPEED_MODE,
         .channel = LEDC_CHANNEL_1,
         .timer_sel = LEDC_TIMER_1,
@@ -181,8 +195,8 @@ static void count_mode_test(gpio_num_t ctl_io)
         .hpoint = 0,
     };
     ledc_channel_config(&ledc_channel);
-
-    pcnt_config_t pcnt_config = {
+    pcnt_config_t pcnt_config =
+    {
         .pulse_gpio_num = PCNT_INPUT_IO,
         .ctrl_gpio_num = ctl_io,
         .channel = PCNT_CHANNEL_0,
@@ -199,14 +213,16 @@ static void count_mode_test(gpio_num_t ctl_io)
     int16_t result1[8] = {100, -100, 0, -100, 100, 100, 0, 100};
     int16_t result2[8] = {100, -100, 0, 100, -100, -100, 100, 0};
     int16_t *result;
-    if (ctl_io == PCNT_CTRL_VCC_IO) {
+    if (ctl_io == PCNT_CTRL_VCC_IO)
+    {
         result = result1;
-    } else {
+    }
+    else
+    {
         result = result2;
     }
     // Wait for ledc and pcnt settling down
     vTaskDelay(500 / portTICK_PERIOD_MS);
-
     // 1, 0, 0, 0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -218,7 +234,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[0]);
-
     //2, 0, 0, 0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -230,7 +245,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[1]);
-
     //0,0,0,0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -242,7 +256,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[2]);
-
     //1,0,1,0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -254,7 +267,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[3]);
-
     //1,0,0,1
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -266,7 +278,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[4]);
-
     //2,0,0,1
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -278,7 +289,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[5]);
-
     //1,0,2,0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -290,7 +300,6 @@ static void count_mode_test(gpio_num_t ctl_io)
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     printf("value: %d\n", test_counter);
     TEST_ASSERT_INT16_WITHIN(1, test_counter, result[6]);
-
     //1,0,0,2
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -307,7 +316,8 @@ static void count_mode_test(gpio_num_t ctl_io)
 // test PCNT basic configuration
 TEST_CASE("PCNT_test_config", "[pcnt]")
 {
-    pcnt_config_t pcnt_config = {
+    pcnt_config_t pcnt_config =
+    {
         .pulse_gpio_num = PCNT_INPUT_IO,
         .ctrl_gpio_num = PCNT_CTRL_VCC_IO,
         .channel = PCNT_CHANNEL_0,
@@ -322,16 +332,15 @@ TEST_CASE("PCNT_test_config", "[pcnt]")
     // basic configuration
     pcnt_config_t temp_pcnt_config = pcnt_config;
     TEST_ESP_OK(pcnt_unit_config(&pcnt_config));
-
     // test SOC_PCNT_UNITS_PER_GROUP units, from 0-(SOC_PCNT_UNITS_PER_GROUP-1)
     pcnt_config = temp_pcnt_config;
     pcnt_config.unit = SOC_PCNT_UNITS_PER_GROUP;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
-    for (int i = 0; i < SOC_PCNT_UNITS_PER_GROUP; i++) {
+    for (int i = 0; i < SOC_PCNT_UNITS_PER_GROUP; i++)
+    {
         pcnt_config.unit = i;
         TEST_ESP_OK(pcnt_unit_config(&pcnt_config));
     }
-
     // test channels
     pcnt_config = temp_pcnt_config;
     pcnt_config.channel = PCNT_CHANNEL_MAX;
@@ -339,25 +348,20 @@ TEST_CASE("PCNT_test_config", "[pcnt]")
     pcnt_config = temp_pcnt_config;
     pcnt_config.pulse_gpio_num = -1;
     TEST_ESP_OK(pcnt_unit_config(&pcnt_config));
-
     pcnt_config = temp_pcnt_config;
     pcnt_config.pulse_gpio_num = GPIO_NUM_MAX + 1;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
-
     // test pulse_gpio_num and ctrl_gpio_num is the same
     pcnt_config = temp_pcnt_config;
     pcnt_config.pulse_gpio_num = PCNT_INPUT_IO;
     pcnt_config.ctrl_gpio_num = PCNT_INPUT_IO;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
-
     pcnt_config = temp_pcnt_config;
     pcnt_config.pos_mode = PCNT_COUNT_MAX;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
-
     pcnt_config = temp_pcnt_config;
     pcnt_config.hctrl_mode = PCNT_MODE_MAX;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
-
     pcnt_config = temp_pcnt_config;
     pcnt_config.lctrl_mode = PCNT_MODE_MAX;
     TEST_ASSERT_NOT_NULL((void *)pcnt_unit_config(&pcnt_config));
@@ -375,7 +379,8 @@ TEST_CASE("PCNT_basic_function_test", "[pcnt]")
     int clear_count = 0;
     int resume_count = 0;
     int temp_value = 0;
-    pcnt_config_t pcnt_config = {
+    pcnt_config_t pcnt_config =
+    {
         .pulse_gpio_num = PCNT_INPUT_IO,
         .ctrl_gpio_num = PCNT_CTRL_VCC_IO,
         .channel = PCNT_CHANNEL_0,
@@ -388,47 +393,44 @@ TEST_CASE("PCNT_basic_function_test", "[pcnt]")
         .counter_l_lim = -10,
     };
     TEST_ESP_OK(pcnt_unit_config(&pcnt_config));
-
     // use LEDC to produce the pulse, then the PCNT to count it
     produce_pulse();
     pcnt_test_io_config(PCNT_CTRL_HIGH_LEVEL);
-
     // initialize first, the initail value should be 0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     TEST_ASSERT_EQUAL_INT16(test_counter, 0);
-
     // resume the PCNT
     TEST_ESP_OK(pcnt_counter_resume(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     TEST_ASSERT_EQUAL_INT16(test_counter, 0);
     TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
     TEST_ASSERT_EQUAL_INT16(test_counter, 0);
-
     //count now
-    while (time != 10) {
+    while (time != 10)
+    {
         vTaskDelay(501 / portTICK_PERIOD_MS);  // in case of can't wait to get counter(edge effect)
         TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
         printf("COUNT: %d\n", test_counter);
         TEST_ASSERT_NOT_EQUAL(test_counter, temp_value);
         temp_value = test_counter;
-
-        if (test_counter == 5 || test_counter == -5) {
+        if (test_counter == 5 || test_counter == -5)
+        {
             //test clear
             TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
             TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
             TEST_ASSERT_EQUAL_INT16(test_counter, 0);
             clear_count++;
         }
-        if (test_counter == 0) {
+        if (test_counter == 0)
+        {
             //test pause
             TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
             vTaskDelay(500 / portTICK_PERIOD_MS);
             TEST_ESP_OK(pcnt_get_counter_value(PCNT_UNIT_0, &test_counter));
             printf("PAUSE: %d\n", test_counter);
             TEST_ASSERT_EQUAL_INT16(test_counter, 0);
-
             // test resume
             TEST_ESP_OK(pcnt_counter_resume(PCNT_UNIT_0));
             vTaskDelay(500 / portTICK_PERIOD_MS);
@@ -459,7 +461,8 @@ TEST_CASE("PCNT_basic_function_test", "[pcnt]")
  * */
 TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
 {
-    pcnt_config_t config = {
+    pcnt_config_t config =
+    {
         .pulse_gpio_num = PCNT_INPUT_IO,
         .ctrl_gpio_num = PCNT_CTRL_VCC_IO,
         .channel = PCNT_CHANNEL_0,
@@ -474,8 +477,8 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ESP_OK(pcnt_unit_config(&config));
     produce_pulse();
     pcnt_test_io_config(PCNT_CTRL_HIGH_LEVEL);
-
-    event_times event = {
+    event_times event =
+    {
         .zero_times = 0,
         .h_limit = 0,
         .l_limit = 0,
@@ -483,7 +486,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
         .l_threshold = 0,
         .filter_time = 0,
     };
-
     //interrupt set
     TEST_ESP_OK(pcnt_set_filter_value(PCNT_UNIT_0, 2));
     TEST_ESP_OK(pcnt_filter_enable(PCNT_UNIT_0));
@@ -494,18 +496,14 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_ZERO));
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_H_LIM));  // when arrive to max limit trigger
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_L_LIM));  // when arrive to minimum limit trigger
-
     // initialize first, the initail value should be 0
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
-
     pcnt_evt_queue = xQueueCreate(10, sizeof(uint32_t));
-
     pcnt_isr_handle_t pcnt_isr_service;
     TEST_ESP_OK(pcnt_isr_register(pcnt_intr_handler, NULL, 0, &pcnt_isr_service));
     TEST_ESP_OK(pcnt_intr_enable(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_resume(PCNT_UNIT_0));
-
     // test event
     event_calculate(&event);
     TEST_ASSERT_INT_WITHIN(2, event.h_threshold, 2);
@@ -514,7 +512,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 2);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 2);
     TEST_ASSERT_INT_WITHIN(3, event.filter_time, 4);
-
     // test interrupt disable
     TEST_ESP_OK(pcnt_intr_disable(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -526,7 +523,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 2);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 2);
     TEST_ASSERT_INT_WITHIN(3, event.filter_time, 4);
-
     // enable the intr
     TEST_ESP_OK(pcnt_intr_enable(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
@@ -539,7 +535,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 4);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 4);
     TEST_ASSERT_INT_WITHIN(3, event.filter_time, 10);
-
     // disable part of events
     TEST_ESP_OK(pcnt_event_disable(PCNT_UNIT_0, PCNT_EVT_ZERO));
     TEST_ESP_OK(pcnt_event_disable(PCNT_UNIT_0, PCNT_EVT_L_LIM));
@@ -551,7 +546,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(3, event.h_limit, 6);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 4);
     TEST_ASSERT_INT_WITHIN(3, event.filter_time, 14);
-
     // Because this test uses its own ISR, we need to release it with `pcnt_isr_unregister` instead of `pcnt_isr_service_uninstall`
     TEST_ESP_OK(pcnt_isr_unregister(pcnt_isr_service));
     vQueueDelete(pcnt_evt_queue);
@@ -559,7 +553,8 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_high", "[pcnt][timeout=120]")
 
 TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
 {
-    pcnt_config_t config = {
+    pcnt_config_t config =
+    {
         .pulse_gpio_num = PCNT_INPUT_IO,
         .ctrl_gpio_num = PCNT_CTRL_GND_IO,
         .channel = PCNT_CHANNEL_0,
@@ -574,8 +569,8 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ESP_OK(pcnt_unit_config(&config));
     produce_pulse();
     pcnt_test_io_config(PCNT_CTRL_LOW_LEVEL);
-
-    event_times event = {
+    event_times event =
+    {
         .zero_times = 0,
         .h_limit = 0,
         .l_limit = 0,
@@ -583,7 +578,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
         .l_threshold = 0,
         .filter_time = 0,
     };
-
     //interrupt set
     TEST_ESP_OK(pcnt_set_filter_value(PCNT_UNIT_0, 2));
     TEST_ESP_OK(pcnt_filter_enable(PCNT_UNIT_0));
@@ -594,18 +588,14 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_ZERO));
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_H_LIM));  // when arrive to max limit trigger
     TEST_ESP_OK(pcnt_event_enable(PCNT_UNIT_0, PCNT_EVT_L_LIM));  // when arrive to minimum limit trigger
-
     // to initialize for PCNT
     TEST_ESP_OK(pcnt_counter_pause(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
-
     pcnt_evt_queue = xQueueCreate(10, sizeof(uint32_t));
-
     pcnt_isr_handle_t pcnt_isr_service;
     TEST_ESP_OK(pcnt_isr_register(pcnt_intr_handler, NULL, 0, &pcnt_isr_service));
     TEST_ESP_OK(pcnt_intr_enable(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_resume(PCNT_UNIT_0));
-
     // test event
     event_calculate(&event);
     TEST_ASSERT_INT_WITHIN(2, event.h_threshold, 1);
@@ -614,7 +604,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 0);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 1);
     TEST_ASSERT_INT_WITHIN(2, event.filter_time, 2);
-
     // test interrupt disable
     TEST_ESP_OK(pcnt_intr_disable(PCNT_UNIT_0));
     TEST_ESP_OK(pcnt_counter_clear(PCNT_UNIT_0));
@@ -626,7 +615,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 0);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 1);
     TEST_ASSERT_INT_WITHIN(2, event.filter_time, 2);
-
     // enable the intr
     pcnt_unit_config(&config);
     pcnt_test_io_config(PCNT_CTRL_LOW_LEVEL);
@@ -641,7 +629,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 0);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 2);
     TEST_ASSERT_INT_WITHIN(2, event.filter_time, 6);
-
     // disable part of events
     TEST_ESP_OK(pcnt_event_disable(PCNT_UNIT_0, PCNT_EVT_ZERO));
     TEST_ESP_OK(pcnt_event_disable(PCNT_UNIT_0, PCNT_EVT_L_LIM));
@@ -653,7 +640,6 @@ TEST_CASE("PCNT_interrupt_method_test_control_IO_low", "[pcnt][timeout=120]")
     TEST_ASSERT_INT_WITHIN(2, event.h_limit, 0);
     TEST_ASSERT_INT_WITHIN(2, event.zero_times, 2);
     TEST_ASSERT_INT_WITHIN(2, event.filter_time, 8);
-
     // Because this test uses its own ISR, we need to release it with `pcnt_isr_unregister` instead of `pcnt_isr_service_uninstall`
     TEST_ESP_OK(pcnt_isr_unregister(pcnt_isr_service));
     vQueueDelete(pcnt_evt_queue);

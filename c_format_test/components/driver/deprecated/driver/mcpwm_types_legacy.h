@@ -24,7 +24,8 @@ extern "C" {
  *        - 3 MCPWM sync input pins to synchronize MCPWM outputs signals
  *        - 3 MCPWM capture input pins to gather feedback from controlled motors, using e.g. hall sensors
  */
-typedef enum {
+typedef enum
+{
     MCPWM0A = 0,        /*!<PWM0A output pin*/
     MCPWM0B,            /*!<PWM0B output pin*/
     MCPWM1A,            /*!<PWM1A output pin*/
@@ -45,7 +46,8 @@ typedef enum {
 /**
  * @brief pin number for MCPWM
  */
-typedef struct {
+typedef struct
+{
     int mcpwm0a_out_num;       /*!<MCPWM0A out pin*/
     int mcpwm0b_out_num;       /*!<MCPWM0A out pin*/
     int mcpwm1a_out_num;       /*!<MCPWM0A out pin*/
@@ -66,18 +68,20 @@ typedef struct {
 /**
  * @brief Select MCPWM unit
  */
-typedef enum {
+typedef enum
+{
     MCPWM_UNIT_0,   /*!<MCPWM unit0 selected*/
-#if SOC_MCPWM_GROUPS > 1
+    #if SOC_MCPWM_GROUPS > 1
     MCPWM_UNIT_1,   /*!<MCPWM unit1 selected*/
-#endif
+    #endif
     MCPWM_UNIT_MAX, /*!<Max number of MCPWM units*/
 } mcpwm_unit_t;
 
 /**
  * @brief Select MCPWM timer
  */
-typedef enum {
+typedef enum
+{
     MCPWM_TIMER_0,   /*!<Select MCPWM timer0*/
     MCPWM_TIMER_1,   /*!<Select MCPWM timer1*/
     MCPWM_TIMER_2,   /*!<Select MCPWM timer2*/
@@ -87,7 +91,8 @@ typedef enum {
 /**
  * @brief Select MCPWM operator
  */
-typedef enum {
+typedef enum
+{
     MCPWM_GEN_A,   /*!<Select MCPWMXA, where 'X' is operator number*/
     MCPWM_GEN_B,   /*!<Select MCPWMXB, where 'X' is operator number*/
     MCPWM_GEN_MAX, /*!<Num of generators to each operator of MCPWM*/
@@ -102,7 +107,8 @@ typedef mcpwm_generator_t mcpwm_operator_t; ///< @deprecated
 /**
  * @brief MCPWM carrier output inversion, high frequency carrier signal active with MCPWM signal is high
  */
-typedef enum {
+typedef enum
+{
     MCPWM_CARRIER_OUT_IVT_DIS, /*!<Enable  carrier output inversion*/
     MCPWM_CARRIER_OUT_IVT_EN,  /*!<Disable carrier output inversion*/
 } mcpwm_carrier_out_ivt_t;
@@ -110,7 +116,8 @@ typedef enum {
 /**
  * @brief MCPWM select fault signal input
  */
-typedef enum {
+typedef enum
+{
     MCPWM_SELECT_F0, /*!<Select F0 as input*/
     MCPWM_SELECT_F1, /*!<Select F1 as input*/
     MCPWM_SELECT_F2, /*!<Select F2 as input*/
@@ -119,7 +126,8 @@ typedef enum {
 /**
  * @brief MCPWM select sync signal input
  */
-typedef enum {
+typedef enum
+{
     MCPWM_SELECT_NO_INPUT,        /*!<No sync input selected*/
     MCPWM_SELECT_TIMER0_SYNC,     /*!<Select software sync signal from timer0 as input*/
     MCPWM_SELECT_TIMER1_SYNC,     /*!<Select software sync signal from timer1 as input*/
@@ -137,7 +145,8 @@ typedef enum {
 /**
  * @brief MCPWM timer sync event trigger
  */
-typedef enum {
+typedef enum
+{
     MCPWM_SWSYNC_SOURCE_SYNCIN,      /*!<the input sync signal will be routed to its sync output path*/
     MCPWM_SWSYNC_SOURCE_TEZ,         /*!<sync signal generated when timer counts to zero*/
     MCPWM_SWSYNC_SOURCE_TEP,         /*!<sync signal generated when timer counts to peak*/
@@ -147,7 +156,8 @@ typedef enum {
 /**
  * @brief MCPWM select triggering level of fault signal
  */
-typedef enum {
+typedef enum
+{
     MCPWM_LOW_LEVEL_TGR,  /*!<Fault condition occurs when fault input signal goes from high to low*/
     MCPWM_HIGH_LEVEL_TGR, /*!<Fault condition occurs when fault input signal goes low to high*/
 } mcpwm_fault_input_level_t;
@@ -155,7 +165,8 @@ typedef enum {
 /**
  * @brief MCPWM select capture starts from which edge
  */
-typedef enum {
+typedef enum
+{
     MCPWM_NEG_EDGE = BIT(0),           /*!<Capture the negative edge*/
     MCPWM_POS_EDGE = BIT(1),           /*!<Capture the positive edge*/
     MCPWM_BOTH_EDGE = BIT(1) | BIT(0), /*!<Capture both edges*/
@@ -164,7 +175,8 @@ typedef enum {
 /**
  * @brief Select type of MCPWM counter
  */
-typedef enum {
+typedef enum
+{
     MCPWM_FREEZE_COUNTER,   /*!<Counter freeze */
     MCPWM_UP_COUNTER,       /*!<For asymmetric MCPWM*/
     MCPWM_DOWN_COUNTER,     /*!<For asymmetric MCPWM*/
@@ -175,7 +187,8 @@ typedef enum {
 /**
  * @brief Select type of MCPWM duty cycle mode
  */
-typedef enum {
+typedef enum
+{
     MCPWM_DUTY_MODE_0 = 0,      /*!<Active high duty, i.e. duty cycle proportional to high time for asymmetric MCPWM*/
     MCPWM_DUTY_MODE_1,          /*!<Active low duty,  i.e. duty cycle proportional to low  time for asymmetric MCPWM, out of phase(inverted) MCPWM*/
     MCPWM_DUTY_MODE_FORCE_LOW,  /*!< Forced to output low level */
@@ -189,7 +202,8 @@ typedef enum {
 /**
  * @brief MCPWM deadtime types, used to generate deadtime, RED refers to rising edge delay and FED refers to falling edge delay
  */
-typedef enum {
+typedef enum
+{
     MCPWM_DEADTIME_BYPASS = 0,          /*!<Bypass the deadtime*/
     MCPWM_BYPASS_RED,                   /*!<MCPWMXA Out = MCPWMXA In with no delay, MCPWMXB Out = MCPWMXA In with falling edge delay*/
     MCPWM_BYPASS_FED,                   /*!<MCPWMXA Out = MCPWMXA In with rising edge delay, MCPWMXB Out = MCPWMXB In with no delay*/
@@ -205,7 +219,8 @@ typedef enum {
 /**
  * @brief MCPWM select action to be taken on the output when event happens
  */
-typedef enum {
+typedef enum
+{
     MCPWM_ACTION_NO_CHANGE = 0,  /*!<No change in the output*/
     MCPWM_ACTION_FORCE_LOW,      /*!<Make output low*/
     MCPWM_ACTION_FORCE_HIGH,     /*!<Make output high*/
@@ -229,7 +244,8 @@ typedef mcpwm_output_action_t mcpwm_action_on_pwmxb_t;
 /**
  * @brief MCPWM select capture signal input
  */
-typedef enum {
+typedef enum
+{
     MCPWM_SELECT_CAP0, /*!<Select CAP0 as input*/
     MCPWM_SELECT_CAP1, /*!<Select CAP1 as input*/
     MCPWM_SELECT_CAP2, /*!<Select CAP2 as input*/
@@ -243,7 +259,8 @@ typedef mcpwm_capture_signal_t mcpwm_capture_channel_id_t;
 /**
  * @brief event data that will be passed into ISR callback
  */
-typedef struct {
+typedef struct
+{
     mcpwm_capture_on_edge_t cap_edge;   /*!<Which signal edge is detected*/
     uint32_t cap_value;                 /*!<Corresponding timestamp when event occurs. Clock rate = APB(usually 80M)*/
 } cap_event_data_t;
@@ -267,7 +284,8 @@ typedef bool (*cap_isr_cb_t)(mcpwm_unit_t mcpwm, mcpwm_capture_channel_id_t cap_
 /**
  * @brief MCPWM config structure
  */
-typedef struct {
+typedef struct
+{
     uint32_t frequency;              /*!<Set frequency of MCPWM in Hz*/
     float cmpr_a;                    /*!<Set % duty cycle for operator a(MCPWMXA), i.e for 62.3% duty cycle, duty_a = 62.3*/
     float cmpr_b;                    /*!<Set % duty cycle for operator b(MCPWMXB), i.e for 48% duty cycle, duty_b = 48.0*/
@@ -278,7 +296,8 @@ typedef struct {
 /**
  * @brief MCPWM carrier configuration structure
  */
-typedef struct {
+typedef struct
+{
     uint8_t carrier_period;                    /*!<Set carrier period = (carrier_period + 1)*800ns, carrier_period should be < 16*/
     uint8_t carrier_duty;                      /*!<Set carrier duty cycle, carrier_duty should be less than 8 (increment every 12.5%)*/
     uint8_t pulse_width_in_os;                 /*!<Set pulse width of first pulse in one shot mode = (carrier period)*(pulse_width_in_os + 1), should be less then 16*/
@@ -288,7 +307,8 @@ typedef struct {
 /**
  * @brief MCPWM config capture structure
  */
-typedef struct {
+typedef struct
+{
     mcpwm_capture_on_edge_t cap_edge;      /*!<Set capture edge*/
     uint32_t cap_prescale;                 /*!<Prescale of capture signal, ranging from 1 to 256*/
     cap_isr_cb_t capture_cb;               /*!<User defined capture event callback, running under interrupt context */
@@ -298,7 +318,8 @@ typedef struct {
 /**
  * @brief MCPWM config sync structure
  */
-typedef struct {
+typedef struct
+{
     mcpwm_sync_signal_t sync_sig;              /*!<Set sync input signal that will cause timer to sync*/
     uint32_t timer_val;                        /*!<Counter value to be set after sync, in 0 ~ 999, unit: 1 / 1000 * peak*/
     mcpwm_timer_direction_t count_direction;   /*!<Counting direction to be set after sync */

@@ -43,10 +43,8 @@ psa_status_t mbedtls_psa_external_get_random(
     uint8_t *output, size_t output_size, size_t *output_length )
 {
     (void) context;
-
     if( !test_insecure_external_rng_enabled )
         return( PSA_ERROR_INSUFFICIENT_ENTROPY );
-
     /* This implementation is for test purposes only!
      * Use the libc non-cryptographic random generator. */
     mbedtls_test_rnd_std_rand( NULL, output, output_size );

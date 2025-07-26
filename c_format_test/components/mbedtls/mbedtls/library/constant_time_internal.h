@@ -335,10 +335,10 @@ int mbedtls_ct_hmac( mbedtls_md_context_t *ctx,
  *              The input doesn't contain properly formatted padding.
  */
 int mbedtls_ct_rsaes_pkcs1_v15_unpadding( unsigned char *input,
-                                          size_t ilen,
-                                          unsigned char *output,
-                                          size_t output_max_len,
-                                          size_t *olen );
+        size_t ilen,
+        unsigned char *output,
+        size_t output_max_len,
+        size_t *olen );
 
 #endif /* MBEDTLS_PKCS1_V15 && MBEDTLS_RSA_C && ! MBEDTLS_RSA_ALT */
 

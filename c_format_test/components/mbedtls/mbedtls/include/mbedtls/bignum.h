@@ -122,63 +122,63 @@
  * disabled by defining MBEDTLS_NO_UDBL_DIVISION.
  */
 #if !defined(MBEDTLS_HAVE_INT32)
-    #if defined(_MSC_VER) && defined(_M_AMD64)
-        /* Always choose 64-bit when using MSC */
-        #if !defined(MBEDTLS_HAVE_INT64)
-            #define MBEDTLS_HAVE_INT64
-        #endif /* !MBEDTLS_HAVE_INT64 */
-        typedef  int64_t mbedtls_mpi_sint;
-        typedef uint64_t mbedtls_mpi_uint;
-    #elif defined(__GNUC__) && (                         \
-        defined(__amd64__) || defined(__x86_64__)     || \
-        defined(__ppc64__) || defined(__powerpc64__)  || \
-        defined(__ia64__)  || defined(__alpha__)      || \
-        ( defined(__sparc__) && defined(__arch64__) ) || \
-        defined(__s390x__) || defined(__mips64)       || \
-        defined(__aarch64__) )
-        #if !defined(MBEDTLS_HAVE_INT64)
-            #define MBEDTLS_HAVE_INT64
-        #endif /* MBEDTLS_HAVE_INT64 */
-        typedef  int64_t mbedtls_mpi_sint;
-        typedef uint64_t mbedtls_mpi_uint;
-        #if !defined(MBEDTLS_NO_UDBL_DIVISION)
-            /* mbedtls_t_udbl defined as 128-bit unsigned int */
-            typedef unsigned int mbedtls_t_udbl __attribute__((mode(TI)));
-            #define MBEDTLS_HAVE_UDBL
-        #endif /* !MBEDTLS_NO_UDBL_DIVISION */
-    #elif defined(__ARMCC_VERSION) && defined(__aarch64__)
-        /*
-         * __ARMCC_VERSION is defined for both armcc and armclang and
-         * __aarch64__ is only defined by armclang when compiling 64-bit code
-         */
-        #if !defined(MBEDTLS_HAVE_INT64)
-            #define MBEDTLS_HAVE_INT64
-        #endif /* !MBEDTLS_HAVE_INT64 */
-        typedef  int64_t mbedtls_mpi_sint;
-        typedef uint64_t mbedtls_mpi_uint;
-        #if !defined(MBEDTLS_NO_UDBL_DIVISION)
-            /* mbedtls_t_udbl defined as 128-bit unsigned int */
-            typedef __uint128_t mbedtls_t_udbl;
-            #define MBEDTLS_HAVE_UDBL
-        #endif /* !MBEDTLS_NO_UDBL_DIVISION */
-    #elif defined(MBEDTLS_HAVE_INT64)
-        /* Force 64-bit integers with unknown compiler */
-        typedef  int64_t mbedtls_mpi_sint;
-        typedef uint64_t mbedtls_mpi_uint;
-    #endif
+#if defined(_MSC_VER) && defined(_M_AMD64)
+/* Always choose 64-bit when using MSC */
+#if !defined(MBEDTLS_HAVE_INT64)
+#define MBEDTLS_HAVE_INT64
+#endif /* !MBEDTLS_HAVE_INT64 */
+typedef  int64_t mbedtls_mpi_sint;
+typedef uint64_t mbedtls_mpi_uint;
+#elif defined(__GNUC__) && (                         \
+defined(__amd64__) || defined(__x86_64__)     || \
+defined(__ppc64__) || defined(__powerpc64__)  || \
+defined(__ia64__)  || defined(__alpha__)      || \
+( defined(__sparc__) && defined(__arch64__) ) || \
+defined(__s390x__) || defined(__mips64)       || \
+defined(__aarch64__) )
+#if !defined(MBEDTLS_HAVE_INT64)
+#define MBEDTLS_HAVE_INT64
+#endif /* MBEDTLS_HAVE_INT64 */
+typedef  int64_t mbedtls_mpi_sint;
+typedef uint64_t mbedtls_mpi_uint;
+#if !defined(MBEDTLS_NO_UDBL_DIVISION)
+/* mbedtls_t_udbl defined as 128-bit unsigned int */
+typedef unsigned int mbedtls_t_udbl __attribute__((mode(TI)));
+#define MBEDTLS_HAVE_UDBL
+#endif /* !MBEDTLS_NO_UDBL_DIVISION */
+#elif defined(__ARMCC_VERSION) && defined(__aarch64__)
+/*
+ * __ARMCC_VERSION is defined for both armcc and armclang and
+ * __aarch64__ is only defined by armclang when compiling 64-bit code
+ */
+#if !defined(MBEDTLS_HAVE_INT64)
+#define MBEDTLS_HAVE_INT64
+#endif /* !MBEDTLS_HAVE_INT64 */
+typedef  int64_t mbedtls_mpi_sint;
+typedef uint64_t mbedtls_mpi_uint;
+#if !defined(MBEDTLS_NO_UDBL_DIVISION)
+/* mbedtls_t_udbl defined as 128-bit unsigned int */
+typedef __uint128_t mbedtls_t_udbl;
+#define MBEDTLS_HAVE_UDBL
+#endif /* !MBEDTLS_NO_UDBL_DIVISION */
+#elif defined(MBEDTLS_HAVE_INT64)
+/* Force 64-bit integers with unknown compiler */
+typedef  int64_t mbedtls_mpi_sint;
+typedef uint64_t mbedtls_mpi_uint;
+#endif
 #endif /* !MBEDTLS_HAVE_INT32 */
 
 #if !defined(MBEDTLS_HAVE_INT64)
-    /* Default to 32-bit compilation */
-    #if !defined(MBEDTLS_HAVE_INT32)
-        #define MBEDTLS_HAVE_INT32
-    #endif /* !MBEDTLS_HAVE_INT32 */
-    typedef  int32_t mbedtls_mpi_sint;
-    typedef uint32_t mbedtls_mpi_uint;
-    #if !defined(MBEDTLS_NO_UDBL_DIVISION)
-        typedef uint64_t mbedtls_t_udbl;
-        #define MBEDTLS_HAVE_UDBL
-    #endif /* !MBEDTLS_NO_UDBL_DIVISION */
+/* Default to 32-bit compilation */
+#if !defined(MBEDTLS_HAVE_INT32)
+#define MBEDTLS_HAVE_INT32
+#endif /* !MBEDTLS_HAVE_INT32 */
+typedef  int32_t mbedtls_mpi_sint;
+typedef uint32_t mbedtls_mpi_uint;
+#if !defined(MBEDTLS_NO_UDBL_DIVISION)
+typedef uint64_t mbedtls_t_udbl;
+#define MBEDTLS_HAVE_UDBL
+#endif /* !MBEDTLS_NO_UDBL_DIVISION */
 #endif /* !MBEDTLS_HAVE_INT64 */
 
 #ifdef __cplusplus
@@ -615,7 +615,7 @@ int mbedtls_mpi_cmp_mpi( const mbedtls_mpi *X, const mbedtls_mpi *Y );
  *                 the two input MPIs is not the same.
  */
 int mbedtls_mpi_lt_mpi_ct( const mbedtls_mpi *X, const mbedtls_mpi *Y,
-        unsigned *ret );
+                           unsigned *ret );
 
 /**
  * \brief          Compare an MPI with an integer.
@@ -875,8 +875,8 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
  *                 be relevant in applications like deterministic ECDSA.
  */
 int mbedtls_mpi_fill_random( mbedtls_mpi *X, size_t size,
-                     int (*f_rng)(void *, unsigned char *, size_t),
-                     void *p_rng );
+                             int (*f_rng)(void *, unsigned char *, size_t),
+                             void *p_rng );
 
 /** Generate a random number uniformly in a range.
  *
@@ -985,7 +985,8 @@ int mbedtls_mpi_is_prime_ext( const mbedtls_mpi *X, int rounds,
  * Each of these flags is a constraint on the result X returned by
  * mbedtls_mpi_gen_prime().
  */
-typedef enum {
+typedef enum
+{
     MBEDTLS_MPI_GEN_PRIME_FLAG_DH =      0x0001, /**< (X-1)/2 is prime too */
     MBEDTLS_MPI_GEN_PRIME_FLAG_LOW_ERR = 0x0002, /**< lower error rate from 2<sup>-80</sup> to 2<sup>-128</sup> */
 } mbedtls_mpi_gen_prime_flag_t;
@@ -1010,8 +1011,8 @@ typedef enum {
  *                 \c 3 and #MBEDTLS_MPI_MAX_BITS.
  */
 int mbedtls_mpi_gen_prime( mbedtls_mpi *X, size_t nbits, int flags,
-                   int (*f_rng)(void *, unsigned char *, size_t),
-                   void *p_rng );
+                           int (*f_rng)(void *, unsigned char *, size_t),
+                           void *p_rng );
 #else /* MBEDTLS_BIGNUM_ALT */
 #include "bignum_alt.h"
 #endif /* MBEDTLS_BIGNUM_ALT */

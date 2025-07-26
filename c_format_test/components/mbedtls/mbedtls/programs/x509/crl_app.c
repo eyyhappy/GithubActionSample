@@ -31,13 +31,13 @@
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_RSA_C) ||  \
-    !defined(MBEDTLS_X509_CRL_PARSE_C) || !defined(MBEDTLS_FS_IO) || \
-    defined(MBEDTLS_X509_REMOVE_INFO)
+!defined(MBEDTLS_X509_CRL_PARSE_C) || !defined(MBEDTLS_FS_IO) || \
+defined(MBEDTLS_X509_REMOVE_INFO)
 int main( void )
 {
     mbedtls_printf("MBEDTLS_BIGNUM_C and/or MBEDTLS_RSA_C and/or "
-           "MBEDTLS_X509_CRL_PARSE_C and/or MBEDTLS_FS_IO not defined and/or "
-           "MBEDTLS_X509_REMOVE_INFO defined.\n");
+                   "MBEDTLS_X509_CRL_PARSE_C and/or MBEDTLS_FS_IO not defined and/or "
+                   "MBEDTLS_X509_REMOVE_INFO defined.\n");
     mbedtls_exit( 0 );
 }
 #else
@@ -74,51 +74,41 @@ int main( int argc, char *argv[] )
     mbedtls_x509_crl crl;
     int i;
     char *p, *q;
-
     /*
      * Set to sane values
      */
     mbedtls_x509_crl_init( &crl );
-
     if( argc == 0 )
     {
     usage:
         mbedtls_printf( USAGE );
         goto exit;
     }
-
     opt.filename            = DFL_FILENAME;
-
     for( i = 1; i < argc; i++ )
     {
         p = argv[i];
         if( ( q = strchr( p, '=' ) ) == NULL )
             goto usage;
         *q++ = '\0';
-
         if( strcmp( p, "filename" ) == 0 )
             opt.filename = q;
         else
             goto usage;
     }
-
     /*
      * 1.1. Load the CRL
      */
     mbedtls_printf( "\n  . Loading the CRL ..." );
     fflush( stdout );
-
     ret = mbedtls_x509_crl_parse_file( &crl, opt.filename );
-
     if( ret != 0 )
     {
         mbedtls_printf( " failed\n  !  mbedtls_x509_crl_parse_file returned %d\n\n", ret );
         mbedtls_x509_crl_free( &crl );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 1.2 Print the CRL
      */
@@ -130,15 +120,11 @@ int main( int argc, char *argv[] )
         mbedtls_x509_crl_free( &crl );
         goto exit;
     }
-
     mbedtls_printf( "%s\n", buf );
-
     exit_code = MBEDTLS_EXIT_SUCCESS;
-
 exit:
     mbedtls_x509_crl_free( &crl );
-
     mbedtls_exit( exit_code );
 }
 #endif /* MBEDTLS_BIGNUM_C && MBEDTLS_RSA_C && MBEDTLS_X509_CRL_PARSE_C &&
-          MBEDTLS_FS_IO */
+MBEDTLS_FS_IO */

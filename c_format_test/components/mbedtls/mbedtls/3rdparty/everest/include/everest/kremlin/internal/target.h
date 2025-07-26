@@ -23,8 +23,8 @@
 #endif
 
 #if (                                                                          \
-    (defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) &&             \
-    (!(defined KRML_HOST_EPRINTF)))
+(defined __STDC_VERSION__) && (__STDC_VERSION__ >= 199901L) &&             \
+(!(defined KRML_HOST_EPRINTF)))
 #  define KRML_HOST_EPRINTF(...) fprintf(stderr, __VA_ARGS__)
 #endif
 
@@ -49,8 +49,9 @@
 #  include <time.h>
 
 /* Prims_nat not yet in scope */
-inline static int32_t krml_time() {
-  return (int32_t)time(NULL);
+inline static int32_t krml_time()
+{
+    return (int32_t)time(NULL);
 }
 
 #  define KRML_HOST_TIME krml_time

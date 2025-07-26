@@ -99,7 +99,7 @@ int mbedtls_timing_get_delay( void *data );
  * \return         Final timing delay in milliseconds.
  */
 uint32_t mbedtls_timing_get_final_delay(
-                                     const mbedtls_timing_delay_context *data );
+    const mbedtls_timing_delay_context *data );
 
 #ifdef __cplusplus
 }

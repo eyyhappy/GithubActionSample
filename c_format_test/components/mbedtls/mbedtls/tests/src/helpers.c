@@ -34,17 +34,17 @@ mbedtls_test_info_t mbedtls_test_info;
 int mbedtls_test_platform_setup( void )
 {
     int ret = 0;
-#if defined(MBEDTLS_PLATFORM_C)
+    #if defined(MBEDTLS_PLATFORM_C)
     ret = mbedtls_platform_setup( &platform_ctx );
-#endif /* MBEDTLS_PLATFORM_C */
+    #endif /* MBEDTLS_PLATFORM_C */
     return( ret );
 }
 
 void mbedtls_test_platform_teardown( void )
 {
-#if defined(MBEDTLS_PLATFORM_C)
+    #if defined(MBEDTLS_PLATFORM_C)
     mbedtls_platform_teardown( &platform_ctx );
-#endif /* MBEDTLS_PLATFORM_C */
+    #endif /* MBEDTLS_PLATFORM_C */
 }
 
 static int ascii2uc(const char c, unsigned char *uc)
@@ -57,7 +57,6 @@ static int ascii2uc(const char c, unsigned char *uc)
         *uc = c - 'A' + 10;
     else
         return( -1 );
-
     return( 0 );
 }
 
@@ -174,28 +173,21 @@ int mbedtls_test_unhexify( unsigned char *obuf,
                            size_t *len )
 {
     unsigned char uc, uc2;
-
     *len = strlen( ibuf );
-
     /* Must be even number of bytes. */
     if ( ( *len ) & 1 )
         return( -1 );
     *len /= 2;
-
     if ( (*len) > obufmax )
         return( -1 );
-
     while( *ibuf != 0 )
     {
         if ( ascii2uc( *(ibuf++), &uc ) != 0 )
             return( -1 );
-
         if ( ascii2uc( *(ibuf++), &uc2 ) != 0 )
             return( -1 );
-
         *(obuf++) = ( uc << 4 ) | uc2;
     }
-
     return( 0 );
 }
 
@@ -204,22 +196,18 @@ void mbedtls_test_hexify( unsigned char *obuf,
                           int len )
 {
     unsigned char l, h;
-
     while( len != 0 )
     {
         h = *ibuf / 16;
         l = *ibuf % 16;
-
         if( h < 10 )
             *obuf++ = '0' + h;
         else
             *obuf++ = 'a' + h - 10;
-
         if( l < 10 )
             *obuf++ = '0' + l;
         else
             *obuf++ = 'a' + l - 10;
-
         ++ibuf;
         len--;
     }
@@ -229,12 +217,9 @@ unsigned char *mbedtls_test_zero_alloc( size_t len )
 {
     void *p;
     size_t actual_len = ( len != 0 ) ? len : 1;
-
     p = mbedtls_calloc( 1, actual_len );
     TEST_HELPER_ASSERT( p != NULL );
-
     memset( p, 0x00, actual_len );
-
     return( p );
 }
 
@@ -242,16 +227,12 @@ unsigned char *mbedtls_test_unhexify_alloc( const char *ibuf, size_t *olen )
 {
     unsigned char *obuf;
     size_t len;
-
     *olen = strlen( ibuf ) / 2;
-
     if( *olen == 0 )
         return( mbedtls_test_zero_alloc( *olen ) );
-
     obuf = mbedtls_calloc( 1, *olen );
     TEST_HELPER_ASSERT( obuf != NULL );
     TEST_HELPER_ASSERT( mbedtls_test_unhexify( obuf, *olen, ibuf, &len ) == 0 );
-
     return( obuf );
 }
 
@@ -260,10 +241,8 @@ int mbedtls_test_hexcmp( uint8_t * a, uint8_t * b,
 {
     int ret = 0;
     uint32_t i = 0;
-
     if( a_len != b_len )
         return( -1 );
-
     for( i = 0; i < a_len; i++ )
     {
         if( a[i] != b[i] )
@@ -292,41 +271,41 @@ void mbedtls_test_err_add_check( int high, int low,
      * l = low level error code.
      */
     if ( high > -0x1000 && high != 0 )
-    /* high < 0001000000000000
-     * No high level module ID bits are set.
-     */
+        /* high < 0001000000000000
+         * No high level module ID bits are set.
+         */
     {
         mbedtls_test_fail( "'high' is not a high-level error code",
-                            line, file );
+                           line, file );
     }
     else if ( high < -0x7F80 )
-    /* high > 0111111110000000
-     * Error code is greater than the largest allowed high level module ID.
-     */
+        /* high > 0111111110000000
+         * Error code is greater than the largest allowed high level module ID.
+         */
     {
         mbedtls_test_fail( "'high' error code is greater than 15 bits",
-                            line, file );
+                           line, file );
     }
     else if ( ( high & 0x7F ) != 0 )
-    /* high & 0000000001111111
-     * Error code contains low level error code bits.
-     */
+        /* high & 0000000001111111
+         * Error code contains low level error code bits.
+         */
     {
         mbedtls_test_fail( "'high' contains a low-level error code",
-                            line, file );
+                           line, file );
     }
     else if ( low < -0x007F )
-    /* low >  0000000001111111
-     * Error code contains high or module level error code bits.
-     */
+        /* low >  0000000001111111
+         * Error code contains high or module level error code bits.
+         */
     {
         mbedtls_test_fail( "'low' error code is greater than 7 bits",
-                            line, file );
+                           line, file );
     }
     else if ( low > 0 )
     {
         mbedtls_test_fail( "'low' error code is greater than zero",
-                            line, file );
+                           line, file );
     }
 }
 #endif /* MBEDTLS_TEST_HOOKS */

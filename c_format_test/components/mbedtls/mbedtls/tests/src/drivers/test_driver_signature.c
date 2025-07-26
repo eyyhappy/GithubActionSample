@@ -47,9 +47,9 @@
 #include <string.h>
 
 mbedtls_test_driver_signature_hooks_t
-    mbedtls_test_driver_signature_sign_hooks = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
+mbedtls_test_driver_signature_sign_hooks = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
 mbedtls_test_driver_signature_hooks_t
-    mbedtls_test_driver_signature_verify_hooks = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
+mbedtls_test_driver_signature_verify_hooks = MBEDTLS_TEST_DRIVER_SIGNATURE_INIT;
 
 psa_status_t sign_hash(
     const psa_key_attributes_t *attributes,
@@ -67,22 +67,22 @@ psa_status_t sign_hash(
         if( PSA_ALG_IS_RSA_PKCS1V15_SIGN( alg ) ||
             PSA_ALG_IS_RSA_PSS( alg) )
         {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
-      defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS) )
+            #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+            ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
+              defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS) )
             return( libtestdriver1_mbedtls_psa_rsa_sign_hash(
                         (const libtestdriver1_psa_key_attributes_t *) attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_size, signature_length ) );
-#elif defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
-      defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
+            #elif defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
+            defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
             return( mbedtls_psa_rsa_sign_hash(
                         attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_size, signature_length ) );
-#endif
+            #endif
         }
         else
         {
@@ -93,29 +93,28 @@ psa_status_t sign_hash(
     {
         if( PSA_ALG_IS_ECDSA( alg ) )
         {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
-      defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) )
+            #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+            ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
+              defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) )
             return( libtestdriver1_mbedtls_psa_ecdsa_sign_hash(
                         (const libtestdriver1_psa_key_attributes_t *) attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_size, signature_length ) );
-#elif defined(MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
-      defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
+            #elif defined(MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
+            defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
             return( mbedtls_psa_ecdsa_sign_hash(
                         attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_size, signature_length ) );
-#endif
+            #endif
         }
         else
         {
             return( PSA_ERROR_INVALID_ARGUMENT );
         }
     }
-
     (void)attributes;
     (void)key_buffer;
     (void)key_buffer_size;
@@ -143,22 +142,22 @@ psa_status_t verify_hash(
         if( PSA_ALG_IS_RSA_PKCS1V15_SIGN( alg ) ||
             PSA_ALG_IS_RSA_PSS( alg) )
         {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
-      defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS) )
+            #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+            ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
+              defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS) )
             return( libtestdriver1_mbedtls_psa_rsa_verify_hash(
                         (const libtestdriver1_psa_key_attributes_t *) attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_length ) );
-#elif defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
-      defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
+            #elif defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN) || \
+            defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
             return( mbedtls_psa_rsa_verify_hash(
                         attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_length ) );
-#endif
+            #endif
         }
         else
         {
@@ -169,29 +168,28 @@ psa_status_t verify_hash(
     {
         if( PSA_ALG_IS_ECDSA( alg ) )
         {
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
-      defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) )
+            #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+            ( defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
+              defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) )
             return( libtestdriver1_mbedtls_psa_ecdsa_verify_hash(
                         (const libtestdriver1_psa_key_attributes_t *) attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_length ) );
-#elif defined(MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
-      defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
+            #elif defined(MBEDTLS_PSA_BUILTIN_ALG_ECDSA) || \
+            defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
             return( mbedtls_psa_ecdsa_verify_hash(
                         attributes,
                         key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_length ) );
-#endif
+            #endif
         }
         else
         {
             return( PSA_ERROR_INVALID_ARGUMENT );
         }
     }
-
     (void)attributes;
     (void)key_buffer;
     (void)key_buffer_size;
@@ -217,41 +215,34 @@ psa_status_t mbedtls_test_transparent_signature_sign_message(
     psa_status_t status = PSA_ERROR_CORRUPTION_DETECTED;
     size_t hash_length;
     uint8_t hash[PSA_HASH_MAX_SIZE];
-
     ++mbedtls_test_driver_signature_sign_hooks.hits;
-
     if( mbedtls_test_driver_signature_sign_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_signature_sign_hooks.forced_status );
-
     if( mbedtls_test_driver_signature_sign_hooks.forced_output != NULL )
     {
         if( mbedtls_test_driver_signature_sign_hooks.forced_output_length > signature_size )
             return( PSA_ERROR_BUFFER_TOO_SMALL );
-
         memcpy( signature, mbedtls_test_driver_signature_sign_hooks.forced_output,
                 mbedtls_test_driver_signature_sign_hooks.forced_output_length );
         *signature_length = mbedtls_test_driver_signature_sign_hooks.forced_output_length;
-
         return( PSA_SUCCESS );
     }
-
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
     status = libtestdriver1_mbedtls_psa_hash_compute(
-                PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
-                hash, sizeof( hash ), &hash_length );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+                 PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
+                 hash, sizeof( hash ), &hash_length );
+    #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
     status = mbedtls_psa_hash_compute(
-                PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
-                hash, sizeof( hash ), &hash_length );
-#else
+                 PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
+                 hash, sizeof( hash ), &hash_length );
+    #else
     (void) input;
     (void) input_length;
     status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+    #endif
     if( status != PSA_SUCCESS )
         return status;
-
     return( sign_hash( attributes, key_buffer, key_buffer_size,
                        alg, hash, hash_length,
                        signature, signature_size, signature_length ) );
@@ -277,7 +268,6 @@ psa_status_t mbedtls_test_opaque_signature_sign_message(
     (void) signature;
     (void) signature_size;
     (void) signature_length;
-
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -294,29 +284,25 @@ psa_status_t mbedtls_test_transparent_signature_verify_message(
     psa_status_t status = PSA_ERROR_CORRUPTION_DETECTED;
     size_t hash_length;
     uint8_t hash[PSA_HASH_MAX_SIZE];
-
     ++mbedtls_test_driver_signature_verify_hooks.hits;
-
     if( mbedtls_test_driver_signature_verify_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_signature_verify_hooks.forced_status );
-
-#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_HASH)
     status = libtestdriver1_mbedtls_psa_hash_compute(
-                PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
-                hash, sizeof( hash ), &hash_length );
-#elif defined(MBEDTLS_PSA_BUILTIN_HASH)
+                 PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
+                 hash, sizeof( hash ), &hash_length );
+    #elif defined(MBEDTLS_PSA_BUILTIN_HASH)
     status = mbedtls_psa_hash_compute(
-                PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
-                hash, sizeof( hash ), &hash_length );
-#else
+                 PSA_ALG_SIGN_GET_HASH( alg ), input, input_length,
+                 hash, sizeof( hash ), &hash_length );
+    #else
     (void) input;
     (void) input_length;
     status = PSA_ERROR_NOT_SUPPORTED;
-#endif
+    #endif
     if( status != PSA_SUCCESS )
         return status;
-
     return( verify_hash( attributes, key_buffer, key_buffer_size,
                          alg, hash, hash_length,
                          signature, signature_length ) );
@@ -340,7 +326,6 @@ psa_status_t mbedtls_test_opaque_signature_verify_message(
     (void) input_length;
     (void) signature;
     (void) signature_length;
-
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -352,10 +337,8 @@ psa_status_t mbedtls_test_transparent_signature_sign_hash(
     uint8_t *signature, size_t signature_size, size_t *signature_length )
 {
     ++mbedtls_test_driver_signature_sign_hooks.hits;
-
     if( mbedtls_test_driver_signature_sign_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_signature_sign_hooks.forced_status );
-
     if( mbedtls_test_driver_signature_sign_hooks.forced_output != NULL )
     {
         if( mbedtls_test_driver_signature_sign_hooks.forced_output_length > signature_size )
@@ -365,10 +348,9 @@ psa_status_t mbedtls_test_transparent_signature_sign_hash(
         *signature_length = mbedtls_test_driver_signature_sign_hooks.forced_output_length;
         return( PSA_SUCCESS );
     }
-
     return( sign_hash( attributes, key_buffer, key_buffer_size,
-                      alg, hash, hash_length,
-                      signature, signature_size, signature_length ) );
+                       alg, hash, hash_length,
+                       signature, signature_size, signature_length ) );
 }
 
 psa_status_t mbedtls_test_opaque_signature_sign_hash(
@@ -387,7 +369,6 @@ psa_status_t mbedtls_test_opaque_signature_sign_hash(
     (void) signature;
     (void) signature_size;
     (void) signature_length;
-
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -399,10 +380,8 @@ psa_status_t mbedtls_test_transparent_signature_verify_hash(
     const uint8_t *signature, size_t signature_length )
 {
     ++mbedtls_test_driver_signature_verify_hooks.hits;
-
     if( mbedtls_test_driver_signature_verify_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_signature_verify_hooks.forced_status );
-
     return verify_hash( attributes, key_buffer, key_buffer_size,
                         alg, hash, hash_length,
                         signature, signature_length );

@@ -182,15 +182,15 @@ static inline struct psa_aead_operation_s psa_aead_operation_init( void )
 }
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND)
+defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT) || \
+defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND)
 typedef struct
 {
     uint8_t *MBEDTLS_PRIVATE(info);
     size_t MBEDTLS_PRIVATE(info_length);
-#if PSA_HASH_MAX_SIZE > 0xff
+    #if PSA_HASH_MAX_SIZE > 0xff
 #error "PSA_HASH_MAX_SIZE does not fit in uint8_t"
-#endif
+    #endif
     uint8_t MBEDTLS_PRIVATE(offset_in_block);
     uint8_t MBEDTLS_PRIVATE(block_number);
     unsigned int MBEDTLS_PRIVATE(state) : 2;
@@ -200,11 +200,11 @@ typedef struct
     struct psa_mac_operation_s MBEDTLS_PRIVATE(hmac);
 } psa_hkdf_key_derivation_t;
 #endif /* MBEDTLS_PSA_BUILTIN_ALG_HKDF ||
-          MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT ||
-          MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND */
+MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT ||
+MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND */
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
+defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
 typedef enum
 {
     PSA_TLS12_PRF_STATE_INIT,             /* no input provided */
@@ -217,9 +217,9 @@ typedef enum
 
 typedef struct psa_tls12_prf_key_derivation_s
 {
-#if PSA_HASH_MAX_SIZE > 0xff
+    #if PSA_HASH_MAX_SIZE > 0xff
 #error "PSA_HASH_MAX_SIZE does not fit in uint8_t"
-#endif
+    #endif
 
     /* Indicates how many bytes in the current HMAC block have
      * not yet been read by the user. */
@@ -236,10 +236,10 @@ typedef struct psa_tls12_prf_key_derivation_s
     size_t MBEDTLS_PRIVATE(seed_length);
     uint8_t *MBEDTLS_PRIVATE(label);
     size_t MBEDTLS_PRIVATE(label_length);
-#if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
+    #if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
     uint8_t *MBEDTLS_PRIVATE(other_secret);
     size_t MBEDTLS_PRIVATE(other_secret_length);
-#endif /* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
+    #endif /* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
 
     uint8_t MBEDTLS_PRIVATE(Ai)[PSA_HASH_MAX_SIZE];
 
@@ -247,7 +247,7 @@ typedef struct psa_tls12_prf_key_derivation_s
     uint8_t MBEDTLS_PRIVATE(output_block)[PSA_HASH_MAX_SIZE];
 } psa_tls12_prf_key_derivation_t;
 #endif /* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) ||
-        * MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
+* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
 
 struct psa_key_derivation_s
 {
@@ -258,22 +258,22 @@ struct psa_key_derivation_s
     {
         /* Make the union non-empty even with no supported algorithms. */
         uint8_t MBEDTLS_PRIVATE(dummy);
-#if defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND)
+        #if defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF) || \
+        defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT) || \
+        defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND)
         psa_hkdf_key_derivation_t MBEDTLS_PRIVATE(hkdf);
-#endif
-#if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) || \
-    defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
+        #endif
+        #if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) || \
+        defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
         psa_tls12_prf_key_derivation_t MBEDTLS_PRIVATE(tls12_prf);
-#endif
+        #endif
     } MBEDTLS_PRIVATE(ctx);
 };
 
 /* This only zeroes out the first byte in the union, the rest is unspecified. */
 #define PSA_KEY_DERIVATION_OPERATION_INIT { 0, 0, 0, { 0 } }
 static inline struct psa_key_derivation_s psa_key_derivation_operation_init(
-        void )
+    void )
 {
     const struct psa_key_derivation_s v = PSA_KEY_DERIVATION_OPERATION_INIT;
     return( v );
@@ -348,9 +348,9 @@ typedef struct
 struct psa_key_attributes_s
 {
     psa_core_key_attributes_t MBEDTLS_PRIVATE(core);
-#if defined(MBEDTLS_PSA_CRYPTO_SE_C)
+    #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
     psa_key_slot_number_t MBEDTLS_PRIVATE(slot_number);
-#endif /* MBEDTLS_PSA_CRYPTO_SE_C */
+    #endif /* MBEDTLS_PSA_CRYPTO_SE_C */
     void *MBEDTLS_PRIVATE(domain_parameters);
     size_t MBEDTLS_PRIVATE(domain_parameters_size);
 };
@@ -371,9 +371,7 @@ static inline void psa_set_key_id( psa_key_attributes_t *attributes,
                                    mbedtls_svc_key_id_t key )
 {
     psa_key_lifetime_t lifetime = attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime);
-
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id) = key;
-
     if( PSA_KEY_LIFETIME_IS_VOLATILE( lifetime ) )
     {
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) =
@@ -391,23 +389,23 @@ static inline mbedtls_svc_key_id_t psa_get_key_id(
 
 #ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
 static inline void mbedtls_set_key_owner_id( psa_key_attributes_t *attributes,
-                                             mbedtls_key_owner_id_t owner )
+        mbedtls_key_owner_id_t owner )
 {
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(owner) = owner;
 }
 #endif
 
 static inline void psa_set_key_lifetime( psa_key_attributes_t *attributes,
-                                        psa_key_lifetime_t lifetime )
+        psa_key_lifetime_t lifetime )
 {
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) = lifetime;
     if( PSA_KEY_LIFETIME_IS_VOLATILE( lifetime ) )
     {
-#ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
+        #ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(key_id) = 0;
-#else
+        #else
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id) = 0;
-#endif
+        #endif
     }
 }
 
@@ -421,13 +419,12 @@ static inline void psa_extend_key_usage_flags( psa_key_usage_t *usage_flags )
 {
     if( *usage_flags & PSA_KEY_USAGE_SIGN_HASH )
         *usage_flags |= PSA_KEY_USAGE_SIGN_MESSAGE;
-
     if( *usage_flags & PSA_KEY_USAGE_VERIFY_HASH )
         *usage_flags |= PSA_KEY_USAGE_VERIFY_MESSAGE;
 }
 
 static inline void psa_set_key_usage_flags(psa_key_attributes_t *attributes,
-                                           psa_key_usage_t usage_flags)
+        psa_key_usage_t usage_flags)
 {
     psa_extend_key_usage_flags( &usage_flags );
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(usage) = usage_flags;
@@ -440,7 +437,7 @@ static inline psa_key_usage_t psa_get_key_usage_flags(
 }
 
 static inline void psa_set_key_algorithm( psa_key_attributes_t *attributes,
-                                         psa_algorithm_t alg )
+        psa_algorithm_t alg )
 {
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(policy).MBEDTLS_PRIVATE(alg) = alg;
 }
@@ -454,12 +451,12 @@ static inline psa_algorithm_t psa_get_key_algorithm(
 /* This function is declared in crypto_extra.h, which comes after this
  * header file, but we need the function here, so repeat the declaration. */
 psa_status_t psa_set_key_domain_parameters( psa_key_attributes_t *attributes,
-                                           psa_key_type_t type,
-                                           const uint8_t *data,
-                                           size_t data_length );
+        psa_key_type_t type,
+        const uint8_t *data,
+        size_t data_length );
 
 static inline void psa_set_key_type( psa_key_attributes_t *attributes,
-                                    psa_key_type_t type )
+                                     psa_key_type_t type )
 {
     if( attributes->MBEDTLS_PRIVATE(domain_parameters) == NULL )
     {
@@ -483,7 +480,7 @@ static inline psa_key_type_t psa_get_key_type(
 }
 
 static inline void psa_set_key_bits( psa_key_attributes_t *attributes,
-                                    size_t bits )
+                                     size_t bits )
 {
     if( bits > PSA_MAX_KEY_BITS )
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(bits) = PSA_KEY_BITS_TOO_LARGE;

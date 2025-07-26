@@ -107,10 +107,10 @@ esp_err_t essl_sdio_init_dev(essl_handle_t *out_handle, const essl_sdio_config_t
     *arg = (essl_sdio_context_t)
     {
         .card = config->card,
-         .block_size = 0x200,
-          .buffer_size = config->recv_buffer_size,
-           .tx_sent_buffers = 0,
-            .rx_got_bytes = 0,
+        .block_size = 0x200,
+        .buffer_size = config->recv_buffer_size,
+        .tx_sent_buffers = 0,
+        .rx_got_bytes = 0,
     };
     *out_handle = dev;
     return ESP_OK;

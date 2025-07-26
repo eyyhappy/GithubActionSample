@@ -64,20 +64,20 @@
 /* Flags indicating whether to include code that is specific to certain
  * types of curves. These flags are for internal library use only. */
 #if defined(MBEDTLS_ECP_DP_SECP192R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP224R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP384R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP521R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_BP256R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_BP384R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_BP512R1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP192K1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP224K1_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_SECP256K1_ENABLED)
+defined(MBEDTLS_ECP_DP_SECP224R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP384R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP521R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_BP256R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_BP384R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_BP512R1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP192K1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP224K1_ENABLED) || \
+defined(MBEDTLS_ECP_DP_SECP256K1_ENABLED)
 #define MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED
 #endif
 #if defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED) || \
-    defined(MBEDTLS_ECP_DP_CURVE448_ENABLED)
+defined(MBEDTLS_ECP_DP_CURVE448_ENABLED)
 #define MBEDTLS_ECP_MONTGOMERY_ENABLED
 #endif
 
@@ -720,7 +720,7 @@ int mbedtls_ecp_point_cmp( const mbedtls_ecp_point *P,
  * \return          An \c MBEDTLS_ERR_MPI_XXX error code on failure.
  */
 int mbedtls_ecp_point_read_string( mbedtls_ecp_point *P, int radix,
-                           const char *x, const char *y );
+                                   const char *x, const char *y );
 
 /**
  * \brief           This function exports a point into unsigned binary data.
@@ -939,8 +939,8 @@ int mbedtls_ecp_tls_write_group( const mbedtls_ecp_group *grp,
  * \return          Another negative error code on other kinds of failure.
  */
 int mbedtls_ecp_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
+                     const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+                     int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
 
 /**
  * \brief           This function performs multiplication of a point by
@@ -973,9 +973,9 @@ int mbedtls_ecp_mul( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
  * \return          Another negative error code on other kinds of failure.
  */
 int mbedtls_ecp_mul_restartable( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
-             mbedtls_ecp_restart_ctx *rs_ctx );
+                                 const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+                                 int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+                                 mbedtls_ecp_restart_ctx *rs_ctx );
 
 #if defined(MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED)
 /**
@@ -1014,8 +1014,8 @@ int mbedtls_ecp_mul_restartable( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
  * \return          Another negative error code on other kinds of failure.
  */
 int mbedtls_ecp_muladd( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             const mbedtls_mpi *n, const mbedtls_ecp_point *Q );
+                        const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+                        const mbedtls_mpi *n, const mbedtls_ecp_point *Q );
 
 /**
  * \brief           This function performs multiplication and addition of two
@@ -1058,10 +1058,10 @@ int mbedtls_ecp_muladd( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
  * \return          Another negative error code on other kinds of failure.
  */
 int mbedtls_ecp_muladd_restartable(
-             mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
-             const mbedtls_mpi *m, const mbedtls_ecp_point *P,
-             const mbedtls_mpi *n, const mbedtls_ecp_point *Q,
-             mbedtls_ecp_restart_ctx *rs_ctx );
+    mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
+    const mbedtls_mpi *m, const mbedtls_ecp_point *P,
+    const mbedtls_mpi *n, const mbedtls_ecp_point *Q,
+    mbedtls_ecp_restart_ctx *rs_ctx );
 #endif /* MBEDTLS_ECP_SHORT_WEIERSTRASS_ENABLED */
 
 /**
@@ -1132,9 +1132,9 @@ int mbedtls_ecp_check_privkey( const mbedtls_ecp_group *grp,
  *                  on failure.
  */
 int mbedtls_ecp_gen_privkey( const mbedtls_ecp_group *grp,
-                     mbedtls_mpi *d,
-                     int (*f_rng)(void *, unsigned char *, size_t),
-                     void *p_rng );
+                             mbedtls_mpi *d,
+                             int (*f_rng)(void *, unsigned char *, size_t),
+                             void *p_rng );
 
 /**
  * \brief           This function generates a keypair with a configurable base
@@ -1275,8 +1275,8 @@ int mbedtls_ecp_write_key( mbedtls_ecp_keypair *key,
  *                  error code on calculation failure.
  */
 int mbedtls_ecp_check_pub_priv(
-        const mbedtls_ecp_keypair *pub, const mbedtls_ecp_keypair *prv,
-        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
+    const mbedtls_ecp_keypair *pub, const mbedtls_ecp_keypair *prv,
+    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
 
 /**
  * \brief           This function exports generic key-pair parameters.

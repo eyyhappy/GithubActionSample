@@ -27,7 +27,7 @@
 #include <stddef.h>
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
-    !defined(inline) && !defined(__cplusplus)
+!defined(inline) && !defined(__cplusplus)
 #define inline __inline
 #endif
 
@@ -156,13 +156,12 @@ extern void (*mbedtls_test_hook_error_add)( int, int, const char *, int );
 static inline int mbedtls_error_add( int high, int low,
                                      const char *file, int line )
 {
-#if defined(MBEDTLS_TEST_HOOKS)
+    #if defined(MBEDTLS_TEST_HOOKS)
     if( *mbedtls_test_hook_error_add != NULL )
         ( *mbedtls_test_hook_error_add )( high, low, file, line );
-#endif
+    #endif
     (void)file;
     (void)line;
-
     return( high + low );
 }
 

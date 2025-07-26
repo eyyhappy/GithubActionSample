@@ -28,7 +28,8 @@
 #define PSA_CRYPTO_TEST_DRIVER_BUILTIN_AES_KEY_SLOT     0
 #define PSA_CRYPTO_TEST_DRIVER_BUILTIN_ECDSA_KEY_SLOT   1
 
-typedef struct {
+typedef struct
+{
     /* If non-null, on success, copy this to the output. */
     void *forced_output;
     size_t forced_output_length;
@@ -48,10 +49,10 @@ typedef struct {
  * used as a location of an opaque test drivers. */
 #define MBEDTLS_TEST_DRIVER_KEY_MANAGEMENT_INIT { NULL, 0, PSA_SUCCESS, 0, 0x800000 }
 static inline mbedtls_test_driver_key_management_hooks_t
-    mbedtls_test_driver_key_management_hooks_init( void )
+mbedtls_test_driver_key_management_hooks_init( void )
 {
     const mbedtls_test_driver_key_management_hooks_t
-        v = MBEDTLS_TEST_DRIVER_KEY_MANAGEMENT_INIT;
+    v = MBEDTLS_TEST_DRIVER_KEY_MANAGEMENT_INIT;
     return( v );
 }
 
@@ -70,7 +71,7 @@ size_t mbedtls_test_opaque_size_function(
     const size_t key_bits );
 
 extern mbedtls_test_driver_key_management_hooks_t
-    mbedtls_test_driver_key_management_hooks;
+mbedtls_test_driver_key_management_hooks;
 
 psa_status_t mbedtls_test_transparent_init( void );
 void mbedtls_test_transparent_free( void );

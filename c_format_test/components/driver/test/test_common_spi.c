@@ -133,7 +133,7 @@ void spitest_init_transactions(const spitest_param_set_t *cfg, spitest_context_t
             trans[i] = (spi_transaction_t)
             {
                 .rx_buffer = rx_buf_ptr,
-                 .rxlength = length,
+                .rxlength = length,
             };
         }
         else if (dup == HALF_DUPLEX_MOSI)
@@ -141,7 +141,7 @@ void spitest_init_transactions(const spitest_param_set_t *cfg, spitest_context_t
             trans[i] = (spi_transaction_t)
             {
                 .tx_buffer = tx_buffer,
-                 .length = length,
+                .length = length,
             };
         }
         else
@@ -149,8 +149,8 @@ void spitest_init_transactions(const spitest_param_set_t *cfg, spitest_context_t
             trans[i] = (spi_transaction_t)
             {
                 .tx_buffer = tx_buffer,
-                 .length = length,
-                  .rx_buffer = rx_buf_ptr,
+                .length = length,
+                .rx_buffer = rx_buf_ptr,
             };
         }
         rx_buf_ptr = (uint8_t*)( (uint32_t)(rx_buf_ptr + (length + 7) / 8 + 3) & (~3));
@@ -159,7 +159,7 @@ void spitest_init_transactions(const spitest_param_set_t *cfg, spitest_context_t
         context->slave_trans[i] = (slave_txdata_t)
         {
             .start = slave_tx,
-             .len = 512,
+            .len = 512,
         };
         if (cfg->slave_dma_chan != 0) context->slave_trans[i].len = 1024;
     }
@@ -246,9 +246,9 @@ void same_pin_func_sel(spi_bus_config_t bus, spi_device_interface_config_t dev, 
     spitest_gpio_input_sel(dev.spics_io_num, FUNC_GPIO, spi_periph_signal[TEST_SLAVE_HOST].spics_in);
     spitest_gpio_output_sel(bus.sclk_io_num, FUNC_GPIO, spi_periph_signal[TEST_SPI_HOST].spiclk_out);
     spitest_gpio_input_sel(bus.sclk_io_num, FUNC_GPIO, spi_periph_signal[TEST_SLAVE_HOST].spiclk_in);
-#if CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
+    #if CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
     GPIO.func_in_sel_cfg[FSPIQ_IN_IDX].sig_in_sel = 1;
-#endif
+    #endif
 }
 
 void get_tx_buffer(uint32_t seed, uint8_t *master_send_buf, uint8_t *slave_send_buf, int send_buf_size)

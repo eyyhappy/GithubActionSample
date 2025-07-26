@@ -36,7 +36,8 @@
 static void mbedtls_zeroize( void *v, size_t n )
 {
     volatile unsigned char *p = v;
-    while ( n-- ) {
+    while ( n-- )
+    {
         *p++ = 0;
     }
 }
@@ -71,10 +72,10 @@ void mbedtls_sha256_init( mbedtls_sha256_context *ctx )
 
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 {
-    if ( ctx == NULL ) {
+    if ( ctx == NULL )
+    {
         return;
     }
-
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha256_context ) );
 }
 
@@ -90,13 +91,14 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
 int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
 {
     memset( ctx, 0, sizeof( mbedtls_sha256_context ) );
-
-    if ( is224 ) {
+    if ( is224 )
+    {
         ctx->mode = SHA2_224;
-    } else {
+    }
+    else
+    {
         ctx->mode = SHA2_256;
     }
-
     return 0;
 }
 
@@ -106,7 +108,6 @@ int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx, const unsigned
     esp_sha_acquire_hardware();
     ret = esp_sha_dma(ctx->mode, data, 64, 0, 0, ctx->first_block);
     esp_sha_release_hardware();
-
     return ret;
 }
 
@@ -114,68 +115,63 @@ int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx, const unsigned
  * SHA-256 process buffer
  */
 int mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *input,
-                               size_t ilen )
+                           size_t ilen )
 {
     int ret = 0;
     size_t fill;
     uint32_t left, len, local_len = 0;
-
-    if ( ilen == 0 ) {
+    if ( ilen == 0 )
+    {
         return 0;
     }
-
     left = ctx->total[0] & 0x3F;
     fill = 64 - left;
-
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
-
-    if ( ctx->total[0] < (uint32_t) ilen ) {
+    if ( ctx->total[0] < (uint32_t) ilen )
+    {
         ctx->total[1]++;
     }
-
     /* Check if any data pending from previous call to this API */
-    if ( left && ilen >= fill ) {
+    if ( left && ilen >= fill )
+    {
         memcpy( (void *) (ctx->buffer + left), input, fill );
-
         input += fill;
         ilen  -= fill;
         left = 0;
         local_len = 64;
     }
-
     len = (ilen / 64) * 64;
-
-    if ( len || local_len) {
+    if ( len || local_len)
+    {
         esp_sha_acquire_hardware();
-
-        if (ctx->sha_state == ESP_SHA256_STATE_INIT) {
+        if (ctx->sha_state == ESP_SHA256_STATE_INIT)
+        {
             ctx->first_block = true;
             ctx->sha_state = ESP_SHA256_STATE_IN_PROCESS;
-        } else if (ctx->sha_state == ESP_SHA256_STATE_IN_PROCESS) {
+        }
+        else if (ctx->sha_state == ESP_SHA256_STATE_IN_PROCESS)
+        {
             ctx->first_block = false;
             esp_sha_write_digest_state(ctx->mode, ctx->state);
         }
-
         ret = esp_sha_dma(ctx->mode, input, len,  ctx->buffer, local_len, ctx->first_block);
-
         esp_sha_read_digest_state(ctx->mode, ctx->state);
-
         esp_sha_release_hardware();
-
-        if (ret != 0) {
+        if (ret != 0)
+        {
             return ret;
         }
     }
-
-    if ( ilen > 0 ) {
+    if ( ilen > 0 )
+    {
         memcpy( (void *) (ctx->buffer + left), input + len, ilen - len );
     }
-
     return 0;
 }
 
-static const unsigned char sha256_padding[64] = {
+static const unsigned char sha256_padding[64] =
+{
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -191,27 +187,22 @@ int mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char *output )
     uint32_t last, padn;
     uint32_t high, low;
     unsigned char msglen[8];
-
     high = ( ctx->total[0] >> 29 )
            | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
-
     PUT_UINT32_BE( high, msglen, 0 );
     PUT_UINT32_BE( low,  msglen, 4 );
-
     last = ctx->total[0] & 0x3F;
     padn = ( last < 56 ) ? ( 56 - last ) : ( 120 - last );
-
-    if ( ( ret = mbedtls_sha256_update( ctx, sha256_padding, padn ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha256_update( ctx, sha256_padding, padn ) ) != 0 )
+    {
         return ret;
     }
-
-    if ( ( ret = mbedtls_sha256_update( ctx, msglen, 8 ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha256_update( ctx, msglen, 8 ) ) != 0 )
+    {
         return ret;
     }
-
     memcpy(output, ctx->state, 32);
-
     return ret;
 }
 

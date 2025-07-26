@@ -30,7 +30,7 @@
 #include <string.h>
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
-    !defined(inline) && !defined(__cplusplus)
+!defined(inline) && !defined(__cplusplus)
 #define inline __inline
 #endif
 
@@ -77,7 +77,6 @@ static inline int mps_reader_is_accumulating(
     mbedtls_mps_size_t acc_remaining;
     if( rd->acc == NULL )
         return( 0 );
-
     acc_remaining = rd->acc_share.acc_remaining;
     return( acc_remaining > 0 );
 }
@@ -100,10 +99,8 @@ static inline mbedtls_mps_size_t mps_reader_get_fragment_offset(
 {
     unsigned char *acc = rd->acc;
     mbedtls_mps_size_t frag_offset;
-
     if( acc == NULL )
         return( 0 );
-
     frag_offset = rd->acc_share.frag_offset;
     return( frag_offset );
 }
@@ -112,10 +109,8 @@ static inline mbedtls_mps_size_t mps_reader_serving_from_accumulator(
     mbedtls_mps_reader const *rd )
 {
     mbedtls_mps_size_t frag_offset, end;
-
     frag_offset = mps_reader_get_fragment_offset( rd );
     end = rd->end;
-
     return( end < frag_offset );
 }
 
@@ -128,16 +123,17 @@ static inline void mps_reader_zero( mbedtls_mps_reader *rd )
      * doesn't require reasoning about structs being
      * interpreted as unstructured binary blobs. */
     static mbedtls_mps_reader const zero =
-        { .frag          = NULL,
-          .frag_len      = 0,
-          .commit        = 0,
-          .end           = 0,
-          .pending       = 0,
-          .acc           = NULL,
-          .acc_len       = 0,
-          .acc_available = 0,
-          .acc_share     = { .acc_remaining = 0 }
-        };
+    {
+        .frag          = NULL,
+        .frag_len      = 0,
+        .commit        = 0,
+        .end           = 0,
+        .pending       = 0,
+        .acc           = NULL,
+        .acc_len       = 0,
+        .acc_available = 0,
+        .acc_share     = { .acc_remaining = 0 }
+    };
     *rd = zero;
 }
 
@@ -169,33 +165,25 @@ int mbedtls_mps_reader_feed( mbedtls_mps_reader *rd,
     MBEDTLS_MPS_TRACE_INIT( "mbedtls_mps_reader_feed" );
     MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                        "* Fragment length: %u bytes", (unsigned) new_frag_len );
-
     if( new_frag == NULL )
         MBEDTLS_MPS_TRACE_RETURN( MBEDTLS_ERR_MPS_READER_INVALID_ARG );
-
     MBEDTLS_MPS_STATE_VALIDATE_RAW( mps_reader_is_producing( rd ),
-        "mbedtls_mps_reader_feed() requires reader to be in producing mode" );
-
+                                    "mbedtls_mps_reader_feed() requires reader to be in producing mode" );
     if( mps_reader_is_accumulating( rd ) )
     {
         unsigned char *acc    = rd->acc;
         mbedtls_mps_size_t acc_remaining = rd->acc_share.acc_remaining;
         mbedtls_mps_size_t acc_available = rd->acc_available;
-
         /* Skip over parts of the accumulator that have already been filled. */
         acc += acc_available;
-
         copy_to_acc = acc_remaining;
         if( copy_to_acc > new_frag_len )
             copy_to_acc = new_frag_len;
-
         /* Copy new contents to accumulator. */
         memcpy( acc, new_frag, copy_to_acc );
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
-                "Copy new data of size %u of %u into accumulator at offset %u",
-                (unsigned) copy_to_acc, (unsigned) new_frag_len, (unsigned) acc_available );
-
+                           "Copy new data of size %u of %u into accumulator at offset %u",
+                           (unsigned) copy_to_acc, (unsigned) new_frag_len, (unsigned) acc_available );
         /* Check if, with the new fragment, we have enough data. */
         acc_remaining -= copy_to_acc;
         if( acc_remaining > 0 )
@@ -206,12 +194,9 @@ int mbedtls_mps_reader_feed( mbedtls_mps_reader *rd,
             rd->acc_available = acc_available;
             MBEDTLS_MPS_TRACE_RETURN( MBEDTLS_ERR_MPS_READER_NEED_MORE );
         }
-
         /* We have filled the accumulator: Move to consuming mode. */
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                            "Enough data available to serve user request" );
-
         /* Remember overlap of accumulator and fragment. */
         rd->acc_share.frag_offset = acc_available;
         acc_available += copy_to_acc;
@@ -221,7 +206,6 @@ int mbedtls_mps_reader_feed( mbedtls_mps_reader *rd,
     {
         rd->acc_share.frag_offset = 0;
     }
-
     rd->frag = new_frag;
     rd->frag_len = new_frag_len;
     rd->commit = 0;
@@ -240,13 +224,10 @@ int mbedtls_mps_reader_get( mbedtls_mps_reader *rd,
     MBEDTLS_MPS_TRACE_INIT( "mbedtls_mps_reader_get" );
     MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                        "* Bytes requested: %u", (unsigned) desired );
-
     MBEDTLS_MPS_STATE_VALIDATE_RAW( mps_reader_is_consuming( rd ),
-          "mbedtls_mps_reader_get() requires reader to be in consuming mode" );
-
+                                    "mbedtls_mps_reader_get() requires reader to be in consuming mode" );
     end = rd->end;
     frag_offset = mps_reader_get_fragment_offset( rd );
-
     /* Check if we're still serving from the accumulator. */
     if( mps_reader_serving_from_accumulator( rd ) )
     {
@@ -312,9 +293,7 @@ int mbedtls_mps_reader_get( mbedtls_mps_reader *rd,
          * In case of Allowed #2 we're switching to serve from
          * `frag` starting from the next call to mbedtls_mps_reader_get().
          */
-
         unsigned char *acc;
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                            "Serve the request from the accumulator" );
         if( frag_offset - end < desired )
@@ -337,31 +316,24 @@ int mbedtls_mps_reader_get( mbedtls_mps_reader *rd,
                     MBEDTLS_ERR_MPS_READER_INCONSISTENT_REQUESTS );
             }
         }
-
         acc = rd->acc;
         acc += end;
-
         *buffer = acc;
         if( buflen != NULL )
             *buflen = desired;
-
         end += desired;
         rd->end = end;
         rd->pending = 0;
-
         MBEDTLS_MPS_TRACE_RETURN( 0 );
     }
-
     /* Attempt to serve the request from the current fragment */
     MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                        "Serve the request from the current fragment." );
-
     frag_len = rd->frag_len;
     frag_fetched = end - frag_offset; /* The amount of data from the current
                                        * fragment that has already been passed
                                        * to the user. */
     frag_remaining = frag_len - frag_fetched; /* Remaining data in fragment */
-
     /* Check if we can serve the read request from the fragment. */
     if( frag_remaining < desired )
     {
@@ -376,25 +348,20 @@ int mbedtls_mps_reader_get( mbedtls_mps_reader *rd,
             {
                 rd->pending = desired - frag_remaining;
                 MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
-                       "Remember to collect %u bytes before re-opening",
-                       (unsigned) rd->pending );
+                                   "Remember to collect %u bytes before re-opening",
+                                   (unsigned) rd->pending );
             }
             MBEDTLS_MPS_TRACE_RETURN( MBEDTLS_ERR_MPS_READER_OUT_OF_DATA );
         }
-
         desired = frag_remaining;
     }
-
     /* There's enough data in the current fragment to serve the
      * (potentially modified) read request. */
-
     frag = rd->frag;
     frag += frag_fetched;
-
     *buffer = frag;
     if( buflen != NULL )
         *buflen = desired;
-
     end += desired;
     rd->end = end;
     rd->pending = 0;
@@ -406,11 +373,9 @@ int mbedtls_mps_reader_commit( mbedtls_mps_reader *rd )
     mbedtls_mps_size_t end;
     MBEDTLS_MPS_TRACE_INIT( "mbedtls_mps_reader_commit" );
     MBEDTLS_MPS_STATE_VALIDATE_RAW( mps_reader_is_consuming( rd ),
-       "mbedtls_mps_reader_commit() requires reader to be in consuming mode" );
-
+                                    "mbedtls_mps_reader_commit() requires reader to be in consuming mode" );
     end = rd->end;
     rd->commit = end;
-
     MBEDTLS_MPS_TRACE_RETURN( 0 );
 }
 
@@ -421,26 +386,20 @@ int mbedtls_mps_reader_reclaim( mbedtls_mps_reader *rd,
     mbedtls_mps_size_t pending, commit;
     mbedtls_mps_size_t acc_len, frag_offset, frag_len;
     MBEDTLS_MPS_TRACE_INIT( "mbedtls_mps_reader_reclaim" );
-
     if( paused != NULL )
         *paused = 0;
-
     MBEDTLS_MPS_STATE_VALIDATE_RAW( mps_reader_is_consuming( rd ),
-       "mbedtls_mps_reader_reclaim() requires reader to be in consuming mode" );
-
+                                    "mbedtls_mps_reader_reclaim() requires reader to be in consuming mode" );
     frag     = rd->frag;
     acc      = rd->acc;
     pending  = rd->pending;
     commit   = rd->commit;
     frag_len = rd->frag_len;
-
     frag_offset = mps_reader_get_fragment_offset( rd );
-
     if( pending == 0 )
     {
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                            "No unsatisfied read-request has been logged." );
-
         /* Check if there's data left to be consumed. */
         if( commit < frag_offset || commit - frag_offset < frag_len )
         {
@@ -449,29 +408,23 @@ int mbedtls_mps_reader_reclaim( mbedtls_mps_reader *rd,
             rd->end = commit;
             MBEDTLS_MPS_TRACE_RETURN( MBEDTLS_ERR_MPS_READER_DATA_LEFT );
         }
-
         rd->acc_available = 0;
         rd->acc_share.acc_remaining = 0;
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                            "Fragment has been fully processed and committed." );
     }
     else
     {
         int overflow;
-
         mbedtls_mps_size_t acc_backup_offset;
         mbedtls_mps_size_t acc_backup_len;
         mbedtls_mps_size_t frag_backup_offset;
         mbedtls_mps_size_t frag_backup_len;
-
         mbedtls_mps_size_t backup_len;
         mbedtls_mps_size_t acc_len_needed;
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
-               "There has been an unsatisfied read with %u bytes overhead.",
-               (unsigned) pending );
-
+                           "There has been an unsatisfied read with %u bytes overhead.",
+                           (unsigned) pending );
         if( acc == NULL )
         {
             MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
@@ -480,7 +433,6 @@ int mbedtls_mps_reader_reclaim( mbedtls_mps_reader *rd,
                 MBEDTLS_ERR_MPS_READER_NEED_ACCUMULATOR );
         }
         acc_len = rd->acc_len;
-
         /* Check if the upper layer has already fetched
          * and committed the contents of the accumulator. */
         if( commit < frag_offset )
@@ -499,14 +451,11 @@ int mbedtls_mps_reader_reclaim( mbedtls_mps_reader *rd,
             acc_backup_offset = 0;
             acc_backup_len = 0;
         }
-
         backup_len = acc_backup_len + frag_backup_len;
         acc_len_needed = backup_len + pending;
-
         overflow  = 0;
         overflow |= ( backup_len     < acc_backup_len );
         overflow |= ( acc_len_needed < backup_len );
-
         if( overflow || acc_len < acc_len_needed )
         {
             /* Except for the different return code, we behave as if
@@ -525,35 +474,27 @@ int mbedtls_mps_reader_reclaim( mbedtls_mps_reader *rd,
             MBEDTLS_MPS_TRACE_RETURN(
                 MBEDTLS_ERR_MPS_READER_ACCUMULATOR_TOO_SMALL );
         }
-
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
-                         "Fragment backup: %u", (unsigned) frag_backup_len );
+                           "Fragment backup: %u", (unsigned) frag_backup_len );
         MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
-                         "Accumulator backup: %u", (unsigned) acc_backup_len );
-
+                           "Accumulator backup: %u", (unsigned) acc_backup_len );
         /* Move uncommitted parts from the accumulator to the front
          * of the accumulator. */
         memmove( acc, acc + acc_backup_offset, acc_backup_len );
-
         /* Copy uncmmitted parts of the current fragment to the
          * accumulator. */
         memcpy( acc + acc_backup_len,
                 frag + frag_backup_offset, frag_backup_len );
-
         rd->acc_available = backup_len;
         rd->acc_share.acc_remaining = pending;
-
         if( paused != NULL )
             *paused = 1;
     }
-
     rd->frag     = NULL;
     rd->frag_len = 0;
-
     rd->commit  = 0;
     rd->end     = 0;
     rd->pending = 0;
-
     MBEDTLS_MPS_TRACE( MBEDTLS_MPS_TRACE_TYPE_COMMENT,
                        "Final state: aa %u, al %u, ar %u",
                        (unsigned) rd->acc_available, (unsigned) rd->acc_len,

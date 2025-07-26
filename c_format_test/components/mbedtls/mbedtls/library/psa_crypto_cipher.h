@@ -242,16 +242,16 @@ psa_status_t mbedtls_psa_cipher_abort( mbedtls_psa_cipher_operation_t *operation
  *         padding, and the ciphertext does not contain valid padding.
  */
 psa_status_t mbedtls_psa_cipher_encrypt( const psa_key_attributes_t *attributes,
-                                         const uint8_t *key_buffer,
-                                         size_t key_buffer_size,
-                                         psa_algorithm_t alg,
-                                         const uint8_t *iv,
-                                         size_t iv_length,
-                                         const uint8_t *input,
-                                         size_t input_length,
-                                         uint8_t *output,
-                                         size_t output_size,
-                                         size_t *output_length );
+        const uint8_t *key_buffer,
+        size_t key_buffer_size,
+        psa_algorithm_t alg,
+        const uint8_t *iv,
+        size_t iv_length,
+        const uint8_t *input,
+        size_t input_length,
+        uint8_t *output,
+        size_t output_size,
+        size_t *output_length );
 
 /** Decrypt a message using a symmetric cipher.
  *
@@ -293,13 +293,13 @@ psa_status_t mbedtls_psa_cipher_encrypt( const psa_key_attributes_t *attributes,
  *         padding, and the ciphertext does not contain valid padding.
  */
 psa_status_t mbedtls_psa_cipher_decrypt( const psa_key_attributes_t *attributes,
-                                         const uint8_t *key_buffer,
-                                         size_t key_buffer_size,
-                                         psa_algorithm_t alg,
-                                         const uint8_t *input,
-                                         size_t input_length,
-                                         uint8_t *output,
-                                         size_t output_size,
-                                         size_t *output_length );
+        const uint8_t *key_buffer,
+        size_t key_buffer_size,
+        psa_algorithm_t alg,
+        const uint8_t *input,
+        size_t input_length,
+        uint8_t *output,
+        size_t output_size,
+        size_t *output_length );
 
 #endif /* PSA_CRYPTO_CIPHER_H */

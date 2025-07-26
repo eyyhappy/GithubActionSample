@@ -195,10 +195,10 @@ void psa_format_key_data_for_storage( const uint8_t *data,
  * \retval #PSA_ERROR_DATA_INVALID
  */
 psa_status_t psa_parse_key_data_from_storage( const uint8_t *storage_data,
-                                              size_t storage_data_length,
-                                              uint8_t **key_data,
-                                              size_t *key_data_length,
-                                              psa_core_key_attributes_t *attr );
+        size_t storage_data_length,
+        uint8_t **key_data,
+        size_t *key_data_length,
+        psa_core_key_attributes_t *attr );
 
 #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
 /** This symbol is defined if transaction support is required. */
@@ -389,7 +389,7 @@ psa_status_t psa_crypto_stop_transaction( void );
  *         The entropy seed file already exists.
  */
 psa_status_t mbedtls_psa_storage_inject_entropy( const unsigned char *seed,
-                                                 size_t seed_size );
+        size_t seed_size );
 #endif /* MBEDTLS_PSA_INJECT_ENTROPY */
 
 #ifdef __cplusplus

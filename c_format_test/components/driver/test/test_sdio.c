@@ -87,7 +87,7 @@ sdio_test_config_t test_cfg_array[] =
         .check_data = true,
     },
     //the performance test is only done when psram is not enabled
-#if !CONFIG_SPIRAM && !CONFIG_FREERTOS_CHECK_PORT_CRITICAL_COMPLIANCE
+    #if !CONFIG_SPIRAM && !CONFIG_FREERTOS_CHECK_PORT_CRITICAL_COMPLIANCE
     {
         .test_name = "HS4B (perf)",
         .sdio_mode = SDIO_4BIT,
@@ -103,7 +103,7 @@ sdio_test_config_t test_cfg_array[] =
         .sdio_mode = SDIO_SPI,
         .freq = SDMMC_FREQ_HIGHSPEED,
     },
-#endif
+    #endif
 };
 
 sdio_test_config_t packet_config =
@@ -182,10 +182,10 @@ static void init_essl(essl_handle_t *out_handle, const sdio_test_config_t *conf)
             bus_config = (spi_bus_config_t)
             {
                 .mosi_io_num = SDIO_SLAVE_SLOT1_IOMUX_PIN_NUM_CMD,
-                 .miso_io_num = SDIO_SLAVE_SLOT1_IOMUX_PIN_NUM_D0,
-                  .sclk_io_num = SDIO_SLAVE_SLOT1_IOMUX_PIN_NUM_CLK,
-                   .quadwp_io_num = -1,
-                    .quadhd_io_num = -1,
+                .miso_io_num = SDIO_SLAVE_SLOT1_IOMUX_PIN_NUM_D0,
+                .sclk_io_num = SDIO_SLAVE_SLOT1_IOMUX_PIN_NUM_CLK,
+                .quadwp_io_num = -1,
+                .quadhd_io_num = -1,
             };
             err = spi_bus_initialize(TEST_SDSPI_HOST, &bus_config, TEST_SDSPI_DMACHAN);
             TEST_ESP_OK(err);

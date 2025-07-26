@@ -12,7 +12,8 @@ static gptimer_handle_t ts_gptimer;
 
 void ref_clock_init(void)
 {
-    gptimer_config_t timer_config = {
+    gptimer_config_t timer_config =
+    {
         .clk_src = GPTIMER_CLK_SRC_XTAL,
         .direction = GPTIMER_COUNT_UP,
         .resolution_hz = 1000000, // Resolution is configured to 1MHz

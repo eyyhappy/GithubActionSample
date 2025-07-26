@@ -19,9 +19,11 @@ extern "C" {
 /**
  * @brief MCPWM generator configuration
  */
-typedef struct {
+typedef struct
+{
     int gen_gpio_num;           /*!< The GPIO number used to output the PWM signal */
-    struct {
+    struct
+    {
         uint32_t invert_pwm: 1;   /*!< Whether to invert the PWM signal (done by GPIO matrix) */
         uint32_t io_loop_back: 1; /*!< For debug/test, the signal output from the GPIO will be fed to the input path as well */
     } flags;                      /*!< Extra configuration flags for generator */
@@ -73,7 +75,8 @@ esp_err_t mcpwm_generator_set_force_level(mcpwm_gen_handle_t gen, int level, boo
 /**
  * @brief Generator action on specific timer event
  */
-typedef struct {
+typedef struct
+{
     mcpwm_timer_direction_t direction; /*!< Timer direction */
     mcpwm_timer_event_t event;         /*!< Timer event */
     mcpwm_generator_action_t action;   /*!< Generator action should perform */
@@ -103,7 +106,8 @@ esp_err_t mcpwm_generator_set_actions_on_timer_event(mcpwm_gen_handle_t gen, mcp
 /**
  * @brief Generator action on specific comparator event
  */
-typedef struct {
+typedef struct
+{
     mcpwm_timer_direction_t direction; /*!< Timer direction */
     mcpwm_cmpr_handle_t comparator;    /*!< Comparator handle */
     mcpwm_generator_action_t action;   /*!< Generator action should perform */
@@ -132,7 +136,8 @@ esp_err_t mcpwm_generator_set_actions_on_compare_event(mcpwm_gen_handle_t genera
 /**
  * @brief Generator action on specific brake event
  */
-typedef struct {
+typedef struct
+{
     mcpwm_timer_direction_t direction;       /*!< Timer direction */
     mcpwm_operator_brake_mode_t brake_mode;  /*!< Brake mode */
     mcpwm_generator_action_t action;         /*!< Generator action should perform */
@@ -161,10 +166,12 @@ esp_err_t mcpwm_generator_set_actions_on_brake_event(mcpwm_gen_handle_t generato
 /**
  * @brief MCPWM dead time configuration structure
  */
-typedef struct {
+typedef struct
+{
     uint32_t posedge_delay_ticks; /*!< delay time applied to rising edge, 0 means no rising delay time */
     uint32_t negedge_delay_ticks; /*!< delay time applied to falling edge, 0 means no falling delay time */
-    struct {
+    struct
+    {
         uint32_t invert_output: 1; /*!< Invert the signal after applied the dead time */
     } flags;                       /*!< Extra flags for dead time configuration */
 } mcpwm_dead_time_config_t;

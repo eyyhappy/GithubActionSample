@@ -84,7 +84,6 @@ static int calloc_self_test( int verbose )
     void *empty2 = mbedtls_calloc( 0, 1 );
     void *buffer1 = mbedtls_calloc( 1, 1 );
     void *buffer2 = mbedtls_calloc( 1, 1 );
-
     if( empty1 == NULL && empty2 == NULL )
     {
         if( verbose )
@@ -106,7 +105,6 @@ static int calloc_self_test( int verbose )
         if( verbose )
             mbedtls_printf( "  CALLOC(0): passed (distinct non-null)\n" );
     }
-
     if( buffer1 == NULL || buffer2 == NULL )
     {
         if( verbose )
@@ -124,7 +122,6 @@ static int calloc_self_test( int verbose )
         if( verbose )
             mbedtls_printf( "  CALLOC(1): passed\n" );
     }
-
     mbedtls_free( buffer1 );
     buffer1 = mbedtls_calloc( 1, 1 );
     if( buffer1 == NULL )
@@ -138,7 +135,6 @@ static int calloc_self_test( int verbose )
         if( verbose )
             mbedtls_printf( "  CALLOC(1 again): passed\n" );
     }
-
     if( verbose )
         mbedtls_printf( "\n" );
     mbedtls_free( empty1 );
@@ -154,18 +150,15 @@ static int test_snprintf( size_t n, const char *ref_buf, int ref_ret )
     int ret;
     char buf[10] = "xxxxxxxxx";
     const char ref[10] = "xxxxxxxxx";
-
     ret = mbedtls_snprintf( buf, n, "%s", "123" );
     if( ret < 0 || (size_t) ret >= n )
         ret = -1;
-
     if( strncmp( ref_buf, buf, sizeof( buf ) ) != 0 ||
         ref_ret != ret ||
         memcmp( buf + n, ref + n, sizeof( buf ) - n ) != 0 )
     {
         return( 1 );
     }
-
     return( 0 );
 }
 
@@ -191,33 +184,29 @@ static void create_entropy_seed_file( void )
     int result;
     size_t output_len = 0;
     unsigned char seed_value[MBEDTLS_ENTROPY_BLOCK_SIZE];
-
     /* Attempt to read the entropy seed file. If this fails - attempt to write
      * to the file to ensure one is present. */
     result = mbedtls_platform_std_nv_seed_read( seed_value,
-                                                    MBEDTLS_ENTROPY_BLOCK_SIZE );
+             MBEDTLS_ENTROPY_BLOCK_SIZE );
     if( 0 == result )
         return;
-
     result = mbedtls_platform_entropy_poll( NULL,
                                             seed_value,
                                             MBEDTLS_ENTROPY_BLOCK_SIZE,
                                             &output_len );
     if( 0 != result )
         return;
-
     if( MBEDTLS_ENTROPY_BLOCK_SIZE != output_len )
         return;
-
     mbedtls_platform_std_nv_seed_write( seed_value, MBEDTLS_ENTROPY_BLOCK_SIZE );
 }
 #endif
 
 int mbedtls_entropy_self_test_wrapper( int verbose )
 {
-#if defined(MBEDTLS_ENTROPY_NV_SEED) && !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
+    #if defined(MBEDTLS_ENTROPY_NV_SEED) && !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
     create_entropy_seed_file( );
-#endif
+    #endif
     return( mbedtls_entropy_self_test( verbose ) );
 }
 #endif
@@ -228,9 +217,9 @@ int mbedtls_memory_buffer_alloc_free_and_self_test( int verbose )
 {
     if( verbose != 0 )
     {
-#if defined(MBEDTLS_MEMORY_DEBUG)
+        #if defined(MBEDTLS_MEMORY_DEBUG)
         mbedtls_memory_buffer_alloc_status( );
-#endif
+        #endif
     }
     mbedtls_memory_buffer_alloc_free( );
     return( mbedtls_memory_buffer_alloc_self_test( verbose ) );
@@ -246,106 +235,105 @@ typedef struct
 const selftest_t selftests[] =
 {
     {"calloc", calloc_self_test},
-#if defined(MBEDTLS_MD5_C)
+    #if defined(MBEDTLS_MD5_C)
     {"md5", mbedtls_md5_self_test},
-#endif
-#if defined(MBEDTLS_RIPEMD160_C)
+    #endif
+    #if defined(MBEDTLS_RIPEMD160_C)
     {"ripemd160", mbedtls_ripemd160_self_test},
-#endif
-#if defined(MBEDTLS_SHA1_C)
+    #endif
+    #if defined(MBEDTLS_SHA1_C)
     {"sha1", mbedtls_sha1_self_test},
-#endif
-#if defined(MBEDTLS_SHA256_C)
+    #endif
+    #if defined(MBEDTLS_SHA256_C)
     {"sha256", mbedtls_sha256_self_test},
-#endif
-#if defined(MBEDTLS_SHA512_C)
+    #endif
+    #if defined(MBEDTLS_SHA512_C)
     {"sha512", mbedtls_sha512_self_test},
-#endif
-#if defined(MBEDTLS_DES_C)
+    #endif
+    #if defined(MBEDTLS_DES_C)
     {"des", mbedtls_des_self_test},
-#endif
-#if defined(MBEDTLS_AES_C)
+    #endif
+    #if defined(MBEDTLS_AES_C)
     {"aes", mbedtls_aes_self_test},
-#endif
-#if defined(MBEDTLS_GCM_C) && defined(MBEDTLS_AES_C)
+    #endif
+    #if defined(MBEDTLS_GCM_C) && defined(MBEDTLS_AES_C)
     {"gcm", mbedtls_gcm_self_test},
-#endif
-#if defined(MBEDTLS_CCM_C) && defined(MBEDTLS_AES_C)
+    #endif
+    #if defined(MBEDTLS_CCM_C) && defined(MBEDTLS_AES_C)
     {"ccm", mbedtls_ccm_self_test},
-#endif
-#if defined(MBEDTLS_NIST_KW_C) && defined(MBEDTLS_AES_C)
+    #endif
+    #if defined(MBEDTLS_NIST_KW_C) && defined(MBEDTLS_AES_C)
     {"nist_kw", mbedtls_nist_kw_self_test},
-#endif
-#if defined(MBEDTLS_CMAC_C)
+    #endif
+    #if defined(MBEDTLS_CMAC_C)
     {"cmac", mbedtls_cmac_self_test},
-#endif
-#if defined(MBEDTLS_CHACHA20_C)
+    #endif
+    #if defined(MBEDTLS_CHACHA20_C)
     {"chacha20", mbedtls_chacha20_self_test},
-#endif
-#if defined(MBEDTLS_POLY1305_C)
+    #endif
+    #if defined(MBEDTLS_POLY1305_C)
     {"poly1305", mbedtls_poly1305_self_test},
-#endif
-#if defined(MBEDTLS_CHACHAPOLY_C)
+    #endif
+    #if defined(MBEDTLS_CHACHAPOLY_C)
     {"chacha20-poly1305", mbedtls_chachapoly_self_test},
-#endif
-#if defined(MBEDTLS_BASE64_C)
+    #endif
+    #if defined(MBEDTLS_BASE64_C)
     {"base64", mbedtls_base64_self_test},
-#endif
-#if defined(MBEDTLS_BIGNUM_C)
+    #endif
+    #if defined(MBEDTLS_BIGNUM_C)
     {"mpi", mbedtls_mpi_self_test},
-#endif
-#if defined(MBEDTLS_RSA_C)
+    #endif
+    #if defined(MBEDTLS_RSA_C)
     {"rsa", mbedtls_rsa_self_test},
-#endif
-#if defined(MBEDTLS_CAMELLIA_C)
+    #endif
+    #if defined(MBEDTLS_CAMELLIA_C)
     {"camellia", mbedtls_camellia_self_test},
-#endif
-#if defined(MBEDTLS_ARIA_C)
+    #endif
+    #if defined(MBEDTLS_ARIA_C)
     {"aria", mbedtls_aria_self_test},
-#endif
-#if defined(MBEDTLS_CTR_DRBG_C)
+    #endif
+    #if defined(MBEDTLS_CTR_DRBG_C)
     {"ctr_drbg", mbedtls_ctr_drbg_self_test},
-#endif
-#if defined(MBEDTLS_HMAC_DRBG_C)
+    #endif
+    #if defined(MBEDTLS_HMAC_DRBG_C)
     {"hmac_drbg", mbedtls_hmac_drbg_self_test},
-#endif
-#if defined(MBEDTLS_ECP_C)
+    #endif
+    #if defined(MBEDTLS_ECP_C)
     {"ecp", mbedtls_ecp_self_test},
-#endif
-#if defined(MBEDTLS_ECJPAKE_C)
+    #endif
+    #if defined(MBEDTLS_ECJPAKE_C)
     {"ecjpake", mbedtls_ecjpake_self_test},
-#endif
-#if defined(MBEDTLS_DHM_C)
+    #endif
+    #if defined(MBEDTLS_DHM_C)
     {"dhm", mbedtls_dhm_self_test},
-#endif
-#if defined(MBEDTLS_ENTROPY_C)
+    #endif
+    #if defined(MBEDTLS_ENTROPY_C)
     {"entropy", mbedtls_entropy_self_test_wrapper},
-#endif
-#if defined(MBEDTLS_PKCS5_C)
+    #endif
+    #if defined(MBEDTLS_PKCS5_C)
     {"pkcs5", mbedtls_pkcs5_self_test},
-#endif
-/* Heap test comes last */
-#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+    #endif
+    /* Heap test comes last */
+    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     {"memory_buffer_alloc", mbedtls_memory_buffer_alloc_free_and_self_test},
-#endif
+    #endif
     {NULL, NULL}
 };
 #endif /* MBEDTLS_SELF_TEST */
 
 int main( int argc, char *argv[] )
 {
-#if defined(MBEDTLS_SELF_TEST)
+    #if defined(MBEDTLS_SELF_TEST)
     const selftest_t *test;
-#endif /* MBEDTLS_SELF_TEST */
+    #endif /* MBEDTLS_SELF_TEST */
     char **argp;
     int v = 1; /* v=1 for verbose mode */
     int exclude_mode = 0;
     int suites_tested = 0, suites_failed = 0;
-#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C) && defined(MBEDTLS_SELF_TEST)
+    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C) && defined(MBEDTLS_SELF_TEST)
     unsigned char buf[1000000];
-#endif
+    #endif
     void *pointer;
-
     /*
      * The C standard doesn't guarantee that all-bits-0 is the representation
      * of a NULL pointer. We do however use that in our code for initializing
@@ -357,7 +345,6 @@ int main( int argc, char *argv[] )
         mbedtls_printf( "all-bits-zero is not a NULL pointer\n" );
         mbedtls_exit( MBEDTLS_EXIT_FAILURE );
     }
-
     /*
      * The C standard allows padding bits in the representation
      * of standard integer types, but our code does currently not
@@ -376,7 +363,6 @@ int main( int argc, char *argv[] )
      * We assume that [u]intxx_t exist and that they don't
      * have padding bits, as the standard requires.
      */
-
 #define CHECK_PADDING_SIGNED(TYPE, NAME)                                \
     do                                                                  \
     {                                                                   \
@@ -399,7 +385,6 @@ int main( int argc, char *argv[] )
             mbedtls_exit( MBEDTLS_EXIT_FAILURE );                       \
         }                                                               \
     } while( 0 )
-
 #define CHECK_PADDING_UNSIGNED(TYPE, NAME)                              \
     do                                                                  \
     {                                                                   \
@@ -414,22 +399,18 @@ int main( int argc, char *argv[] )
             mbedtls_exit( MBEDTLS_EXIT_FAILURE );                       \
         }                                                               \
     } while( 0 )
-
     CHECK_PADDING_SIGNED( short,        SHRT );
     CHECK_PADDING_SIGNED( int,           INT );
     CHECK_PADDING_SIGNED( long,         LONG );
     CHECK_PADDING_SIGNED( long long,   LLONG );
     CHECK_PADDING_SIGNED( ptrdiff_t, PTRDIFF );
-
     CHECK_PADDING_UNSIGNED( unsigned short,      USHRT );
     CHECK_PADDING_UNSIGNED( unsigned,             UINT );
     CHECK_PADDING_UNSIGNED( unsigned long,       ULONG );
     CHECK_PADDING_UNSIGNED( unsigned long long, ULLONG );
     CHECK_PADDING_UNSIGNED( size_t,               SIZE );
-
 #undef CHECK_PADDING_SIGNED
 #undef CHECK_PADDING_UNSIGNED
-
     /*
      * Make sure we have a snprintf that correctly zero-terminates
      */
@@ -438,7 +419,6 @@ int main( int argc, char *argv[] )
         mbedtls_printf( "the snprintf implementation is broken\n" );
         mbedtls_exit( MBEDTLS_EXIT_FAILURE );
     }
-
     for( argp = argv + ( argc >= 1 ? 1 : argc ); *argp != NULL; ++argp )
     {
         if( strcmp( *argp, "--quiet" ) == 0 ||
@@ -454,16 +434,12 @@ int main( int argc, char *argv[] )
         else
             break;
     }
-
     if( v != 0 )
         mbedtls_printf( "\n" );
-
-#if defined(MBEDTLS_SELF_TEST)
-
-#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+    #if defined(MBEDTLS_SELF_TEST)
+    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     mbedtls_memory_buffer_alloc_init( buf, sizeof(buf) );
-#endif
-
+    #endif
     if( *argp != NULL && exclude_mode == 0 )
     {
         /* Run the specified tests */
@@ -515,16 +491,13 @@ int main( int argc, char *argv[] )
             suites_tested++;
         }
     }
-
-#else
+    #else
     (void) exclude_mode;
     mbedtls_printf( " MBEDTLS_SELF_TEST not defined.\n" );
-#endif
-
+    #endif
     if( v != 0 )
     {
         mbedtls_printf( "  Executed %d test suites\n\n", suites_tested );
-
         if( suites_failed > 0)
         {
             mbedtls_printf( "  [ %d tests FAIL ]\n\n", suites_failed );
@@ -534,9 +507,7 @@ int main( int argc, char *argv[] )
             mbedtls_printf( "  [ All tests PASS ]\n\n" );
         }
     }
-
     if( suites_failed > 0)
         mbedtls_exit( MBEDTLS_EXIT_FAILURE );
-
     mbedtls_exit( MBEDTLS_EXIT_SUCCESS );
 }

@@ -53,10 +53,10 @@ typedef struct mbedtls_sha512_context
     uint64_t MBEDTLS_PRIVATE(total)[2];          /*!< The number of Bytes processed. */
     uint64_t MBEDTLS_PRIVATE(state)[8];          /*!< The intermediate digest state. */
     unsigned char MBEDTLS_PRIVATE(buffer)[128];  /*!< The data block being processed. */
-#if defined(MBEDTLS_SHA384_C)
+    #if defined(MBEDTLS_SHA384_C)
     int MBEDTLS_PRIVATE(is384);                  /*!< Determines which function to use:
                                                       0: Use SHA-512, or 1: Use SHA-384. */
-#endif
+    #endif
 }
 mbedtls_sha512_context;
 
@@ -189,12 +189,12 @@ int mbedtls_sha512( const unsigned char *input,
 
 #if defined(MBEDTLS_SELF_TEST)
 
- /**
- * \brief          The SHA-384 or SHA-512 checkup routine.
- *
- * \return         \c 0 on success.
- * \return         \c 1 on failure.
- */
+/**
+* \brief          The SHA-384 or SHA-512 checkup routine.
+*
+* \return         \c 0 on success.
+* \return         \c 1 on failure.
+*/
 int mbedtls_sha512_self_test( int verbose );
 #endif /* MBEDTLS_SELF_TEST */
 

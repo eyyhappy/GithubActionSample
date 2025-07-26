@@ -23,7 +23,8 @@ typedef struct gptimer_t *gptimer_handle_t;
 /**
  * @brief GPTimer alarm event data
  */
-typedef struct {
+typedef struct
+{
     uint64_t count_value; /*!< Current count value */
     uint64_t alarm_value; /*!< Current alarm value */
 } gptimer_alarm_event_data_t;
@@ -43,19 +44,22 @@ typedef bool (*gptimer_alarm_cb_t) (gptimer_handle_t timer, const gptimer_alarm_
  * @note The callbacks are all running under ISR environment
  * @note When CONFIG_GPTIMER_ISR_IRAM_SAFE is enabled, the callback itself and functions called by it should be placed in IRAM.
  */
-typedef struct {
+typedef struct
+{
     gptimer_alarm_cb_t on_alarm; /*!< Timer alarm callback */
 } gptimer_event_callbacks_t;
 
 /**
  * @brief General Purpose Timer configuration
  */
-typedef struct {
+typedef struct
+{
     gptimer_clock_source_t clk_src;      /*!< GPTimer clock source */
     gptimer_count_direction_t direction; /*!< Count direction */
     uint32_t resolution_hz;              /*!< Counter resolution (working frequency) in Hz,
                                               hence, the step size of each count tick equals to (1 / resolution_hz) seconds */
-    struct {
+    struct
+    {
         uint32_t intr_shared: 1;         /*!< Set true, the timer interrupt number can be shared with other peripherals */
     } flags;                             /*!< GPTimer config flags*/
 } gptimer_config_t;
@@ -63,10 +67,12 @@ typedef struct {
 /**
  * @brief General Purpose Timer alarm configuration
  */
-typedef struct {
+typedef struct
+{
     uint64_t alarm_count;  /*!< Alarm target count value */
     uint64_t reload_count; /*!< Alarm reload count value, effect only when `auto_reload_on_alarm` is set to true */
-    struct {
+    struct
+    {
         uint32_t auto_reload_on_alarm: 1; /*!< Reload the count value by hardware, immediately at the alarm event */
     } flags;                              /*!< Alarm config flags*/
 } gptimer_alarm_config_t;

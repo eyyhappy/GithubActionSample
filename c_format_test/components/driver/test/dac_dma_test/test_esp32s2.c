@@ -119,18 +119,18 @@ uint32_t dac_dma_linker_init(bool is_alter, bool is_loop)
     dma1 = (lldesc_t)
     {
         .size = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
-         .length = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
-          .eof = 0,
-           .owner = 1,
-            .buf = &link_buf[0][0],
-             .qe.stqe_next = &dma2,
+        .length = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
+        .eof = 0,
+        .owner = 1,
+        .buf = &link_buf[0][0],
+        .qe.stqe_next = &dma2,
     };
     dma2 = (lldesc_t)
     {
         .size = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
-         .length = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
-          .owner = 1,
-           .buf = &link_buf[1][0],
+        .length = (is_alter) ? SAR_SIMPLE_NUM * 2 : SAR_SIMPLE_NUM,
+        .owner = 1,
+        .buf = &link_buf[1][0],
     };
     if (is_loop)
     {

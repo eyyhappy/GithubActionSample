@@ -38,7 +38,8 @@
 static void mbedtls_zeroize( void *v, size_t n )
 {
     volatile unsigned char *p = (unsigned char *)v;
-    while ( n-- ) {
+    while ( n-- )
+    {
         *p++ = 0;
     }
 }
@@ -73,11 +74,12 @@ void mbedtls_sha1_init( mbedtls_sha1_context *ctx )
 
 void mbedtls_sha1_free( mbedtls_sha1_context *ctx )
 {
-    if ( ctx == NULL ) {
+    if ( ctx == NULL )
+    {
         return;
     }
-
-    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         esp_sha_unlock_engine(SHA1);
     }
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha1_context ) );
@@ -87,8 +89,8 @@ void mbedtls_sha1_clone( mbedtls_sha1_context *dst,
                          const mbedtls_sha1_context *src )
 {
     *dst = *src;
-
-    if (src->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (src->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         /* Copy hardware digest state out to cloned state,
            which will be a software digest.
         */
@@ -105,18 +107,16 @@ int mbedtls_sha1_starts( mbedtls_sha1_context *ctx )
 {
     ctx->total[0] = 0;
     ctx->total[1] = 0;
-
     ctx->state[0] = 0x67452301;
     ctx->state[1] = 0xEFCDAB89;
     ctx->state[2] = 0x98BADCFE;
     ctx->state[3] = 0x10325476;
     ctx->state[4] = 0xC3D2E1F0;
-
-    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         esp_sha_unlock_engine(SHA1);
     }
     ctx->mode = ESP_MBEDTLS_SHA1_UNUSED;
-
     return 0;
 }
 
@@ -126,29 +126,33 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
 int mbedtls_internal_sha1_process( mbedtls_sha1_context *ctx, const unsigned char data[64] )
 {
     bool first_block = false;
-    if (ctx->mode == ESP_MBEDTLS_SHA1_UNUSED) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_UNUSED)
+    {
         /* try to use hardware for this digest */
-        if (esp_sha_try_lock_engine(SHA1)) {
+        if (esp_sha_try_lock_engine(SHA1))
+        {
             ctx->mode = ESP_MBEDTLS_SHA1_HARDWARE;
             first_block = true;
-        } else {
+        }
+        else
+        {
             ctx->mode = ESP_MBEDTLS_SHA1_SOFTWARE;
         }
     }
-
-    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         esp_sha_block(SHA1, data, first_block);
-    } else {
+    }
+    else
+    {
         mbedtls_sha1_software_process(ctx, data);
     }
-
     return 0;
 }
 
 static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsigned char data[64] )
 {
     uint32_t temp, W[16], A, B, C, D, E;
-
     GET_UINT32_BE( W[ 0], data,  0 );
     GET_UINT32_BE( W[ 1], data,  4 );
     GET_UINT32_BE( W[ 2], data,  8 );
@@ -165,30 +169,24 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
     GET_UINT32_BE( W[13], data, 52 );
     GET_UINT32_BE( W[14], data, 56 );
     GET_UINT32_BE( W[15], data, 60 );
-
 #define S(x,n) ((x << n) | ((x & 0xFFFFFFFF) >> (32 - n)))
-
 #define R(t)                                            \
 (                                                       \
     temp = W[( t -  3 ) & 0x0F] ^ W[( t - 8 ) & 0x0F] ^ \
            W[( t - 14 ) & 0x0F] ^ W[  t       & 0x0F],  \
     ( W[t & 0x0F] = S(temp,1) )                         \
 )
-
 #define P(a,b,c,d,e,x)                                  \
 {                                                       \
     e += S(a,5) + F(b,c,d) + K + x; b = S(b,30);        \
 }
-
     A = ctx->state[0];
     B = ctx->state[1];
     C = ctx->state[2];
     D = ctx->state[3];
     E = ctx->state[4];
-
 #define F(x,y,z) (z ^ (x & (y ^ z)))
 #define K 0x5A827999
-
     P( A, B, C, D, E, W[0]  );
     P( E, A, B, C, D, W[1]  );
     P( D, E, A, B, C, W[2]  );
@@ -209,13 +207,10 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
     P( D, E, A, B, C, R(17) );
     P( C, D, E, A, B, R(18) );
     P( B, C, D, E, A, R(19) );
-
 #undef K
 #undef F
-
 #define F(x,y,z) (x ^ y ^ z)
 #define K 0x6ED9EBA1
-
     P( A, B, C, D, E, R(20) );
     P( E, A, B, C, D, R(21) );
     P( D, E, A, B, C, R(22) );
@@ -236,13 +231,10 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
     P( D, E, A, B, C, R(37) );
     P( C, D, E, A, B, R(38) );
     P( B, C, D, E, A, R(39) );
-
 #undef K
 #undef F
-
 #define F(x,y,z) ((x & y) | (z & (x | y)))
 #define K 0x8F1BBCDC
-
     P( A, B, C, D, E, R(40) );
     P( E, A, B, C, D, R(41) );
     P( D, E, A, B, C, R(42) );
@@ -263,13 +255,10 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
     P( D, E, A, B, C, R(57) );
     P( C, D, E, A, B, R(58) );
     P( B, C, D, E, A, R(59) );
-
 #undef K
 #undef F
-
 #define F(x,y,z) (x ^ y ^ z)
 #define K 0xCA62C1D6
-
     P( A, B, C, D, E, R(60) );
     P( E, A, B, C, D, R(61) );
     P( D, E, A, B, C, R(62) );
@@ -290,10 +279,8 @@ static void mbedtls_sha1_software_process( mbedtls_sha1_context *ctx, const unsi
     P( D, E, A, B, C, R(77) );
     P( C, D, E, A, B, R(78) );
     P( B, C, D, E, A, R(79) );
-
 #undef K
 #undef F
-
     ctx->state[0] += A;
     ctx->state[1] += B;
     ctx->state[2] += C;
@@ -309,50 +296,47 @@ int mbedtls_sha1_update( mbedtls_sha1_context *ctx, const unsigned char *input, 
     int ret;
     size_t fill;
     uint32_t left;
-
-    if ( ilen == 0 ) {
+    if ( ilen == 0 )
+    {
         return 0;
     }
-
     left = ctx->total[0] & 0x3F;
     fill = 64 - left;
-
     ctx->total[0] += (uint32_t) ilen;
     ctx->total[0] &= 0xFFFFFFFF;
-
-    if ( ctx->total[0] < (uint32_t) ilen ) {
+    if ( ctx->total[0] < (uint32_t) ilen )
+    {
         ctx->total[1]++;
     }
-
-    if ( left && ilen >= fill ) {
+    if ( left && ilen >= fill )
+    {
         memcpy( (void *) (ctx->buffer + left), input, fill );
-
-        if ( ( ret = mbedtls_internal_sha1_process( ctx, ctx->buffer ) ) != 0 ) {
+        if ( ( ret = mbedtls_internal_sha1_process( ctx, ctx->buffer ) ) != 0 )
+        {
             return ret;
         }
-
         input += fill;
         ilen  -= fill;
         left = 0;
     }
-
-    while ( ilen >= 64 ) {
-        if ( ( ret = mbedtls_internal_sha1_process( ctx, input ) ) != 0 ) {
+    while ( ilen >= 64 )
+    {
+        if ( ( ret = mbedtls_internal_sha1_process( ctx, input ) ) != 0 )
+        {
             return ret;
         }
-
         input += 64;
         ilen  -= 64;
     }
-
-    if ( ilen > 0 ) {
+    if ( ilen > 0 )
+    {
         memcpy( (void *) (ctx->buffer + left), input, ilen );
     }
-
     return 0;
 }
 
-static const unsigned char sha1_padding[64] = {
+static const unsigned char sha1_padding[64] =
+{
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -368,41 +352,37 @@ int mbedtls_sha1_finish( mbedtls_sha1_context *ctx, unsigned char output[20] )
     uint32_t last, padn;
     uint32_t high, low;
     unsigned char msglen[8];
-
     high = ( ctx->total[0] >> 29 )
            | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
-
     PUT_UINT32_BE( high, msglen, 0 );
     PUT_UINT32_BE( low,  msglen, 4 );
-
     last = ctx->total[0] & 0x3F;
     padn = ( last < 56 ) ? ( 56 - last ) : ( 120 - last );
-
-    if ( ( ret = mbedtls_sha1_update( ctx, sha1_padding, padn ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha1_update( ctx, sha1_padding, padn ) ) != 0 )
+    {
         goto out;
     }
-    if ( ( ret = mbedtls_sha1_update( ctx, msglen, 8 ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha1_update( ctx, msglen, 8 ) ) != 0 )
+    {
         goto out;
     }
-
     /* if state is in hardware, read it out */
-    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         esp_sha_read_digest_state(SHA1, ctx->state);
     }
-
     PUT_UINT32_BE( ctx->state[0], output,  0 );
     PUT_UINT32_BE( ctx->state[1], output,  4 );
     PUT_UINT32_BE( ctx->state[2], output,  8 );
     PUT_UINT32_BE( ctx->state[3], output, 12 );
     PUT_UINT32_BE( ctx->state[4], output, 16 );
-
 out:
-    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA1_HARDWARE)
+    {
         esp_sha_unlock_engine(SHA1);
         ctx->mode = ESP_MBEDTLS_SHA1_SOFTWARE;
     }
-
     return ret;
 }
 

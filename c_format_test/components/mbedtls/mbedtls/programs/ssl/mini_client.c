@@ -46,14 +46,14 @@
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_C) || !defined(MBEDTLS_ENTROPY_C) || \
-    !defined(MBEDTLS_NET_C) || !defined(MBEDTLS_SSL_CLI_C) || \
-    !defined(UNIX)
+!defined(MBEDTLS_NET_C) || !defined(MBEDTLS_SSL_CLI_C) || \
+!defined(UNIX)
 
 int main( void )
 {
     mbedtls_printf( "MBEDTLS_CTR_DRBG_C and/or MBEDTLS_ENTROPY_C and/or "
-            "MBEDTLS_NET_C and/or MBEDTLS_SSL_CLI_C and/or UNIX "
-            "not defined.\n");
+                    "MBEDTLS_NET_C and/or MBEDTLS_SSL_CLI_C and/or UNIX "
+                    "not defined.\n");
     mbedtls_exit( 0 );
 }
 #else
@@ -83,7 +83,8 @@ int main( void )
 const char *pers = "mini_client";
 
 #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
-const unsigned char psk[] = {
+const unsigned char psk[] =
+{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
@@ -92,7 +93,8 @@ const char psk_id[] = "Client_identity";
 
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
 /* This is tests/data_files/test-ca2.crt, a CA using EC secp384r1 */
-const unsigned char ca_cert[] = {
+const unsigned char ca_cert[] =
+{
     0x30, 0x82, 0x02, 0x52, 0x30, 0x82, 0x01, 0xd7, 0xa0, 0x03, 0x02, 0x01,
     0x02, 0x02, 0x09, 0x00, 0xc1, 0x43, 0xe2, 0x7e, 0x62, 0x43, 0xcc, 0xe8,
     0x30, 0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 0x02,
@@ -166,130 +168,109 @@ int main( void )
     int ret = exit_ok;
     mbedtls_net_context server_fd;
     struct sockaddr_in addr;
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
+    #if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt ca;
-#endif
-
+    #endif
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
     mbedtls_ctr_drbg_init( &ctr_drbg );
-
     /*
      * 0. Initialize and setup stuff
      */
     mbedtls_net_init( &server_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
+    #if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt_init( &ca );
-#endif
-
+    #endif
     mbedtls_entropy_init( &entropy );
     if( mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy,
-                       (const unsigned char *) pers, strlen( pers ) ) != 0 )
+                               (const unsigned char *) pers, strlen( pers ) ) != 0 )
     {
         ret = ctr_drbg_seed_failed;
         goto exit;
     }
-
     if( mbedtls_ssl_config_defaults( &conf,
-                MBEDTLS_SSL_IS_CLIENT,
-                MBEDTLS_SSL_TRANSPORT_STREAM,
-                MBEDTLS_SSL_PRESET_DEFAULT ) != 0 )
+                                     MBEDTLS_SSL_IS_CLIENT,
+                                     MBEDTLS_SSL_TRANSPORT_STREAM,
+                                     MBEDTLS_SSL_PRESET_DEFAULT ) != 0 )
     {
         ret = ssl_config_defaults_failed;
         goto exit;
     }
-
     mbedtls_ssl_conf_rng( &conf, mbedtls_ctr_drbg_random, &ctr_drbg );
-
-#if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
+    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
     mbedtls_ssl_conf_psk( &conf, psk, sizeof( psk ),
-                (const unsigned char *) psk_id, sizeof( psk_id ) - 1 );
-#endif
-
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
+                          (const unsigned char *) psk_id, sizeof( psk_id ) - 1 );
+    #endif
+    #if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( mbedtls_x509_crt_parse_der( &ca, ca_cert, sizeof( ca_cert ) ) != 0 )
     {
         ret = x509_crt_parse_failed;
         goto exit;
     }
-
     mbedtls_ssl_conf_ca_chain( &conf, &ca, NULL );
     mbedtls_ssl_conf_authmode( &conf, MBEDTLS_SSL_VERIFY_REQUIRED );
-#endif
-
+    #endif
     if( mbedtls_ssl_setup( &ssl, &conf ) != 0 )
     {
         ret = ssl_setup_failed;
         goto exit;
     }
-
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
+    #if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( mbedtls_ssl_set_hostname( &ssl, HOSTNAME ) != 0 )
     {
         ret = hostname_failed;
         goto exit;
     }
-#endif
-
+    #endif
     /*
      * 1. Start the connection
      */
     memset( &addr, 0, sizeof( addr ) );
     addr.sin_family = AF_INET;
-
     ret = 1; /* for endianness detection */
     addr.sin_port = *((char *) &ret) == ret ? PORT_LE : PORT_BE;
     addr.sin_addr.s_addr = *((char *) &ret) == ret ? ADDR_LE : ADDR_BE;
     ret = 0;
-
     if( ( server_fd.fd = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 )
     {
         ret = socket_failed;
         goto exit;
     }
-
     if( connect( server_fd.fd,
-                (const struct sockaddr *) &addr, sizeof( addr ) ) < 0 )
+                 (const struct sockaddr *) &addr, sizeof( addr ) ) < 0 )
     {
         ret = connect_failed;
         goto exit;
     }
-
     mbedtls_ssl_set_bio( &ssl, &server_fd, mbedtls_net_send, mbedtls_net_recv, NULL );
-
     if( mbedtls_ssl_handshake( &ssl ) != 0 )
     {
         ret = ssl_handshake_failed;
         goto exit;
     }
-
     /*
      * 2. Write the GET request and close the connection
      */
     if( mbedtls_ssl_write( &ssl, (const unsigned char *) GET_REQUEST,
-                         sizeof( GET_REQUEST ) - 1 ) <= 0 )
+                           sizeof( GET_REQUEST ) - 1 ) <= 0 )
     {
         ret = ssl_write_failed;
         goto exit;
     }
-
     mbedtls_ssl_close_notify( &ssl );
-
 exit:
     mbedtls_net_free( &server_fd );
-
     mbedtls_ssl_free( &ssl );
     mbedtls_ssl_config_free( &conf );
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
-#if defined(MBEDTLS_X509_CRT_PARSE_C)
+    #if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt_free( &ca );
-#endif
-
+    #endif
     mbedtls_exit( ret );
 }
 #endif

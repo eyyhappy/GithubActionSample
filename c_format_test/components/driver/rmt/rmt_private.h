@@ -49,8 +49,10 @@ extern "C" {
 #define RMT_DMA_NODES_PING_PONG  2  // two nodes ping-pong
 #define RMT_PM_LOCK_NAME_LEN_MAX 16
 
-typedef struct {
-    struct {
+typedef struct
+{
+    struct
+    {
         rmt_symbol_word_t symbols[SOC_RMT_MEM_WORDS_PER_CHANNEL];
     } channels[SOC_RMT_CHANNELS_PER_GROUP];
 } rmt_block_mem_t;
@@ -58,17 +60,20 @@ typedef struct {
 // RMTMEM address is declared in <target>.peripherals.ld
 extern rmt_block_mem_t RMTMEM;
 
-typedef enum {
+typedef enum
+{
     RMT_CHANNEL_DIRECTION_TX,
     RMT_CHANNEL_DIRECTION_RX,
 } rmt_channel_direction_t;
 
-typedef enum {
+typedef enum
+{
     RMT_FSM_INIT,
     RMT_FSM_ENABLE,
 } rmt_fsm_t;
 
-enum {
+enum
+{
     RMT_TX_QUEUE_READY,
     RMT_TX_QUEUE_PROGRESS,
     RMT_TX_QUEUE_COMPLETE,
@@ -81,7 +86,8 @@ typedef struct rmt_tx_channel_t rmt_tx_channel_t;
 typedef struct rmt_rx_channel_t rmt_rx_channel_t;
 typedef struct rmt_sync_manager_t rmt_sync_manager_t;
 
-struct rmt_group_t {
+struct rmt_group_t
+{
     int group_id;               // group ID, index from 0
     portMUX_TYPE spinlock;      // to protect per-group register level concurrent access
     rmt_hal_context_t hal;      // hal layer for each group
@@ -93,7 +99,8 @@ struct rmt_group_t {
     rmt_sync_manager_t *sync_manager; // sync manager, this can be extended into an array if there're more sync controllers in one RMT group
 };
 
-struct rmt_channel_t {
+struct rmt_channel_t
+{
     int channel_id;         // channel ID, index from 0
     int gpio_num;           // GPIO number used by RMT RX channel
     uint32_t channel_mask;  // mask of the memory blocks that occupied by the channel
@@ -108,9 +115,9 @@ struct rmt_channel_t {
     rmt_symbol_word_t *dma_mem_base;   // base address of RMT channel DMA buffer
     gdma_channel_handle_t dma_chan;    // DMA channel
     esp_pm_lock_handle_t pm_lock;      // power management lock
-#if CONFIG_PM_ENABLE
+    #if CONFIG_PM_ENABLE
     char pm_lock_name[RMT_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-#endif
+    #endif
     // RMT channel common interface
     // The following IO functions will have per-implementation for TX and RX channel
     esp_err_t (*del)(rmt_channel_t *channel);
@@ -119,20 +126,23 @@ struct rmt_channel_t {
     esp_err_t (*disable)(rmt_channel_t *channel);
 };
 
-typedef struct {
+typedef struct
+{
     rmt_encoder_handle_t encoder;  // encode user payload into RMT symbols
     const void *payload;           // encoder payload
     size_t payload_bytes;          // payload size
     int loop_count;                // transaction can be continued in a loop for specific times
     int remain_loop_count;         // user required loop count may exceed hardware limitation, the driver will transfer them in batches
     size_t transmitted_symbol_num; // track the number of transmitted symbols
-    struct {
+    struct
+    {
         uint32_t eot_level : 1;    // Set the output level for the "End Of Transmission"
         uint32_t encoding_done: 1; // Indicate whether the encoding has finished (not the encoding of transmission)
     } flags;
 } rmt_tx_trans_desc_t;
 
-struct rmt_tx_channel_t {
+struct rmt_tx_channel_t
+{
     rmt_channel_t base; // channel base class
     size_t mem_off;     // runtime argument, indicating the next writing position in the RMT hardware memory
     size_t mem_end;     // runtime argument, incidating the end of current writing region
@@ -149,14 +159,16 @@ struct rmt_tx_channel_t {
     rmt_tx_trans_desc_t trans_desc_pool[];   // tranfer descriptor pool
 };
 
-typedef struct {
+typedef struct
+{
     void *buffer;               // buffer for saving the received symbols
     size_t buffer_size;         // size of the buffer, in bytes
     size_t received_symbol_num; // track the number of received symbols
     size_t copy_dest_off;       // tracking offset in the copy destination
 } rmt_rx_trans_desc_t;
 
-struct rmt_rx_channel_t {
+struct rmt_rx_channel_t
+{
     rmt_channel_t base;                  // channel base class
     size_t mem_off;                      // starting offset to fetch the symbols in RMTMEM
     size_t ping_pong_symbols;            // ping-pong size (half of the RMT channel memory)

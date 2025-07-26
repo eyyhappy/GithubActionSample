@@ -280,19 +280,19 @@ extern "C" {
  * associated HW assist, define PSA_HAVE_SOFT_BLOCK_MODE for checking
  * in the block cipher key types. */
 #if (defined(PSA_WANT_ALG_CTR) && !defined(MBEDTLS_PSA_ACCEL_ALG_CTR)) || \
-    (defined(PSA_WANT_ALG_CFB) && !defined(MBEDTLS_PSA_ACCEL_ALG_CFB)) || \
-    (defined(PSA_WANT_ALG_OFB) && !defined(MBEDTLS_PSA_ACCEL_ALG_OFB)) || \
-    defined(PSA_WANT_ALG_ECB_NO_PADDING) || \
-    (defined(PSA_WANT_ALG_CBC_NO_PADDING) && \
-     !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_NO_PADDING)) || \
-    (defined(PSA_WANT_ALG_CBC_PKCS7) && \
-     !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_PKCS7)) || \
-    (defined(PSA_WANT_ALG_CMAC) && !defined(MBEDTLS_PSA_ACCEL_ALG_CMAC))
+(defined(PSA_WANT_ALG_CFB) && !defined(MBEDTLS_PSA_ACCEL_ALG_CFB)) || \
+(defined(PSA_WANT_ALG_OFB) && !defined(MBEDTLS_PSA_ACCEL_ALG_OFB)) || \
+defined(PSA_WANT_ALG_ECB_NO_PADDING) || \
+(defined(PSA_WANT_ALG_CBC_NO_PADDING) && \
+ !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_NO_PADDING)) || \
+(defined(PSA_WANT_ALG_CBC_PKCS7) && \
+ !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_PKCS7)) || \
+(defined(PSA_WANT_ALG_CMAC) && !defined(MBEDTLS_PSA_ACCEL_ALG_CMAC))
 #define PSA_HAVE_SOFT_BLOCK_MODE 1
 #endif
 
 #if (defined(PSA_WANT_ALG_GCM) && !defined(MBEDTLS_PSA_ACCEL_ALG_GCM)) || \
-    (defined(PSA_WANT_ALG_CCM) && !defined(MBEDTLS_PSA_ACCEL_ALG_CCM))
+(defined(PSA_WANT_ALG_CCM) && !defined(MBEDTLS_PSA_ACCEL_ALG_CCM))
 #define PSA_HAVE_SOFT_BLOCK_AEAD 1
 #endif
 
@@ -301,8 +301,8 @@ extern "C" {
 #define PSA_HAVE_SOFT_KEY_TYPE_AES 1
 #endif /* !MBEDTLS_PSA_ACCEL_KEY_TYPE_AES */
 #if defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
-    defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
-    defined(PSA_HAVE_SOFT_BLOCK_AEAD)
+defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
+defined(PSA_HAVE_SOFT_BLOCK_AEAD)
 #define MBEDTLS_PSA_BUILTIN_KEY_TYPE_AES 1
 #define MBEDTLS_AES_C
 #endif /* PSA_HAVE_SOFT_KEY_TYPE_AES || PSA_HAVE_SOFT_BLOCK_MODE */
@@ -313,8 +313,8 @@ extern "C" {
 #define PSA_HAVE_SOFT_KEY_TYPE_ARIA 1
 #endif /* !MBEDTLS_PSA_ACCEL_KEY_TYPE_ARIA */
 #if defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
-    defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
-    defined(PSA_HAVE_SOFT_BLOCK_AEAD)
+defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
+defined(PSA_HAVE_SOFT_BLOCK_AEAD)
 #define MBEDTLS_PSA_BUILTIN_KEY_TYPE_ARIA 1
 #define MBEDTLS_ARIA_C
 #endif /* PSA_HAVE_SOFT_KEY_TYPE_ARIA || PSA_HAVE_SOFT_BLOCK_MODE */
@@ -325,8 +325,8 @@ extern "C" {
 #define PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA 1
 #endif /* !MBEDTLS_PSA_ACCEL_KEY_TYPE_CAMELLIA */
 #if defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA) || \
-    defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
-    defined(PSA_HAVE_SOFT_BLOCK_AEAD)
+defined(PSA_HAVE_SOFT_BLOCK_MODE) || \
+defined(PSA_HAVE_SOFT_BLOCK_AEAD)
 #define MBEDTLS_PSA_BUILTIN_KEY_TYPE_CAMELLIA 1
 #define MBEDTLS_CAMELLIA_C
 #endif /* PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA || PSA_HAVE_SOFT_BLOCK_MODE */
@@ -337,7 +337,7 @@ extern "C" {
 #define PSA_HAVE_SOFT_KEY_TYPE_DES 1
 #endif /* !MBEDTLS_PSA_ACCEL_KEY_TYPE_DES */
 #if defined(PSA_HAVE_SOFT_KEY_TYPE_DES) || \
-    defined(PSA_HAVE_SOFT_BLOCK_MODE)
+defined(PSA_HAVE_SOFT_BLOCK_MODE)
 #define MBEDTLS_PSA_BUILTIN_KEY_TYPE_DES 1
 #define MBEDTLS_DES_C
 #endif /*PSA_HAVE_SOFT_KEY_TYPE_DES || PSA_HAVE_SOFT_BLOCK_MODE */
@@ -354,9 +354,9 @@ extern "C" {
  * PSA_HAVE_SOFT_BLOCK_CIPHER, which can be used in any of these
  * situations. */
 #if defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_DES) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
+defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_DES) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
 #define PSA_HAVE_SOFT_BLOCK_CIPHER 1
 #endif
 
@@ -373,7 +373,7 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_CMAC)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CMAC) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_PSA_BUILTIN_ALG_CMAC 1
 #define MBEDTLS_CMAC_C
 #endif /* !MBEDTLS_PSA_ACCEL_ALG_CMAC */
@@ -381,7 +381,7 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_CTR)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CTR) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_PSA_BUILTIN_ALG_CTR 1
 #define MBEDTLS_CIPHER_MODE_CTR
 #endif
@@ -389,7 +389,7 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_CFB)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CFB) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_PSA_BUILTIN_ALG_CFB 1
 #define MBEDTLS_CIPHER_MODE_CFB
 #endif
@@ -397,20 +397,20 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_OFB)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_OFB) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_PSA_BUILTIN_ALG_OFB 1
 #define MBEDTLS_CIPHER_MODE_OFB
 #endif
 #endif /* PSA_WANT_ALG_OFB */
 
 #if defined(PSA_WANT_ALG_ECB_NO_PADDING) &&     \
-    !defined(MBEDTLS_PSA_ACCEL_ALG_ECB_NO_PADDING)
+!defined(MBEDTLS_PSA_ACCEL_ALG_ECB_NO_PADDING)
 #define MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING 1
 #endif
 
 #if defined(PSA_WANT_ALG_CBC_NO_PADDING)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_NO_PADDING) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_CIPHER_MODE_CBC
 #define MBEDTLS_PSA_BUILTIN_ALG_CBC_NO_PADDING 1
 #endif
@@ -418,7 +418,7 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_CBC_PKCS7)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CBC_PKCS7) || \
-    defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
+defined(PSA_HAVE_SOFT_BLOCK_CIPHER)
 #define MBEDTLS_CIPHER_MODE_CBC
 #define MBEDTLS_PSA_BUILTIN_ALG_CBC_PKCS7 1
 #define MBEDTLS_CIPHER_PADDING_PKCS7
@@ -427,9 +427,9 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_CCM)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_CCM) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
+defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
 #define MBEDTLS_PSA_BUILTIN_ALG_CCM 1
 #define MBEDTLS_PSA_BUILTIN_ALG_CCM_STAR_NO_TAG 1
 #define MBEDTLS_CCM_C
@@ -438,9 +438,9 @@ extern "C" {
 
 #if defined(PSA_WANT_ALG_GCM)
 #if !defined(MBEDTLS_PSA_ACCEL_ALG_GCM) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
-    defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
+defined(PSA_HAVE_SOFT_KEY_TYPE_AES) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_ARIA) || \
+defined(PSA_HAVE_SOFT_KEY_TYPE_CAMELLIA)
 #define MBEDTLS_PSA_BUILTIN_ALG_GCM 1
 #define MBEDTLS_GCM_C
 #endif
@@ -727,7 +727,7 @@ extern "C" {
 #endif
 
 #if defined(MBEDTLS_AES_C) || defined(MBEDTLS_DES_C) || \
-    defined(MBEDTLS_ARIA_C) || defined(MBEDTLS_CAMELLIA_C)
+defined(MBEDTLS_ARIA_C) || defined(MBEDTLS_CAMELLIA_C)
 #define MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING 1
 #define PSA_WANT_ALG_ECB_NO_PADDING 1
 #endif

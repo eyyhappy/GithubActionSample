@@ -123,11 +123,11 @@ extern const struct mbedtls_ssl_tls13_labels_struct mbedtls_ssl_tls13_labels;
 
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_hkdf_expand_label(
-                     psa_algorithm_t hash_alg,
-                     const unsigned char *secret, size_t secret_len,
-                     const unsigned char *label, size_t label_len,
-                     const unsigned char *ctx, size_t ctx_len,
-                     unsigned char *buf, size_t buf_len );
+    psa_algorithm_t hash_alg,
+    const unsigned char *secret, size_t secret_len,
+    const unsigned char *label, size_t label_len,
+    const unsigned char *ctx, size_t ctx_len,
+    unsigned char *buf, size_t buf_len );
 
 /**
  * \brief           This function is part of the TLS 1.3 key schedule.
@@ -162,11 +162,11 @@ int mbedtls_ssl_tls13_hkdf_expand_label(
 
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_make_traffic_keys(
-                     psa_algorithm_t hash_alg,
-                     const unsigned char *client_secret,
-                     const unsigned char *server_secret, size_t secret_len,
-                     size_t key_len, size_t iv_len,
-                     mbedtls_ssl_key_set *keys );
+    psa_algorithm_t hash_alg,
+    const unsigned char *client_secret,
+    const unsigned char *server_secret, size_t secret_len,
+    size_t key_len, size_t iv_len,
+    mbedtls_ssl_key_set *keys );
 
 /**
  * \brief The \c Derive-Secret function from the TLS 1.3 standard RFC 8446.
@@ -209,12 +209,12 @@ int mbedtls_ssl_tls13_make_traffic_keys(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_derive_secret(
-                   psa_algorithm_t hash_alg,
-                   const unsigned char *secret, size_t secret_len,
-                   const unsigned char *label, size_t label_len,
-                   const unsigned char *ctx, size_t ctx_len,
-                   int ctx_hashed,
-                   unsigned char *dstbuf, size_t dstbuf_len );
+    psa_algorithm_t hash_alg,
+    const unsigned char *secret, size_t secret_len,
+    const unsigned char *label, size_t label_len,
+    const unsigned char *ctx, size_t ctx_len,
+    int ctx_hashed,
+    unsigned char *dstbuf, size_t dstbuf_len );
 
 /**
  * \brief Derive TLS 1.3 early data key material from early secret.
@@ -260,10 +260,10 @@ int mbedtls_ssl_tls13_derive_secret(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_derive_early_secrets(
-          psa_algorithm_t hash_alg,
-          unsigned char const *early_secret,
-          unsigned char const *transcript, size_t transcript_len,
-          mbedtls_ssl_tls13_early_secrets *derived );
+    psa_algorithm_t hash_alg,
+    unsigned char const *early_secret,
+    unsigned char const *transcript, size_t transcript_len,
+    mbedtls_ssl_tls13_early_secrets *derived );
 
 /**
  * \brief Derive TLS 1.3 handshake key material from the handshake secret.
@@ -306,10 +306,10 @@ int mbedtls_ssl_tls13_derive_early_secrets(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_derive_handshake_secrets(
-          psa_algorithm_t hash_alg,
-          unsigned char const *handshake_secret,
-          unsigned char const *transcript, size_t transcript_len,
-          mbedtls_ssl_tls13_handshake_secrets *derived );
+    psa_algorithm_t hash_alg,
+    unsigned char const *handshake_secret,
+    unsigned char const *transcript, size_t transcript_len,
+    mbedtls_ssl_tls13_handshake_secrets *derived );
 
 /**
  * \brief Derive TLS 1.3 application key material from the master secret.
@@ -357,10 +357,10 @@ int mbedtls_ssl_tls13_derive_handshake_secrets(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_derive_application_secrets(
-          psa_algorithm_t hash_alg,
-          unsigned char const *master_secret,
-          unsigned char const *transcript, size_t transcript_len,
-          mbedtls_ssl_tls13_application_secrets *derived );
+    psa_algorithm_t hash_alg,
+    unsigned char const *master_secret,
+    unsigned char const *transcript, size_t transcript_len,
+    mbedtls_ssl_tls13_application_secrets *derived );
 
 /**
  * \brief Derive TLS 1.3 resumption master secret from the master secret.
@@ -388,10 +388,10 @@ int mbedtls_ssl_tls13_derive_application_secrets(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_derive_resumption_master_secret(
-          psa_algorithm_t hash_alg,
-          unsigned char const *application_secret,
-          unsigned char const *transcript, size_t transcript_len,
-          mbedtls_ssl_tls13_application_secrets *derived );
+    psa_algorithm_t hash_alg,
+    unsigned char const *application_secret,
+    unsigned char const *transcript, size_t transcript_len,
+    mbedtls_ssl_tls13_application_secrets *derived );
 
 /**
  * \brief Compute the next secret in the TLS 1.3 key schedule
@@ -462,10 +462,10 @@ int mbedtls_ssl_tls13_derive_resumption_master_secret(
 
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_evolve_secret(
-                   psa_algorithm_t hash_alg,
-                   const unsigned char *secret_old,
-                   const unsigned char *input, size_t input_len,
-                   unsigned char *secret_new );
+    psa_algorithm_t hash_alg,
+    const unsigned char *secret_old,
+    const unsigned char *input, size_t input_len,
+    unsigned char *secret_new );
 
 /**
  * \brief             Calculate a TLS 1.3 PSK binder.
@@ -492,11 +492,11 @@ int mbedtls_ssl_tls13_evolve_secret(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_create_psk_binder( mbedtls_ssl_context *ssl,
-                               const psa_algorithm_t hash_alg,
-                               unsigned char const *psk, size_t psk_len,
-                               int psk_type,
-                               unsigned char const *transcript,
-                               unsigned char *result );
+        const psa_algorithm_t hash_alg,
+        unsigned char const *psk, size_t psk_len,
+        int psk_type,
+        unsigned char const *transcript,
+        unsigned char *result );
 
 /**
  * \bref Setup an SSL transform structure representing the
@@ -527,10 +527,10 @@ int mbedtls_ssl_tls13_create_psk_binder( mbedtls_ssl_context *ssl,
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
-                                          int endpoint,
-                                          int ciphersuite,
-                                          mbedtls_ssl_key_set const *traffic_keys,
-                                          mbedtls_ssl_context *ssl );
+        int endpoint,
+        int ciphersuite,
+        mbedtls_ssl_key_set const *traffic_keys,
+        mbedtls_ssl_context *ssl );
 
 /*
  * TLS 1.3 key schedule evolutions
@@ -588,7 +588,7 @@ int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl );
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_generate_handshake_keys( mbedtls_ssl_context *ssl,
-                                               mbedtls_ssl_key_set *traffic_keys );
+        mbedtls_ssl_key_set *traffic_keys );
 
 /**
  * \brief Transition into application stage of TLS 1.3 key schedule.
@@ -663,10 +663,10 @@ int mbedtls_ssl_tls13_generate_resumption_master_secret(
  */
 MBEDTLS_CHECK_RETURN_CRITICAL
 int mbedtls_ssl_tls13_calculate_verify_data( mbedtls_ssl_context *ssl,
-                                             unsigned char *dst,
-                                             size_t dst_len,
-                                             size_t *actual_len,
-                                             int which );
+        unsigned char *dst,
+        size_t dst_len,
+        size_t *actual_len,
+        int which );
 
 /**
  * \brief Compute TLS 1.3 handshake transform

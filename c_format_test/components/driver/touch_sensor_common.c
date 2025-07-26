@@ -61,8 +61,8 @@ esp_err_t touch_pad_set_voltage(touch_high_volt_t refh, touch_low_volt_t refl, t
                 ESP_ERR_INVALID_ARG);
     TOUCH_CHECK(((atten < TOUCH_HVOLT_ATTEN_MAX) && (refh >= (int )TOUCH_HVOLT_ATTEN_KEEP)), "touch atten error",
                 ESP_ERR_INVALID_ARG);
-
-    const touch_hal_volt_t volt = {
+    const touch_hal_volt_t volt =
+    {
         .refh = refh,
         .refl = refl,
         .atten = atten,
@@ -70,7 +70,6 @@ esp_err_t touch_pad_set_voltage(touch_high_volt_t refh, touch_low_volt_t refl, t
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_voltage(&volt);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
@@ -83,7 +82,6 @@ esp_err_t touch_pad_get_voltage(touch_high_volt_t *refh, touch_low_volt_t *refl,
     *refh = volt.refh;
     *refl = volt.refl;
     *atten = volt.atten;
-
     return ESP_OK;
 }
 
@@ -92,29 +90,26 @@ esp_err_t touch_pad_set_cnt_mode(touch_pad_t touch_num, touch_cnt_slope_t slope,
     TOUCH_CHECK(touch_num < SOC_TOUCH_SENSOR_NUM, "Touch channel error", ESP_ERR_INVALID_ARG);
     TOUCH_CHECK(slope < TOUCH_PAD_SLOPE_MAX, "touch slope error", ESP_ERR_INVALID_ARG);
     TOUCH_CHECK(opt < TOUCH_PAD_TIE_OPT_MAX, "touch opt error", ESP_ERR_INVALID_ARG);
-
-    const touch_hal_meas_mode_t meas = {
+    const touch_hal_meas_mode_t meas =
+    {
         .slope = slope,
         .tie_opt = opt,
     };
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_meas_mode(touch_num, &meas);
     TOUCH_EXIT_CRITICAL();
-
     return ESP_OK;
 }
 
 esp_err_t touch_pad_get_cnt_mode(touch_pad_t touch_num, touch_cnt_slope_t *slope, touch_tie_opt_t *opt)
 {
     TOUCH_CHECK(touch_num < SOC_TOUCH_SENSOR_NUM, "Touch channel error", ESP_ERR_INVALID_ARG);
-
     touch_hal_meas_mode_t meas = {0};
     TOUCH_ENTER_CRITICAL();
     touch_hal_get_meas_mode(touch_num, &meas);
     TOUCH_EXIT_CRITICAL();
     *slope = meas.slope;
     *opt = meas.tie_opt;
-
     return ESP_OK;
 }
 
@@ -148,17 +143,19 @@ esp_err_t touch_pad_fsm_stop(void)
 esp_err_t touch_pad_set_fsm_mode(touch_fsm_mode_t mode)
 {
     TOUCH_CHECK((mode < TOUCH_FSM_MODE_MAX), "touch fsm mode error", ESP_ERR_INVALID_ARG);
-
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_fsm_mode(mode);
     TOUCH_EXIT_CRITICAL();
-#ifdef CONFIG_IDF_TARGET_ESP32
-    if (mode == TOUCH_FSM_MODE_TIMER) {
+    #ifdef CONFIG_IDF_TARGET_ESP32
+    if (mode == TOUCH_FSM_MODE_TIMER)
+    {
         touch_pad_fsm_start();
-    } else {
+    }
+    else
+    {
         touch_pad_fsm_stop();
     }
-#endif
+    #endif
     return ESP_OK;
 }
 

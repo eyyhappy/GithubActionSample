@@ -55,7 +55,8 @@ typedef void (*bg_ctrl_func_t)(void*);
 typedef struct lldesc_s lldesc_t;
 
 /// Attributes of an SPI bus
-typedef struct {
+typedef struct
+{
     spi_bus_config_t bus_cfg;   ///< Config used to initialize the bus
     uint32_t flags;             ///< Flags (attributes) of the bus
     int max_transfer_sz;        ///< Maximum length of bytes available to send
@@ -66,9 +67,9 @@ typedef struct {
     lldesc_t *dmadesc_tx;       ///< DMA descriptor array for TX
     lldesc_t *dmadesc_rx;       ///< DMA descriptor array for RX
     spi_bus_lock_handle_t lock;
-#ifdef CONFIG_PM_ENABLE
+    #ifdef CONFIG_PM_ENABLE
     esp_pm_lock_handle_t pm_lock;   ///< Power management lock
-#endif
+    #endif
 } spi_bus_attr_t;
 
 /// Destructor called when a bus is deinitialized.
@@ -444,13 +445,15 @@ esp_err_t spi_bus_register_destroy_func(spi_host_device_t host_id,
 #define DEV_NUM_MAX 6     ///< Number of devices supported by this lock
 
 /// Lock configuration struct
-typedef struct {
+typedef struct
+{
     int host_id;    ///< SPI host id
     int cs_num;     ///< Physical cs numbers of the host
 } spi_bus_lock_config_t;
 
 /// Child-lock configuration struct
-typedef struct {
+typedef struct
+{
     uint32_t flags; ///< flags for the lock, OR-ed of `SPI_BUS_LOCK_DEV_*` flags.
 #define SPI_BUS_LOCK_DEV_FLAG_CS_REQUIRED   BIT(0)  ///< The device needs a physical CS pin.
 } spi_bus_lock_dev_config_t;

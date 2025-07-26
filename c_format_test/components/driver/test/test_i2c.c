@@ -74,9 +74,9 @@
 #define LOWEST_LIMIT -10000
 
 static DRAM_ATTR i2c_dev_t *const I2C[SOC_I2C_NUM] = { &I2C0,
-#if SOC_I2C_NUM > 1
+                                                       #if SOC_I2C_NUM > 1
                                                        &I2C1,
-#endif
+                                                       #endif
                                                      };
 
 
@@ -617,11 +617,11 @@ TEST_CASE("test i2c_slave_write_buffer is not blocked when ticks_to_wait=0", "[i
 
 TEST_CASE("I2C general API test", "[i2c]")
 {
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+    #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
 #define I2C_TEST_TIME 0x3ff
-#else
+    #else
 #define I2C_TEST_TIME 0x1f
-#endif
+    #endif
     const int i2c_num = 0;
     i2c_config_t conf_master =
     {
@@ -676,15 +676,15 @@ static void uart_aut_baud_det_init(int rxd_io_num)
 //Calculate I2C scl freq
 static void i2c_scl_freq_cal(void)
 {
-#if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
+    #if CONFIG_IDF_TARGET_ESP32 || CONFIG_IDF_TARGET_ESP32S2
     const int i2c_source_clk_freq = 80000000;
     const float i2c_cource_clk_period = 0.0125;
     int expt_cnt = 542;
-#else
+    #else
     const int i2c_source_clk_freq = 18000000; // Clock sorce: RTC
     const float i2c_cource_clk_period = 0.056;
     int expt_cnt = 540;
-#endif
+    #endif
     int edg_cnt = uart_ll_get_rxd_edge_cnt(&UART1);
     int pospulse_cnt = uart_ll_get_pos_pulse_cnt(&UART1);
     int negpulse_cnt = uart_ll_get_neg_pulse_cnt(&UART1);

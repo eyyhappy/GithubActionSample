@@ -55,7 +55,8 @@ typedef int sdspi_dev_handle_t;
 /**
  * Extra configuration for SD SPI device.
  */
-typedef struct {
+typedef struct
+{
     spi_host_device_t host_id; ///< SPI host to use, SPIx_HOST (see spi_types.h).
     gpio_num_t gpio_cs;     ///< GPIO number of CS signal
     gpio_num_t gpio_cd;     ///< GPIO number of card detect signal

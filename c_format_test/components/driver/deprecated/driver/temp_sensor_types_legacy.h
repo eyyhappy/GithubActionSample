@@ -13,7 +13,8 @@
 extern "C" {
 #endif
 
-typedef enum {
+typedef enum
+{
     TSENS_DAC_L0 = 0, /*!< offset = -2, measure range: 50℃ ~ 125℃, error < 3℃. */
     TSENS_DAC_L1,     /*!< offset = -1, measure range: 20℃ ~ 100℃, error < 2℃. */
     TSENS_DAC_L2,     /*!< offset =  0, measure range:-10℃ ~  80℃, error < 1℃. */
@@ -27,7 +28,8 @@ typedef enum {
 /**
  * @brief Configuration for temperature sensor reading
  */
-typedef struct {
+typedef struct
+{
     temp_sensor_dac_offset_t dac_offset;    /*!< The temperature measurement range is configured with a built-in temperature offset DAC. */
     uint8_t clk_div;                        /*!< Default: 6 */
 } temp_sensor_config_t;

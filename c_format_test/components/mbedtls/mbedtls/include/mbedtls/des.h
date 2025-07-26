@@ -197,7 +197,7 @@ int mbedtls_des_setkey_dec( mbedtls_des_context *ctx, const unsigned char key[MB
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_set2key_enc( mbedtls_des3_context *ctx,
-                      const unsigned char key[MBEDTLS_DES_KEY_SIZE * 2] );
+                              const unsigned char key[MBEDTLS_DES_KEY_SIZE * 2] );
 
 /**
  * \brief          Triple-DES key schedule (112-bit, decryption)
@@ -209,7 +209,7 @@ int mbedtls_des3_set2key_enc( mbedtls_des3_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_set2key_dec( mbedtls_des3_context *ctx,
-                      const unsigned char key[MBEDTLS_DES_KEY_SIZE * 2] );
+                              const unsigned char key[MBEDTLS_DES_KEY_SIZE * 2] );
 
 /**
  * \brief          Triple-DES key schedule (168-bit, encryption)
@@ -221,7 +221,7 @@ int mbedtls_des3_set2key_dec( mbedtls_des3_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_set3key_enc( mbedtls_des3_context *ctx,
-                      const unsigned char key[MBEDTLS_DES_KEY_SIZE * 3] );
+                              const unsigned char key[MBEDTLS_DES_KEY_SIZE * 3] );
 
 /**
  * \brief          Triple-DES key schedule (168-bit, decryption)
@@ -233,7 +233,7 @@ int mbedtls_des3_set3key_enc( mbedtls_des3_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_set3key_dec( mbedtls_des3_context *ctx,
-                      const unsigned char key[MBEDTLS_DES_KEY_SIZE * 3] );
+                              const unsigned char key[MBEDTLS_DES_KEY_SIZE * 3] );
 
 /**
  * \brief          DES-ECB block encryption/decryption
@@ -250,8 +250,8 @@ int mbedtls_des3_set3key_dec( mbedtls_des3_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des_crypt_ecb( mbedtls_des_context *ctx,
-                    const unsigned char input[8],
-                    unsigned char output[8] );
+                           const unsigned char input[8],
+                           unsigned char output[8] );
 
 #if defined(MBEDTLS_CIPHER_MODE_CBC)
 /**
@@ -278,11 +278,11 @@ int mbedtls_des_crypt_ecb( mbedtls_des_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des_crypt_cbc( mbedtls_des_context *ctx,
-                    int mode,
-                    size_t length,
-                    unsigned char iv[8],
-                    const unsigned char *input,
-                    unsigned char *output );
+                           int mode,
+                           size_t length,
+                           unsigned char iv[8],
+                           const unsigned char *input,
+                           unsigned char *output );
 #endif /* MBEDTLS_CIPHER_MODE_CBC */
 
 /**
@@ -296,8 +296,8 @@ int mbedtls_des_crypt_cbc( mbedtls_des_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_crypt_ecb( mbedtls_des3_context *ctx,
-                     const unsigned char input[8],
-                     unsigned char output[8] );
+                            const unsigned char input[8],
+                            unsigned char output[8] );
 
 #if defined(MBEDTLS_CIPHER_MODE_CBC)
 /**
@@ -322,11 +322,11 @@ int mbedtls_des3_crypt_ecb( mbedtls_des3_context *ctx,
  */
 MBEDTLS_CHECK_RETURN_TYPICAL
 int mbedtls_des3_crypt_cbc( mbedtls_des3_context *ctx,
-                     int mode,
-                     size_t length,
-                     unsigned char iv[8],
-                     const unsigned char *input,
-                     unsigned char *output );
+                            int mode,
+                            size_t length,
+                            unsigned char iv[8],
+                            const unsigned char *input,
+                            unsigned char *output );
 #endif /* MBEDTLS_CIPHER_MODE_CBC */
 
 /**

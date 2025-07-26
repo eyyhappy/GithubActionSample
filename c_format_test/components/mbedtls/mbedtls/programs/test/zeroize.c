@@ -60,25 +60,21 @@ int main( int argc, char** argv )
     char *p = buf;
     char *end = p + BUFFER_LEN;
     int c;
-
     if( argc != 2 )
     {
         mbedtls_printf( "This program takes exactly 1 argument\n" );
         usage();
         mbedtls_exit( exit_code );
     }
-
     fp = fopen( argv[1], "r" );
     if( fp == NULL )
     {
         mbedtls_printf( "Could not open file '%s'\n", argv[1] );
         mbedtls_exit( exit_code );
     }
-
     while( ( c = fgetc( fp ) ) != EOF && p < end - 1 )
-        *p++ = (char)c;
+        * p++ = (char)c;
     *p = '\0';
-
     if( p - buf != 0 )
     {
         mbedtls_printf( "%s\n", buf );
@@ -86,9 +82,7 @@ int main( int argc, char** argv )
     }
     else
         mbedtls_printf( "The file is empty!\n" );
-
     fclose( fp );
     mbedtls_platform_zeroize( buf, sizeof( buf ) );
-
     mbedtls_exit( exit_code ); // GDB_BREAK_HERE -- don't remove this comment!
 }

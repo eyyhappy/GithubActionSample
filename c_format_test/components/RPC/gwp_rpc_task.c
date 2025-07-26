@@ -149,12 +149,12 @@ void test_secure_rpc_thread(void)
 ret_code_t secure_rpc_task(void)
 {
     ret_code_t ret_code = GWP_SUCCESS;
-#ifdef FREERTOS
+    #ifdef FREERTOS
     if (pdPASS != xTaskCreate(secure_rpc_thread, "RPC", 3436, NULL, 1, &pxRpcTask))   //5120
     {
         ret_code = GWP_ERROR_NO_MEM;
     }
-#endif
+    #endif
     return ret_code;
 }
 
@@ -316,12 +316,12 @@ void test_secure_rpc_thread(void)
 ret_code_t secure_rpc_task(void)
 {
     ret_code_t ret_code = GWP_SUCCESS;
-#ifdef FREERTOS
+    #ifdef FREERTOS
     if (pdPASS != xTaskCreate(secure_rpc_thread, "RPC", 3436, NULL, 1, &pxRpcTask))   //5120
     {
         ret_code = GWP_ERROR_NO_MEM;
     }
-#endif
+    #endif
     return ret_code;
 }
 

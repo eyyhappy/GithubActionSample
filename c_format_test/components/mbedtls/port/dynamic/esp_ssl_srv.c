@@ -20,11 +20,13 @@ static bool ssl_ciphersuite_uses_rsa_key_ex(mbedtls_ssl_context *ssl)
 {
     const mbedtls_ssl_ciphersuite_t *ciphersuite_info =
         ssl->MBEDTLS_PRIVATE(handshake)->ciphersuite_info;
-
     if (ciphersuite_info->MBEDTLS_PRIVATE(key_exchange) == MBEDTLS_KEY_EXCHANGE_RSA ||
-        ciphersuite_info->MBEDTLS_PRIVATE(key_exchange) == MBEDTLS_KEY_EXCHANGE_RSA_PSK) {
+        ciphersuite_info->MBEDTLS_PRIVATE(key_exchange) == MBEDTLS_KEY_EXCHANGE_RSA_PSK)
+    {
         return true;
-    } else {
+    }
+    else
+    {
         return false;
     }
 }
@@ -33,164 +35,179 @@ static bool ssl_ciphersuite_uses_rsa_key_ex(mbedtls_ssl_context *ssl)
 static int manage_resource(mbedtls_ssl_context *ssl, bool add)
 {
     int state = add ? ssl->MBEDTLS_PRIVATE(state) : ssl->MBEDTLS_PRIVATE(state) - 1;
-
-    if (ssl->MBEDTLS_PRIVATE(state) == MBEDTLS_SSL_HANDSHAKE_OVER || ssl->MBEDTLS_PRIVATE(handshake) == NULL) {
+    if (ssl->MBEDTLS_PRIVATE(state) == MBEDTLS_SSL_HANDSHAKE_OVER || ssl->MBEDTLS_PRIVATE(handshake) == NULL)
+    {
         return 0;
     }
-
-    if (!add) {
-        if (!ssl->MBEDTLS_PRIVATE(out_left)) {
+    if (!add)
+    {
+        if (!ssl->MBEDTLS_PRIVATE(out_left))
+        {
             CHECK_OK(esp_mbedtls_free_tx_buffer(ssl));
         }
     }
-
-    switch (state) {
+    switch (state)
+    {
         case MBEDTLS_SSL_HELLO_REQUEST:
             break;
         case MBEDTLS_SSL_CLIENT_HELLO:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
             }
             break;
-
-
         case MBEDTLS_SSL_SERVER_HELLO:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
         case MBEDTLS_SSL_SERVER_CERTIFICATE:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = 3;
                 mbedtls_ssl_key_cert *key_cert = ssl->MBEDTLS_PRIVATE(conf)->MBEDTLS_PRIVATE(key_cert);
-
-                while (key_cert && key_cert->cert) {
+                while (key_cert && key_cert->cert)
+                {
                     size_t num;
-
                     buffer_len += esp_mbedtls_get_crt_size(key_cert->cert, &num);
                     buffer_len += num * 3;
-
                     key_cert = key_cert->next;
                 }
-
                 buffer_len = MAX(buffer_len, MBEDTLS_SSL_OUT_BUFFER_LEN);
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
-            } else {
-#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+            }
+            else
+            {
+                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 /**
                  * Not free keycert->cert until MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
                  * For ssl server will use keycert->cert to parse client key exchange.
                  */
-                if (!ssl_ciphersuite_uses_rsa_key_ex(ssl)) {
+                if (!ssl_ciphersuite_uses_rsa_key_ex(ssl))
+                {
                     esp_mbedtls_free_keycert_cert(ssl);
                 }
-#endif
+                #endif
             }
             break;
         case MBEDTLS_SSL_SERVER_KEY_EXCHANGE:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
-            } else {
-#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+            }
+            else
+            {
+                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 esp_mbedtls_free_dhm(ssl);
                 /**
                  * Not free keycert->key and keycert until MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
                  * For ssl server will use keycert->key to parse client key exchange.
                  */
-                if (!ssl_ciphersuite_uses_rsa_key_ex(ssl)) {
+                if (!ssl_ciphersuite_uses_rsa_key_ex(ssl))
+                {
                     esp_mbedtls_free_keycert_key(ssl);
                     esp_mbedtls_free_keycert(ssl);
                 }
-#endif
+                #endif
             }
             break;
         case MBEDTLS_SSL_CERTIFICATE_REQUEST:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
         case MBEDTLS_SSL_SERVER_HELLO_DONE:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
-
-
         case MBEDTLS_SSL_CLIENT_CERTIFICATE:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
-
-#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
+                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
                 esp_mbedtls_free_cacert(ssl);
-#endif
+                #endif
             }
             break;
         case MBEDTLS_SSL_CLIENT_KEY_EXCHANGE:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
-
-#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 /**
                  * Free keycert after MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
                  * For ssl server will use keycert->cert and keycert->key to parse client key exchange.
                  */
-                if (ssl_ciphersuite_uses_rsa_key_ex(ssl)) {
+                if (ssl_ciphersuite_uses_rsa_key_ex(ssl))
+                {
                     esp_mbedtls_free_keycert_cert(ssl);
                     esp_mbedtls_free_keycert_key(ssl);
                     esp_mbedtls_free_keycert(ssl);
                 }
-#endif
+                #endif
             }
             break;
         case MBEDTLS_SSL_CERTIFICATE_VERIFY:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
             }
             break;
         case MBEDTLS_SSL_CLIENT_CHANGE_CIPHER_SPEC:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
             }
             break;
         case MBEDTLS_SSL_CLIENT_FINISHED:
-            if (add) {
+            if (add)
+            {
                 CHECK_OK(esp_mbedtls_add_rx_buffer(ssl));
-            } else {
+            }
+            else
+            {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
             }
             break;
-
-
         case MBEDTLS_SSL_SERVER_CHANGE_CIPHER_SPEC:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
         case MBEDTLS_SSL_SERVER_FINISHED:
-            if (add) {
+            if (add)
+            {
                 size_t buffer_len = MBEDTLS_SSL_OUT_BUFFER_LEN;
-
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
@@ -201,17 +218,13 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
         default:
             break;
     }
-
     return 0;
 }
 
 int __wrap_mbedtls_ssl_handshake_server_step(mbedtls_ssl_context *ssl)
 {
     CHECK_OK(manage_resource(ssl, true));
-
     CHECK_OK(__real_mbedtls_ssl_handshake_server_step(ssl));
-
     CHECK_OK(manage_resource(ssl, false));
-
     return 0;
 }

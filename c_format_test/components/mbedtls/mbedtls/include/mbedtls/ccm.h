@@ -177,10 +177,10 @@ void mbedtls_ccm_free( mbedtls_ccm_context *ctx );
  * \return          A CCM or cipher-specific error code on failure.
  */
 int mbedtls_ccm_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
-                         const unsigned char *iv, size_t iv_len,
-                         const unsigned char *ad, size_t ad_len,
-                         const unsigned char *input, unsigned char *output,
-                         unsigned char *tag, size_t tag_len );
+                                 const unsigned char *iv, size_t iv_len,
+                                 const unsigned char *ad, size_t ad_len,
+                                 const unsigned char *input, unsigned char *output,
+                                 unsigned char *tag, size_t tag_len );
 
 /**
  * \brief           This function encrypts a buffer using CCM*.
@@ -226,10 +226,10 @@ int mbedtls_ccm_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
  * \return          A CCM or cipher-specific error code on failure.
  */
 int mbedtls_ccm_star_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
-                         const unsigned char *iv, size_t iv_len,
-                         const unsigned char *ad, size_t ad_len,
-                         const unsigned char *input, unsigned char *output,
-                         unsigned char *tag, size_t tag_len );
+                                      const unsigned char *iv, size_t iv_len,
+                                      const unsigned char *ad, size_t ad_len,
+                                      const unsigned char *input, unsigned char *output,
+                                      unsigned char *tag, size_t tag_len );
 
 /**
  * \brief           This function performs a CCM authenticated decryption of a
@@ -263,10 +263,10 @@ int mbedtls_ccm_star_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
  * \return          A cipher-specific error code on calculation failure.
  */
 int mbedtls_ccm_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
-                      const unsigned char *iv, size_t iv_len,
-                      const unsigned char *ad, size_t ad_len,
-                      const unsigned char *input, unsigned char *output,
-                      const unsigned char *tag, size_t tag_len );
+                              const unsigned char *iv, size_t iv_len,
+                              const unsigned char *ad, size_t ad_len,
+                              const unsigned char *input, unsigned char *output,
+                              const unsigned char *tag, size_t tag_len );
 
 /**
  * \brief           This function performs a CCM* authenticated decryption of a
@@ -309,10 +309,10 @@ int mbedtls_ccm_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
  * \return          A cipher-specific error code on calculation failure.
  */
 int mbedtls_ccm_star_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
-                      const unsigned char *iv, size_t iv_len,
-                      const unsigned char *ad, size_t ad_len,
-                      const unsigned char *input, unsigned char *output,
-                      const unsigned char *tag, size_t tag_len );
+                                   const unsigned char *iv, size_t iv_len,
+                                   const unsigned char *ad, size_t ad_len,
+                                   const unsigned char *input, unsigned char *output,
+                                   const unsigned char *tag, size_t tag_len );
 
 /**
  * \brief           This function starts a CCM encryption or decryption

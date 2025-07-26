@@ -37,11 +37,9 @@ int mbedtls_test_asn1_skip_integer( unsigned char **p, const unsigned char *end,
     TEST_EQUAL( mbedtls_asn1_get_tag( p, end, &len,
                                       MBEDTLS_ASN1_INTEGER ),
                 0 );
-
     /* Check if the retrieved length doesn't extend the actual buffer's size.
      * It is assumed here, that end >= p, which validates casting to size_t. */
     TEST_ASSERT( len <= (size_t)( end - *p) );
-
     /* Tolerate a slight departure from DER encoding:
      * - 0 may be represented by an empty string or a 1-byte string.
      * - The sign bit may be used as a value bit. */
@@ -64,7 +62,7 @@ int mbedtls_test_asn1_skip_integer( unsigned char **p, const unsigned char *end,
     TEST_ASSERT( actual_bits >= min_bits );
     TEST_ASSERT( actual_bits <= max_bits );
     if( must_be_odd )
-        TEST_ASSERT( ( ( *p )[len-1] & 1 ) != 0 );
+        TEST_ASSERT( ( ( *p )[len - 1] & 1 ) != 0 );
     *p += len;
     return( 1 );
 exit:

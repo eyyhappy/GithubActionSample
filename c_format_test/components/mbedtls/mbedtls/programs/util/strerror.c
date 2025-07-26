@@ -51,13 +51,11 @@ int main( int argc, char *argv[] )
 {
     long int val;
     char *end = argv[1];
-
     if( argc != 2 )
     {
         mbedtls_printf( USAGE );
         mbedtls_exit( 0 );
     }
-
     val = strtol( argv[1], &end, 10 );
     if( *end != '\0' )
     {
@@ -70,14 +68,12 @@ int main( int argc, char *argv[] )
     }
     if( val > 0 )
         val = -val;
-
     if( val != 0 )
     {
         char error_buf[200];
         mbedtls_strerror( val, error_buf, 200 );
-        mbedtls_printf("Last error was: -0x%04x - %s\n\n", (unsigned int) -val, error_buf );
+        mbedtls_printf("Last error was: -0x%04x - %s\n\n", (unsigned int) - val, error_buf );
     }
-
     mbedtls_exit( val );
 }
 #endif /* MBEDTLS_ERROR_C */

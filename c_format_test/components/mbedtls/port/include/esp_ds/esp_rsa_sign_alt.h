@@ -23,7 +23,8 @@ extern "C" {
  */
 
 /* Context for encrypted private key data required for DS */
-typedef struct esp_ds_data_ctx {
+typedef struct esp_ds_data_ctx
+{
     esp_ds_data_t *esp_ds_data;
     uint8_t efuse_key_id; /* efuse block id in which DS_KEY is stored e.g. 0,1*/
     uint16_t rsa_length_bits; /* length of RSA private key in bits e.g. 2048 */

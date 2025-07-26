@@ -95,23 +95,19 @@ static psa_status_t psa_its_read_file( psa_storage_uid_t uid,
     char filename[PSA_ITS_STORAGE_FILENAME_LENGTH];
     psa_its_file_header_t header;
     size_t n;
-
     *p_stream = NULL;
     psa_its_fill_filename( uid, filename );
     *p_stream = fopen( filename, "rb" );
     if( *p_stream == NULL )
         return( PSA_ERROR_DOES_NOT_EXIST );
-
     /* Ensure no stdio buffering of secrets, as such buffers cannot be wiped. */
     mbedtls_setbuf( *p_stream, NULL );
-
     n = fread( &header, 1, sizeof( header ), *p_stream );
     if( n != sizeof( header ) )
         return( PSA_ERROR_DATA_CORRUPT );
     if( memcmp( header.magic, PSA_ITS_MAGIC_STRING,
                 PSA_ITS_MAGIC_LENGTH ) != 0 )
         return( PSA_ERROR_DATA_CORRUPT );
-
     p_info->size = ( header.size[0] |
                      header.size[1] << 8 |
                      header.size[2] << 16 |
@@ -144,29 +140,27 @@ psa_status_t psa_its_get( psa_storage_uid_t uid,
     FILE *stream = NULL;
     size_t n;
     struct psa_storage_info_t info;
-
     status = psa_its_read_file( uid, &info, &stream );
     if( status != PSA_SUCCESS )
         goto exit;
     status = PSA_ERROR_INVALID_ARGUMENT;
     if( data_offset + data_length < data_offset )
         goto exit;
-#if SIZE_MAX < 0xffffffff
+    #if SIZE_MAX < 0xffffffff
     if( data_offset + data_length > SIZE_MAX )
         goto exit;
-#endif
+    #endif
     if( data_offset + data_length > info.size )
         goto exit;
-
     status = PSA_ERROR_STORAGE_FAILURE;
-#if LONG_MAX < 0xffffffff
+    #if LONG_MAX < 0xffffffff
     while( data_offset > LONG_MAX )
     {
         if( fseek( stream, LONG_MAX, SEEK_CUR ) != 0 )
             goto exit;
         data_offset -= LONG_MAX;
     }
-#endif
+    #endif
     if( fseek( stream, data_offset, SEEK_CUR ) != 0 )
         goto exit;
     n = fread( p_data, 1, data_length, stream );
@@ -175,7 +169,6 @@ psa_status_t psa_its_get( psa_storage_uid_t uid,
     status = PSA_SUCCESS;
     if( p_data_length != NULL )
         *p_data_length = n;
-
 exit:
     if( stream != NULL )
         fclose( stream );
@@ -191,26 +184,20 @@ psa_status_t psa_its_set( psa_storage_uid_t uid,
     {
         return( PSA_ERROR_INVALID_HANDLE );
     }
-
     psa_status_t status = PSA_ERROR_STORAGE_FAILURE;
     char filename[PSA_ITS_STORAGE_FILENAME_LENGTH];
     FILE *stream = NULL;
     psa_its_file_header_t header;
     size_t n;
-
     memcpy( header.magic, PSA_ITS_MAGIC_STRING, PSA_ITS_MAGIC_LENGTH );
     MBEDTLS_PUT_UINT32_LE( data_length, header.size, 0 );
     MBEDTLS_PUT_UINT32_LE( create_flags, header.flags, 0 );
-
     psa_its_fill_filename( uid, filename );
     stream = fopen( PSA_ITS_STORAGE_TEMP, "wb" );
-
     if( stream == NULL )
         goto exit;
-
     /* Ensure no stdio buffering of secrets, as such buffers cannot be wiped. */
     mbedtls_setbuf( stream, NULL );
-
     status = PSA_ERROR_INSUFFICIENT_STORAGE;
     n = fwrite( &header, 1, sizeof( header ), stream );
     if( n != sizeof( header ) )
@@ -222,7 +209,6 @@ psa_status_t psa_its_set( psa_storage_uid_t uid,
             goto exit;
     }
     status = PSA_SUCCESS;
-
 exit:
     if( stream != NULL )
     {

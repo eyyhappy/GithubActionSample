@@ -49,7 +49,8 @@ inline static esp_sha_type sha_type(const mbedtls_sha512_context *ctx)
 static void mbedtls_zeroize( void *v, size_t n )
 {
     volatile unsigned char *p = v;
-    while ( n-- ) {
+    while ( n-- )
+    {
         *p++ = 0;
     }
 }
@@ -92,11 +93,12 @@ void mbedtls_sha512_init( mbedtls_sha512_context *ctx )
 
 void mbedtls_sha512_free( mbedtls_sha512_context *ctx )
 {
-    if ( ctx == NULL ) {
+    if ( ctx == NULL )
+    {
         return;
     }
-
-    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         esp_sha_unlock_engine(sha_type(ctx));
     }
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha512_context ) );
@@ -106,8 +108,8 @@ void mbedtls_sha512_clone( mbedtls_sha512_context *dst,
                            const mbedtls_sha512_context *src )
 {
     *dst = *src;
-
-    if (src->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (src->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         /* Copy hardware digest state out to cloned state,
            which will be a software digest.
 
@@ -128,8 +130,8 @@ int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
 {
     ctx->total[0] = 0;
     ctx->total[1] = 0;
-
-    if ( is384 == 0 ) {
+    if ( is384 == 0 )
+    {
         /* SHA-512 */
         ctx->state[0] = UL64(0x6A09E667F3BCC908);
         ctx->state[1] = UL64(0xBB67AE8584CAA73B);
@@ -139,7 +141,9 @@ int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
         ctx->state[5] = UL64(0x9B05688C2B3E6C1F);
         ctx->state[6] = UL64(0x1F83D9ABFB41BD6B);
         ctx->state[7] = UL64(0x5BE0CD19137E2179);
-    } else {
+    }
+    else
+    {
         /* SHA-384 */
         ctx->state[0] = UL64(0xCBBB9D5DC1059ED8);
         ctx->state[1] = UL64(0x629A292A367CD507);
@@ -150,20 +154,20 @@ int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
         ctx->state[6] = UL64(0xDB0C2E0D64F98FA7);
         ctx->state[7] = UL64(0x47B5481DBEFA4FA4);
     }
-
     ctx->is384 = is384;
-    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         esp_sha_unlock_engine(sha_type(ctx));
     }
     ctx->mode = ESP_MBEDTLS_SHA512_UNUSED;
-
     return 0;
 }
 
 /*
  * Round constants
  */
-static const uint64_t K[80] = {
+static const uint64_t K[80] =
+{
     UL64(0x428A2F98D728AE22),  UL64(0x7137449123EF65CD),
     UL64(0xB5C0FBCFEC4D3B2F),  UL64(0xE9B5DBA58189DBBC),
     UL64(0x3956C25BF348B538),  UL64(0x59F111F1B605D019),
@@ -211,23 +215,27 @@ static void mbedtls_sha512_software_process( mbedtls_sha512_context *ctx, const 
 int mbedtls_internal_sha512_process( mbedtls_sha512_context *ctx, const unsigned char data[128] )
 {
     bool first_block = false;
-
-    if (ctx->mode == ESP_MBEDTLS_SHA512_UNUSED) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_UNUSED)
+    {
         /* try to use hardware for this digest */
-        if (esp_sha_try_lock_engine(sha_type(ctx))) {
+        if (esp_sha_try_lock_engine(sha_type(ctx)))
+        {
             ctx->mode = ESP_MBEDTLS_SHA512_HARDWARE;
             first_block = true;
-        } else {
+        }
+        else
+        {
             ctx->mode = ESP_MBEDTLS_SHA512_SOFTWARE;
         }
     }
-
-    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         esp_sha_block(sha_type(ctx), data, first_block);
-    } else {
+    }
+    else
+    {
         mbedtls_sha512_software_process(ctx, data);
     }
-
     return 0;
 }
 
@@ -236,35 +244,29 @@ static void mbedtls_sha512_software_process( mbedtls_sha512_context *ctx, const 
     int i;
     uint64_t temp1, temp2, W[80];
     uint64_t A, B, C, D, E, F, G, H;
-
 #define  SHR(x,n) (x >> n)
 #define ROTR(x,n) (SHR(x,n) | (x << (64 - n)))
-
 #define S0(x) (ROTR(x, 1) ^ ROTR(x, 8) ^  SHR(x, 7))
 #define S1(x) (ROTR(x,19) ^ ROTR(x,61) ^  SHR(x, 6))
-
 #define S2(x) (ROTR(x,28) ^ ROTR(x,34) ^ ROTR(x,39))
 #define S3(x) (ROTR(x,14) ^ ROTR(x,18) ^ ROTR(x,41))
-
 #define F0(x,y,z) ((x & y) | (z & (x | y)))
 #define F1(x,y,z) (z ^ (x & (y ^ z)))
-
 #define P(a,b,c,d,e,f,g,h,x,K)                  \
 {                                               \
     temp1 = h + S3(e) + F1(e,f,g) + K + x;      \
     temp2 = S2(a) + F0(a,b,c);                  \
     d += temp1; h = temp1 + temp2;              \
 }
-
-    for ( i = 0; i < 16; i++ ) {
+    for ( i = 0; i < 16; i++ )
+    {
         GET_UINT64_BE( W[i], data, i << 3 );
     }
-
-    for ( ; i < 80; i++ ) {
+    for ( ; i < 80; i++ )
+    {
         W[i] = S1(W[i -  2]) + W[i -  7] +
                S0(W[i - 15]) + W[i - 16];
     }
-
     A = ctx->state[0];
     B = ctx->state[1];
     C = ctx->state[2];
@@ -274,18 +276,26 @@ static void mbedtls_sha512_software_process( mbedtls_sha512_context *ctx, const 
     G = ctx->state[6];
     H = ctx->state[7];
     i = 0;
-
-    do {
-        P( A, B, C, D, E, F, G, H, W[i], K[i] ); i++;
-        P( H, A, B, C, D, E, F, G, W[i], K[i] ); i++;
-        P( G, H, A, B, C, D, E, F, W[i], K[i] ); i++;
-        P( F, G, H, A, B, C, D, E, W[i], K[i] ); i++;
-        P( E, F, G, H, A, B, C, D, W[i], K[i] ); i++;
-        P( D, E, F, G, H, A, B, C, W[i], K[i] ); i++;
-        P( C, D, E, F, G, H, A, B, W[i], K[i] ); i++;
-        P( B, C, D, E, F, G, H, A, W[i], K[i] ); i++;
-    } while ( i < 80 );
-
+    do
+    {
+        P( A, B, C, D, E, F, G, H, W[i], K[i] );
+        i++;
+        P( H, A, B, C, D, E, F, G, W[i], K[i] );
+        i++;
+        P( G, H, A, B, C, D, E, F, W[i], K[i] );
+        i++;
+        P( F, G, H, A, B, C, D, E, W[i], K[i] );
+        i++;
+        P( E, F, G, H, A, B, C, D, W[i], K[i] );
+        i++;
+        P( D, E, F, G, H, A, B, C, W[i], K[i] );
+        i++;
+        P( C, D, E, F, G, H, A, B, W[i], K[i] );
+        i++;
+        P( B, C, D, E, F, G, H, A, W[i], K[i] );
+        i++;
+    }
+    while ( i < 80 );
     ctx->state[0] += A;
     ctx->state[1] += B;
     ctx->state[2] += C;
@@ -300,53 +310,51 @@ static void mbedtls_sha512_software_process( mbedtls_sha512_context *ctx, const 
  * SHA-512 process buffer
  */
 int mbedtls_sha512_update( mbedtls_sha512_context *ctx, const unsigned char *input,
-                               size_t ilen )
+                           size_t ilen )
 {
     int ret;
     size_t fill;
     unsigned int left;
-
-    if ( ilen == 0 ) {
+    if ( ilen == 0 )
+    {
         return 0;
     }
-
     left = (unsigned int) (ctx->total[0] & 0x7F);
     fill = 128 - left;
-
     ctx->total[0] += (uint64_t) ilen;
-
-    if ( ctx->total[0] < (uint64_t) ilen ) {
+    if ( ctx->total[0] < (uint64_t) ilen )
+    {
         ctx->total[1]++;
     }
-
-    if ( left && ilen >= fill ) {
+    if ( left && ilen >= fill )
+    {
         memcpy( (void *) (ctx->buffer + left), input, fill );
-        if ( ( ret = mbedtls_internal_sha512_process( ctx, ctx->buffer ) ) != 0 ) {
+        if ( ( ret = mbedtls_internal_sha512_process( ctx, ctx->buffer ) ) != 0 )
+        {
             return ret;
         }
-
         input += fill;
         ilen  -= fill;
         left = 0;
     }
-
-    while ( ilen >= 128 ) {
-        if ( ( ret = mbedtls_internal_sha512_process( ctx, input ) ) != 0 ) {
+    while ( ilen >= 128 )
+    {
+        if ( ( ret = mbedtls_internal_sha512_process( ctx, input ) ) != 0 )
+        {
             return ret;
         }
-
         input += 128;
         ilen  -= 128;
     }
-
-    if ( ilen > 0 ) {
+    if ( ilen > 0 )
+    {
         memcpy( (void *) (ctx->buffer + left), input, ilen );
     }
-
     return 0;
 }
 
-static const unsigned char sha512_padding[128] = {
+static const unsigned char sha512_padding[128] =
+{
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -366,48 +374,43 @@ int mbedtls_sha512_finish( mbedtls_sha512_context *ctx, unsigned char *output )
     size_t last, padn;
     uint64_t high, low;
     unsigned char msglen[16];
-
     high = ( ctx->total[0] >> 61 )
            | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
-
     PUT_UINT64_BE( high, msglen, 0 );
     PUT_UINT64_BE( low,  msglen, 8 );
-
     last = (size_t)( ctx->total[0] & 0x7F );
     padn = ( last < 112 ) ? ( 112 - last ) : ( 240 - last );
-
-    if ( ( ret = mbedtls_sha512_update( ctx, sha512_padding, padn ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha512_update( ctx, sha512_padding, padn ) ) != 0 )
+    {
         goto out;
     }
-
-    if ( ( ret = mbedtls_sha512_update( ctx, msglen, 16 ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha512_update( ctx, msglen, 16 ) ) != 0 )
+    {
         goto out;
     }
-
     /* if state is in hardware, read it out */
-    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         esp_sha_read_digest_state(sha_type(ctx), ctx->state);
     }
-
     PUT_UINT64_BE( ctx->state[0], output,  0 );
     PUT_UINT64_BE( ctx->state[1], output,  8 );
     PUT_UINT64_BE( ctx->state[2], output, 16 );
     PUT_UINT64_BE( ctx->state[3], output, 24 );
     PUT_UINT64_BE( ctx->state[4], output, 32 );
     PUT_UINT64_BE( ctx->state[5], output, 40 );
-
-    if ( ctx->is384 == 0 ) {
+    if ( ctx->is384 == 0 )
+    {
         PUT_UINT64_BE( ctx->state[6], output, 48 );
         PUT_UINT64_BE( ctx->state[7], output, 56 );
     }
-
 out:
-    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE) {
+    if (ctx->mode == ESP_MBEDTLS_SHA512_HARDWARE)
+    {
         esp_sha_unlock_engine(sha_type(ctx));
         ctx->mode = ESP_MBEDTLS_SHA512_SOFTWARE;
     }
-
     return ret;
 }
 

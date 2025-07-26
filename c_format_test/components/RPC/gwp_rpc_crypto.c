@@ -28,7 +28,7 @@ ret_code_t update_rpc_session_key()
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55
     };
     uint8_t const add_info_ssion[] = "GWP_RPC_SESSION";
-#ifdef CONFIG_GWP_ECCHIP_SUPPORT
+    #ifdef CONFIG_GWP_ECCHIP_SUPPORT
     //Read root key
     atecc608_rw_enc_params_t rw_params;
     ATCA_STATUS status = ATCA_SUCCESS;
@@ -43,11 +43,11 @@ ret_code_t update_rpc_session_key()
     {
         //break;
     }
-#else
+    #else
 //    _gwp_storage_read(GWP_DEV_INFO_ADDR + SECUREBOOT_KROOT_OFFSET, root_key, 32);
-#endif
+    #endif
     memset(rpc_session_key, 0, sizeof(rpc_session_key));
-#if defined(NRF52840_XXAA)
+    #if defined(NRF52840_XXAA)
     err_code = nrf_crypto_hkdf_calculate(NULL,
                                          &g_nrf_crypto_hmac_sha256_info,
                                          rpc_session_key,                          // Output key
@@ -59,7 +59,7 @@ ret_code_t update_rpc_session_key()
                                          &add_info_ssion[0],                     // Additional info
                                          sizeof(add_info_ssion) - 1,                                   // Additional info size
                                          GWP_CRYPTO_HKDF_EXTRACT_AND_EXPAND);   // Mode
-#elif defined(STM32WB55xx)
+    #elif defined(STM32WB55xx)
     err_code = gwp_hkdf_calculate(
                    rpc_session_key,                          // Output key
                    root_key,                                // Input key
@@ -69,9 +69,9 @@ ret_code_t update_rpc_session_key()
                    &add_info_ssion[0],                     // Additional info
                    sizeof(add_info_ssion) - 1,                                   // Additional info size
                );   // Mode
-#else
+    #else
 #error "Architecture not set."
-#endif
+    #endif
     /*for(uint8_t i=0;i<4;i++)
        GWP_LOG_INFO("salt_key = %02x ",salt_key[i]);
       NRF_LOG_FLUSH();
@@ -102,7 +102,7 @@ ret_code_t init_rpc_session_key(void)
     size_t Session_key_size = 32;
     uint8_t root_key[32] = {0};
     uint8_t const add_info_ssion[] = "GWP_RPC_INIT";
-#ifdef CONFIG_GWP_ECCHIP_SUPPORT
+    #ifdef CONFIG_GWP_ECCHIP_SUPPORT
     //Read root key
     atecc608_rw_enc_params_t rw_params;
     ATCA_STATUS status = ATCA_SUCCESS;
@@ -117,10 +117,10 @@ ret_code_t init_rpc_session_key(void)
     {
         //break; gwp_firmware_t
     }
-#else
+    #else
     _gwp_storage_read(GWP_DEV_INFO_ADDR + SECUREBOOT_KROOT_OFFSET, root_key, 32);
-#endif
-#if defined(NRF52840_XXAA)
+    #endif
+    #if defined(NRF52840_XXAA)
     err_code = nrf_crypto_hkdf_calculate(NULL,
                                          &g_nrf_crypto_hmac_sha256_info,
                                          rpc_session_key,                          // Output key
@@ -132,10 +132,10 @@ ret_code_t init_rpc_session_key(void)
                                          &add_info_ssion[0],                     // Additional info
                                          sizeof(add_info_ssion) - 1,                                   // Additional info size
                                          GWP_CRYPTO_HKDF_EXTRACT_AND_EXPAND);   // Mode
-#elif defined(STM32WB55xx)
-#else
+    #elif defined(STM32WB55xx)
+    #else
 #error "Architecture not set."
-#endif
+    #endif
     return err_code;
 }
 
@@ -209,7 +209,7 @@ ret_code_t update_rpc_session_key()
         0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55
     };
     uint8_t const add_info_ssion[] = "GWP_RPC_SESSION";
-#ifdef CONFIG_GWP_ECCHIP_SUPPORT
+    #ifdef CONFIG_GWP_ECCHIP_SUPPORT
     //Read root key
     atecc608_rw_enc_params_t rw_params;
     ATCA_STATUS status = ATCA_SUCCESS;
@@ -224,12 +224,12 @@ ret_code_t update_rpc_session_key()
     {
         //break;
     }
-#else
+    #else
 //    memset(root_key, 0, sizeof(root_key));
     // _gwp_storage_read(GWP_DEV_INFO_ADDR + SECUREBOOT_KROOT_OFFSET, root_key, 32);
-#endif
+    #endif
     memset(rpc_session_key, 0, sizeof(rpc_session_key));
-#if defined(NRF52840_XXAA)
+    #if defined(NRF52840_XXAA)
     err_code = nrf_crypto_hkdf_calculate(NULL,
                                          &g_nrf_crypto_hmac_sha256_info,
                                          rpc_session_key,                          // Output key
@@ -241,7 +241,7 @@ ret_code_t update_rpc_session_key()
                                          &add_info_ssion[0],                     // Additional info
                                          sizeof(add_info_ssion) - 1,                                   // Additional info size
                                          GWP_CRYPTO_HKDF_EXTRACT_AND_EXPAND);   // Mode
-#elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
+    #elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
     err_code =  gwpFunctions.hkdfCalculate(  rpc_session_key,                          // Output key
                 (uint8_t const *)&root_key,                                // Input key
                 sizeof(root_key),                        // Input key size
@@ -252,9 +252,9 @@ ret_code_t update_rpc_session_key()
                                           );
     print_hex(rpc_session_key, sizeof(rpc_session_key), "rpc_session_key");
     print_hex(salt_key_all, sizeof(salt_key_all), "salt_key_all");
-#else
+    #else
 #error "Architecture not set."
-#endif
+    #endif
     /*for(uint8_t i=0;i<4;i++)
        GWP_LOG_INFO("salt_key = %02x ",salt_key[i]);
       NRF_LOG_FLUSH();
@@ -287,7 +287,7 @@ ret_code_t init_rpc_session_key(void)
                             0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55
                            };
     uint8_t const add_info_ssion[] = "GWP_RPC_INIT";
-#ifdef CONFIG_GWP_ECCHIP_SUPPORT
+    #ifdef CONFIG_GWP_ECCHIP_SUPPORT
     //Read root key
     atecc608_rw_enc_params_t rw_params;
     ATCA_STATUS status = ATCA_SUCCESS;
@@ -302,11 +302,11 @@ ret_code_t init_rpc_session_key(void)
     {
         //break; gwp_firmware_t
     }
-#else
+    #else
     // _gwp_storage_read(GWP_DEV_INFO_ADDR + SECUREBOOT_KROOT_OFFSET, root_key, 32);
     //todo read rootkey
-#endif
-#if defined(NRF52840_XXAA)
+    #endif
+    #if defined(NRF52840_XXAA)
     err_code = nrf_crypto_hkdf_calculate(NULL,
                                          &g_nrf_crypto_hmac_sha256_info,
                                          rpc_session_key,                          // Output key
@@ -318,7 +318,7 @@ ret_code_t init_rpc_session_key(void)
                                          &add_info_ssion[0],                     // Additional info
                                          sizeof(add_info_ssion) - 1,                                   // Additional info size
                                          GWP_CRYPTO_HKDF_EXTRACT_AND_EXPAND);   // Mode
-#elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
+    #elif defined(STM32WB55xx) || defined(CONFIG_IDF_TARGET_ESP32S3)
 //    gwpFunctions.rngVectorGenerate
     err_code = gwpFunctions.hkdfCalculate(  rpc_session_key,                         // Output key
                                             (const uint8_t *)root_key,                                // Input key
@@ -328,9 +328,9 @@ ret_code_t init_rpc_session_key(void)
                                             (uint8_t *)&add_info_ssion[0],                     // Additional info
                                             sizeof(add_info_ssion) - 1                                 // Additional info size
                                          );
-#else
+    #else
 #error "Architecture not set."
-#endif
+    #endif
     return err_code;
 }
 

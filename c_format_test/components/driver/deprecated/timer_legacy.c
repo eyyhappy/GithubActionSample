@@ -34,14 +34,16 @@ static const char *TIMER_TAG = "timer_group";
 #define TIMER_ENTER_CRITICAL(mux)      portENTER_CRITICAL_SAFE(mux);
 #define TIMER_EXIT_CRITICAL(mux)       portEXIT_CRITICAL_SAFE(mux);
 
-typedef struct {
+typedef struct
+{
     timer_isr_t fn;  /*!< isr function */
     void *args;      /*!< isr function args */
     timer_isr_handle_t timer_isr_handle;  /*!< interrupt handle */
     timer_group_t isr_timer_group;        /*!< timer group of interrupt triggered */
 } timer_isr_func_t;
 
-typedef struct {
+typedef struct
+{
     timer_hal_context_t hal;
     timer_isr_func_t timer_isr_fun;
     timer_src_clk_t clk_src;
@@ -77,30 +79,31 @@ esp_err_t timer_get_counter_time_sec(timer_group_t group_num, timer_idx_t timer_
     uint64_t timer_val = timer_ll_get_counter_value(p_timer_obj[group_num][timer_num]->hal.dev, timer_num);
     uint32_t div = p_timer_obj[group_num][timer_num]->divider;
     // [clk_tree] TODO: replace the following switch table by clk_tree API
-    switch (p_timer_obj[group_num][timer_num]->clk_src) {
-#if SOC_TIMER_GROUP_SUPPORT_APB
-    case TIMER_SRC_CLK_APB:
-        *time = (double)timer_val * div / esp_clk_apb_freq();
-        break;
-#endif
-#if SOC_TIMER_GROUP_SUPPORT_XTAL
-    case TIMER_SRC_CLK_XTAL:
-        *time = (double)timer_val * div / esp_clk_xtal_freq();
-        break;
-#endif
-#if SOC_TIMER_GROUP_SUPPORT_AHB
-    case TIMER_SRC_CLK_AHB:
-        *time = (double)timer_val * div / (48 * 1000 * 1000);
-        break;
-#endif
-#if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
-    case TIMER_SRC_CLK_PLL_F40M:
-        *time = (double)timer_val * div / (40 * 1000 * 1000);
-        break;
-#endif
-    default:
-        ESP_RETURN_ON_FALSE(false, ESP_ERR_INVALID_ARG, TIMER_TAG, "invalid clock source");
-        break;
+    switch (p_timer_obj[group_num][timer_num]->clk_src)
+    {
+            #if SOC_TIMER_GROUP_SUPPORT_APB
+        case TIMER_SRC_CLK_APB:
+            *time = (double)timer_val * div / esp_clk_apb_freq();
+            break;
+            #endif
+            #if SOC_TIMER_GROUP_SUPPORT_XTAL
+        case TIMER_SRC_CLK_XTAL:
+            *time = (double)timer_val * div / esp_clk_xtal_freq();
+            break;
+            #endif
+            #if SOC_TIMER_GROUP_SUPPORT_AHB
+        case TIMER_SRC_CLK_AHB:
+            *time = (double)timer_val * div / (48 * 1000 * 1000);
+            break;
+            #endif
+            #if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
+        case TIMER_SRC_CLK_PLL_F40M:
+            *time = (double)timer_val * div / (40 * 1000 * 1000);
+            break;
+            #endif
+        default:
+            ESP_RETURN_ON_FALSE(false, ESP_ERR_INVALID_ARG, TIMER_TAG, "invalid clock source");
+            break;
     }
     return ESP_OK;
 }
@@ -218,7 +221,8 @@ static void IRAM_ATTR timer_isr_default(void *arg)
 {
     bool is_awoken = false;
     timer_obj_t *timer_obj = (timer_obj_t *)arg;
-    if (timer_obj == NULL || timer_obj->timer_isr_fun.fn == NULL) {
+    if (timer_obj == NULL || timer_obj->timer_isr_fun.fn == NULL)
+    {
         return;
     }
     uint32_t timer_id = timer_obj->hal.timer_id;
@@ -226,7 +230,8 @@ static void IRAM_ATTR timer_isr_default(void *arg)
     TIMER_ENTER_CRITICAL(&timer_spinlock[timer_obj->timer_isr_fun.isr_timer_group]);
     uint32_t intr_status = timer_ll_get_intr_status(hal->dev);
     uint64_t old_alarm_value = timer_obj->alarm_value;
-    if (intr_status & TIMER_LL_EVENT_ALARM(timer_id)) {
+    if (intr_status & TIMER_LL_EVENT_ALARM(timer_id))
+    {
         // Clear interrupt status
         timer_ll_clear_intr_status(hal->dev, TIMER_LL_EVENT_ALARM(timer_id));
         // call user registered callback
@@ -237,8 +242,8 @@ static void IRAM_ATTR timer_isr_default(void *arg)
         timer_ll_enable_alarm(hal->dev, timer_id, reenable_alarm);
     }
     TIMER_EXIT_CRITICAL(&timer_spinlock[timer_obj->timer_isr_fun.isr_timer_group]);
-
-    if (is_awoken) {
+    if (is_awoken)
+    {
         portYIELD_FROM_ISR();
     }
 }
@@ -285,7 +290,6 @@ esp_err_t timer_isr_callback_add(timer_group_t group_num, timer_idx_t timer_num,
     ESP_RETURN_ON_FALSE(timer_num < TIMER_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NUM_ERROR);
     ESP_RETURN_ON_FALSE(p_timer_obj[group_num][timer_num] != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NEVER_INIT_ERROR);
     esp_err_t ret = ESP_OK;
-
     timer_disable_intr(group_num, timer_num);
     p_timer_obj[group_num][timer_num]->timer_isr_fun.fn = isr_handler;
     p_timer_obj[group_num][timer_num]->timer_isr_fun.args = args;
@@ -294,7 +298,6 @@ esp_err_t timer_isr_callback_add(timer_group_t group_num, timer_idx_t timer_num,
                              intr_alloc_flags, &(p_timer_obj[group_num][timer_num]->timer_isr_fun.timer_isr_handle));
     ESP_RETURN_ON_ERROR(ret, TIMER_TAG, "register interrupt service failed");
     timer_enable_intr(group_num, timer_num);
-
     return ret;
 }
 
@@ -303,12 +306,10 @@ esp_err_t timer_isr_callback_remove(timer_group_t group_num, timer_idx_t timer_n
     ESP_RETURN_ON_FALSE(group_num < TIMER_GROUP_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_GROUP_NUM_ERROR);
     ESP_RETURN_ON_FALSE(timer_num < TIMER_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NUM_ERROR);
     ESP_RETURN_ON_FALSE(p_timer_obj[group_num][timer_num] != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NEVER_INIT_ERROR);
-
     timer_disable_intr(group_num, timer_num);
     p_timer_obj[group_num][timer_num]->timer_isr_fun.fn = NULL;
     p_timer_obj[group_num][timer_num]->timer_isr_fun.args = NULL;
     esp_intr_free(p_timer_obj[group_num][timer_num]->timer_isr_fun.timer_isr_handle);
-
     return ESP_OK;
 }
 
@@ -319,14 +320,13 @@ esp_err_t timer_init(timer_group_t group_num, timer_idx_t timer_num, const timer
     ESP_RETURN_ON_FALSE(config != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_PARAM_ADDR_ERROR);
     ESP_RETURN_ON_FALSE(config->divider > 1 && config->divider < 65537, ESP_ERR_INVALID_ARG, TIMER_TAG,  DIVIDER_RANGE_ERROR);
     ESP_RETURN_ON_FALSE(config->intr_type < TIMER_INTR_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG, "only support Level Interrupt");
-    if (p_timer_obj[group_num][timer_num] == NULL) {
+    if (p_timer_obj[group_num][timer_num] == NULL)
+    {
         p_timer_obj[group_num][timer_num] = (timer_obj_t *) heap_caps_calloc(1, sizeof(timer_obj_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         ESP_RETURN_ON_FALSE(p_timer_obj[group_num][timer_num], ESP_ERR_NO_MEM, TIMER_TAG, "no mem for timer object");
     }
     timer_hal_context_t *hal = &p_timer_obj[group_num][timer_num]->hal;
-
     periph_module_enable(timer_group_periph_signals.groups[group_num].module);
-
     TIMER_ENTER_CRITICAL(&timer_spinlock[group_num]);
     timer_hal_init(hal, group_num, timer_num);
     timer_hal_set_counter_value(hal, 0);
@@ -347,7 +347,6 @@ esp_err_t timer_init(timer_group_t group_num, timer_idx_t timer_num, const timer
     p_timer_obj[group_num][timer_num]->counter_en = config->counter_en;
     p_timer_obj[group_num][timer_num]->divider = config->divider;
     TIMER_EXIT_CRITICAL(&timer_spinlock[group_num]);
-
     return ESP_OK;
 }
 
@@ -357,16 +356,13 @@ esp_err_t timer_deinit(timer_group_t group_num, timer_idx_t timer_num)
     ESP_RETURN_ON_FALSE(timer_num < TIMER_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NUM_ERROR);
     ESP_RETURN_ON_FALSE(p_timer_obj[group_num][timer_num] != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NEVER_INIT_ERROR);
     timer_hal_context_t *hal = &p_timer_obj[group_num][timer_num]->hal;
-
     TIMER_ENTER_CRITICAL(&timer_spinlock[group_num]);
     timer_ll_enable_counter(hal->dev, timer_num, false);
     timer_ll_enable_intr(hal->dev, TIMER_LL_EVENT_ALARM(timer_num), false);
     timer_ll_clear_intr_status(hal->dev, TIMER_LL_EVENT_ALARM(timer_num));
     TIMER_EXIT_CRITICAL(&timer_spinlock[group_num]);
-
     free(p_timer_obj[group_num][timer_num]);
     p_timer_obj[group_num][timer_num] = NULL;
-
     return ESP_OK;
 }
 
@@ -376,7 +372,6 @@ esp_err_t timer_get_config(timer_group_t group_num, timer_idx_t timer_num, timer
     ESP_RETURN_ON_FALSE(timer_num < TIMER_MAX, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NUM_ERROR);
     ESP_RETURN_ON_FALSE(config != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_PARAM_ADDR_ERROR);
     ESP_RETURN_ON_FALSE(p_timer_obj[group_num][timer_num] != NULL, ESP_ERR_INVALID_ARG, TIMER_TAG,  TIMER_NEVER_INIT_ERROR);
-
     TIMER_ENTER_CRITICAL(&timer_spinlock[group_num]);
     config->alarm_en = p_timer_obj[group_num][timer_num]->alarm_en;
     config->auto_reload = p_timer_obj[group_num][timer_num]->auto_reload_en;
@@ -411,14 +406,16 @@ esp_err_t timer_group_intr_disable(timer_group_t group_num, timer_intr_t disable
 uint32_t IRAM_ATTR timer_group_get_intr_status_in_isr(timer_group_t group_num)
 {
     uint32_t intr_status = 0;
-    if (p_timer_obj[group_num][TIMER_0] != NULL) {
+    if (p_timer_obj[group_num][TIMER_0] != NULL)
+    {
         intr_status = timer_ll_get_intr_status(TIMER_LL_GET_HW(group_num)) & TIMER_LL_EVENT_ALARM(0);
     }
-#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
-    else if (p_timer_obj[group_num][TIMER_1] != NULL) {
+    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+    else if (p_timer_obj[group_num][TIMER_1] != NULL)
+    {
         intr_status = timer_ll_get_intr_status(TIMER_LL_GET_HW(group_num)) & TIMER_LL_EVENT_ALARM(1);
     }
-#endif
+    #endif
     return intr_status;
 }
 
@@ -464,7 +461,8 @@ static void check_legacy_timer_driver_conflict(void)
     // This function was declared as weak here. gptimer driver has one implementation.
     // So if gptimer driver is not linked in, then `gptimer_new_timer()` should be NULL at runtime.
     extern __attribute__((weak)) esp_err_t gptimer_new_timer(const void *config, void **ret_timer);
-    if ((void *)gptimer_new_timer != NULL) {
+    if ((void *)gptimer_new_timer != NULL)
+    {
         ESP_EARLY_LOGE(TIMER_TAG, "CONFLICT! driver_ng is not allowed to be used with the legacy driver");
         abort();
     }

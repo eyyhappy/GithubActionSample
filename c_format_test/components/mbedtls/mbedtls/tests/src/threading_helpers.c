@@ -99,7 +99,7 @@ static mutex_functions_t mutex_functions;
 static int live_mutexes;
 
 static void mbedtls_test_mutex_usage_error( mbedtls_threading_mutex_t *mutex,
-                                            const char *msg )
+        const char *msg )
 {
     (void) mutex;
     if( mbedtls_test_info.mutex_usage_error == NULL )

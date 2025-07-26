@@ -35,7 +35,8 @@ extern "C" {
 /**
  * Decoded values from SD card Card Specific Data register
  */
-typedef struct {
+typedef struct
+{
     int csd_ver;                /*!< CSD structure format */
     int mmc_ver;                /*!< MMC version (for CID format) */
     int capacity;               /*!< total number of sectors */
@@ -48,7 +49,8 @@ typedef struct {
 /**
  * Decoded values from SD card Card IDentification register
  */
-typedef struct {
+typedef struct
+{
     int mfg_id;     /*!< manufacturer identification number */
     int oem_id;     /*!< OEM/product identification number */
     char name[8];   /*!< product name (MMC v1 has the longest) */
@@ -61,7 +63,8 @@ typedef struct {
  * Decoded values from SD Configuration Register
  * Note: When new member is added, update reserved bits accordingly
  */
-typedef struct {
+typedef struct
+{
     uint32_t sd_spec: 4;            /*!< SD Physical layer specification version, reported by card */
     uint32_t erase_mem_state: 1;    /*!< data state on card after erase whether 0 or 1 (card vendor dependent) */
     uint32_t bus_width: 4;          /*!< bus widths supported by card: BIT(0) — 1-bit bus, BIT(2) — 4-bit bus */
@@ -73,7 +76,8 @@ typedef struct {
  * Decoded values from SD Status Register
  * Note: When new member is added, update reserved bits accordingly
  */
-typedef struct {
+typedef struct
+{
     uint32_t alloc_unit_kb: 16;     /*!< Allocation unit of the card, in multiples of kB (1024 bytes) */
     uint32_t erase_size_au: 16;     /*!< Erase size for the purpose of timeout calculation, in multiples of allocation unit */
     uint32_t cur_bus_width: 2;      /*!< SD current bus width */
@@ -87,7 +91,8 @@ typedef struct {
 /**
  * Decoded values of Extended Card Specific Data
  */
-typedef struct {
+typedef struct
+{
     uint8_t rev;                /*!< Extended CSD Revision */
     uint8_t power_class;        /*!< Power class used by the card */
     uint8_t erase_mem_state;    /*!< data state on card after erase whether 0 or 1 (card vendor dependent) */
@@ -102,22 +107,24 @@ typedef uint32_t sdmmc_response_t[4];
 /**
  * SD SWITCH_FUNC response buffer
  */
-typedef struct {
+typedef struct
+{
     uint32_t data[512 / 8 / sizeof(uint32_t)];  /*!< response data */
 } sdmmc_switch_func_rsp_t;
 
 /**
  * SD/MMC command information
  */
-typedef struct {
-        uint32_t opcode;            /*!< SD or MMC command index */
-        uint32_t arg;               /*!< SD/MMC command argument */
-        sdmmc_response_t response;  /*!< response buffer */
-        void* data;                 /*!< buffer to send or read into */
-        size_t datalen;             /*!< length of data buffer */
-        size_t blklen;              /*!< block length */
-        int flags;                  /*!< see below */
-/** @cond */
+typedef struct
+{
+    uint32_t opcode;            /*!< SD or MMC command index */
+    uint32_t arg;               /*!< SD/MMC command argument */
+    sdmmc_response_t response;  /*!< response buffer */
+    void* data;                 /*!< buffer to send or read into */
+    size_t datalen;             /*!< length of data buffer */
+    size_t blklen;              /*!< block length */
+    int flags;                  /*!< see below */
+    /** @cond */
 #define SCF_ITSDONE      0x0001     /*!< command is complete */
 #define SCF_CMD(flags)   ((flags) & 0x00f0)
 #define SCF_CMD_AC       0x0000
@@ -130,7 +137,7 @@ typedef struct {
 #define SCF_RSP_CRC      0x0400
 #define SCF_RSP_IDX      0x0800
 #define SCF_RSP_PRESENT  0x1000
-/* response types */
+    /* response types */
 #define SCF_RSP_R0       0 /*!< none */
 #define SCF_RSP_R1       (SCF_RSP_PRESENT|SCF_RSP_CRC|SCF_RSP_IDX)
 #define SCF_RSP_R1B      (SCF_RSP_PRESENT|SCF_RSP_CRC|SCF_RSP_IDX|SCF_RSP_BSY)
@@ -141,11 +148,11 @@ typedef struct {
 #define SCF_RSP_R5B      (SCF_RSP_PRESENT|SCF_RSP_CRC|SCF_RSP_IDX|SCF_RSP_BSY)
 #define SCF_RSP_R6       (SCF_RSP_PRESENT|SCF_RSP_CRC|SCF_RSP_IDX)
 #define SCF_RSP_R7       (SCF_RSP_PRESENT|SCF_RSP_CRC|SCF_RSP_IDX)
-/* special flags */
+    /* special flags */
 #define SCF_WAIT_BUSY    0x2000     /*!< Wait for completion of card busy signal before returning */
-/** @endcond */
-        esp_err_t error;            /*!< error returned from transfer */
-        uint32_t timeout_ms;        /*!< response timeout, in milliseconds */
+    /** @endcond */
+    esp_err_t error;            /*!< error returned from transfer */
+    uint32_t timeout_ms;        /*!< response timeout, in milliseconds */
 } sdmmc_command_t;
 
 /**
@@ -154,7 +161,8 @@ typedef struct {
  * This structure defines properties of SD/MMC host and functions
  * of SD/MMC host which can be used by upper layers.
  */
-typedef struct {
+typedef struct
+{
     uint32_t flags;             /*!< flags defining host properties */
 #define SDMMC_HOST_FLAG_1BIT    BIT(0)      /*!< host supports 1-line SD and MMC protocol */
 #define SDMMC_HOST_FLAG_4BIT    BIT(1)      /*!< host supports 4-line SD and MMC protocol */
@@ -176,7 +184,8 @@ typedef struct {
     esp_err_t (*set_bus_ddr_mode)(int slot, bool ddr_enable); /*!< host function to set DDR mode */
     esp_err_t (*set_card_clk)(int slot, uint32_t freq_khz); /*!< host function to set card clock frequency */
     esp_err_t (*do_transaction)(int slot, sdmmc_command_t* cmdinfo);    /*!< host function to do a transaction */
-    union {
+    union
+    {
         esp_err_t (*deinit)(void);  /*!< host function to deinitialize the driver */
         esp_err_t (*deinit_p)(int slot);  /*!< host function to deinitialize the driver, called with the `slot` */
     };
@@ -188,10 +197,12 @@ typedef struct {
 /**
  * SD/MMC card information structure
  */
-typedef struct {
+typedef struct
+{
     sdmmc_host_t host;          /*!< Host with which the card is associated */
     uint32_t ocr;               /*!< OCR (Operation Conditions Register) value */
-    union {
+    union
+    {
         sdmmc_cid_t cid;            /*!< decoded CID (Card IDentification) register value */
         sdmmc_response_t raw_cid;   /*!< raw CID of MMC card to be decoded
                                          after the CSD is fetched in the data transfer mode*/
@@ -230,7 +241,8 @@ typedef struct {
  *  fully accessible to the host dependent on device.
  *
  */
-typedef enum {
+typedef enum
+{
     SDMMC_ERASE_ARG = 0,      /*!< Erase operation on SD, Trim operation on MMC */
     SDMMC_DISCARD_ARG = 1,    /*!< Discard operation for SD/MMC */
 } sdmmc_erase_arg_t;

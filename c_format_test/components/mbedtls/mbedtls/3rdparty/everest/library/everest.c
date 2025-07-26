@@ -73,8 +73,8 @@ int mbedtls_everest_get_params( mbedtls_ecdh_context_everest *ctx,
 {
     mbedtls_x25519_context *x25519_ctx = &ctx->ctx;
     mbedtls_x25519_ecdh_side s = side == MBEDTLS_EVEREST_ECDH_OURS ?
-                                            MBEDTLS_X25519_ECDH_OURS :
-                                            MBEDTLS_X25519_ECDH_THEIRS;
+                                 MBEDTLS_X25519_ECDH_OURS :
+                                 MBEDTLS_X25519_ECDH_THEIRS;
     return mbedtls_x25519_get_params( x25519_ctx, key, s );
 }
 

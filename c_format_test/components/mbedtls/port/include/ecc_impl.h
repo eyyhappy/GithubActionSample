@@ -21,7 +21,8 @@ extern "C" {
 
    Note this is opposite to most byte string formats used to represent keys, which are often big endian
 */
-typedef struct {
+typedef struct
+{
     uint8_t x[P256_LEN]; /* Little endian order */
     uint8_t y[P256_LEN]; /* Little endian order */
     unsigned len;        /* P192_LEN or P256_LEN */

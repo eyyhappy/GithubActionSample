@@ -23,7 +23,8 @@ typedef struct rmt_encoder_t rmt_encoder_t;
 /**
  * @brief RMT encoding state
  */
-typedef enum {
+typedef enum
+{
     RMT_ENCODING_COMPLETE = (1 << 0), /*!< The encoding session is finished, the caller can continue with subsequent encoding */
     RMT_ENCODING_MEM_FULL = (1 << 1), /*!< The encoding artifact memory is full, the caller should return from current encoding session */
 } rmt_encode_state_t;
@@ -31,7 +32,8 @@ typedef enum {
 /**
  * @brief Interface of RMT encoder
  */
-struct rmt_encoder_t {
+struct rmt_encoder_t
+{
     /**
      * @brief Encode the user data into RMT symbols and write into RMT memory
      *
@@ -71,10 +73,12 @@ struct rmt_encoder_t {
 /**
  * @brief Bytes encoder configuration
  */
-typedef struct {
+typedef struct
+{
     rmt_symbol_word_t bit0; /*!< How to represent BIT0 in RMT symbol */
     rmt_symbol_word_t bit1; /*!< How to represent BIT1 in RMT symbol */
-    struct {
+    struct
+    {
         uint32_t msb_first: 1; /*!< Whether to encode MSB bit first */
     } flags;                   /*!< Encoder config flag */
 } rmt_bytes_encoder_config_t;
@@ -82,7 +86,8 @@ typedef struct {
 /**
  * @brief Copy encoder configuration
  */
-typedef struct {
+typedef struct
+{
 } rmt_copy_encoder_config_t;
 
 /**

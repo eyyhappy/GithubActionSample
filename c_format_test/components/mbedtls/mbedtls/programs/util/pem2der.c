@@ -75,15 +75,12 @@ int convert_pem_to_der( const unsigned char *input, size_t ilen,
     int ret;
     const unsigned char *s1, *s2, *end = input + ilen;
     size_t len = 0;
-
     s1 = (unsigned char *) strstr( (const char *) input, "-----BEGIN" );
     if( s1 == NULL )
         return( -1 );
-
     s2 = (unsigned char *) strstr( (const char *) input, "-----END" );
     if( s2 == NULL )
         return( -1 );
-
     s1 += 10;
     while( s1 < end && *s1 != '-' )
         s1++;
@@ -91,25 +88,19 @@ int convert_pem_to_der( const unsigned char *input, size_t ilen,
         s1++;
     if( *s1 == '\r' ) s1++;
     if( *s1 == '\n' ) s1++;
-
     if( s2 <= s1 || s2 > end )
         return( -1 );
-
     ret = mbedtls_base64_decode( NULL, 0, &len, (const unsigned char *) s1, s2 - s1 );
     if( ret == MBEDTLS_ERR_BASE64_INVALID_CHARACTER )
         return( ret );
-
     if( len > *olen )
         return( -1 );
-
     if( ( ret = mbedtls_base64_decode( output, len, &len, (const unsigned char *) s1,
-                               s2 - s1 ) ) != 0 )
+                                       s2 - s1 ) ) != 0 )
     {
         return( ret );
     }
-
     *olen = len;
-
     return( 0 );
 }
 
@@ -120,10 +111,8 @@ static int load_file( const char *path, unsigned char **buf, size_t *n )
 {
     FILE *f;
     long size;
-
     if( ( f = fopen( path, "rb" ) ) == NULL )
         return( -1 );
-
     fseek( f, 0, SEEK_END );
     if( ( size = ftell( f ) ) == -1 )
     {
@@ -131,16 +120,13 @@ static int load_file( const char *path, unsigned char **buf, size_t *n )
         return( -1 );
     }
     fseek( f, 0, SEEK_SET );
-
     *n = (size_t) size;
-
     if( *n + 1 == 0 ||
         ( *buf = mbedtls_calloc( 1, *n + 1 ) ) == NULL )
     {
         fclose( f );
         return( -1 );
     }
-
     if( fread( *buf, 1, *n, f ) != *n )
     {
         fclose( f );
@@ -148,11 +134,8 @@ static int load_file( const char *path, unsigned char **buf, size_t *n )
         *buf = NULL;
         return( -1 );
     }
-
     fclose( f );
-
     (*buf)[*n] = '\0';
-
     return( 0 );
 }
 
@@ -162,16 +145,13 @@ static int load_file( const char *path, unsigned char **buf, size_t *n )
 static int write_file( const char *path, unsigned char *buf, size_t n )
 {
     FILE *f;
-
     if( ( f = fopen( path, "wb" ) ) == NULL )
         return( -1 );
-
     if( fwrite( buf, 1, n, f ) != n )
     {
         fclose( f );
         return( -1 );
     }
-
     fclose( f );
     return( 0 );
 }
@@ -186,31 +166,25 @@ int main( int argc, char *argv[] )
     size_t pem_size, der_size = sizeof(der_buffer);
     int i;
     char *p, *q;
-
     /*
      * Set to sane values
      */
     memset( buf, 0, sizeof(buf) );
     memset( der_buffer, 0, sizeof(der_buffer) );
-
     if( argc == 0 )
     {
     usage:
         mbedtls_printf( USAGE );
         goto exit;
     }
-
     opt.filename            = DFL_FILENAME;
     opt.output_file         = DFL_OUTPUT_FILENAME;
-
     for( i = 1; i < argc; i++ )
     {
-
         p = argv[i];
         if( ( q = strchr( p, '=' ) ) == NULL )
             goto usage;
         *q++ = '\0';
-
         if( strcmp( p, "filename" ) == 0 )
             opt.filename = q;
         else if( strcmp( p, "output_file" ) == 0 )
@@ -218,67 +192,53 @@ int main( int argc, char *argv[] )
         else
             goto usage;
     }
-
     /*
      * 1.1. Load the PEM file
      */
     mbedtls_printf( "\n  . Loading the PEM file ..." );
     fflush( stdout );
-
     ret = load_file( opt.filename, &pem_buffer, &pem_size );
-
     if( ret != 0 )
     {
-#ifdef MBEDTLS_ERROR_C
+        #ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-#endif
+        #endif
         mbedtls_printf( " failed\n  !  load_file returned %d - %s\n\n", ret, buf );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 1.2. Convert from PEM to DER
      */
     mbedtls_printf( "  . Converting from PEM to DER ..." );
     fflush( stdout );
-
     if( ( ret = convert_pem_to_der( pem_buffer, pem_size, der_buffer, &der_size ) ) != 0 )
     {
-#ifdef MBEDTLS_ERROR_C
+        #ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-#endif
+        #endif
         mbedtls_printf( " failed\n  !  convert_pem_to_der %d - %s\n\n", ret, buf );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     /*
      * 1.3. Write the DER file
      */
     mbedtls_printf( "  . Writing the DER file ..." );
     fflush( stdout );
-
     ret = write_file( opt.output_file, der_buffer, der_size );
-
     if( ret != 0 )
     {
-#ifdef MBEDTLS_ERROR_C
+        #ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-#endif
+        #endif
         mbedtls_printf( " failed\n  !  write_file returned %d - %s\n\n", ret, buf );
         goto exit;
     }
-
     mbedtls_printf( " ok\n" );
-
     exit_code = MBEDTLS_EXIT_SUCCESS;
-
 exit:
     free( pem_buffer );
-
     mbedtls_exit( exit_code );
 }
 #endif /* MBEDTLS_BASE64_C && MBEDTLS_FS_IO */

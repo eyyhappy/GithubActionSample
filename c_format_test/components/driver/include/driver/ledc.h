@@ -36,7 +36,8 @@ extern "C" {
 /**
  * @brief Configuration parameters of LEDC channel for ledc_channel_config function
  */
-typedef struct {
+typedef struct
+{
     int gpio_num;                   /*!< the LEDC output gpio_num, if you want to use gpio16, gpio_num = 16 */
     ledc_mode_t speed_mode;         /*!< LEDC speed speed_mode, high-speed mode or low-speed mode */
     ledc_channel_t channel;         /*!< LEDC channel (0 - 7) */
@@ -44,7 +45,8 @@ typedef struct {
     ledc_timer_t timer_sel;         /*!< Select the timer source of channel (0 - 3) */
     uint32_t duty;                  /*!< LEDC channel duty, the range of duty setting is [0, (2**duty_resolution)] */
     int hpoint;                     /*!< LEDC channel hpoint value, the max value is 0xfffff */
-    struct {
+    struct
+    {
         unsigned int output_invert: 1;/*!< Enable (1) or disable (0) gpio output invert */
     } flags;                        /*!< LEDC flags */
 
@@ -53,7 +55,8 @@ typedef struct {
 /**
  * @brief Configuration parameters of LEDC Timer timer for ledc_timer_config function
  */
-typedef struct {
+typedef struct
+{
     ledc_mode_t speed_mode;                /*!< LEDC speed speed_mode, high-speed mode or low-speed mode */
     ledc_timer_bit_t duty_resolution;      /*!< LEDC channel duty resolution */
     ledc_timer_t  timer_num;               /*!< The timer source of channel (0 - 3) */
@@ -72,14 +75,16 @@ typedef intr_handle_t ledc_isr_handle_t;
 /**
  * @brief LEDC callback event type
  */
-typedef enum {
+typedef enum
+{
     LEDC_FADE_END_EVT                   /**< LEDC fade end event */
 } ledc_cb_event_t;
 
 /**
  * @brief LEDC callback parameter
  */
-typedef struct {
+typedef struct
+{
     ledc_cb_event_t event;              /**< Event name */
     uint32_t speed_mode;                /**< Speed mode of the LEDC channel group */
     uint32_t channel;                   /**< LEDC channel (0 - LEDC_CHANNEL_MAX-1) */
@@ -98,7 +103,8 @@ typedef bool (*ledc_cb_t)(const ledc_cb_param_t *param, void *user_arg);
  * @brief Group of supported LEDC callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     ledc_cb_t fade_cb;                  /**< LEDC fade_end callback function */
 } ledc_cbs_t;
 

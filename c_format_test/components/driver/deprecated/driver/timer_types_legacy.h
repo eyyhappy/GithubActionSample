@@ -19,36 +19,39 @@ extern "C" {
 /**
  * @brief Timer-Group ID
  */
-typedef enum {
+typedef enum
+{
     TIMER_GROUP_0 = 0, /*!< Hw timer group 0 */
-#if SOC_TIMER_GROUPS > 1
+    #if SOC_TIMER_GROUPS > 1
     TIMER_GROUP_1 = 1, /*!< Hw timer group 1 */
-#endif
+    #endif
     TIMER_GROUP_MAX    /*!< Maximum number of Hw timer groups */
 } timer_group_t;
 
 /**
  * @brief Timer ID
  */
-typedef enum {
+typedef enum
+{
     TIMER_0 = 0, /*!< Select timer0 of GROUPx*/
-#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
     TIMER_1 = 1, /*!< Select timer1 of GROUPx*/
-#endif
+    #endif
     TIMER_MAX,
 } timer_idx_t;
 
 /**
  * @brief Interrupt types of the timer.
  */
-typedef enum {
+typedef enum
+{
     TIMER_INTR_T0 = 1 << 0,  /*!< interrupt of timer 0 */
-#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
     TIMER_INTR_T1 = 1 << 1,  /*!< interrupt of timer 1 */
     TIMER_INTR_WDT = 1 << 2, /*!< interrupt of watchdog */
-#else
+    #else
     TIMER_INTR_WDT = 1 << 1, /*!< interrupt of watchdog */
-#endif
+    #endif
     TIMER_INTR_NONE = 0
 } timer_intr_t;
 FLAG_ATTR(timer_intr_t)
@@ -56,7 +59,8 @@ FLAG_ATTR(timer_intr_t)
 /**
  * @brief Timer count direction
  */
-typedef enum {
+typedef enum
+{
     TIMER_COUNT_DOWN = GPTIMER_COUNT_DOWN, /*!< Descending Count from cnt.high|cnt.low*/
     TIMER_COUNT_UP = GPTIMER_COUNT_UP,     /*!< Ascending Count from Zero*/
     TIMER_COUNT_MAX                        /*!< Maximum number of timer count directions */
@@ -65,7 +69,8 @@ typedef enum {
 /**
  * @brief Timer start/stop command
  */
-typedef enum {
+typedef enum
+{
     TIMER_PAUSE, /*!< Pause timer counter*/
     TIMER_START, /*!< Start timer counter*/
 } timer_start_t;
@@ -73,7 +78,8 @@ typedef enum {
 /**
  * @brief Timer alarm command
  */
-typedef enum {
+typedef enum
+{
     TIMER_ALARM_DIS = 0, /*!< Disable timer alarm*/
     TIMER_ALARM_EN = 1,  /*!< Enable timer alarm*/
     TIMER_ALARM_MAX
@@ -82,7 +88,8 @@ typedef enum {
 /**
  * @brief Timer interrupt type
  */
-typedef enum {
+typedef enum
+{
     TIMER_INTR_LEVEL = 0, /*!< Interrupt mode: level mode*/
     TIMER_INTR_MAX
 } timer_intr_mode_t;
@@ -90,7 +97,8 @@ typedef enum {
 /**
  * @brief Timer autoreload command
  */
-typedef enum {
+typedef enum
+{
     TIMER_AUTORELOAD_DIS = 0, /*!< Disable auto-reload: hardware will not load counter value after an alarm event*/
     TIMER_AUTORELOAD_EN = 1,  /*!< Enable auto-reload: hardware will load counter value after an alarm event*/
     TIMER_AUTORELOAD_MAX,
@@ -123,7 +131,8 @@ typedef intr_handle_t timer_isr_handle_t;
 /**
  * @brief Timer configurations
  */
-typedef struct {
+typedef struct
+{
     timer_alarm_t alarm_en;         /*!< Timer alarm enable */
     timer_start_t counter_en;       /*!< Counter enable */
     timer_intr_mode_t intr_type;    /*!< Interrupt mode */

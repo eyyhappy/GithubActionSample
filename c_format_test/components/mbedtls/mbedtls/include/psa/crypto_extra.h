@@ -497,9 +497,9 @@ psa_status_t mbedtls_psa_inject_entropy(const uint8_t *seed,
  * \retval #PSA_ERROR_INSUFFICIENT_MEMORY
  */
 psa_status_t psa_set_key_domain_parameters(psa_key_attributes_t *attributes,
-                                           psa_key_type_t type,
-                                           const uint8_t *data,
-                                           size_t data_length);
+        psa_key_type_t type,
+        const uint8_t *data,
+        size_t data_length);
 
 /**
  * \brief Get domain parameters for a key.
@@ -588,7 +588,7 @@ psa_status_t psa_get_key_domain_parameters(
  * \return              \c 0 on failure (\p grpid is not recognized).
  */
 static inline psa_ecc_family_t mbedtls_ecc_group_to_psa( mbedtls_ecp_group_id grpid,
-                                                        size_t *bits )
+        size_t *bits )
 {
     switch( grpid )
     {
@@ -657,8 +657,8 @@ static inline psa_ecc_family_t mbedtls_ecc_group_to_psa( mbedtls_ecp_group_id gr
  *                      correct for \p curve.
  */
 mbedtls_ecp_group_id mbedtls_ecc_group_of_psa( psa_ecc_family_t curve,
-                                               size_t bits,
-                                               int bits_is_sloppy );
+        size_t bits,
+        int bits_is_sloppy );
 #endif /* MBEDTLS_ECP_C */
 
 /**@}*/
@@ -1171,7 +1171,7 @@ static psa_pake_cipher_suite_t psa_pake_cipher_suite_init( void );
  * \return The PAKE algorithm stored in the cipher suite structure.
  */
 static psa_algorithm_t psa_pake_cs_get_algorithm(
-                           const psa_pake_cipher_suite_t *cipher_suite );
+    const psa_pake_cipher_suite_t *cipher_suite );
 
 /** Declare the PAKE algorithm for the cipher suite.
  *
@@ -1195,7 +1195,7 @@ static void psa_pake_cs_set_algorithm( psa_pake_cipher_suite_t *cipher_suite,
  * \return The primitive stored in the cipher suite structure.
  */
 static psa_pake_primitive_t psa_pake_cs_get_primitive(
-                           const psa_pake_cipher_suite_t *cipher_suite );
+    const psa_pake_cipher_suite_t *cipher_suite );
 
 /** Declare the primitive for a PAKE cipher suite.
  *
@@ -1216,7 +1216,7 @@ static void psa_pake_cs_set_primitive( psa_pake_cipher_suite_t *cipher_suite,
  * \return The PAKE family stored in the cipher suite structure.
  */
 static psa_pake_family_t psa_pake_cs_get_family(
-                           const psa_pake_cipher_suite_t *cipher_suite );
+    const psa_pake_cipher_suite_t *cipher_suite );
 
 /** Retrieve the PAKE primitive bit-size from a PAKE cipher suite.
  *
@@ -1225,7 +1225,7 @@ static psa_pake_family_t psa_pake_cs_get_family(
  * \return The PAKE primitive bit-size stored in the cipher suite structure.
  */
 static uint16_t psa_pake_cs_get_bits(
-                           const psa_pake_cipher_suite_t *cipher_suite );
+    const psa_pake_cipher_suite_t *cipher_suite );
 
 /** Retrieve the hash algorithm from a PAKE cipher suite.
  *
@@ -1236,7 +1236,7 @@ static uint16_t psa_pake_cs_get_bits(
  *         the hash algorithm is not set.
  */
 static psa_algorithm_t psa_pake_cs_get_hash(
-                           const psa_pake_cipher_suite_t *cipher_suite );
+    const psa_pake_cipher_suite_t *cipher_suite );
 
 /** Declare the hash algorithm for a PAKE cipher suite.
  *
@@ -1821,7 +1821,7 @@ struct psa_pake_cipher_suite_s
 };
 
 static inline psa_algorithm_t psa_pake_cs_get_algorithm(
-                        const psa_pake_cipher_suite_t *cipher_suite )
+    const psa_pake_cipher_suite_t *cipher_suite )
 {
     return( cipher_suite->algorithm );
 }
@@ -1837,15 +1837,15 @@ static inline void psa_pake_cs_set_algorithm(
 }
 
 static inline psa_pake_primitive_t psa_pake_cs_get_primitive(
-                        const psa_pake_cipher_suite_t *cipher_suite )
+    const psa_pake_cipher_suite_t *cipher_suite )
 {
     return( PSA_PAKE_PRIMITIVE( cipher_suite->type, cipher_suite->family,
                                 cipher_suite->bits ) );
 }
 
 static inline void psa_pake_cs_set_primitive(
-                        psa_pake_cipher_suite_t *cipher_suite,
-                        psa_pake_primitive_t primitive )
+    psa_pake_cipher_suite_t *cipher_suite,
+    psa_pake_primitive_t primitive )
 {
     cipher_suite->type = (psa_pake_primitive_type_t) (primitive >> 24);
     cipher_suite->family = (psa_pake_family_t) (0xFF & (primitive >> 16));
@@ -1853,25 +1853,25 @@ static inline void psa_pake_cs_set_primitive(
 }
 
 static inline psa_pake_family_t psa_pake_cs_get_family(
-                        const psa_pake_cipher_suite_t *cipher_suite )
+    const psa_pake_cipher_suite_t *cipher_suite )
 {
     return( cipher_suite->family );
 }
 
 static inline uint16_t psa_pake_cs_get_bits(
-                        const psa_pake_cipher_suite_t *cipher_suite )
+    const psa_pake_cipher_suite_t *cipher_suite )
 {
     return( cipher_suite->bits );
 }
 
 static inline psa_algorithm_t psa_pake_cs_get_hash(
-                        const psa_pake_cipher_suite_t *cipher_suite )
+    const psa_pake_cipher_suite_t *cipher_suite )
 {
     return( cipher_suite->hash );
 }
 
 static inline void psa_pake_cs_set_hash( psa_pake_cipher_suite_t *cipher_suite,
-                                         psa_algorithm_t hash )
+        psa_algorithm_t hash )
 {
     if( !PSA_ALG_IS_HASH( hash ) )
         cipher_suite->hash = 0;

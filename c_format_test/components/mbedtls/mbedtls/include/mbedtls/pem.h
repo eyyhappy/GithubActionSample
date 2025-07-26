@@ -28,7 +28,7 @@
 #include <stddef.h>
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
-    !defined(inline) && !defined(__cplusplus)
+!defined(inline) && !defined(__cplusplus)
 #define inline __inline
 #endif
 
@@ -108,9 +108,9 @@ void mbedtls_pem_init( mbedtls_pem_context *ctx );
  * \return          0 on success, or a specific PEM error code
  */
 int mbedtls_pem_read_buffer( mbedtls_pem_context *ctx, const char *header, const char *footer,
-                     const unsigned char *data,
-                     const unsigned char *pwd,
-                     size_t pwdlen, size_t *use_len );
+                             const unsigned char *data,
+                             const unsigned char *pwd,
+                             size_t pwdlen, size_t *use_len );
 
 /**
  * \brief       Get the pointer to the decoded binary data in a PEM context.
@@ -167,8 +167,8 @@ void mbedtls_pem_free( mbedtls_pem_context *ctx );
  * \return          Another PEM or BASE64 error code on other kinds of failure.
  */
 int mbedtls_pem_write_buffer( const char *header, const char *footer,
-                      const unsigned char *der_data, size_t der_len,
-                      unsigned char *buf, size_t buf_len, size_t *olen );
+                              const unsigned char *der_data, size_t der_len,
+                              unsigned char *buf, size_t buf_len, size_t *olen );
 #endif /* MBEDTLS_PEM_WRITE_C */
 
 #ifdef __cplusplus

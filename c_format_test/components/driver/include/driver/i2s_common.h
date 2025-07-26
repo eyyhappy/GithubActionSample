@@ -35,7 +35,8 @@ extern "C" {
  * @note When CONFIG_I2S_ISR_IRAM_SAFE is enabled, the callback itself and functions called by it should be placed in IRAM.
  *       The variables used in the function should be in the SRAM as well.
  */
-typedef struct {
+typedef struct
+{
     i2s_isr_callback_t on_recv;             /**< Callback of data received event, only for rx channel
                                              *   The event data includes DMA buffer address and size that just finished receiving data
                                              */
@@ -53,7 +54,8 @@ typedef struct {
 /**
  * @brief I2S controller channel configuration
 */
-typedef struct {
+typedef struct
+{
     i2s_port_t          id;                 /*!< I2S port id */
     i2s_role_t          role;               /*!< I2S role, I2S_ROLE_MASTER or I2S_ROLE_SLAVE */
 
@@ -68,7 +70,8 @@ typedef struct {
 /**
  * @brief I2S channel information
  */
-typedef struct {
+typedef struct
+{
     i2s_port_t          id;                 /*!< I2S port id */
     i2s_role_t          role;               /*!< I2S role, I2S_ROLE_MASTER or I2S_ROLE_SLAVE */
     i2s_dir_t           dir;                /*!< I2S channel direction */

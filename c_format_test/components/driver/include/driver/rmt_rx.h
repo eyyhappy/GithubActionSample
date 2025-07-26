@@ -21,19 +21,22 @@ extern "C" {
  * @note When CONFIG_RMT_ISR_IRAM_SAFE is enabled, the callback itself and functions called by it should be placed in IRAM.
  *       The variables used in the function should be in the SRAM as well.
  */
-typedef struct {
+typedef struct
+{
     rmt_rx_done_callback_t on_recv_done; /*!< Event callback, invoked when one RMT channel receiving transaction completes */
 } rmt_rx_event_callbacks_t;
 
 /**
  * @brief RMT RX channel specific configuration
  */
-typedef struct {
+typedef struct
+{
     int gpio_num;               /*!< GPIO number used by RMT RX channel. Set to -1 if unused */
     rmt_clock_source_t clk_src; /*!< Clock source of RMT RX channel, channels in the same group must use the same clock source */
     uint32_t resolution_hz;     /*!< Channel clock resolution, in Hz */
     size_t mem_block_symbols;   /*!< Size of memory block, in number of `rmt_symbol_word_t`, must be an even */
-    struct {
+    struct
+    {
         uint32_t invert_in: 1;    /*!< Whether to invert the incoming RMT channel signal */
         uint32_t with_dma: 1;     /*!< If set, the driver will allocate an RMT channel with DMA capability */
         uint32_t io_loop_back: 1; /*!< For debug/test, the signal output from the GPIO will be fed to the input path as well */
@@ -43,7 +46,8 @@ typedef struct {
 /**
  * @brief RMT receive specific configuration
  */
-typedef struct {
+typedef struct
+{
     uint32_t signal_range_min_ns; /*!< A pulse whose width is smaller than this threshold will be treated as glitch and ignored */
     uint32_t signal_range_max_ns; /*!< RMT will stop receiving if one symbol level has kept more than `signal_range_max_ns` */
 } rmt_receive_config_t;

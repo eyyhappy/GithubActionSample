@@ -91,11 +91,11 @@ int mbedtls_psa_get_random( void *p_rng,
  */
 static inline void mbedtls_psa_drbg_init( mbedtls_psa_drbg_context_t *p_rng )
 {
-#if defined(MBEDTLS_CTR_DRBG_C)
+    #if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_init( p_rng );
-#elif defined(MBEDTLS_HMAC_DRBG_C)
+    #elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_init( p_rng );
-#endif
+    #endif
 }
 
 /** Deinitialize the PSA DRBG.
@@ -104,11 +104,11 @@ static inline void mbedtls_psa_drbg_init( mbedtls_psa_drbg_context_t *p_rng )
  */
 static inline void mbedtls_psa_drbg_free( mbedtls_psa_drbg_context_t *p_rng )
 {
-#if defined(MBEDTLS_CTR_DRBG_C)
+    #if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_free( p_rng );
-#elif defined(MBEDTLS_HMAC_DRBG_C)
+    #elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_free( p_rng );
-#endif
+    #endif
 }
 
 /** The type of the PSA random generator context.
@@ -184,12 +184,12 @@ static inline int mbedtls_psa_drbg_seed(
     mbedtls_entropy_context *entropy,
     const unsigned char *custom, size_t len )
 {
-#if defined(MBEDTLS_CTR_DRBG_C)
+    #if defined(MBEDTLS_CTR_DRBG_C)
     return( mbedtls_ctr_drbg_seed( MBEDTLS_PSA_RANDOM_STATE,
                                    mbedtls_entropy_func,
                                    entropy,
                                    custom, len ) );
-#elif defined(MBEDTLS_HMAC_DRBG_C)
+    #elif defined(MBEDTLS_HMAC_DRBG_C)
     const mbedtls_md_info_t *md_info =
         mbedtls_md_info_from_type( MBEDTLS_PSA_HMAC_DRBG_MD_TYPE );
     return( mbedtls_hmac_drbg_seed( MBEDTLS_PSA_RANDOM_STATE,
@@ -197,7 +197,7 @@ static inline int mbedtls_psa_drbg_seed(
                                     mbedtls_entropy_func,
                                     entropy,
                                     custom, len ) );
-#endif
+    #endif
 }
 
 #endif /* MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG */

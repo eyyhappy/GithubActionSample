@@ -28,7 +28,8 @@
 
 #include "mbedtls/cipher.h"
 
-typedef struct {
+typedef struct
+{
     /* If non-null, on success, copy this to the output. */
     void *forced_output;
     size_t forced_output_length;
@@ -41,7 +42,7 @@ typedef struct {
 
 #define MBEDTLS_TEST_DRIVER_CIPHER_INIT { NULL, 0, PSA_SUCCESS, 0 }
 static inline mbedtls_test_driver_cipher_hooks_t
-     mbedtls_test_driver_cipher_hooks_init( void )
+mbedtls_test_driver_cipher_hooks_init( void )
 {
     const mbedtls_test_driver_cipher_hooks_t v = MBEDTLS_TEST_DRIVER_CIPHER_INIT;
     return( v );

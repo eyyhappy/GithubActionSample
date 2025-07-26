@@ -55,16 +55,16 @@ extern "C" {
 typedef struct mbedtls_ssl_ticket_key
 {
     unsigned char MBEDTLS_PRIVATE(name)[MBEDTLS_SSL_TICKET_KEY_NAME_BYTES];
-                                                     /*!< random key identifier              */
+    /*!< random key identifier              */
     uint32_t MBEDTLS_PRIVATE(generation_time);       /*!< key generation timestamp (seconds) */
-#if !defined(MBEDTLS_USE_PSA_CRYPTO)
+    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
     mbedtls_cipher_context_t MBEDTLS_PRIVATE(ctx);   /*!< context for auth enc/decryption    */
-#else
+    #else
     mbedtls_svc_key_id_t MBEDTLS_PRIVATE(key);       /*!< key used for auth enc/decryption   */
     psa_algorithm_t MBEDTLS_PRIVATE(alg);            /*!< algorithm of auth enc/decryption   */
     psa_key_type_t MBEDTLS_PRIVATE(key_type);        /*!< key type                           */
     size_t MBEDTLS_PRIVATE(key_bits);                /*!< key length in bits                 */
-#endif
+    #endif
 }
 mbedtls_ssl_ticket_key;
 
@@ -82,9 +82,9 @@ typedef struct mbedtls_ssl_ticket_context
     int  (*MBEDTLS_PRIVATE(f_rng))(void *, unsigned char *, size_t);
     void *MBEDTLS_PRIVATE(p_rng);                    /*!< context for the RNG function       */
 
-#if defined(MBEDTLS_THREADING_C)
+    #if defined(MBEDTLS_THREADING_C)
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);
-#endif
+    #endif
 }
 mbedtls_ssl_ticket_context;
 
@@ -120,9 +120,9 @@ void mbedtls_ssl_ticket_init( mbedtls_ssl_ticket_context *ctx );
  *                  or a specific MBEDTLS_ERR_XXX error code
  */
 int mbedtls_ssl_ticket_setup( mbedtls_ssl_ticket_context *ctx,
-    int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
-    mbedtls_cipher_type_t cipher,
-    uint32_t lifetime );
+                              int (*f_rng)(void *, unsigned char *, size_t), void *p_rng,
+                              mbedtls_cipher_type_t cipher,
+                              uint32_t lifetime );
 
 /**
  * \brief           Rotate session ticket encryption key to new specified key.
@@ -157,9 +157,9 @@ int mbedtls_ssl_ticket_setup( mbedtls_ssl_ticket_context *ctx,
  *                  or a specific MBEDTLS_ERR_XXX error code
  */
 int mbedtls_ssl_ticket_rotate( mbedtls_ssl_ticket_context *ctx,
-    const unsigned char *name, size_t nlength,
-    const unsigned char *k, size_t klength,
-    uint32_t lifetime );
+                               const unsigned char *name, size_t nlength,
+                               const unsigned char *k, size_t klength,
+                               uint32_t lifetime );
 
 /**
  * \brief           Implementation of the ticket write callback

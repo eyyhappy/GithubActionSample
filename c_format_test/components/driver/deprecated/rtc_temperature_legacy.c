@@ -27,7 +27,8 @@ static const char *TAG = "tsens";
 #define TSENS_DAC_FACTOR  (27.88)
 #define TSENS_SYS_OFFSET  (20.52)
 
-typedef struct {
+typedef struct
+{
     int index;
     int offset;
     int reg_val;
@@ -36,7 +37,8 @@ typedef struct {
     int error_max;
 } tsens_dac_offset_t;
 
-static const tsens_dac_offset_t dac_offset[TSENS_DAC_MAX] = {
+static const tsens_dac_offset_t dac_offset[TSENS_DAC_MAX] =
+{
     /*     DAC     Offset reg_val  min  max  error */
     {TSENS_DAC_L0,   -2,     5,    50,  125,   3},
     {TSENS_DAC_L1,   -1,     7,    20,  100,   2},
@@ -45,7 +47,8 @@ static const tsens_dac_offset_t dac_offset[TSENS_DAC_MAX] = {
     {TSENS_DAC_L4,    2,    10,   -40,   20,   3},
 };
 
-typedef enum {
+typedef enum
+{
     TSENS_HW_STATE_UNCONFIGURED,
     TSENS_HW_STATE_CONFIGURED,
     TSENS_HW_STATE_STARTED,
@@ -58,7 +61,8 @@ static float s_deltaT = NAN; // Unused number
 esp_err_t temp_sensor_set_config(temp_sensor_config_t tsens)
 {
     esp_err_t err = ESP_OK;
-    if (tsens_hw_state == TSENS_HW_STATE_STARTED) {
+    if (tsens_hw_state == TSENS_HW_STATE_STARTED)
+    {
         ESP_LOGE(TAG, "Do not configure the temp sensor when it's running!");
         err = ESP_ERR_INVALID_STATE;
     }
@@ -77,8 +81,10 @@ esp_err_t temp_sensor_get_config(temp_sensor_config_t *tsens)
 {
     ESP_RETURN_ON_FALSE(tsens != NULL, ESP_ERR_INVALID_ARG, TAG, "no tsens specified");
     tsens->dac_offset = temperature_sensor_ll_get_offset();
-    for (int i = TSENS_DAC_L0; i < TSENS_DAC_MAX; i++) {
-        if ((int)tsens->dac_offset == dac_offset[i].reg_val) {
+    for (int i = TSENS_DAC_L0; i < TSENS_DAC_MAX; i++)
+    {
+        if ((int)tsens->dac_offset == dac_offset[i].reg_val)
+        {
             tsens->dac_offset = dac_offset[i].index;
             break;
         }
@@ -90,7 +96,8 @@ esp_err_t temp_sensor_get_config(temp_sensor_config_t *tsens)
 esp_err_t temp_sensor_start(void)
 {
     esp_err_t err = ESP_OK;
-    if (tsens_hw_state != TSENS_HW_STATE_CONFIGURED) {
+    if (tsens_hw_state != TSENS_HW_STATE_CONFIGURED)
+    {
         ESP_LOGE(TAG, "Is already running or not be configured");
         err = ESP_ERR_INVALID_STATE;
     }
@@ -127,7 +134,8 @@ static esp_err_t read_delta_t_from_efuse(void)
 
 static float parse_temp_sensor_raw_value(uint32_t tsens_raw, const int dac_offset)
 {
-    if (isnan(s_deltaT)) { //suggests that the value is not initialized
+    if (isnan(s_deltaT))   //suggests that the value is not initialized
+    {
         read_delta_t_from_efuse();
     }
     float result = (TEMPERATURE_SENSOR_LL_ADC_FACTOR * (float)tsens_raw - TEMPERATURE_SENSOR_LL_DAC_FACTOR * dac_offset - TEMPERATURE_SENSOR_LL_OFFSET_FACTOR) - s_deltaT / 10.0;
@@ -137,7 +145,8 @@ static float parse_temp_sensor_raw_value(uint32_t tsens_raw, const int dac_offse
 esp_err_t temp_sensor_read_celsius(float *celsius)
 {
     ESP_RETURN_ON_FALSE(celsius != NULL, ESP_ERR_INVALID_ARG, TAG, "celsius points to nothing");
-    if (tsens_hw_state != TSENS_HW_STATE_STARTED) {
+    if (tsens_hw_state != TSENS_HW_STATE_STARTED)
+    {
         ESP_LOGE(TAG, "Has not been started");
         return ESP_ERR_INVALID_STATE;
     }
@@ -148,7 +157,8 @@ esp_err_t temp_sensor_read_celsius(float *celsius)
     ESP_LOGV(TAG, "tsens_out %"PRIu32, tsens_out);
     const tsens_dac_offset_t *dac = &dac_offset[tsens.dac_offset];
     *celsius = parse_temp_sensor_raw_value(tsens_out, dac->offset);
-    if (*celsius < dac->range_min || *celsius > dac->range_max) {
+    if (*celsius < dac->range_min || *celsius > dac->range_max)
+    {
         ESP_LOGW(TAG, "Exceeding the temperature range!");
         return ESP_ERR_INVALID_STATE;
     }
@@ -164,7 +174,8 @@ static void check_legacy_temp_sensor_driver_conflict(void)
     // This function was declared as weak here. temperature_sensor driver has one implementation.
     // So if temperature_sensor driver is not linked in, then `temperature_sensor_install()` should be NULL at runtime.
     extern __attribute__((weak)) esp_err_t temperature_sensor_install(const void *tsens_config, void **ret_tsens);
-    if ((void *)temperature_sensor_install != NULL) {
+    if ((void *)temperature_sensor_install != NULL)
+    {
         ESP_EARLY_LOGE(TAG, "CONFLICT! driver_ng is not allowed to be used with the legacy driver");
         abort();
     }

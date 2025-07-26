@@ -18,8 +18,10 @@ extern "C" {
 /**
  * @brief MCPWM comparator configuration
  */
-typedef struct {
-    struct {
+typedef struct
+{
+    struct
+    {
         uint32_t update_cmp_on_tez: 1;  /*!< Whether to update compare value when timer count equals to zero (tez) */
         uint32_t update_cmp_on_tep: 1;  /*!< Whether to update compare value when timer count equals to peak (tep) */
         uint32_t update_cmp_on_sync: 1; /*!< Whether to update compare value on sync event */
@@ -56,7 +58,8 @@ esp_err_t mcpwm_del_comparator(mcpwm_cmpr_handle_t cmpr);
  * @brief Group of supported MCPWM compare event callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     mcpwm_compare_event_cb_t on_reach; /*!< ISR callback function which would be invoked when counter reaches compare value */
 } mcpwm_comparator_event_callbacks_t;
 

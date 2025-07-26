@@ -43,7 +43,8 @@
 static void mbedtls_zeroize( void *v, size_t n )
 {
     volatile unsigned char *p = v;
-    while ( n-- ) {
+    while ( n-- )
+    {
         *p++ = 0;
     }
 }
@@ -67,16 +68,17 @@ static void mbedtls_zeroize( void *v, size_t n )
 
 void esp_sha512_set_mode(mbedtls_sha512_context *ctx, esp_sha_type type)
 {
-    switch (type) {
-    case SHA2_384:
-    case SHA2_512224:
-    case SHA2_512256:
-    case SHA2_512T:
-        ctx->mode = type;
-        break;
-    default:
-        ctx->mode = SHA2_512;
-        break;
+    switch (type)
+    {
+        case SHA2_384:
+        case SHA2_512224:
+        case SHA2_512256:
+        case SHA2_512T:
+            ctx->mode = type;
+            break;
+        default:
+            ctx->mode = SHA2_512;
+            break;
     }
 }
 
@@ -90,16 +92,15 @@ void esp_sha512_set_t( mbedtls_sha512_context *ctx, uint16_t t_val)
 void mbedtls_sha512_init( mbedtls_sha512_context *ctx )
 {
     assert(ctx != NULL);
-
     memset( ctx, 0, sizeof( mbedtls_sha512_context ) );
 }
 
 void mbedtls_sha512_free( mbedtls_sha512_context *ctx )
 {
-    if ( ctx == NULL ) {
+    if ( ctx == NULL )
+    {
         return;
     }
-
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha512_context ) );
 }
 
@@ -115,13 +116,14 @@ void mbedtls_sha512_clone( mbedtls_sha512_context *dst,
 int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
 {
     mbedtls_zeroize( ctx, sizeof( mbedtls_sha512_context ) );
-
-    if ( is384 ) {
+    if ( is384 )
+    {
         ctx->mode = SHA2_384;
-    } else {
+    }
+    else
+    {
         ctx->mode = SHA2_512;
     }
-
     return 0;
 }
 
@@ -130,8 +132,8 @@ static int esp_internal_sha512_block_process(mbedtls_sha512_context *ctx,
         uint8_t *buf, size_t buf_len)
 {
     esp_sha_block(ctx->mode, data, ctx->first_block);
-
-    if (ctx->first_block) {
+    if (ctx->first_block)
+    {
         ctx->first_block = false;
     }
 }
@@ -148,78 +150,73 @@ int mbedtls_internal_sha512_process( mbedtls_sha512_context *ctx, const unsigned
  * SHA-512 process buffer
  */
 int mbedtls_sha512_update( mbedtls_sha512_context *ctx, const unsigned char *input,
-                               size_t ilen )
+                           size_t ilen )
 {
     int ret;
     size_t fill;
     unsigned int left, len, local_len = 0;
-
-    if ( ilen == 0 ) {
+    if ( ilen == 0 )
+    {
         return 0;
     }
-
     left = (unsigned int) (ctx->total[0] & 0x7F);
     fill = 128 - left;
-
     ctx->total[0] += (uint64_t) ilen;
-
-    if ( ctx->total[0] < (uint64_t) ilen ) {
+    if ( ctx->total[0] < (uint64_t) ilen )
+    {
         ctx->total[1]++;
     }
-
-    if ( left && ilen >= fill ) {
+    if ( left && ilen >= fill )
+    {
         memcpy( (void *) (ctx->buffer + left), input, fill );
-
         input += fill;
         ilen  -= fill;
         left = 0;
         local_len = 128;
     }
-
-
-    if ( len || local_len) {
-
+    if ( len || local_len)
+    {
         esp_sha_acquire_hardware();
-
-        if (ctx->sha_state == ESP_SHA512_STATE_INIT) {
-
-            if (ctx->mode == SHA2_512T) {
+        if (ctx->sha_state == ESP_SHA512_STATE_INIT)
+        {
+            if (ctx->mode == SHA2_512T)
+            {
                 esp_sha_512_t_init_hash(ctx->t_val);
                 ctx->first_block = false;
-            } else {
+            }
+            else
+            {
                 ctx->first_block = true;
             }
             ctx->sha_state = ESP_SHA512_STATE_IN_PROCESS;
-
-        } else if (ctx->sha_state == ESP_SHA512_STATE_IN_PROCESS) {
+        }
+        else if (ctx->sha_state == ESP_SHA512_STATE_IN_PROCESS)
+        {
             esp_sha_write_digest_state(ctx->mode, ctx->state);
         }
-
         /* First process buffered block, if any */
-        if ( local_len ) {
+        if ( local_len )
+        {
             esp_internal_sha256_block_process(ctx, ctx->buffer);
         }
-
-        while ( ilen >= 128 ) {
+        while ( ilen >= 128 )
+        {
             esp_internal_sha256_block_process(ctx, input);
-
             input += 64;
             ilen  -= 64;
         }
         esp_sha_read_digest_state(ctx->mode, ctx->state);
-
         esp_sha_release_hardware();
-
     }
-
-    if ( ilen > 0 ) {
+    if ( ilen > 0 )
+    {
         memcpy( (void *) (ctx->buffer + left), input, ilen);
     }
-
     return 0;
 }
 
-static const unsigned char sha512_padding[128] = {
+static const unsigned char sha512_padding[128] =
+{
     0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -239,31 +236,29 @@ int mbedtls_sha512_finish( mbedtls_sha512_context *ctx, unsigned char *output )
     size_t last, padn;
     uint64_t high, low;
     unsigned char msglen[16];
-
     high = ( ctx->total[0] >> 61 )
            | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
-
     PUT_UINT64_BE( high, msglen, 0 );
     PUT_UINT64_BE( low,  msglen, 8 );
-
     last = (size_t)( ctx->total[0] & 0x7F );
     padn = ( last < 112 ) ? ( 112 - last ) : ( 240 - last );
-
-    if ( ( ret = mbedtls_sha512_update( ctx, sha512_padding, padn ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha512_update( ctx, sha512_padding, padn ) ) != 0 )
+    {
         return ret;
     }
-
-    if ( ( ret = mbedtls_sha512_update( ctx, msglen, 16 ) ) != 0 ) {
+    if ( ( ret = mbedtls_sha512_update( ctx, msglen, 16 ) ) != 0 )
+    {
         return ret;
     }
-
-    if (ctx->mode == SHA2_384) {
+    if (ctx->mode == SHA2_384)
+    {
         memcpy(output, ctx->state, 48);
-    } else {
+    }
+    else
+    {
         memcpy(output, ctx->state, 64);
     }
-
     return ret;
 }
 

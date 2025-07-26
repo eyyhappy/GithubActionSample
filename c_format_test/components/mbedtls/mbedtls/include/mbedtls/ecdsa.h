@@ -108,9 +108,9 @@ typedef struct
                                               shared administrative info    */
     mbedtls_ecdsa_restart_ver_ctx *MBEDTLS_PRIVATE(ver); /*!<  ecdsa_verify() sub-context    */
     mbedtls_ecdsa_restart_sig_ctx *MBEDTLS_PRIVATE(sig); /*!<  ecdsa_sign() sub-context      */
-#if defined(MBEDTLS_ECDSA_DETERMINISTIC)
+    #if defined(MBEDTLS_ECDSA_DETERMINISTIC)
     mbedtls_ecdsa_restart_det_ctx *MBEDTLS_PRIVATE(det); /*!<  ecdsa_sign_det() sub-context  */
-#endif
+    #endif
 } mbedtls_ecdsa_restart_ctx;
 
 #else /* MBEDTLS_ECP_RESTARTABLE */
@@ -167,8 +167,8 @@ int mbedtls_ecdsa_can_do( mbedtls_ecp_group_id gid );
  *                  or \c MBEDTLS_MPI_XXX error code on failure.
  */
 int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
-                const mbedtls_mpi *d, const unsigned char *buf, size_t blen,
-                int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
+                        const mbedtls_mpi *d, const unsigned char *buf, size_t blen,
+                        int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
 
 #if defined(MBEDTLS_ECDSA_DETERMINISTIC)
 /**
@@ -211,11 +211,11 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
  *                  error code on failure.
  */
 int mbedtls_ecdsa_sign_det_ext( mbedtls_ecp_group *grp, mbedtls_mpi *r,
-                            mbedtls_mpi *s, const mbedtls_mpi *d,
-                            const unsigned char *buf, size_t blen,
-                            mbedtls_md_type_t md_alg,
-                            int (*f_rng_blind)(void *, unsigned char *, size_t),
-                            void *p_rng_blind );
+                                mbedtls_mpi *s, const mbedtls_mpi *d,
+                                const unsigned char *buf, size_t blen,
+                                mbedtls_md_type_t md_alg,
+                                int (*f_rng_blind)(void *, unsigned char *, size_t),
+                                void *p_rng_blind );
 #endif /* MBEDTLS_ECDSA_DETERMINISTIC */
 
 /**
@@ -306,10 +306,10 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
  */
 int mbedtls_ecdsa_write_signature( mbedtls_ecdsa_context *ctx,
                                    mbedtls_md_type_t md_alg,
-                           const unsigned char *hash, size_t hlen,
-                           unsigned char *sig, size_t sig_size, size_t *slen,
-                           int (*f_rng)(void *, unsigned char *, size_t),
-                           void *p_rng );
+                                   const unsigned char *hash, size_t hlen,
+                                   unsigned char *sig, size_t sig_size, size_t *slen,
+                                   int (*f_rng)(void *, unsigned char *, size_t),
+                                   void *p_rng );
 
 /**
  * \brief           This function computes the ECDSA signature and writes it
@@ -352,12 +352,12 @@ int mbedtls_ecdsa_write_signature( mbedtls_ecdsa_context *ctx,
  *                  \c MBEDTLS_ERR_ASN1_XXX error code on failure.
  */
 int mbedtls_ecdsa_write_signature_restartable( mbedtls_ecdsa_context *ctx,
-                           mbedtls_md_type_t md_alg,
-                           const unsigned char *hash, size_t hlen,
-                           unsigned char *sig, size_t sig_size, size_t *slen,
-                           int (*f_rng)(void *, unsigned char *, size_t),
-                           void *p_rng,
-                           mbedtls_ecdsa_restart_ctx *rs_ctx );
+        mbedtls_md_type_t md_alg,
+        const unsigned char *hash, size_t hlen,
+        unsigned char *sig, size_t sig_size, size_t *slen,
+        int (*f_rng)(void *, unsigned char *, size_t),
+        void *p_rng,
+        mbedtls_ecdsa_restart_ctx *rs_ctx );
 
 /**
  * \brief           This function reads and verifies an ECDSA signature.
@@ -387,8 +387,8 @@ int mbedtls_ecdsa_write_signature_restartable( mbedtls_ecdsa_context *ctx,
  *                  error code on failure for any other reason.
  */
 int mbedtls_ecdsa_read_signature( mbedtls_ecdsa_context *ctx,
-                          const unsigned char *hash, size_t hlen,
-                          const unsigned char *sig, size_t slen );
+                                  const unsigned char *hash, size_t hlen,
+                                  const unsigned char *sig, size_t slen );
 
 /**
  * \brief           This function reads and verifies an ECDSA signature,
@@ -422,9 +422,9 @@ int mbedtls_ecdsa_read_signature( mbedtls_ecdsa_context *ctx,
  *                  error code on failure for any other reason.
  */
 int mbedtls_ecdsa_read_signature_restartable( mbedtls_ecdsa_context *ctx,
-                          const unsigned char *hash, size_t hlen,
-                          const unsigned char *sig, size_t slen,
-                          mbedtls_ecdsa_restart_ctx *rs_ctx );
+        const unsigned char *hash, size_t hlen,
+        const unsigned char *sig, size_t slen,
+        mbedtls_ecdsa_restart_ctx *rs_ctx );
 
 /**
  * \brief          This function generates an ECDSA keypair on the given curve.
@@ -443,7 +443,7 @@ int mbedtls_ecdsa_read_signature_restartable( mbedtls_ecdsa_context *ctx,
  * \return         An \c MBEDTLS_ERR_ECP_XXX code on failure.
  */
 int mbedtls_ecdsa_genkey( mbedtls_ecdsa_context *ctx, mbedtls_ecp_group_id gid,
-                  int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
+                          int (*f_rng)(void *, unsigned char *, size_t), void *p_rng );
 
 /**
  * \brief           This function sets up an ECDSA context from an EC key pair.

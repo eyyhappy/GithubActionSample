@@ -50,7 +50,8 @@ extern "C" {
 /**
  * @brief I2S slot configuration for pdm rx mode
  */
-typedef struct {
+typedef struct
+{
     /* General fields */
     i2s_data_bit_width_t    data_bit_width;     /*!< I2S sample data bit width (valid data bits per sample), only support 16 bits for PDM mode */
     i2s_slot_bit_width_t    slot_bit_width;     /*!< I2S slot bit width (total bits per slot) , only support 16 bits for PDM mode */
@@ -62,7 +63,8 @@ typedef struct {
 /**
  * @brief I2S clock configuration for pdm rx mode
  */
-typedef struct {
+typedef struct
+{
     /* General fields */
     uint32_t                sample_rate_hz;     /*!< I2S sample rate */
     i2s_clock_src_t         clk_src;            /*!< Choose clock source */
@@ -74,10 +76,12 @@ typedef struct {
 /**
  * @brief I2S PDM tx mode GPIO pins configuration
  */
-typedef struct {
+typedef struct
+{
     gpio_num_t clk;                /*!< PDM clk pin, output */
     gpio_num_t din;                /*!< DATA pin, input */
-    struct {
+    struct
+    {
         uint32_t   clk_inv: 1;     /*!< Set 1 to invert the clk output */
     } invert_flags;                /*!< GPIO pin invert flags */
 } i2s_pdm_rx_gpio_config_t;
@@ -85,7 +89,8 @@ typedef struct {
 /**
  * @brief I2S PDM RX mode major configuration that including clock/slot/gpio configuration
  */
-typedef struct {
+typedef struct
+{
     i2s_pdm_rx_clk_config_t    clk_cfg;         /*!< PDM RX clock configurations, can be genertated by macro I2S_PDM_RX_CLK_DEFAULT_CONFIG */
     i2s_pdm_rx_slot_config_t   slot_cfg;        /*!< PDM RX slot configurations, can be genertated by macro I2S_PDM_RX_SLOT_DEFAULT_CONFIG */
     i2s_pdm_rx_gpio_config_t   gpio_cfg;        /*!< PDM RX slot configurations, specified by user */
@@ -235,7 +240,8 @@ esp_err_t i2s_channel_reconfig_pdm_rx_gpio(i2s_chan_handle_t handle, const i2s_p
 /**
  * @brief I2S slot configuration for pdm tx mode
  */
-typedef struct {
+typedef struct
+{
     /* General fields */
     i2s_data_bit_width_t    data_bit_width;     /*!< I2S sample data bit width (valid data bits per sample), only support 16 bits for PDM mode */
     i2s_slot_bit_width_t    slot_bit_width;     /*!< I2S slot bit width (total bits per slot), only support 16 bits for PDM mode */
@@ -244,27 +250,28 @@ typedef struct {
                                                  *   Stereo means the data buffer contains two slots data
                                                  */
     /* Particular fields */
-#if SOC_I2S_HW_VERSION_1
+    #if SOC_I2S_HW_VERSION_1
     i2s_pdm_slot_mask_t     slot_mask;          /*!< Slot mask to choose left or right slot */
-#endif
+    #endif
     uint32_t                sd_prescale;        /*!< Sigma-delta filter prescale */
     i2s_pdm_sig_scale_t     sd_scale;           /*!< Sigma-delta filter scaling value */
     i2s_pdm_sig_scale_t     hp_scale;           /*!< High pass filter scaling value */
     i2s_pdm_sig_scale_t     lp_scale;           /*!< Low pass filter scaling value */
     i2s_pdm_sig_scale_t     sinc_scale;         /*!< Sinc filter scaling value */
-#if SOC_I2S_HW_VERSION_2
+    #if SOC_I2S_HW_VERSION_2
     i2s_pdm_tx_line_mode_t  line_mode;          /*!< PDM TX line mode, on-line codec, one-line dac, two-line dac mode can be selected */
     bool                    hp_en;              /*!< High pass filter enable */
     float                   hp_cut_off_freq_hz; /*!< High pass filter cut-off frequency, range 23.3Hz ~ 185Hz, see cut-off frequency sheet above */
     uint32_t                sd_dither;          /*!< Sigma-delta filter dither */
     uint32_t                sd_dither2;         /*!< Sigma-delta filter dither2 */
-#endif // SOC_I2S_HW_VERSION_2
+    #endif // SOC_I2S_HW_VERSION_2
 } i2s_pdm_tx_slot_config_t;
 
 /**
  * @brief I2S clock configuration for pdm tx mode
  */
-typedef struct {
+typedef struct
+{
     /* General fields */
     uint32_t                sample_rate_hz;     /*!< I2S sample rate */
     i2s_clock_src_t         clk_src;            /*!< Choose clock source */
@@ -277,15 +284,17 @@ typedef struct {
 /**
  * @brief I2S PDM tx mode GPIO pins configuration
  */
-typedef struct {
+typedef struct
+{
     gpio_num_t clk;                /*!< PDM clk pin, output */
     gpio_num_t dout;               /*!< DATA pin, output */
-#if SOC_I2S_HW_VERSION_2
+    #if SOC_I2S_HW_VERSION_2
     gpio_num_t dout2;              /*!< The second data pin for the DAC dual-line mode,
                                     *   only take effect when the line mode is `I2S_PDM_TX_TWO_LINE_DAC`
                                     */
-#endif
-    struct {
+    #endif
+    struct
+    {
         uint32_t   clk_inv: 1;     /*!< Set 1 to invert the clk output */
     } invert_flags;                /*!< GPIO pin invert flags */
 } i2s_pdm_tx_gpio_config_t;
@@ -293,7 +302,8 @@ typedef struct {
 /**
  * @brief I2S PDM TX mode major configuration that including clock/slot/gpio configuration
  */
-typedef struct {
+typedef struct
+{
     i2s_pdm_tx_clk_config_t    clk_cfg;         /*!< PDM TX clock configurations, can be genertated by macro I2S_PDM_TX_CLK_DEFAULT_CONFIG */
     i2s_pdm_tx_slot_config_t   slot_cfg;        /*!< PDM TX slot configurations, can be genertated by macro I2S_PDM_TX_SLOT_DEFAULT_CONFIG */
     i2s_pdm_tx_gpio_config_t   gpio_cfg;        /*!< PDM TX gpio configurations, specified by user */

@@ -18,7 +18,8 @@ extern "C" {
 /**
  * @brief MCPWM capture timer configuration structure
  */
-typedef struct {
+typedef struct
+{
     int group_id;                         /*!< Specify from which group to allocate the capture timer */
     mcpwm_capture_clock_source_t clk_src; /*!< MCPWM capture timer clock source */
 } mcpwm_capture_timer_config_t;
@@ -109,7 +110,8 @@ esp_err_t mcpwm_capture_timer_get_resolution(mcpwm_cap_timer_handle_t cap_timer,
 /**
  * @brief MCPWM Capture timer sync phase configuration
  */
-typedef struct {
+typedef struct
+{
     mcpwm_sync_handle_t sync_src;      /*!< The sync event source */
     uint32_t count_value;              /*!< The count value that should lock to upon sync event */
     mcpwm_timer_direction_t direction; /*!< The count direction that should lock to upon sync event */
@@ -130,10 +132,12 @@ esp_err_t mcpwm_capture_timer_set_phase_on_sync(mcpwm_cap_timer_handle_t cap_tim
 /**
  * @brief MCPWM capture channel configuration structure
  */
-typedef struct {
+typedef struct
+{
     int gpio_num;                /*!< GPIO used capturing input signal */
     uint32_t prescale;               /*!< Prescale of input signal, effective frequency = cap_input_clk/prescale */
-    struct {
+    struct
+    {
         uint32_t pos_edge: 1;          /*!< Whether to capture on positive edge */
         uint32_t neg_edge: 1;          /*!< Whether to capture on negative edge */
         uint32_t pull_up: 1;           /*!< Whether to pull up internally */
@@ -202,7 +206,8 @@ esp_err_t mcpwm_capture_channel_disable(mcpwm_cap_channel_handle_t cap_channel);
  * @brief Group of supported MCPWM capture event callbacks
  * @note The callbacks are all running under ISR environment
  */
-typedef struct {
+typedef struct
+{
     mcpwm_capture_event_cb_t on_cap; /*!< Callback function that would be invoked when capture event occurred */
 } mcpwm_capture_event_callbacks_t;
 

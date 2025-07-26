@@ -66,13 +66,14 @@ extern "C"
 /**
  * @brief SPI DMA channels
  */
-typedef enum {
-  SPI_DMA_DISABLED = 0,     ///< Do not enable DMA for SPI
-#if CONFIG_IDF_TARGET_ESP32
-  SPI_DMA_CH1      = 1,     ///< Enable DMA, select DMA Channel 1
-  SPI_DMA_CH2      = 2,     ///< Enable DMA, select DMA Channel 2
-#endif
-  SPI_DMA_CH_AUTO  = 3,     ///< Enable DMA, channel is automatically selected by driver
+typedef enum
+{
+    SPI_DMA_DISABLED = 0,     ///< Do not enable DMA for SPI
+    #if CONFIG_IDF_TARGET_ESP32
+    SPI_DMA_CH1      = 1,     ///< Enable DMA, select DMA Channel 1
+    SPI_DMA_CH2      = 2,     ///< Enable DMA, select DMA Channel 2
+    #endif
+    SPI_DMA_CH_AUTO  = 3,     ///< Enable DMA, channel is automatically selected by driver
 } spi_common_dma_t;
 
 #if __cplusplus
@@ -91,23 +92,28 @@ typedef spi_common_dma_t spi_dma_chan_t;
  *
  * @note Be advised that the slave driver does not use the quadwp/quadhd lines and fields in spi_bus_config_t refering to these lines will be ignored and can thus safely be left uninitialized.
  */
-typedef struct {
-    union {
-      int mosi_io_num;    ///< GPIO pin for Master Out Slave In (=spi_d) signal, or -1 if not used.
-      int data0_io_num;   ///< GPIO pin for spi data0 signal in quad/octal mode, or -1 if not used.
+typedef struct
+{
+    union
+    {
+        int mosi_io_num;    ///< GPIO pin for Master Out Slave In (=spi_d) signal, or -1 if not used.
+        int data0_io_num;   ///< GPIO pin for spi data0 signal in quad/octal mode, or -1 if not used.
     };
-    union {
-      int miso_io_num;    ///< GPIO pin for Master In Slave Out (=spi_q) signal, or -1 if not used.
-      int data1_io_num;   ///< GPIO pin for spi data1 signal in quad/octal mode, or -1 if not used.
+    union
+    {
+        int miso_io_num;    ///< GPIO pin for Master In Slave Out (=spi_q) signal, or -1 if not used.
+        int data1_io_num;   ///< GPIO pin for spi data1 signal in quad/octal mode, or -1 if not used.
     };
     int sclk_io_num;      ///< GPIO pin for SPI Clock signal, or -1 if not used.
-    union {
-      int quadwp_io_num;  ///< GPIO pin for WP (Write Protect) signal, or -1 if not used.
-      int data2_io_num;   ///< GPIO pin for spi data2 signal in quad/octal mode, or -1 if not used.
+    union
+    {
+        int quadwp_io_num;  ///< GPIO pin for WP (Write Protect) signal, or -1 if not used.
+        int data2_io_num;   ///< GPIO pin for spi data2 signal in quad/octal mode, or -1 if not used.
     };
-    union {
-      int quadhd_io_num;  ///< GPIO pin for HD (Hold) signal, or -1 if not used.
-      int data3_io_num;   ///< GPIO pin for spi data3 signal in quad/octal mode, or -1 if not used.
+    union
+    {
+        int quadhd_io_num;  ///< GPIO pin for HD (Hold) signal, or -1 if not used.
+        int data3_io_num;   ///< GPIO pin for spi data3 signal in quad/octal mode, or -1 if not used.
     };
     int data4_io_num;     ///< GPIO pin for spi data4 signal in octal mode, or -1 if not used.
     int data5_io_num;     ///< GPIO pin for spi data5 signal in octal mode, or -1 if not used.

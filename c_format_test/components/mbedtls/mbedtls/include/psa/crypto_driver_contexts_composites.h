@@ -48,11 +48,11 @@
 
 #if defined(PSA_CRYPTO_DRIVER_TEST)
 #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_MAC)
+defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_MAC)
 typedef libtestdriver1_mbedtls_psa_mac_operation_t
-        mbedtls_transparent_test_driver_mac_operation_t;
+mbedtls_transparent_test_driver_mac_operation_t;
 typedef libtestdriver1_mbedtls_psa_mac_operation_t
-        mbedtls_opaque_test_driver_mac_operation_t;
+mbedtls_opaque_test_driver_mac_operation_t;
 
 #define MBEDTLS_TRANSPARENT_TEST_DRIVER_MAC_OPERATION_INIT \
         LIBTESTDRIVER1_MBEDTLS_PSA_MAC_OPERATION_INIT
@@ -61,9 +61,9 @@ typedef libtestdriver1_mbedtls_psa_mac_operation_t
 
 #else
 typedef mbedtls_psa_mac_operation_t
-        mbedtls_transparent_test_driver_mac_operation_t;
+mbedtls_transparent_test_driver_mac_operation_t;
 typedef mbedtls_psa_mac_operation_t
-        mbedtls_opaque_test_driver_mac_operation_t;
+mbedtls_opaque_test_driver_mac_operation_t;
 
 #define MBEDTLS_TRANSPARENT_TEST_DRIVER_MAC_OPERATION_INIT \
         MBEDTLS_PSA_MAC_OPERATION_INIT
@@ -73,15 +73,15 @@ typedef mbedtls_psa_mac_operation_t
 #endif /* MBEDTLS_TEST_LIBTESTDRIVER1 && LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_MAC */
 
 #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
-    defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_AEAD)
+defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_AEAD)
 typedef libtestdriver1_mbedtls_psa_aead_operation_t
-        mbedtls_transparent_test_driver_aead_operation_t;
+mbedtls_transparent_test_driver_aead_operation_t;
 
 #define MBEDTLS_TRANSPARENT_TEST_DRIVER_AEAD_OPERATION_INIT \
         LIBTESTDRIVER1_MBEDTLS_PSA_AEAD_OPERATION_INIT
 #else
 typedef mbedtls_psa_aead_operation_t
-        mbedtls_transparent_test_driver_aead_operation_t;
+mbedtls_transparent_test_driver_aead_operation_t;
 
 #define MBEDTLS_TRANSPARENT_TEST_DRIVER_AEAD_OPERATION_INIT \
         MBEDTLS_PSA_AEAD_OPERATION_INIT
@@ -97,21 +97,23 @@ typedef mbedtls_psa_aead_operation_t
  * are formatted as `'drivername'_ctx`. This allows for procedural generation
  * of both this file and the content of psa_crypto_driver_wrappers.c */
 
-typedef union {
+typedef union
+{
     unsigned dummy; /* Make sure this union is always non-empty */
     mbedtls_psa_mac_operation_t mbedtls_ctx;
-#if defined(PSA_CRYPTO_DRIVER_TEST)
+    #if defined(PSA_CRYPTO_DRIVER_TEST)
     mbedtls_transparent_test_driver_mac_operation_t transparent_test_driver_ctx;
     mbedtls_opaque_test_driver_mac_operation_t opaque_test_driver_ctx;
-#endif
+    #endif
 } psa_driver_mac_context_t;
 
-typedef union {
+typedef union
+{
     unsigned dummy; /* Make sure this union is always non-empty */
     mbedtls_psa_aead_operation_t mbedtls_ctx;
-#if defined(PSA_CRYPTO_DRIVER_TEST)
+    #if defined(PSA_CRYPTO_DRIVER_TEST)
     mbedtls_transparent_test_driver_aead_operation_t transparent_test_driver_ctx;
-#endif
+    #endif
 } psa_driver_aead_context_t;
 
 #endif /* PSA_CRYPTO_DRIVER_CONTEXTS_COMPOSITES_H */

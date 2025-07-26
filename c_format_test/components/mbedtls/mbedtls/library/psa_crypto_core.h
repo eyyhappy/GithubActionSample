@@ -39,10 +39,8 @@ static inline int mbedtls_psa_safer_memcmp(
 {
     size_t i;
     unsigned char diff = 0;
-
     for( i = 0; i < n; i++ )
         diff |= a[i] ^ b[i];
-
     return( diff );
 }
 
@@ -128,7 +126,7 @@ static inline int psa_is_key_slot_locked( const psa_key_slot_t *slot )
  *         bitwise-anded with \p mask.
  */
 static inline uint16_t psa_key_slot_get_flags( const psa_key_slot_t *slot,
-                                               uint16_t mask )
+        uint16_t mask )
 {
     return( slot->attr.flags & mask );
 }
@@ -140,11 +138,11 @@ static inline uint16_t psa_key_slot_get_flags( const psa_key_slot_t *slot,
  * \param value         The new value of the selected bits.
  */
 static inline void psa_key_slot_set_flags( psa_key_slot_t *slot,
-                                           uint16_t mask,
-                                           uint16_t value )
+        uint16_t mask,
+        uint16_t value )
 {
     slot->attr.flags = ( ( ~mask & slot->attr.flags ) |
-                              ( mask & value ) );
+                         ( mask & value ) );
 }
 
 /** Turn on flags in psa_key_slot_t::attr::core::flags.
@@ -153,7 +151,7 @@ static inline void psa_key_slot_set_flags( psa_key_slot_t *slot,
  * \param mask          The mask of bits to set.
  */
 static inline void psa_key_slot_set_bits_in_flags( psa_key_slot_t *slot,
-                                                   uint16_t mask )
+        uint16_t mask )
 {
     slot->attr.flags |= mask;
 }
@@ -164,7 +162,7 @@ static inline void psa_key_slot_set_bits_in_flags( psa_key_slot_t *slot,
  * \param mask          The mask of bits to clear.
  */
 static inline void psa_key_slot_clear_bits( psa_key_slot_t *slot,
-                                            uint16_t mask )
+        uint16_t mask )
 {
     slot->attr.flags &= ~mask;
 }
@@ -209,7 +207,7 @@ psa_status_t psa_wipe_key_slot( psa_key_slot_t *slot );
  *         Trying to allocate a buffer to a non-empty key slot.
  */
 psa_status_t psa_allocate_buffer_to_slot( psa_key_slot_t *slot,
-                                          size_t buffer_length );
+        size_t buffer_length );
 
 /** Wipe key data from a slot. Preserves metadata such as the policy. */
 psa_status_t psa_remove_key_data_from_memory( psa_key_slot_t *slot );
@@ -232,8 +230,8 @@ psa_status_t psa_remove_key_data_from_memory( psa_key_slot_t *slot );
  *         There was other key material already present in the slot.
  */
 psa_status_t psa_copy_key_material_into_slot( psa_key_slot_t *slot,
-                                              const uint8_t *data,
-                                              size_t data_length );
+        const uint8_t *data,
+        size_t data_length );
 
 /** Convert an mbed TLS error code to a PSA error code
  *
@@ -546,5 +544,5 @@ psa_status_t psa_verify_hash_builtin(
  *         the two is not supported.
  */
 psa_status_t psa_validate_unstructured_key_bit_size( psa_key_type_t type,
-                                                     size_t bits );
+        size_t bits );
 #endif /* PSA_CRYPTO_CORE_H */

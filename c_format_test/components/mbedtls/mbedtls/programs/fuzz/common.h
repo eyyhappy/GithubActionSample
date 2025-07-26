@@ -23,4 +23,4 @@ int fuzz_recv( void *ctx, unsigned char *buf, size_t len );
 int dummy_random( void *p_rng, unsigned char *output, size_t output_len );
 int dummy_entropy( void *data, unsigned char *output, size_t len );
 int fuzz_recv_timeout( void *ctx, unsigned char *buf, size_t len,
-                      uint32_t timeout );
+                       uint32_t timeout );

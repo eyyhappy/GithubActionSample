@@ -57,7 +57,8 @@ typedef struct mcpwm_cap_channel_t *mcpwm_cap_channel_handle_t;
 /**
  * @brief MCPWM timer event data
  */
-typedef struct {
+typedef struct
+{
     uint32_t count_value;              /*!< MCPWM timer count value */
     mcpwm_timer_direction_t direction; /*!< MCPWM timer count direction */
 } mcpwm_timer_event_data_t;
@@ -75,7 +76,8 @@ typedef bool (*mcpwm_timer_event_cb_t)(mcpwm_timer_handle_t timer, const mcpwm_t
 /**
  * @brief MCPWM brake event data
  */
-typedef struct {
+typedef struct
+{
 } mcpwm_brake_event_data_t;
 
 /**
@@ -91,7 +93,8 @@ typedef bool (*mcpwm_brake_event_cb_t)(mcpwm_oper_handle_t oper, const mcpwm_bra
 /**
  * @brief MCPWM fault event data
  */
-typedef struct {
+typedef struct
+{
 } mcpwm_fault_event_data_t;
 
 /**
@@ -107,7 +110,8 @@ typedef bool (*mcpwm_fault_event_cb_t)(mcpwm_fault_handle_t fault, const mcpwm_f
 /**
  * @brief MCPWM compare event data
  */
-typedef struct {
+typedef struct
+{
     uint32_t compare_ticks;            /*!< Compare value */
     mcpwm_timer_direction_t direction; /*!< Count direction */
 } mcpwm_compare_event_data_t;
@@ -125,7 +129,8 @@ typedef bool (*mcpwm_compare_event_cb_t)(mcpwm_cmpr_handle_t comparator, const m
 /**
  * @brief MCPWM capture event data
  */
-typedef struct {
+typedef struct
+{
     uint32_t cap_value;            /*!< Captured value */
     mcpwm_capture_edge_t cap_edge; /*!< Capture edge */
 } mcpwm_capture_event_data_t;

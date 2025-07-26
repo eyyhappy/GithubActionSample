@@ -19,7 +19,8 @@ static size_t test_unity_leak_level[ESP_LEAK_TYPE_MAX][ESP_COMP_LEAK_ALL] = { 0 
 
 esp_err_t test_utils_set_leak_level(size_t leak_level, esp_type_leak_t type_of_leak, esp_comp_leak_t component)
 {
-    if (type_of_leak >= ESP_LEAK_TYPE_MAX || component >= ESP_COMP_LEAK_ALL) {
+    if (type_of_leak >= ESP_LEAK_TYPE_MAX || component >= ESP_COMP_LEAK_ALL)
+    {
         return ESP_ERR_INVALID_ARG;
     }
     test_unity_leak_level[type_of_leak][component] = leak_level;
@@ -29,14 +30,21 @@ esp_err_t test_utils_set_leak_level(size_t leak_level, esp_type_leak_t type_of_l
 size_t test_utils_get_leak_level(esp_type_leak_t type_of_leak, esp_comp_leak_t component)
 {
     size_t leak_level = 0;
-    if (type_of_leak >= ESP_LEAK_TYPE_MAX || component > ESP_COMP_LEAK_ALL) {
+    if (type_of_leak >= ESP_LEAK_TYPE_MAX || component > ESP_COMP_LEAK_ALL)
+    {
         leak_level = 0;
-    } else {
-        if (component == ESP_COMP_LEAK_ALL) {
-            for (int comp = 0; comp < ESP_COMP_LEAK_ALL; ++comp) {
+    }
+    else
+    {
+        if (component == ESP_COMP_LEAK_ALL)
+        {
+            for (int comp = 0; comp < ESP_COMP_LEAK_ALL; ++comp)
+            {
                 leak_level += test_unity_leak_level[type_of_leak][comp];
             }
-        } else {
+        }
+        else
+        {
             leak_level = test_unity_leak_level[type_of_leak][component];
         }
     }
@@ -51,38 +59,38 @@ void test_utils_record_free_mem(void)
 
 void setup_heap_record(void)
 {
-#ifdef CONFIG_HEAP_TRACING
+    #ifdef CONFIG_HEAP_TRACING
     const size_t num_heap_records = 80;
     static heap_trace_record_t *record_buffer;
-    if (!record_buffer) {
+    if (!record_buffer)
+    {
         record_buffer = malloc(sizeof(heap_trace_record_t) * num_heap_records);
         assert(record_buffer);
         heap_trace_init_standalone(record_buffer, num_heap_records);
     }
-#endif
+    #endif
 }
 
 static void check_leak(size_t before_free,
-        size_t after_free,
-        const char *type,
-        size_t warn_threshold,
-        size_t critical_threshold)
+                       size_t after_free,
+                       const char *type,
+                       size_t warn_threshold,
+                       size_t critical_threshold)
 {
     int free_delta = (int)after_free - (int)before_free;
     printf("MALLOC_CAP_%s usage: Free memory delta: %d Leak threshold: -%u \n",
            type,
            free_delta,
            critical_threshold);
-
-    if (free_delta > 0) {
+    if (free_delta > 0)
+    {
         return; // free memory went up somehow
     }
-
     size_t leaked = (size_t)(free_delta * -1);
-    if (leaked <= warn_threshold) {
+    if (leaked <= warn_threshold)
+    {
         return;
     }
-
     printf("MALLOC_CAP_%s %s leak: Before %u bytes free, After %u bytes free (delta %u)\n",
            type,
            leaked <= critical_threshold ? "potential" : "critical",

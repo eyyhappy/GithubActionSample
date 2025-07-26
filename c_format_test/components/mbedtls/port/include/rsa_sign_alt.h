@@ -13,16 +13,16 @@
 extern "C" {
 #endif
 
-#ifdef CONFIG_ESP_TLS_USE_DS_PERIPHERAL
+    #ifdef CONFIG_ESP_TLS_USE_DS_PERIPHERAL
 #include "esp_ds/esp_rsa_sign_alt.h"
-#else
+    #else
 
 #error "DS configuration flags not activated, please enable required menuconfig flags"
 
-#endif
+    #endif
 
-#ifdef __cpluscplus
+    #ifdef __cpluscplus
 }
-#endif
+    #endif
 
 #endif

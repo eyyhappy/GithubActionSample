@@ -12,13 +12,15 @@
 #include "esp_cpu.h"
 #include "esp_private/esp_clk.h"
 
-typedef enum {
+typedef enum
+{
     PERF_TIMER_UNINIT = 0,  // timer has not been initialized yet
     PERF_TIMER_IDLE,        // timer has been initialized but is not tracking elapsed time
     PERF_TIMER_ACTIVE       // timer is tracking elapsed time
 } ccomp_timer_state_t;
 
-typedef struct {
+typedef struct
+{
     uint32_t last_ccount;      // last CCOUNT value, updated every os tick
     ccomp_timer_state_t state; // state of the timer
     int64_t ccount;            // accumulated processors cycles during the time when timer is active
@@ -31,11 +33,15 @@ static portMUX_TYPE s_lock = portMUX_INITIALIZER_UNLOCKED;
 
 static void IRAM_ATTR update_ccount(void)
 {
-    if (s_status[esp_cpu_get_core_id()].state == PERF_TIMER_ACTIVE) {
+    if (s_status[esp_cpu_get_core_id()].state == PERF_TIMER_ACTIVE)
+    {
         int64_t new_ccount = esp_cpu_get_cycle_count();
-        if (new_ccount > s_status[esp_cpu_get_core_id()].last_ccount) {
+        if (new_ccount > s_status[esp_cpu_get_core_id()].last_ccount)
+        {
             s_status[esp_cpu_get_core_id()].ccount += new_ccount - s_status[esp_cpu_get_core_id()].last_ccount;
-        } else {
+        }
+        else
+        {
             // CCOUNT has wrapped around
             s_status[esp_cpu_get_core_id()].ccount += new_ccount + (UINT32_MAX - s_status[esp_cpu_get_core_id()].last_ccount);
         }

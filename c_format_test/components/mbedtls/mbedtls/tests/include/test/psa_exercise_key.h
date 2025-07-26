@@ -253,6 +253,6 @@ int mbedtls_test_psa_exercise_key( mbedtls_svc_key_id_t key,
                                    psa_algorithm_t alg );
 
 psa_key_usage_t mbedtls_test_psa_usage_to_exercise( psa_key_type_t type,
-                                                    psa_algorithm_t alg );
+        psa_algorithm_t alg );
 
 #endif /* PSA_EXERCISE_KEY_H */

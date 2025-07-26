@@ -77,20 +77,17 @@ void mbedtls_test_psa_purge_key_cache( void )
 const char *mbedtls_test_helper_is_psa_leaking( void )
 {
     mbedtls_psa_stats_t stats;
-
     mbedtls_psa_get_stats( &stats );
-
     if( stats.volatile_slots != 0 )
         return( "A volatile slot has not been closed properly." );
     if( stats.persistent_slots != 0 )
         return( "A persistent slot has not been closed properly." );
     if( stats.external_slots != 0 )
         return( "An external slot has not been closed properly." );
-     if( stats.half_filled_slots != 0 )
+    if( stats.half_filled_slots != 0 )
         return( "A half-filled slot has not been cleared properly." );
     if( stats.locked_slots != 0 )
         return( "Some slots are still marked as locked." );
-
     return( NULL );
 }
 
@@ -99,9 +96,9 @@ const char *mbedtls_test_helper_is_psa_leaking( void )
 #define STATUS_LOG_FILE_NAME "statuses.log"
 
 psa_status_t mbedtls_test_record_status( psa_status_t status,
-                                         const char *func,
-                                         const char *file, int line,
-                                         const char *expr )
+        const char *func,
+        const char *file, int line,
+        const char *expr )
 {
     /* We open the log file on first use.
      * We never close the log file, so the record_status feature is not
@@ -118,13 +115,10 @@ psa_status_t mbedtls_test_record_status( psa_status_t status,
 psa_key_usage_t mbedtls_test_update_key_usage_flags( psa_key_usage_t usage_flags )
 {
     psa_key_usage_t updated_usage = usage_flags;
-
     if( usage_flags & PSA_KEY_USAGE_SIGN_HASH )
         updated_usage |= PSA_KEY_USAGE_SIGN_MESSAGE;
-
     if( usage_flags & PSA_KEY_USAGE_VERIFY_HASH )
         updated_usage |= PSA_KEY_USAGE_VERIFY_MESSAGE;
-
     return( updated_usage );
 }
 

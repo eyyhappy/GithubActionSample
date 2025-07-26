@@ -81,8 +81,8 @@ extern FStar_UInt128_uint128
 
 extern FStar_UInt128_uint128
 (*FStar_UInt128_op_Subtraction_Question_Hat)(
-  FStar_UInt128_uint128 x0,
-  FStar_UInt128_uint128 x1
+    FStar_UInt128_uint128 x0,
+    FStar_UInt128_uint128 x1
 );
 
 extern FStar_UInt128_uint128

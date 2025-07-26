@@ -75,7 +75,8 @@ extern "C" {
 /**
  * @brief   TWAI driver states
  */
-typedef enum {
+typedef enum
+{
     TWAI_STATE_STOPPED,             /**< Stopped state. The TWAI controller will not participate in any TWAI bus activities */
     TWAI_STATE_RUNNING,             /**< Running state. The TWAI controller can transmit and receive messages */
     TWAI_STATE_BUS_OFF,             /**< Bus-off state. The TWAI controller cannot participate in bus activities until it has recovered */
@@ -87,7 +88,8 @@ typedef enum {
  *
  * @note    Macro initializers are available for this structure
  */
-typedef struct {
+typedef struct
+{
     twai_mode_t mode;               /**< Mode of TWAI controller */
     gpio_num_t tx_io;               /**< Transmit GPIO number */
     gpio_num_t rx_io;               /**< Receive GPIO number */
@@ -103,7 +105,8 @@ typedef struct {
 /**
  * @brief   Structure to store status information of TWAI driver
  */
-typedef struct {
+typedef struct
+{
     twai_state_t state;             /**< Current state of TWAI controller (Stopped/Running/Bus-Off/Recovery) */
     uint32_t msgs_to_tx;            /**< Number of messages queued for transmission or awaiting transmission completion */
     uint32_t msgs_to_rx;            /**< Number of messages in RX queue waiting to be read */
