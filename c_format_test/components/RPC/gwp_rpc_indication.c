@@ -24,10 +24,10 @@ static gwp_list_head_t           free_items;
 void gwp_indication_item_init(void)
 {
     uint16_t i;
-      gwp_list_init(&free_items);
+    gwp_list_init(&free_items);
     for(i = 0; i < GWP_POLLING_ITEMS_MAX; i++)
     {
-                        gwp_list_push_front(&free_items, (gwp_list_t *)&gwp_item_bank[i]);
+        gwp_list_push_front(&free_items, (gwp_list_t *)&gwp_item_bank[i]);
     }
 }
 uint16_t gwp_size_of_unused_buffer(gwp_list_head_t * list_head)
