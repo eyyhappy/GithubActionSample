@@ -20,14 +20,14 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_X509_CSR_WRITE_C) || !defined(MBEDTLS_FS_IO) ||  \
@@ -350,12 +350,12 @@ int main( int argc, char *argv[] )
 exit:
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
-        #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, sizeof( buf ) );
         mbedtls_printf( " - %s\n", buf );
-        #else
+#else
         mbedtls_printf("\n");
-        #endif
+#endif
     }
     mbedtls_x509write_csr_free( &req );
     mbedtls_pk_free( &key );

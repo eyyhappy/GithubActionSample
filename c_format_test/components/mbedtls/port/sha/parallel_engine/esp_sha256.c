@@ -24,12 +24,12 @@
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 #include "sha/sha_parallel_engine.h"
@@ -222,7 +222,7 @@ static void mbedtls_sha256_software_process( mbedtls_sha256_context *ctx, const 
     {
         A[i] = ctx->state[i];
     }
-    #if defined(MBEDTLS_SHA256_SMALLER)
+#if defined(MBEDTLS_SHA256_SMALLER)
     for ( i = 0; i < 64; i++ )
     {
         if ( i < 16 )
@@ -244,7 +244,7 @@ static void mbedtls_sha256_software_process( mbedtls_sha256_context *ctx, const 
         A[1] = A[0];
         A[0] = temp1;
     }
-    #else /* MBEDTLS_SHA256_SMALLER */
+#else /* MBEDTLS_SHA256_SMALLER */
     for ( i = 0; i < 16; i++ )
     {
         GET_UINT32_BE( W[i], data, 4 * i );
@@ -271,7 +271,7 @@ static void mbedtls_sha256_software_process( mbedtls_sha256_context *ctx, const 
         P( A[2], A[3], A[4], A[5], A[6], A[7], A[0], A[1], R(i + 6), K[i + 6] );
         P( A[1], A[2], A[3], A[4], A[5], A[6], A[7], A[0], R(i + 7), K[i + 7] );
     }
-    #endif /* MBEDTLS_SHA256_SMALLER */
+#endif /* MBEDTLS_SHA256_SMALLER */
     for ( i = 0; i < 8; i++ )
     {
         ctx->state[i] += A[i];

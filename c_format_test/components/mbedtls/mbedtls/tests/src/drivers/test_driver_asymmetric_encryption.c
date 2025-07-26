@@ -27,7 +27,7 @@
 #include "test/drivers/asymmetric_encryption.h"
 
 #if defined(MBEDTLS_TEST_LIBTESTDRIVER1)
-#include "libtestdriver1/library/psa_crypto_rsa.h"
+    #include "libtestdriver1/library/psa_crypto_rsa.h"
 #endif
 
 mbedtls_test_driver_asymmetric_encryption_hooks_t mbedtls_test_driver_asymmetric_encryption_hooks =
@@ -52,19 +52,19 @@ psa_status_t mbedtls_test_transparent_asymmetric_encrypt(
     }
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_asymmetric_encrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-    #else
+#else
     return( mbedtls_psa_asymmetric_encrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -87,19 +87,19 @@ psa_status_t mbedtls_test_transparent_asymmetric_decrypt(
     }
     if( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_asymmetric_encryption_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_asymmetric_decrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-    #else
+#else
     return( mbedtls_psa_asymmetric_decrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, input, input_length, salt, salt_length,
                 output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 

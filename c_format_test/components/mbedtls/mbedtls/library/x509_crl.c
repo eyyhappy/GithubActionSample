@@ -39,29 +39,29 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#include <stdio.h>
-#define mbedtls_free       free
-#define mbedtls_calloc    calloc
-#define mbedtls_snprintf   snprintf
+    #include <stdlib.h>
+    #include <stdio.h>
+    #define mbedtls_free       free
+    #define mbedtls_calloc    calloc
+    #define mbedtls_snprintf   snprintf
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
-#include <windows.h>
-#else
-#include <time.h>
-#endif
+    #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
+        #include <windows.h>
+    #else
+        #include <time.h>
+    #endif
 #endif
 
 #if defined(MBEDTLS_FS_IO) || defined(EFIX64) || defined(EFI32)
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 /*
@@ -460,7 +460,7 @@ int mbedtls_x509_crl_parse_der( mbedtls_x509_crl *chain,
  */
 int mbedtls_x509_crl_parse( mbedtls_x509_crl *chain, const unsigned char *buf, size_t buflen )
 {
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     size_t use_len = 0;
     mbedtls_pem_context pem;
@@ -507,7 +507,7 @@ int mbedtls_x509_crl_parse( mbedtls_x509_crl *chain, const unsigned char *buf, s
     if( is_pem )
         return( 0 );
     else
-    #endif /* MBEDTLS_PEM_PARSE_C */
+#endif /* MBEDTLS_PEM_PARSE_C */
         return( mbedtls_x509_crl_parse_der( chain, buf, buflen ) );
 }
 
@@ -619,9 +619,9 @@ void mbedtls_x509_crl_free( mbedtls_x509_crl *crl )
         return;
     do
     {
-        #if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
+#if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
         mbedtls_free( crl_cur->sig_opts );
-        #endif
+#endif
         name_cur = crl_cur->issuer.next;
         while( name_cur != NULL )
         {

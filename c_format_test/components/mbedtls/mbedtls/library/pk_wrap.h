@@ -28,7 +28,7 @@
 #include "mbedtls/pk.h"
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
-#include "psa/crypto.h"
+    #include "psa/crypto.h"
 #endif /* MBEDTLS_PSA_CRYPTO_C */
 
 struct mbedtls_pk_info_t
@@ -57,7 +57,7 @@ struct mbedtls_pk_info_t
                       int (*f_rng)(void *, unsigned char *, size_t),
                       void *p_rng );
 
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /** Verify signature (restartable) */
     int (*verify_rs_func)( void *ctx, mbedtls_md_type_t md_alg,
                            const unsigned char *hash, size_t hash_len,
@@ -70,7 +70,7 @@ struct mbedtls_pk_info_t
                          unsigned char *sig, size_t sig_size, size_t *sig_len,
                          int (*f_rng)(void *, unsigned char *, size_t),
                          void *p_rng, void *rs_ctx );
-    #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
 
     /** Decrypt message */
     int (*decrypt_func)( void *ctx, const unsigned char *input, size_t ilen,
@@ -95,13 +95,13 @@ struct mbedtls_pk_info_t
     /** Free the given context */
     void (*ctx_free_func)( void *ctx );
 
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /** Allocate the restart context */
     void * (*rs_alloc_func)( void );
 
     /** Free the restart context */
     void (*rs_free_func)( void *rs_ctx );
-    #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
 
     /** Interface with the debug module */
     void (*debug_func)( const void *ctx, mbedtls_pk_debug_item *items );
@@ -119,29 +119,29 @@ typedef struct
 #endif
 
 #if defined(MBEDTLS_RSA_C)
-extern const mbedtls_pk_info_t mbedtls_rsa_info;
+    extern const mbedtls_pk_info_t mbedtls_rsa_info;
 #endif
 
 #if defined(MBEDTLS_ECP_C)
-extern const mbedtls_pk_info_t mbedtls_eckey_info;
-extern const mbedtls_pk_info_t mbedtls_eckeydh_info;
+    extern const mbedtls_pk_info_t mbedtls_eckey_info;
+    extern const mbedtls_pk_info_t mbedtls_eckeydh_info;
 #endif
 
 #if defined(MBEDTLS_ECDSA_C)
-extern const mbedtls_pk_info_t mbedtls_ecdsa_info;
+    extern const mbedtls_pk_info_t mbedtls_ecdsa_info;
 #endif
 
 #if defined(MBEDTLS_PK_RSA_ALT_SUPPORT)
-extern const mbedtls_pk_info_t mbedtls_rsa_alt_info;
+    extern const mbedtls_pk_info_t mbedtls_rsa_alt_info;
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-extern const mbedtls_pk_info_t mbedtls_pk_ecdsa_opaque_info;
-extern const mbedtls_pk_info_t mbedtls_pk_rsa_opaque_info;
+    extern const mbedtls_pk_info_t mbedtls_pk_ecdsa_opaque_info;
+    extern const mbedtls_pk_info_t mbedtls_pk_rsa_opaque_info;
 
-#if defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY)
-int mbedtls_pk_error_from_psa_ecdsa( psa_status_t status );
-#endif
+    #if defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY)
+        int mbedtls_pk_error_from_psa_ecdsa( psa_status_t status );
+    #endif
 
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
@@ -149,8 +149,8 @@ int mbedtls_pk_error_from_psa_ecdsa( psa_status_t status );
 int mbedtls_pk_error_from_psa( psa_status_t status );
 
 #if defined(PSA_WANT_KEY_TYPE_RSA_PUBLIC_KEY) ||    \
-defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR)
-int mbedtls_pk_error_from_psa_rsa( psa_status_t status );
+    defined(PSA_WANT_KEY_TYPE_RSA_KEY_PAIR)
+    int mbedtls_pk_error_from_psa_rsa( psa_status_t status );
 #endif /* PSA_WANT_KEY_TYPE_RSA_PUBLIC_KEY || PSA_WANT_KEY_TYPE_RSA_KEY_PAIR */
 
 #if defined(MBEDTLS_RSA_C)

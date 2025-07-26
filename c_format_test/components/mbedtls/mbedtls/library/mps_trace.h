@@ -31,11 +31,11 @@
 #include "mps_trace.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#define mbedtls_printf    printf
-#define mbedtls_vsnprintf vsnprintf
+    #include <stdio.h>
+    #define mbedtls_printf    printf
+    #define mbedtls_vsnprintf vsnprintf
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_MPS_ENABLE_TRACE)
@@ -74,39 +74,39 @@ typedef enum
 #define MBEDTLS_MPS_TRACE_BIT_READER  6
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_LAYER_1)
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_1 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_1 )
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_1 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_1 )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_1 0
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_1 0
 #endif
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_LAYER_2)
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_2 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_2 )
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_2 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_2 )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_2 0
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_2 0
 #endif
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_LAYER_3)
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_3 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_3 )
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_3 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_3 )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_3 0
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_3 0
 #endif
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_LAYER_4)
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_4 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_4 )
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_4 (1u << MBEDTLS_MPS_TRACE_BIT_LAYER_4 )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_LAYER_4 0
+    #define MBEDTLS_MPS_TRACE_MASK_LAYER_4 0
 #endif
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_READER)
-#define MBEDTLS_MPS_TRACE_MASK_READER (1u << MBEDTLS_MPS_TRACE_BIT_READER )
+    #define MBEDTLS_MPS_TRACE_MASK_READER (1u << MBEDTLS_MPS_TRACE_BIT_READER )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_READER 0
+    #define MBEDTLS_MPS_TRACE_MASK_READER 0
 #endif
 
 #if defined(MBEDTLS_MPS_TRACE_ENABLE_WRITER)
-#define MBEDTLS_MPS_TRACE_MASK_WRITER (1u << MBEDTLS_MPS_TRACE_BIT_WRITER )
+    #define MBEDTLS_MPS_TRACE_MASK_WRITER (1u << MBEDTLS_MPS_TRACE_BIT_WRITER )
 #else
-#define MBEDTLS_MPS_TRACE_MASK_WRITER 0
+    #define MBEDTLS_MPS_TRACE_MASK_WRITER 0
 #endif
 
 #define MBEDTLS_MPS_TRACE_MASK ( MBEDTLS_MPS_TRACE_MASK_LAYER_1 |       \

@@ -6,7 +6,7 @@
 #include "mockMock.h"
 
 #ifdef USE_CEXCEPTION
-#include "CException.h"
+    #include "CException.h"
 #endif
 
 /* Notes about prefixes:

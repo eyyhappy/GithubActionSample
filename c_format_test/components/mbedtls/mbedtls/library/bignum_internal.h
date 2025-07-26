@@ -23,7 +23,7 @@
 #include "common.h"
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+    #include "mbedtls/bignum.h"
 #endif
 
 /** Perform a known-size multiply accumulate operation

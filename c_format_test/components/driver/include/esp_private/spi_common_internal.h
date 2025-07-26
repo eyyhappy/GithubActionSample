@@ -67,9 +67,9 @@ typedef struct
     lldesc_t *dmadesc_tx;       ///< DMA descriptor array for TX
     lldesc_t *dmadesc_rx;       ///< DMA descriptor array for RX
     spi_bus_lock_handle_t lock;
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_handle_t pm_lock;   ///< Power management lock
-    #endif
+#endif
 } spi_bus_attr_t;
 
 /// Destructor called when a bus is deinitialized.

@@ -85,7 +85,7 @@ TEST_CASE("rmt_channel_install_uninstall", "[rmt]")
     TEST_ESP_OK(rmt_del_channel(tx_channels[0]));
     TEST_ESP_OK(rmt_del_channel(tx_channels[1]));
     TEST_ESP_OK(rmt_del_channel(rx_channels[0]));
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     printf("install DMA channel + normal channel\r\n");
     tx_channel_cfg.mem_block_symbols = 4096; // DMA is aimed for transfer large amount of buffers
     tx_channel_cfg.flags.with_dma = true;
@@ -103,5 +103,5 @@ TEST_CASE("rmt_channel_install_uninstall", "[rmt]")
         TEST_ESP_OK(rmt_del_channel(tx_channels[i]));
         TEST_ESP_OK(rmt_del_channel(rx_channels[i]));
     }
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
 }

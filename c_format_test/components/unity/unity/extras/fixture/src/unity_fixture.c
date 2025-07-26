@@ -82,9 +82,9 @@ void UnityTestRunner(unityfunction* setup,
         else
         {
             UnityPrint(printableName);
-            #ifndef UNITY_REPEAT_TEST_NAME
+#ifndef UNITY_REPEAT_TEST_NAME
             Unity.CurrentTestName = NULL;
-            #endif
+#endif
         }
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
@@ -160,10 +160,10 @@ void UnityMalloc_MakeMallocFailAfterCount(int countdown)
 #undef realloc
 
 #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-static unsigned char unity_heap[UNITY_INTERNAL_HEAP_SIZE_BYTES];
-static size_t heap_index;
+    static unsigned char unity_heap[UNITY_INTERNAL_HEAP_SIZE_BYTES];
+    static size_t heap_index;
 #else
-#include <stdlib.h>
+    #include <stdlib.h>
 #endif
 
 typedef struct GuardBytes
@@ -187,7 +187,7 @@ void* unity_malloc(size_t size)
         malloc_fail_countdown--;
     }
     if (size == 0) return NULL;
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     if (heap_index + total_size > UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
         guard = NULL;
@@ -197,9 +197,9 @@ void* unity_malloc(size_t size)
         guard = (Guard*)&unity_heap[heap_index];
         heap_index += total_size;
     }
-    #else
+#else
     guard = (Guard*)UNITY_FIXTURE_MALLOC(total_size);
-    #endif
+#endif
     if (guard == NULL) return NULL;
     malloc_count++;
     guard->size = size;
@@ -222,14 +222,14 @@ static void release_memory(void* mem)
     Guard* guard = (Guard*)mem;
     guard--;
     malloc_count--;
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     if (mem == unity_heap + heap_index - guard->size - sizeof(end))
     {
         heap_index -= (guard->size + sizeof(Guard) + sizeof(end));
     }
-    #else
+#else
     UNITY_FIXTURE_FREE(guard);
-    #endif
+#endif
 }
 
 void unity_free(void* mem)
@@ -272,14 +272,14 @@ void* unity_realloc(void* oldMem, size_t size)
         return NULL;
     }
     if (guard->size >= size) return oldMem;
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
     if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
         heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
         release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
         return unity_malloc(size); /* No memcpy since data is in place */
     }
-    #endif
+#endif
     newMem = unity_malloc(size);
     if (newMem == NULL) return NULL; /* Do not release old memory */
     memcpy(newMem, oldMem, guard->size);

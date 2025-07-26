@@ -10,9 +10,9 @@
 #include <sys/param.h>
 #include "sdkconfig.h"
 #if CONFIG_RMT_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "esp_log.h"
 #include "esp_check.h"

@@ -22,7 +22,7 @@
  * mbedtls_config.h, which pulls in glibc's features.h. Harmless on other platforms.
  */
 #if !defined(_POSIX_C_SOURCE)
-#define _POSIX_C_SOURCE 200112L
+    #define _POSIX_C_SOURCE 200112L
 #endif
 
 #include "common.h"
@@ -52,7 +52,7 @@ defined(__unix) || defined(__unix__) || (defined(__APPLE__) && \
  */
 
 #if ! ( defined(_WIN32) && !defined(EFIX64) && !defined(EFI32) )
-#define THREADING_USE_GMTIME
+    #define THREADING_USE_GMTIME
 #endif /* ! ( defined(_WIN32) && !defined(EFIX64) && !defined(EFI32) ) */
 
 #endif /* !( ( defined(_POSIX_VERSION) && _POSIX_VERSION >= 200809L ) ||     \
@@ -142,12 +142,12 @@ void mbedtls_threading_set_alt( void (*mutex_init)( mbedtls_threading_mutex_t * 
     mbedtls_mutex_free = mutex_free;
     mbedtls_mutex_lock = mutex_lock;
     mbedtls_mutex_unlock = mutex_unlock;
-    #if defined(MBEDTLS_FS_IO)
+#if defined(MBEDTLS_FS_IO)
     mbedtls_mutex_init( &mbedtls_threading_readdir_mutex );
-    #endif
-    #if defined(THREADING_USE_GMTIME)
+#endif
+#if defined(THREADING_USE_GMTIME)
     mbedtls_mutex_init( &mbedtls_threading_gmtime_mutex );
-    #endif
+#endif
 }
 
 /*
@@ -155,12 +155,12 @@ void mbedtls_threading_set_alt( void (*mutex_init)( mbedtls_threading_mutex_t * 
  */
 void mbedtls_threading_free_alt( void )
 {
-    #if defined(MBEDTLS_FS_IO)
+#if defined(MBEDTLS_FS_IO)
     mbedtls_mutex_free( &mbedtls_threading_readdir_mutex );
-    #endif
-    #if defined(THREADING_USE_GMTIME)
+#endif
+#if defined(THREADING_USE_GMTIME)
     mbedtls_mutex_free( &mbedtls_threading_gmtime_mutex );
-    #endif
+#endif
 }
 #endif /* MBEDTLS_THREADING_ALT */
 
@@ -168,13 +168,13 @@ void mbedtls_threading_free_alt( void )
  * Define global mutexes
  */
 #ifndef MUTEX_INIT
-#define MUTEX_INIT
+    #define MUTEX_INIT
 #endif
 #if defined(MBEDTLS_FS_IO)
-mbedtls_threading_mutex_t mbedtls_threading_readdir_mutex MUTEX_INIT;
+    mbedtls_threading_mutex_t mbedtls_threading_readdir_mutex MUTEX_INIT;
 #endif
 #if defined(THREADING_USE_GMTIME)
-mbedtls_threading_mutex_t mbedtls_threading_gmtime_mutex MUTEX_INIT;
+    mbedtls_threading_mutex_t mbedtls_threading_gmtime_mutex MUTEX_INIT;
 #endif
 
 #endif /* MBEDTLS_THREADING_C */

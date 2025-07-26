@@ -21,16 +21,16 @@
 #include "soc/i2s_periph.h"
 #include "driver/i2s_std.h"
 #if SOC_I2S_SUPPORTS_PDM
-#include "driver/i2s_pdm.h"
+    #include "driver/i2s_pdm.h"
 #endif
 #if SOC_I2S_SUPPORTS_TDM
-#include "driver/i2s_tdm.h"
+    #include "driver/i2s_tdm.h"
 #endif
 #include "hal/i2s_hal.h"
 #include "esp_private/i2s_platform.h"
 #if SOC_PCNT_SUPPORTED
-#include "driver/pulse_cnt.h"
-#include "soc/pcnt_periph.h"
+    #include "driver/pulse_cnt.h"
+    #include "soc/pcnt_periph.h"
 #endif
 
 #include "../../test_inc/test_i2s.h"
@@ -78,7 +78,7 @@ static void i2s_test_io_config(int mode)
     gpio_set_direction(DATA_OUT_IO, GPIO_MODE_INPUT_OUTPUT);
     switch (mode)
     {
-            #if SOC_I2S_NUM > 1
+#if SOC_I2S_NUM > 1
         case I2S_TEST_MODE_SLAVE_TO_MASTER:
         {
             esp_rom_gpio_connect_out_signal(MASTER_BCK_IO, i2s_periph_signal[0].m_rx_bck_sig, 0, 0);
@@ -99,7 +99,7 @@ static void i2s_test_io_config(int mode)
             esp_rom_gpio_connect_in_signal(DATA_OUT_IO, i2s_periph_signal[1].data_in_sig, 0);
         }
         break;
-        #endif
+#endif
         case I2S_TEST_MODE_LOOPBACK:
         {
             esp_rom_gpio_connect_out_signal(DATA_OUT_IO, i2s_periph_signal[0].data_out_sig, 0, 0);
@@ -437,7 +437,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
     for (retry = 0; retry < RETEY_TIMES; retry++)
     {
         TEST_ESP_OK(i2s_channel_read(rx_handle, r_buf, READ_BUF_LEN, &r_bytes, portMAX_DELAY));
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         /* The data of tx/rx channels are flipped on ESP32 */
         for (int n = 0; n < READ_BUF_LEN / 2; n += 2)
         {
@@ -445,7 +445,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
             r_buf[n] = r_buf[n + 1];
             r_buf[n + 1] = temp;
         }
-        #endif
+#endif
         /* Expected: 1 3 5 7 9 ... 97 99 */
         if (whether_contains_exapected_data(r_buf, READ_BUF_LEN / 2, 1, 1, 2))
         {
@@ -472,7 +472,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
     for (retry = 0; retry < RETEY_TIMES; retry++)
     {
         TEST_ESP_OK(i2s_channel_read(rx_handle, r_buf, READ_BUF_LEN, &r_bytes, portMAX_DELAY));
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         /* The data of tx/rx channels are flipped on ESP32 */
         for (int n = 0; n < READ_BUF_LEN / 2; n += 2)
         {
@@ -480,7 +480,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
             r_buf[n] = r_buf[n + 1];
             r_buf[n + 1] = temp;
         }
-        #endif
+#endif
         /* Expected: 2 4 6 8 10 ... 96 98 */
         if (whether_contains_exapected_data(r_buf, READ_BUF_LEN / 2, 1, 2, 2))
         {
@@ -521,7 +521,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
         goto err;
     }
     printf("tx/rx stereo test passed\n");
-    #if !CONFIG_IDF_TARGET_ESP32 // the 16 bit channel sequence on ESP32 is incorrect
+#if !CONFIG_IDF_TARGET_ESP32 // the 16 bit channel sequence on ESP32 is incorrect
     /* tx mono rx stereo test
      * tx format: 0x01[L] 0x01[R] 0x02[L] 0x02[R] ...
      * rx receive: 0x01[L] 0x01[R] 0x02[L] 0x02[R] ... */
@@ -549,7 +549,7 @@ TEST_CASE("I2S_mono_stereo_loopback_test", "[i2s]")
         goto err;
     }
     printf("tx mono rx stereo test passed\n");
-    #endif
+#endif
 err:
     if (is_failed)
     {

@@ -33,17 +33,17 @@
 #define TEST_PWM_FREQ 2000
 
 #if SOC_LEDC_SUPPORT_HS_MODE
-#define TEST_SPEED_MODE LEDC_HIGH_SPEED_MODE
-#define SPEED_MODE_LIST {LEDC_HIGH_SPEED_MODE, LEDC_LOW_SPEED_MODE}
+    #define TEST_SPEED_MODE LEDC_HIGH_SPEED_MODE
+    #define SPEED_MODE_LIST {LEDC_HIGH_SPEED_MODE, LEDC_LOW_SPEED_MODE}
 #else
-#define TEST_SPEED_MODE LEDC_LOW_SPEED_MODE
-#define SPEED_MODE_LIST {LEDC_LOW_SPEED_MODE}
+    #define TEST_SPEED_MODE LEDC_LOW_SPEED_MODE
+    #define SPEED_MODE_LIST {LEDC_LOW_SPEED_MODE}
 #endif
 
 #if SOC_LEDC_SUPPORT_APB_CLOCK
-#define TEST_DEFAULT_CLK_CFG LEDC_USE_APB_CLK
+    #define TEST_DEFAULT_CLK_CFG LEDC_USE_APB_CLK
 #elif SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
-#define TEST_DEFAULT_CLK_CFG LEDC_USE_PLL_DIV_CLK
+    #define TEST_DEFAULT_CLK_CFG LEDC_USE_PLL_DIV_CLK
 #endif
 
 static ledc_channel_config_t initialize_channel_config(void)
@@ -468,12 +468,12 @@ static void timer_frequency_test(ledc_channel_t channel, ledc_timer_bit_t timer_
 TEST_CASE("LEDC set and get frequency", "[ledc][timeout=60][ignore]")
 {
     setup_testbench();
-    #if SOC_LEDC_SUPPORT_HS_MODE
+#if SOC_LEDC_SUPPORT_HS_MODE
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_0, LEDC_HIGH_SPEED_MODE);
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_1, LEDC_HIGH_SPEED_MODE);
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_2, LEDC_HIGH_SPEED_MODE);
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_3, LEDC_HIGH_SPEED_MODE);
-    #endif // SOC_LEDC_SUPPORT_HS_MODE
+#endif // SOC_LEDC_SUPPORT_HS_MODE
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_0, LEDC_LOW_SPEED_MODE);
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_1, LEDC_LOW_SPEED_MODE);
     timer_frequency_test(LEDC_CHANNEL_0, LEDC_TIMER_13_BIT, LEDC_TIMER_2, LEDC_LOW_SPEED_MODE);
@@ -526,23 +526,23 @@ TEST_CASE("LEDC timer select specific clock source", "[ledc]")
     {
         printf("Check LEDC_USE_RTC8M_CLK for a 100Hz signal\n");
         timer_set_clk_src_and_freq_test(test_speed_mode, LEDC_USE_RTC8M_CLK, 10, 100);
-        #if SOC_LEDC_SUPPORT_XTAL_CLOCK
+#if SOC_LEDC_SUPPORT_XTAL_CLOCK
         printf("Check LEDC_USE_XTAL_CLK for a 400Hz signal\n");
         timer_set_clk_src_and_freq_test(test_speed_mode, LEDC_USE_XTAL_CLK, 13, 400);
-        #endif
+#endif
     }
-    #if SOC_LEDC_SUPPORT_REF_TICK
+#if SOC_LEDC_SUPPORT_REF_TICK
     printf("Check LEDC_USE_REF_TICK for a 250Hz signal\n");
     timer_set_clk_src_and_freq_test(test_speed_mode, LEDC_USE_REF_TICK, 10, 250);
-    #endif
-    #if SOC_LEDC_SUPPORT_APB_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_APB_CLOCK
     printf("Check LEDC_USE_APB_CLK for a 500Hz signal\n");
     timer_set_clk_src_and_freq_test(test_speed_mode, LEDC_USE_APB_CLK, 13, 500);
-    #endif
-    #if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
     printf("Check LEDC_USE_PLL_DIV_CLK for a 500Hz signal\n");
     timer_set_clk_src_and_freq_test(test_speed_mode, LEDC_USE_PLL_DIV_CLK, 13, 500);
-    #endif
+#endif
     printf("Bind channel 0 to timer 0\n");
     TEST_ESP_OK(ledc_bind_channel_timer(test_speed_mode, LEDC_CHANNEL_0, LEDC_TIMER_0));
     vTaskDelay(1000 / portTICK_PERIOD_MS);

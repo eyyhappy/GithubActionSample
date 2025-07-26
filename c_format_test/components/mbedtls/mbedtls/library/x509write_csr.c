@@ -33,23 +33,23 @@
 #include "mbedtls/platform_util.h"
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+    #include "psa/crypto.h"
+    #include "mbedtls/psa_util.h"
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 #include <string.h>
 #include <stdlib.h>
 
 #if defined(MBEDTLS_PEM_WRITE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc    calloc
-#define mbedtls_free      free
+    #include <stdlib.h>
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free      free
 #endif
 
 void mbedtls_x509write_csr_init( mbedtls_x509write_csr *ctx )
@@ -139,10 +139,10 @@ static int x509write_csr_der_internal( mbedtls_x509write_csr *ctx,
     size_t pub_len = 0, sig_and_oid_len = 0, sig_len;
     size_t len = 0;
     mbedtls_pk_type_t pk_alg;
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     size_t hash_len;
     psa_algorithm_t hash_alg = mbedtls_psa_translate_md( ctx->md_alg );
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     /* Write the CSR backwards starting from the end of buf */
     c = buf + size;
     MBEDTLS_ASN1_CHK_ADD( len, mbedtls_x509_write_extensions( &c, buf,
@@ -196,7 +196,7 @@ static int x509write_csr_der_internal( mbedtls_x509write_csr *ctx,
      * Sign the written CSR data into the sig buffer
      * Note: hash errors can happen only after an internal error
      */
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     if( psa_hash_compute( hash_alg,
                           c,
                           len,
@@ -206,11 +206,11 @@ static int x509write_csr_der_internal( mbedtls_x509write_csr *ctx,
     {
         return( MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED );
     }
-    #else /* MBEDTLS_USE_PSA_CRYPTO */
+#else /* MBEDTLS_USE_PSA_CRYPTO */
     ret = mbedtls_md( mbedtls_md_info_from_type( ctx->md_alg ), c, len, hash );
     if( ret != 0 )
         return( ret );
-    #endif
+#endif
     if( ( ret = mbedtls_pk_sign( ctx->key, ctx->md_alg, hash, 0,
                                  sig, sig_size, &sig_len,
                                  f_rng, p_rng ) ) != 0 )

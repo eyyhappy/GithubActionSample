@@ -28,17 +28,17 @@
 #include "mbedtls/error.h"
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+    #include "mbedtls/rsa.h"
 #endif
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/ecp.h"
+    #include "mbedtls/ecp.h"
 #endif
 #if defined(MBEDTLS_ECDSA_C)
-#include "mbedtls/ecdsa.h"
+    #include "mbedtls/ecdsa.h"
 #endif
 
 #if defined(MBEDTLS_PSA_CRYPTO_C)
-#include "mbedtls/psa_util.h"
+    #include "mbedtls/psa_util.h"
 #endif
 
 #include <limits.h>
@@ -106,20 +106,20 @@ const mbedtls_pk_info_t * mbedtls_pk_info_from_type( mbedtls_pk_type_t pk_type )
 {
     switch( pk_type )
     {
-            #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         case MBEDTLS_PK_RSA:
             return( &mbedtls_rsa_info );
-            #endif
-            #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
         case MBEDTLS_PK_ECKEY:
             return( &mbedtls_eckey_info );
         case MBEDTLS_PK_ECKEY_DH:
             return( &mbedtls_eckeydh_info );
-            #endif
-            #if defined(MBEDTLS_ECDSA_C)
+#endif
+#if defined(MBEDTLS_ECDSA_C)
         case MBEDTLS_PK_ECDSA:
             return( &mbedtls_ecdsa_info );
-            #endif
+#endif
         /* MBEDTLS_PK_RSA_ALT omitted on purpose */
         default:
             return( NULL );
@@ -364,7 +364,7 @@ int mbedtls_pk_verify_restartable( mbedtls_pk_context *ctx,
     if( ctx->pk_info == NULL ||
         pk_hashlen_helper( md_alg, &hash_len ) != 0 )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /* optimization: use non-restartable version if restart disabled */
     if( rs_ctx != NULL &&
         mbedtls_ecp_restart_is_enabled() &&
@@ -379,9 +379,9 @@ int mbedtls_pk_verify_restartable( mbedtls_pk_context *ctx,
             mbedtls_pk_restart_free( rs_ctx );
         return( ret );
     }
-    #else /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#else /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
     (void) rs_ctx;
-    #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
     if( ctx->pk_info->verify_func == NULL )
         return( MBEDTLS_ERR_PK_TYPE_MISMATCH );
     return( ctx->pk_info->verify_func( ctx->pk_ctx, md_alg, hash, hash_len,
@@ -422,17 +422,17 @@ int mbedtls_pk_verify_ext( mbedtls_pk_type_t type, const void *options,
             return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
         return( mbedtls_pk_verify( ctx, md_alg, hash, hash_len, sig, sig_len ) );
     }
-    #if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_PKCS1_V21)
+#if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_PKCS1_V21)
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     const mbedtls_pk_rsassa_pss_options *pss_opts;
-    #if SIZE_MAX > UINT_MAX
+#if SIZE_MAX > UINT_MAX
     if( md_alg == MBEDTLS_MD_NONE && UINT_MAX < hash_len )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
-    #endif /* SIZE_MAX > UINT_MAX */
+#endif /* SIZE_MAX > UINT_MAX */
     if( options == NULL )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
     pss_opts = (const mbedtls_pk_rsassa_pss_options *) options;
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     if( pss_opts->mgf1_hash_id == md_alg &&
         ( (size_t) pss_opts->expected_salt_len == hash_len ||
           pss_opts->expected_salt_len  == MBEDTLS_RSA_SALT_LEN_ANY ) )
@@ -483,7 +483,7 @@ int mbedtls_pk_verify_ext( mbedtls_pk_type_t type, const void *options,
         return( mbedtls_pk_error_from_psa_rsa( status ) );
     }
     else
-    #endif
+#endif
     {
         if( sig_len < mbedtls_pk_get_len( ctx ) )
             return( MBEDTLS_ERR_RSA_VERIFY_FAILED );
@@ -498,9 +498,9 @@ int mbedtls_pk_verify_ext( mbedtls_pk_type_t type, const void *options,
             return( MBEDTLS_ERR_PK_SIG_LEN_MISMATCH );
         return( 0 );
     }
-    #else
+#else
     return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
-    #endif /* MBEDTLS_RSA_C && MBEDTLS_PKCS1_V21 */
+#endif /* MBEDTLS_RSA_C && MBEDTLS_PKCS1_V21 */
 }
 
 /*
@@ -520,7 +520,7 @@ int mbedtls_pk_sign_restartable( mbedtls_pk_context *ctx,
     if( ctx->pk_info == NULL ||
         pk_hashlen_helper( md_alg, &hash_len ) != 0 )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /* optimization: use non-restartable version if restart disabled */
     if( rs_ctx != NULL &&
         mbedtls_ecp_restart_is_enabled() &&
@@ -537,9 +537,9 @@ int mbedtls_pk_sign_restartable( mbedtls_pk_context *ctx,
             mbedtls_pk_restart_free( rs_ctx );
         return( ret );
     }
-    #else /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#else /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
     (void) rs_ctx;
-    #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
     if( ctx->pk_info->sign_func == NULL )
         return( MBEDTLS_ERR_PK_TYPE_MISMATCH );
     return( ctx->pk_info->sign_func( ctx->pk_ctx, md_alg,
@@ -573,9 +573,9 @@ int mbedtls_pk_sign_ext( mbedtls_pk_type_t pk_type,
                          int (*f_rng)(void *, unsigned char *, size_t),
                          void *p_rng )
 {
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     psa_algorithm_t psa_md_alg;
-    #endif /* MBEDTLS_RSA_C */
+#endif /* MBEDTLS_RSA_C */
     *sig_len = 0;
     if( ctx->pk_info == NULL )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
@@ -586,7 +586,7 @@ int mbedtls_pk_sign_ext( mbedtls_pk_type_t pk_type,
         return( mbedtls_pk_sign( ctx, md_alg, hash, hash_len,
                                  sig, sig_size, sig_len, f_rng, p_rng ) );
     }
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     psa_md_alg = mbedtls_psa_translate_md( md_alg );
     if( psa_md_alg == 0 )
         return( MBEDTLS_ERR_PK_BAD_INPUT_DATA );
@@ -602,9 +602,9 @@ int mbedtls_pk_sign_ext( mbedtls_pk_type_t pk_type,
     return( mbedtls_pk_psa_rsa_sign_ext( PSA_ALG_RSA_PSS( psa_md_alg ),
                                          ctx->pk_ctx, hash, hash_len,
                                          sig, sig_size, sig_len ) );
-    #else /* MBEDTLS_RSA_C */
+#else /* MBEDTLS_RSA_C */
     return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
-    #endif /* !MBEDTLS_RSA_C */
+#endif /* !MBEDTLS_RSA_C */
 }
 #endif /* MBEDTLS_PSA_CRYPTO_C */
 
@@ -739,14 +739,14 @@ int mbedtls_pk_wrap_as_opaque( mbedtls_pk_context *pk,
                                psa_key_usage_t usage,
                                psa_algorithm_t alg2 )
 {
-    #if !defined(MBEDTLS_ECP_C) && !defined(MBEDTLS_RSA_C)
+#if !defined(MBEDTLS_ECP_C) && !defined(MBEDTLS_RSA_C)
     ((void) pk);
     ((void) key);
     ((void) alg);
     ((void) usage);
     ((void) alg2);
-    #else
-    #if defined(MBEDTLS_ECP_C)
+#else
+#if defined(MBEDTLS_ECP_C)
     if( mbedtls_pk_get_type( pk ) == MBEDTLS_PK_ECKEY )
     {
         const mbedtls_ecp_keypair *ec;
@@ -782,8 +782,8 @@ int mbedtls_pk_wrap_as_opaque( mbedtls_pk_context *pk,
         return( mbedtls_pk_setup_opaque( pk, *key ) );
     }
     else
-    #endif /* MBEDTLS_ECP_C */
-    #if defined(MBEDTLS_RSA_C)
+#endif /* MBEDTLS_ECP_C */
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( pk ) == MBEDTLS_PK_RSA )
         {
             unsigned char buf[MBEDTLS_PK_RSA_PRV_DER_MAX_BYTES];
@@ -814,8 +814,8 @@ int mbedtls_pk_wrap_as_opaque( mbedtls_pk_context *pk,
             return( mbedtls_pk_setup_opaque( pk, *key ) );
         }
         else
-    #endif /* MBEDTLS_RSA_C */
-    #endif /* !MBEDTLS_ECP_C && !MBEDTLS_RSA_C */
+#endif /* MBEDTLS_RSA_C */
+#endif /* !MBEDTLS_ECP_C && !MBEDTLS_RSA_C */
     return( MBEDTLS_ERR_PK_TYPE_MISMATCH );
 }
 #endif /* MBEDTLS_USE_PSA_CRYPTO */

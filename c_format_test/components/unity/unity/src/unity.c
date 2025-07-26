@@ -10,7 +10,7 @@
 
 /* If omitted from header, declare overrideable prototypes here so they're ready for use */
 #ifdef UNITY_OMIT_OUTPUT_CHAR_HEADER_DECLARATION
-void UNITY_OUTPUT_CHAR(int);
+    void UNITY_OUTPUT_CHAR(int);
 #endif
 
 /* Helpful macros for us to use here in Assert functions */
@@ -21,15 +21,15 @@ void UNITY_OUTPUT_CHAR(int);
 struct UNITY_STORAGE_T Unity;
 
 #ifdef UNITY_OUTPUT_COLOR
-static const char UnityStrOk[]                     = "\033[42mOK\033[00m";
-static const char UnityStrPass[]                   = "\033[42mPASS\033[00m";
-static const char UnityStrFail[]                   = "\033[41mFAIL\033[00m";
-static const char UnityStrIgnore[]                 = "\033[43mIGNORE\033[00m";
+    static const char UnityStrOk[]                     = "\033[42mOK\033[00m";
+    static const char UnityStrPass[]                   = "\033[42mPASS\033[00m";
+    static const char UnityStrFail[]                   = "\033[41mFAIL\033[00m";
+    static const char UnityStrIgnore[]                 = "\033[43mIGNORE\033[00m";
 #else
-static const char UnityStrOk[]                     = "OK";
-static const char UnityStrPass[]                   = "PASS";
-static const char UnityStrFail[]                   = "FAIL";
-static const char UnityStrIgnore[]                 = "IGNORE";
+    static const char UnityStrOk[]                     = "OK";
+    static const char UnityStrPass[]                   = "PASS";
+    static const char UnityStrFail[]                   = "FAIL";
+    static const char UnityStrIgnore[]                 = "IGNORE";
 #endif
 static const char UnityStrNull[]                   = "NULL";
 static const char UnityStrSpacer[]                 = ". ";
@@ -46,12 +46,12 @@ static const char UnityStrPointless[]              = " You Asked Me To Compare N
 static const char UnityStrNullPointerForExpected[] = " Expected pointer to be NULL";
 static const char UnityStrNullPointerForActual[]   = " Actual pointer was NULL";
 #ifndef UNITY_EXCLUDE_FLOAT
-static const char UnityStrNot[]                    = "Not ";
-static const char UnityStrInf[]                    = "Infinity";
-static const char UnityStrNegInf[]                 = "Negative Infinity";
-static const char UnityStrNaN[]                    = "NaN";
-static const char UnityStrDet[]                    = "Determinate";
-static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
+    static const char UnityStrNot[]                    = "Not ";
+    static const char UnityStrInf[]                    = "Infinity";
+    static const char UnityStrNegInf[]                 = "Negative Infinity";
+    static const char UnityStrNaN[]                    = "NaN";
+    static const char UnityStrDet[]                    = "Determinate";
+    static const char UnityStrInvalidFloatTrait[]      = "Invalid Float Trait";
 #endif
 const char UnityStrErrFloat[]                      = "Unity Floating Point Disabled";
 const char UnityStrErrDouble[]                     = "Unity Double Precision Disabled";
@@ -91,7 +91,7 @@ void UnityPrint(const char* string)
                 UNITY_OUTPUT_CHAR('\\');
                 UNITY_OUTPUT_CHAR('n');
             }
-            #ifdef UNITY_OUTPUT_COLOR
+#ifdef UNITY_OUTPUT_COLOR
             /* print ANSI escape code */
             else if (*pch == 27 && *(pch + 1) == '[')
             {
@@ -102,7 +102,7 @@ void UnityPrint(const char* string)
                 }
                 UNITY_OUTPUT_CHAR('m');
             }
-            #endif
+#endif
             /* unprintable characters are shown as codes */
             else
             {
@@ -401,7 +401,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
     if (msg)
     {
         UnityPrint(UnityStrSpacer);
-        #ifndef UNITY_EXCLUDE_DETAILS
+#ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
         {
             UnityPrint(UnityStrDetail1Name);
@@ -413,7 +413,7 @@ static void UnityAddMsgIfSpecified(const char* msg)
             }
             UnityPrint(UnityStrSpacer);
         }
-        #endif
+#endif
         UnityPrint(msg);
     }
 }
@@ -622,12 +622,12 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT16*)actual;
                 break;
-                #ifdef UNITY_SUPPORT_64
+#ifdef UNITY_SUPPORT_64
             case 8:
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT64*)actual;
                 break;
-                #endif
+#endif
             default: /* length 4 bytes */
                 expect_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)expected;
                 actual_val = *(UNITY_PTR_ATTRIBUTE const UNITY_INT32*)actual;
@@ -674,9 +674,9 @@ void UnityAssertEqualIntArray(UNITY_INTERNAL_PTR expected,
     return !(isnan(diff) || isinf(diff) || ((diff) > (delta)))
 /* This first part of this condition will catch any NaN or Infinite values */
 #ifndef UNITY_NAN_NOT_EQUAL_NAN
-#define UNITY_NAN_CHECK isnan(expected) && isnan(actual)
+    #define UNITY_NAN_CHECK isnan(expected) && isnan(actual)
 #else
-#define UNITY_NAN_CHECK 0
+    #define UNITY_NAN_CHECK 0
 #endif
 
 #ifndef UNITY_EXCLUDE_FLOAT_PRINT
@@ -793,13 +793,13 @@ void UnityAssertFloatSpecial(const UNITY_FLOAT actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-        #ifndef UNITY_EXCLUDE_FLOAT_PRINT
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat((UNITY_DOUBLE)actual);
-        #else
+#else
         if (should_be_trait)
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
-        #endif
+#endif
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -912,13 +912,13 @@ void UnityAssertDoubleSpecial(const UNITY_DOUBLE actual,
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
         UnityPrint(UnityStrWas);
-        #ifndef UNITY_EXCLUDE_FLOAT_PRINT
+#ifndef UNITY_EXCLUDE_FLOAT_PRINT
         UnityPrintFloat(actual);
-        #else
+#else
         if (should_be_trait)
             UnityPrint(UnityStrNot);
         UnityPrint(trait_names[trait_index]);
-        #endif
+#endif
         UnityAddMsgIfSpecified(msg);
         UNITY_FAIL_AND_BAIL;
     }
@@ -1172,15 +1172,15 @@ static union
     UNITY_INT8 i8;
     UNITY_INT16 i16;
     UNITY_INT32 i32;
-    #ifdef UNITY_SUPPORT_64
+#ifdef UNITY_SUPPORT_64
     UNITY_INT64 i64;
-    #endif
-    #ifndef UNITY_EXCLUDE_FLOAT
+#endif
+#ifndef UNITY_EXCLUDE_FLOAT
     float f;
-    #endif
-    #ifndef UNITY_EXCLUDE_DOUBLE
+#endif
+#ifndef UNITY_EXCLUDE_DOUBLE
     double d;
-    #endif
+#endif
 } UnityQuickCompare;
 
 UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
@@ -1193,11 +1193,11 @@ UNITY_INTERNAL_PTR UnityNumToPtr(const UNITY_INT num, const UNITY_UINT8 size)
         case 2:
             UnityQuickCompare.i16 = (UNITY_INT16)num;
             return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i16);
-            #ifdef UNITY_SUPPORT_64
+#ifdef UNITY_SUPPORT_64
         case 8:
             UnityQuickCompare.i64 = (UNITY_INT64)num;
             return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i64);
-            #endif
+#endif
         default: /* 4 bytes */
             UnityQuickCompare.i32 = (UNITY_INT32)num;
             return (UNITY_INTERNAL_PTR)(&UnityQuickCompare.i32);
@@ -1232,7 +1232,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
     if (msg != NULL)
     {
         UNITY_OUTPUT_CHAR(':');
-        #ifndef UNITY_EXCLUDE_DETAILS
+#ifndef UNITY_EXCLUDE_DETAILS
         if (Unity.CurrentDetail1)
         {
             UnityPrint(UnityStrDetail1Name);
@@ -1244,7 +1244,7 @@ void UnityFail(const char* msg, const UNITY_LINE_TYPE line)
             }
             UnityPrint(UnityStrSpacer);
         }
-        #endif
+#endif
         if (msg[0] != ' ')
         {
             UNITY_OUTPUT_CHAR(' ');
@@ -1324,10 +1324,10 @@ int UnityEnd(void)
     else
     {
         UnityPrint(UnityStrFail);
-        #ifdef UNITY_DIFFERENTIATE_FINAL_FAIL
+#ifdef UNITY_DIFFERENTIATE_FINAL_FAIL
         UNITY_OUTPUT_CHAR('E');
         UNITY_OUTPUT_CHAR('D');
-        #endif
+#endif
     }
     UNITY_PRINT_EOL();
     UNITY_FLUSH_CALL();

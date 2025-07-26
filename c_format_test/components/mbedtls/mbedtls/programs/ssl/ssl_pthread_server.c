@@ -21,16 +21,16 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_fprintf    fprintf
-#define mbedtls_printf     printf
-#define mbedtls_snprintf   snprintf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_printf     printf
+    #define mbedtls_snprintf   snprintf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif
 
 #if !defined(MBEDTLS_BIGNUM_C)  || !defined(MBEDTLS_ENTROPY_C) ||         \
@@ -55,7 +55,7 @@ int main( void )
 #include <string.h>
 
 #if defined(_WIN32)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include "mbedtls/entropy.h"
@@ -67,11 +67,11 @@ int main( void )
 #include "test/certs.h"
 
 #if defined(MBEDTLS_SSL_CACHE_C)
-#include "mbedtls/ssl_cache.h"
+    #include "mbedtls/ssl_cache.h"
 #endif
 
 #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
-#include "mbedtls/memory_buffer_alloc.h"
+    #include "mbedtls/memory_buffer_alloc.h"
 #endif
 
 
@@ -225,7 +225,7 @@ static void *handle_ssl_connection( void *data )
     mbedtls_printf( " ok\n" );
     ret = 0;
 thread_exit:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
@@ -233,7 +233,7 @@ thread_exit:
         mbedtls_printf("  [ #%ld ]  Last error was: -0x%04x - %s\n\n",
                        thread_id, ( unsigned int ) - ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( client_fd );
     mbedtls_ssl_free( &ssl );
     thread_info->thread_complete = 1;
@@ -285,18 +285,18 @@ int main( void )
     mbedtls_x509_crt srvcert;
     mbedtls_x509_crt cachain;
     mbedtls_pk_context pkey;
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     unsigned char alloc_buf[100000];
-    #endif
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#endif
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_context cache;
-    #endif
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#endif
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     mbedtls_memory_buffer_alloc_init( alloc_buf, sizeof(alloc_buf) );
-    #endif
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#endif
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_init( &cache );
-    #endif
+#endif
     mbedtls_x509_crt_init( &srvcert );
     mbedtls_x509_crt_init( &cachain );
     mbedtls_ssl_config_init( &conf );
@@ -375,11 +375,11 @@ int main( void )
     /* mbedtls_ssl_cache_get() and mbedtls_ssl_cache_set() are thread-safe if
      * MBEDTLS_THREADING_C is set.
      */
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_conf_session_cache( &conf, &cache,
                                     mbedtls_ssl_cache_get,
                                     mbedtls_ssl_cache_set );
-    #endif
+#endif
     mbedtls_ssl_conf_ca_chain( &conf, &cachain, NULL );
     if( ( ret = mbedtls_ssl_conf_own_cert( &conf, &srvcert, &pkey ) ) != 0 )
     {
@@ -399,7 +399,7 @@ int main( void )
     }
     mbedtls_printf( " ok\n" );
 reset:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
@@ -407,7 +407,7 @@ reset:
         mbedtls_printf( "  [ main ]  Last error was: -0x%04x - %s\n", ( unsigned int ) - ret,
                         error_buf );
     }
-    #endif
+#endif
     /*
      * 3. Wait until a client connects
      */
@@ -432,17 +432,17 @@ reset:
 exit:
     mbedtls_x509_crt_free( &srvcert );
     mbedtls_pk_free( &pkey );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_free( &cache );
-    #endif
+#endif
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
     mbedtls_ssl_config_free( &conf );
     mbedtls_net_free( &listen_fd );
     mbedtls_mutex_free( &debug_mutex );
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     mbedtls_memory_buffer_alloc_free();
-    #endif
+#endif
     mbedtls_exit( ret );
 }
 

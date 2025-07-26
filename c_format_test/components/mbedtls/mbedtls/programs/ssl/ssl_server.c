@@ -20,17 +20,17 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_time       time
-#define mbedtls_time_t     time_t
-#define mbedtls_fprintf    fprintf
-#define mbedtls_printf     printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_time       time
+    #define mbedtls_time_t     time_t
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_printf     printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_PEM_PARSE_C) || \
@@ -53,7 +53,7 @@ int main( void )
 #include <string.h>
 
 #if defined(_WIN32)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include "mbedtls/entropy.h"
@@ -66,7 +66,7 @@ int main( void )
 #include "test/certs.h"
 
 #if defined(MBEDTLS_SSL_CACHE_C)
-#include "mbedtls/ssl_cache.h"
+    #include "mbedtls/ssl_cache.h"
 #endif
 
 #define HTTP_RESPONSE \
@@ -98,23 +98,23 @@ int main( void )
     mbedtls_ssl_config conf;
     mbedtls_x509_crt srvcert;
     mbedtls_pk_context pkey;
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_context cache;
-    #endif
+#endif
     mbedtls_net_init( &listen_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_init( &cache );
-    #endif
+#endif
     mbedtls_x509_crt_init( &srvcert );
     mbedtls_pk_init( &pkey );
     mbedtls_entropy_init( &entropy );
     mbedtls_ctr_drbg_init( &ctr_drbg );
-    #if defined(MBEDTLS_DEBUG_C)
+#if defined(MBEDTLS_DEBUG_C)
     mbedtls_debug_set_threshold( DEBUG_LEVEL );
-    #endif
+#endif
     /*
      * 1. Seed the RNG
      */
@@ -187,11 +187,11 @@ int main( void )
     }
     mbedtls_ssl_conf_rng( &conf, mbedtls_ctr_drbg_random, &ctr_drbg );
     mbedtls_ssl_conf_dbg( &conf, my_debug, stdout );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_conf_session_cache( &conf, &cache,
                                     mbedtls_ssl_cache_get,
                                     mbedtls_ssl_cache_set );
-    #endif
+#endif
     mbedtls_ssl_conf_ca_chain( &conf, srvcert.next, NULL );
     if( ( ret = mbedtls_ssl_conf_own_cert( &conf, &srvcert, &pkey ) ) != 0 )
     {
@@ -205,14 +205,14 @@ int main( void )
     }
     mbedtls_printf( " ok\n" );
 reset:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
         mbedtls_printf("Last error was: %d - %s\n\n", ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( &client_fd );
     mbedtls_ssl_session_reset( &ssl );
     /*
@@ -312,23 +312,23 @@ reset:
     ret = 0;
     goto reset;
 exit:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
         mbedtls_printf("Last error was: %d - %s\n\n", ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( &client_fd );
     mbedtls_net_free( &listen_fd );
     mbedtls_x509_crt_free( &srvcert );
     mbedtls_pk_free( &pkey );
     mbedtls_ssl_free( &ssl );
     mbedtls_ssl_config_free( &conf );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_free( &cache );
-    #endif
+#endif
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
     mbedtls_exit( ret );

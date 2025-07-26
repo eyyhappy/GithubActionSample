@@ -20,23 +20,23 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_fprintf         fprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_fprintf         fprintf
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_CTR_DRBG_C) && defined(MBEDTLS_ENTROPY_C) && \
-defined(MBEDTLS_FS_IO)
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
+    defined(MBEDTLS_FS_IO)
+    #include "mbedtls/entropy.h"
+    #include "mbedtls/ctr_drbg.h"
 
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_C) || !defined(MBEDTLS_ENTROPY_C) || \
@@ -76,7 +76,7 @@ int main( int argc, char *argv[] )
         goto cleanup;
     }
     mbedtls_ctr_drbg_set_prediction_resistance( &ctr_drbg, MBEDTLS_CTR_DRBG_PR_OFF );
-    #if defined(MBEDTLS_FS_IO)
+#if defined(MBEDTLS_FS_IO)
     ret = mbedtls_ctr_drbg_update_seed_file( &ctr_drbg, "seedfile" );
     if( ret == MBEDTLS_ERR_CTR_DRBG_FILE_IO_ERROR )
     {
@@ -93,7 +93,7 @@ int main( int argc, char *argv[] )
         mbedtls_printf( "failed in mbedtls_ctr_drbg_update_seed_file: %d\n", ret );
         goto cleanup;
     }
-    #endif
+#endif
     for( i = 0, k = 768; i < k; i++ )
     {
         ret = mbedtls_ctr_drbg_random( &ctr_drbg, buf, sizeof( buf ) );

@@ -60,9 +60,9 @@ typedef enum
     UART_PARITY_ERR,        /*!< UART RX parity event*/
     UART_DATA_BREAK,        /*!< UART TX data and break event*/
     UART_PATTERN_DET,       /*!< UART pattern detected */
-    #if SOC_UART_SUPPORT_WAKEUP_INT
+#if SOC_UART_SUPPORT_WAKEUP_INT
     UART_WAKEUP,            /*!< UART wakeup event */
-    #endif
+#endif
     UART_EVENT_MAX,         /*!< UART event max index*/
 } uart_event_type_t;
 

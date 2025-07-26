@@ -20,15 +20,15 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_snprintf        snprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_snprintf        snprintf
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_MD_C) || \
@@ -65,9 +65,9 @@ int main( int argc, char *argv[] )
     if( argc != 3 )
     {
         mbedtls_printf( "usage: mbedtls_pk_verify <key_file> <filename>\n" );
-        #if defined(_WIN32)
+#if defined(_WIN32)
         mbedtls_printf( "\n" );
-        #endif
+#endif
         goto exit;
     }
     mbedtls_printf( "\n  . Reading public key from '%s'", argv[1] );
@@ -111,13 +111,13 @@ int main( int argc, char *argv[] )
     exit_code = MBEDTLS_EXIT_SUCCESS;
 exit:
     mbedtls_pk_free( &pk );
-    #if defined(MBEDTLS_ERROR_C)
+#if defined(MBEDTLS_ERROR_C)
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         mbedtls_strerror( ret, (char *) buf, sizeof(buf) );
         mbedtls_printf( "  !  Last error was: %s\n", buf );
     }
-    #endif
+#endif
     mbedtls_exit( exit_code );
 }
 #endif /* MBEDTLS_BIGNUM_C && MBEDTLS_SHA256_C &&

@@ -13,7 +13,7 @@
 #include <entropy_poll.h>
 
 #ifndef MBEDTLS_ENTROPY_HARDWARE_ALT
-#error "MBEDTLS_ENTROPY_HARDWARE_ALT should always be set in ESP-IDF"
+    #error "MBEDTLS_ENTROPY_HARDWARE_ALT should always be set in ESP-IDF"
 #endif
 
 int mbedtls_hardware_poll( void *data,

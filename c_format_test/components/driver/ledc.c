@@ -47,9 +47,9 @@ typedef struct
     ledc_fade_mode_t mode;
     SemaphoreHandle_t ledc_fade_sem;
     SemaphoreHandle_t ledc_fade_mux;
-    #if CONFIG_SPIRAM_USE_MALLOC
+#if CONFIG_SPIRAM_USE_MALLOC
     StaticQueue_t ledc_fade_sem_storage;
-    #endif
+#endif
     ledc_cb_t ledc_fade_callback;
     void *cb_user_arg;
     volatile ledc_fade_fsm_t fsm;
@@ -112,12 +112,12 @@ static bool ledc_slow_clk_calibrate(void)
     if (periph_rtc_dig_clk8m_enable())
     {
         s_ledc_slow_clk_8M = periph_rtc_dig_clk8m_get_freq();
-        #if CONFIG_IDF_TARGET_ESP32H2
+#if CONFIG_IDF_TARGET_ESP32H2
         /* Workaround: Calibration cannot be done for CLK8M on H2, we just use its theoretic frequency */
         ESP_LOGD(LEDC_TAG, "Calibration cannot be performed, approximate CLK8M_CLK : %"PRIu32" Hz", s_ledc_slow_clk_8M);
-        #else
+#else
         ESP_LOGD(LEDC_TAG, "Calibrate CLK8M_CLK : %"PRIu32" Hz", s_ledc_slow_clk_8M);
-        #endif
+#endif
         return true;
     }
     ESP_LOGE(LEDC_TAG, "Calibrate CLK8M_CLK failed");
@@ -130,30 +130,30 @@ static uint32_t ledc_get_src_clk_freq(ledc_clk_cfg_t clk_cfg)
     if (clk_cfg == LEDC_USE_RTC8M_CLK)
     {
         src_clk_freq = s_ledc_slow_clk_8M;
-        #if SOC_LEDC_SUPPORT_APB_CLOCK
+#if SOC_LEDC_SUPPORT_APB_CLOCK
     }
     else if (clk_cfg == LEDC_USE_APB_CLK)
     {
         src_clk_freq = esp_clk_apb_freq();
-        #endif
-        #if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
     }
     else if (clk_cfg == LEDC_USE_PLL_DIV_CLK)
     {
         src_clk_freq = LEDC_LL_PLL_DIV_CLK_FREQ;
-        #endif
-        #if SOC_LEDC_SUPPORT_REF_TICK
+#endif
+#if SOC_LEDC_SUPPORT_REF_TICK
     }
     else if (clk_cfg == LEDC_USE_REF_TICK)
     {
         src_clk_freq = REF_CLK_FREQ;
-        #endif
-        #if SOC_LEDC_SUPPORT_XTAL_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_XTAL_CLOCK
     }
     else if (clk_cfg == LEDC_USE_XTAL_CLK)
     {
         src_clk_freq = esp_clk_xtal_freq();
-        #endif
+#endif
     }
     return src_clk_freq;
 }
@@ -164,24 +164,24 @@ static uint32_t ledc_get_glb_clk_freq(ledc_slow_clk_sel_t clk_cfg)
     uint32_t src_clk_freq = 0;
     switch (clk_cfg)
     {
-            #if SOC_LEDC_SUPPORT_APB_CLOCK
+#if SOC_LEDC_SUPPORT_APB_CLOCK
         case LEDC_SLOW_CLK_APB:
             src_clk_freq = esp_clk_apb_freq();
             break;
-            #endif
-            #if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
         case LEDC_SLOW_CLK_PLL_DIV:
             src_clk_freq = LEDC_LL_PLL_DIV_CLK_FREQ;
             break;
-            #endif
+#endif
         case LEDC_SLOW_CLK_RTC8M:
             src_clk_freq = s_ledc_slow_clk_8M;
             break;
-            #if SOC_LEDC_SUPPORT_XTAL_CLOCK
+#if SOC_LEDC_SUPPORT_XTAL_CLOCK
         case LEDC_SLOW_CLK_XTAL:
             src_clk_freq = esp_clk_xtal_freq();
             break;
-            #endif
+#endif
     }
     return src_clk_freq;
 }
@@ -255,11 +255,11 @@ esp_err_t ledc_timer_set(ledc_mode_t speed_mode, ledc_timer_t timer_sel, uint32_
     LEDC_CHECK(p_ledc_obj[speed_mode] != NULL, LEDC_NOT_INIT, ESP_ERR_INVALID_STATE);
     portENTER_CRITICAL(&ledc_spinlock);
     ledc_hal_set_clock_divider(&(p_ledc_obj[speed_mode]->ledc_hal), timer_sel, clock_divider);
-    #if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
+#if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
     /* Clock source can only be configured on boards which support timer-specific
      * source clock. */
     ledc_hal_set_clock_source(&(p_ledc_obj[speed_mode]->ledc_hal), timer_sel, clk_src);
-    #endif
+#endif
     ledc_hal_set_duty_resolution(&(p_ledc_obj[speed_mode]->ledc_hal), timer_sel, duty_resolution);
     ledc_ls_timer_update(speed_mode, timer_sel);
     portEXIT_CRITICAL(&ledc_spinlock);
@@ -415,7 +415,7 @@ static inline uint32_t ledc_auto_timer_specific_clk_divisor(ledc_mode_t speed_mo
             break;
         }
     }
-    #if SOC_LEDC_SUPPORT_HS_MODE
+#if SOC_LEDC_SUPPORT_HS_MODE
     /* On board that support LEDC high-speed mode, APB clock becomes a timer-
      * specific clock when in high speed mode. Check if it is necessary here
      * to test APB. */
@@ -429,7 +429,7 @@ static inline uint32_t ledc_auto_timer_specific_clk_divisor(ledc_mode_t speed_mo
             ret = div_param;
         }
     }
-    #endif
+#endif
     return ret;
 }
 #endif
@@ -442,7 +442,7 @@ static uint32_t ledc_auto_clk_divisor(ledc_mode_t speed_mode, int freq_hz, uint3
                                       ledc_clk_src_t* clk_source, ledc_slow_clk_sel_t* clk_target)
 {
     uint32_t ret = LEDC_CLK_NOT_FOUND;
-    #if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
+#if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
     /* If the SoC presents timer-specific clock(s), try to achieve the given frequency
      * thanks to it/them.
      * clk_source parameter will returned by this function. */
@@ -452,7 +452,7 @@ static uint32_t ledc_auto_clk_divisor(ledc_mode_t speed_mode, int freq_hz, uint3
         /* The dividor is valid, no need try any other clock, return directly. */
         ret = div_param_timer;
     }
-    #endif
+#endif
     /* On ESP32, only low speed channel can use the global clocks. For other
      * chips, there are no high speed channels. */
     if (ret == LEDC_CLK_NOT_FOUND && speed_mode == LEDC_LOW_SPEED_MODE)
@@ -472,27 +472,27 @@ static ledc_slow_clk_sel_t ledc_clk_cfg_to_global_clk(const ledc_clk_cfg_t clk_c
     ledc_slow_clk_sel_t glb_clk;
     switch (clk_cfg)
     {
-            #if SOC_LEDC_SUPPORT_APB_CLOCK
+#if SOC_LEDC_SUPPORT_APB_CLOCK
         case LEDC_USE_APB_CLK:
             glb_clk = LEDC_SLOW_CLK_APB;
             break;
-            #endif
-            #if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
+#endif
+#if SOC_LEDC_SUPPORT_PLL_DIV_CLOCK
         case LEDC_USE_PLL_DIV_CLK:
             glb_clk = LEDC_SLOW_CLK_PLL_DIV;
             break;
-            #endif
+#endif
         case LEDC_USE_RTC8M_CLK:
             glb_clk = LEDC_SLOW_CLK_RTC8M;
             break;
-            #if SOC_LEDC_SUPPORT_XTAL_CLOCK
+#if SOC_LEDC_SUPPORT_XTAL_CLOCK
         case LEDC_USE_XTAL_CLK:
             glb_clk = LEDC_SLOW_CLK_XTAL;
             break;
-            #endif
-            #if SOC_LEDC_SUPPORT_REF_TICK
+#endif
+#if SOC_LEDC_SUPPORT_REF_TICK
         case LEDC_USE_REF_TICK:
-            #endif
+#endif
         default:
             /* We should not get here, REF_TICK is NOT a global clock,
              * it is a timer-specific clock. */
@@ -546,7 +546,7 @@ static esp_err_t ledc_set_timer_div(ledc_mode_t speed_mode, ledc_timer_t timer_n
     }
     else
     {
-        #if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
+#if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
         if (LEDC_LL_IS_TIMER_SPECIFIC_CLOCK(speed_mode, clk_cfg))
         {
             /* Currently we can convert a timer-specific clock to a source clock that
@@ -556,7 +556,7 @@ static esp_err_t ledc_set_timer_div(ledc_mode_t speed_mode, ledc_timer_t timer_n
             timer_clk_src = (ledc_clk_src_t) clk_cfg;
         }
         else
-        #endif
+#endif
         {
             timer_clk_src = LEDC_SCLK;
             glb_clk = ledc_clk_cfg_to_global_clk(clk_cfg);
@@ -581,7 +581,7 @@ static esp_err_t ledc_set_timer_div(ledc_mode_t speed_mode, ledc_timer_t timer_n
      */
     if (speed_mode == LEDC_LOW_SPEED_MODE)
     {
-        #if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
+#if SOC_LEDC_HAS_TIMER_SPECIFIC_MUX
         /* On ESP32 and ESP32-S2, when the source clock of LOW_SPEED timer is a timer-specific one (i.e. REF_TICK), the
          * global clock MUST be set to APB_CLK. For HIGH_SPEED timers, this is not necessary.
          */
@@ -589,12 +589,12 @@ static esp_err_t ledc_set_timer_div(ledc_mode_t speed_mode, ledc_timer_t timer_n
         {
             glb_clk = LEDC_SLOW_CLK_APB;
         }
-        #else
+#else
         /* On later chips, there is only one type of timer/channel (referred as LOW_SPEED in the code), which can only be
          * clocked by the global clock. So there's no limitation on the global clock, except that it must be set.
          */
         assert(timer_clk_src == LEDC_SCLK);
-        #endif
+#endif
         // Arriving here, variable glb_clk must have been assigned to one of the ledc_slow_clk_sel_t enum values
         assert(glb_clk != LEDC_SLOW_CLK_UNINIT);
         ESP_LOGD(LEDC_TAG, "In slow speed mode, global clk set: %d", glb_clk);
@@ -1030,7 +1030,7 @@ static esp_err_t ledc_fade_channel_init_check(ledc_mode_t speed_mode, ledc_chann
     }
     if (s_ledc_fade_rec[speed_mode][channel] == NULL)
     {
-        #if CONFIG_SPIRAM_USE_MALLOC
+#if CONFIG_SPIRAM_USE_MALLOC
         s_ledc_fade_rec[speed_mode][channel] = (ledc_fade_t *) heap_caps_calloc(1, sizeof(ledc_fade_t), MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT);
         if (s_ledc_fade_rec[speed_mode][channel] == NULL)
         {
@@ -1039,7 +1039,7 @@ static esp_err_t ledc_fade_channel_init_check(ledc_mode_t speed_mode, ledc_chann
         }
         memset(&s_ledc_fade_rec[speed_mode][channel]->ledc_fade_sem_storage, 0, sizeof(StaticQueue_t));
         s_ledc_fade_rec[speed_mode][channel]->ledc_fade_sem = xSemaphoreCreateBinaryStatic(&s_ledc_fade_rec[speed_mode][channel]->ledc_fade_sem_storage);
-        #else
+#else
         s_ledc_fade_rec[speed_mode][channel] = (ledc_fade_t *) calloc(1, sizeof(ledc_fade_t));
         if (s_ledc_fade_rec[speed_mode][channel] == NULL)
         {
@@ -1047,7 +1047,7 @@ static esp_err_t ledc_fade_channel_init_check(ledc_mode_t speed_mode, ledc_chann
             return ESP_ERR_NO_MEM;
         }
         s_ledc_fade_rec[speed_mode][channel]->ledc_fade_sem = xSemaphoreCreateBinary();
-        #endif
+#endif
         s_ledc_fade_rec[speed_mode][channel]->ledc_fade_mux = xSemaphoreCreateMutex();
         xSemaphoreGive(s_ledc_fade_rec[speed_mode][channel]->ledc_fade_sem);
         s_ledc_fade_rec[speed_mode][channel]->fsm = LEDC_FSM_IDLE;

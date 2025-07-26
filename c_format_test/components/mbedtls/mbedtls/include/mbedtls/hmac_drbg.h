@@ -32,7 +32,7 @@
 #include "mbedtls/md.h"
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+    #include "mbedtls/threading.h"
 #endif
 
 /*
@@ -56,19 +56,19 @@
  */
 
 #if !defined(MBEDTLS_HMAC_DRBG_RESEED_INTERVAL)
-#define MBEDTLS_HMAC_DRBG_RESEED_INTERVAL   10000   /**< Interval before reseed is performed by default */
+    #define MBEDTLS_HMAC_DRBG_RESEED_INTERVAL   10000   /**< Interval before reseed is performed by default */
 #endif
 
 #if !defined(MBEDTLS_HMAC_DRBG_MAX_INPUT)
-#define MBEDTLS_HMAC_DRBG_MAX_INPUT         256     /**< Maximum number of additional input bytes */
+    #define MBEDTLS_HMAC_DRBG_MAX_INPUT         256     /**< Maximum number of additional input bytes */
 #endif
 
 #if !defined(MBEDTLS_HMAC_DRBG_MAX_REQUEST)
-#define MBEDTLS_HMAC_DRBG_MAX_REQUEST       1024    /**< Maximum number of requested bytes per call */
+    #define MBEDTLS_HMAC_DRBG_MAX_REQUEST       1024    /**< Maximum number of requested bytes per call */
 #endif
 
 #if !defined(MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT)
-#define MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT    384     /**< Maximum size of (re)seed buffer */
+    #define MBEDTLS_HMAC_DRBG_MAX_SEED_INPUT    384     /**< Maximum size of (re)seed buffer */
 #endif
 
 /** \} name SECTION: Module settings */
@@ -101,7 +101,7 @@ typedef struct mbedtls_hmac_drbg_context
     int (*MBEDTLS_PRIVATE(f_entropy))(void *, unsigned char *, size_t); /*!< entropy function */
     void *MBEDTLS_PRIVATE(p_entropy);            /*!< context for the entropy function        */
 
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     /* Invariant: the mutex is initialized if and only if
      * md_ctx->md_info != NULL. This means that the mutex is initialized
      * during the initial seeding in mbedtls_hmac_drbg_seed() or
@@ -111,7 +111,7 @@ typedef struct mbedtls_hmac_drbg_context
      * and do not access the mutex directly in application code.
      */
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);
-    #endif
+#endif
 } mbedtls_hmac_drbg_context;
 
 /**

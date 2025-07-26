@@ -6,11 +6,11 @@
 // <e> NRFX_UART_ENABLED - nrfx_uart - UART peripheral driver
 //==========================================================
 #ifndef NRFX_UART_ENABLED
-#define NRFX_UART_ENABLED 1
+    #define NRFX_UART_ENABLED 1
 #endif
 // <o> NRFX_UART0_ENABLED - Enable UART0 instance
 #ifndef NRFX_UART0_ENABLED
-#define NRFX_UART0_ENABLED 0
+    #define NRFX_UART0_ENABLED 0
 #endif
 
 // <o> NRFX_UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
@@ -19,7 +19,7 @@
 // <1=> Enabled
 
 #ifndef NRFX_UART_DEFAULT_CONFIG_HWFC
-#define NRFX_UART_DEFAULT_CONFIG_HWFC 0
+    #define NRFX_UART_DEFAULT_CONFIG_HWFC 0
 #endif
 
 // <o> NRFX_UART_DEFAULT_CONFIG_PARITY  - Parity
@@ -28,7 +28,7 @@
 // <14=> Included
 
 #ifndef NRFX_UART_DEFAULT_CONFIG_PARITY
-#define NRFX_UART_DEFAULT_CONFIG_PARITY 0
+    #define NRFX_UART_DEFAULT_CONFIG_PARITY 0
 #endif
 
 // <o> NRFX_UART_DEFAULT_CONFIG_BAUDRATE  - Default Baudrate
@@ -53,7 +53,7 @@
 // <268435456=> 1000000 baud
 
 #ifndef NRFX_UART_DEFAULT_CONFIG_BAUDRATE
-#define NRFX_UART_DEFAULT_CONFIG_BAUDRATE 30924800
+    #define NRFX_UART_DEFAULT_CONFIG_BAUDRATE 30924800
 #endif
 
 // <o> NRFX_UART_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -68,13 +68,13 @@
 // <7=> 7
 
 #ifndef NRFX_UART_DEFAULT_CONFIG_IRQ_PRIORITY
-#define NRFX_UART_DEFAULT_CONFIG_IRQ_PRIORITY 6
+    #define NRFX_UART_DEFAULT_CONFIG_IRQ_PRIORITY 6
 #endif
 
 // <e> NRFX_UART_CONFIG_LOG_ENABLED - Enables logging in the module.
 //==========================================================
 #ifndef NRFX_UART_CONFIG_LOG_ENABLED
-#define NRFX_UART_CONFIG_LOG_ENABLED 0
+    #define NRFX_UART_CONFIG_LOG_ENABLED 0
 #endif
 // <o> NRFX_UART_CONFIG_LOG_LEVEL  - Default Severity level
 
@@ -85,7 +85,7 @@
 // <4=> Debug
 
 #ifndef NRFX_UART_CONFIG_LOG_LEVEL
-#define NRFX_UART_CONFIG_LOG_LEVEL 3
+    #define NRFX_UART_CONFIG_LOG_LEVEL 3
 #endif
 
 // <o> NRFX_UART_CONFIG_INFO_COLOR  - ANSI escape code prefix.
@@ -101,7 +101,7 @@
 // <8=> White
 
 #ifndef NRFX_UART_CONFIG_INFO_COLOR
-#define NRFX_UART_CONFIG_INFO_COLOR 0
+    #define NRFX_UART_CONFIG_INFO_COLOR 0
 #endif
 
 // <o> NRFX_UART_CONFIG_DEBUG_COLOR  - ANSI escape code prefix.
@@ -117,7 +117,7 @@
 // <8=> White
 
 #ifndef NRFX_UART_CONFIG_DEBUG_COLOR
-#define NRFX_UART_CONFIG_DEBUG_COLOR 0
+    #define NRFX_UART_CONFIG_DEBUG_COLOR 0
 #endif
 
 // </e>
@@ -127,7 +127,7 @@
 // <e> UART_ENABLED - nrf_drv_uart - UART/UARTE peripheral driver - legacy layer
 //==========================================================
 #ifndef UART_ENABLED
-#define UART_ENABLED 1
+    #define UART_ENABLED 1
 #endif
 // <o> UART_DEFAULT_CONFIG_HWFC  - Hardware Flow Control
 
@@ -135,7 +135,7 @@
 // <1=> Enabled
 
 #ifndef UART_DEFAULT_CONFIG_HWFC
-#define UART_DEFAULT_CONFIG_HWFC 0
+    #define UART_DEFAULT_CONFIG_HWFC 0
 #endif
 
 // <o> UART_DEFAULT_CONFIG_PARITY  - Parity
@@ -144,7 +144,7 @@
 // <14=> Included
 
 #ifndef UART_DEFAULT_CONFIG_PARITY
-#define UART_DEFAULT_CONFIG_PARITY 0
+    #define UART_DEFAULT_CONFIG_PARITY 0
 #endif
 
 // <o> UART_DEFAULT_CONFIG_BAUDRATE  - Default Baudrate
@@ -167,7 +167,7 @@
 // <268435456=> 1000000 baud
 
 #ifndef UART_DEFAULT_CONFIG_BAUDRATE
-#define UART_DEFAULT_CONFIG_BAUDRATE 30801920
+    #define UART_DEFAULT_CONFIG_BAUDRATE 30801920
 #endif
 
 // <o> UART_DEFAULT_CONFIG_IRQ_PRIORITY  - Interrupt priority
@@ -184,45 +184,45 @@
 // <7=> 7
 
 #ifndef UART_DEFAULT_CONFIG_IRQ_PRIORITY
-#define UART_DEFAULT_CONFIG_IRQ_PRIORITY 6
+    #define UART_DEFAULT_CONFIG_IRQ_PRIORITY 6
 #endif
 
 // <q> UART_EASY_DMA_SUPPORT  - Driver supporting EasyDMA
 
 
 #ifndef UART_EASY_DMA_SUPPORT
-#define UART_EASY_DMA_SUPPORT 1
+    #define UART_EASY_DMA_SUPPORT 1
 #endif
 
 // <q> UART_LEGACY_SUPPORT  - Driver supporting Legacy mode
 
 
 #ifndef UART_LEGACY_SUPPORT
-#define UART_LEGACY_SUPPORT 1
+    #define UART_LEGACY_SUPPORT 1
 #endif
 
 // <e> UART0_ENABLED - Enable UART0 instance
 //==========================================================
 #ifndef UART0_ENABLED
-#define UART0_ENABLED 1
+    #define UART0_ENABLED 1
 #endif
 // <q> UART0_CONFIG_USE_EASY_DMA  - Default setting for using EasyDMA
 
 
 #ifndef UART0_CONFIG_USE_EASY_DMA
-#define UART0_CONFIG_USE_EASY_DMA 1
+    #define UART0_CONFIG_USE_EASY_DMA 1
 #endif
 
 // <e> UART0_ENABLED - Enable UART0 instance
 //==========================================================
 #ifndef UART1_ENABLED
-#define UART1_ENABLED 1
+    #define UART1_ENABLED 1
 #endif
 // <q> UART0_CONFIG_USE_EASY_DMA  - Default setting for using EasyDMA
 
 
 #ifndef UART1_CONFIG_USE_EASY_DMA
-#define UART1_CONFIG_USE_EASY_DMA 1
+    #define UART1_CONFIG_USE_EASY_DMA 1
 #endif
 
 
@@ -234,14 +234,14 @@
 // <e> APP_UART_ENABLED - app_uart - UART driver
 //==========================================================
 #ifndef APP_UART_ENABLED
-#define APP_UART_ENABLED 1
+    #define APP_UART_ENABLED 1
 #endif
 // <o> APP_UART_DRIVER_INSTANCE  - UART instance used
 
 // <0=> 0
 
 #ifndef APP_UART_DRIVER_INSTANCE
-#define APP_UART_DRIVER_INSTANCE 1
+    #define APP_UART_DRIVER_INSTANCE 1
 #endif
 
 // </e>
@@ -253,11 +253,11 @@
 
 
 #ifndef APP_FIFO_ENABLED
-#define APP_FIFO_ENABLED 1
+    #define APP_FIFO_ENABLED 1
 #endif
 
 #ifndef CRC16_ENABLED
-#define CRC16_ENABLED          1
+    #define CRC16_ENABLED          1
 #endif
 
 #endif

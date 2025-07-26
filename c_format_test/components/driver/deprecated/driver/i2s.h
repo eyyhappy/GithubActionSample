@@ -20,7 +20,7 @@
 #include "driver/i2s_types_legacy.h"
 
 #if SOC_I2S_SUPPORTS_ADC
-#include "driver/adc.h"
+    #include "driver/adc.h"
 #endif
 
 #if !CONFIG_I2S_SUPPRESS_DEPRECATE_WARN

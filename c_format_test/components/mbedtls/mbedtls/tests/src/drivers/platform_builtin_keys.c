@@ -26,7 +26,7 @@
 #include <psa/crypto_extra.h>
 
 #if defined(PSA_CRYPTO_DRIVER_TEST)
-#include <test/drivers/test_driver.h>
+    #include <test/drivers/test_driver.h>
 #endif
 
 typedef struct
@@ -38,7 +38,7 @@ typedef struct
 
 static const mbedtls_psa_builtin_key_description_t builtin_keys[] =
 {
-    #if defined(PSA_CRYPTO_DRIVER_TEST)
+#if defined(PSA_CRYPTO_DRIVER_TEST)
     /* For testing, assign the AES builtin key slot to the boundary values.
      * ECDSA can be exercised on key ID MBEDTLS_PSA_KEY_ID_BUILTIN_MIN + 1. */
     {
@@ -77,9 +77,9 @@ static const mbedtls_psa_builtin_key_description_t builtin_keys[] =
             PSA_KEY_PERSISTENCE_READ_ONLY, PSA_CRYPTO_TEST_DRIVER_LOCATION ),
         PSA_CRYPTO_TEST_DRIVER_BUILTIN_AES_KEY_SLOT
     },
-    #else
+#else
     {0, 0, 0}
-    #endif
+#endif
 };
 
 psa_status_t mbedtls_psa_platform_get_builtin_key(

@@ -74,34 +74,34 @@
 #endif /* MBEDTLS_RSA_C */
 
 #if defined(MBEDTLS_ECP_C)
-/*
- * EC public keys:
- *  SubjectPublicKeyInfo  ::=  SEQUENCE  {      1 + 2
- *    algorithm         AlgorithmIdentifier,    1 + 1 (sequence)
- *                                            + 1 + 1 + 7 (ec oid)
- *                                            + 1 + 1 + 9 (namedCurve oid)
- *    subjectPublicKey  BIT STRING              1 + 2 + 1               [1]
- *                                            + 1 (point format)        [1]
- *                                            + 2 * ECP_MAX (coords)    [1]
- *  }
- */
-#define MBEDTLS_PK_ECP_PUB_DER_MAX_BYTES    ( 30 + 2 * MBEDTLS_ECP_MAX_BYTES )
+    /*
+    * EC public keys:
+    *  SubjectPublicKeyInfo  ::=  SEQUENCE  {      1 + 2
+    *    algorithm         AlgorithmIdentifier,    1 + 1 (sequence)
+    *                                            + 1 + 1 + 7 (ec oid)
+    *                                            + 1 + 1 + 9 (namedCurve oid)
+    *    subjectPublicKey  BIT STRING              1 + 2 + 1               [1]
+    *                                            + 1 (point format)        [1]
+    *                                            + 2 * ECP_MAX (coords)    [1]
+    *  }
+    */
+    #define MBEDTLS_PK_ECP_PUB_DER_MAX_BYTES    ( 30 + 2 * MBEDTLS_ECP_MAX_BYTES )
 
-/*
- * EC private keys:
- * ECPrivateKey ::= SEQUENCE {                  1 + 2
- *      version        INTEGER ,                1 + 1 + 1
- *      privateKey     OCTET STRING,            1 + 1 + ECP_MAX
- *      parameters [0] ECParameters OPTIONAL,   1 + 1 + (1 + 1 + 9)
- *      publicKey  [1] BIT STRING OPTIONAL      1 + 2 + [1] above
- *    }
- */
-#define MBEDTLS_PK_ECP_PRV_DER_MAX_BYTES    ( 29 + 3 * MBEDTLS_ECP_MAX_BYTES )
+    /*
+    * EC private keys:
+    * ECPrivateKey ::= SEQUENCE {                  1 + 2
+    *      version        INTEGER ,                1 + 1 + 1
+    *      privateKey     OCTET STRING,            1 + 1 + ECP_MAX
+    *      parameters [0] ECParameters OPTIONAL,   1 + 1 + (1 + 1 + 9)
+    *      publicKey  [1] BIT STRING OPTIONAL      1 + 2 + [1] above
+    *    }
+    */
+    #define MBEDTLS_PK_ECP_PRV_DER_MAX_BYTES    ( 29 + 3 * MBEDTLS_ECP_MAX_BYTES )
 
 #else /* MBEDTLS_ECP_C */
 
-#define MBEDTLS_PK_ECP_PUB_DER_MAX_BYTES   0
-#define MBEDTLS_PK_ECP_PRV_DER_MAX_BYTES   0
+    #define MBEDTLS_PK_ECP_PUB_DER_MAX_BYTES   0
+    #define MBEDTLS_PK_ECP_PRV_DER_MAX_BYTES   0
 
 #endif /* MBEDTLS_ECP_C */
 

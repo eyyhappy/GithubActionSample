@@ -53,34 +53,34 @@ int mbedtls_psa_get_random( void *p_rng,
 /* Choose a DRBG based on configuration and availability */
 #if defined(MBEDTLS_PSA_HMAC_DRBG_MD_TYPE)
 
-#include "mbedtls/hmac_drbg.h"
+    #include "mbedtls/hmac_drbg.h"
 
 #elif defined(MBEDTLS_CTR_DRBG_C)
 
-#include "mbedtls/ctr_drbg.h"
+    #include "mbedtls/ctr_drbg.h"
 
 #elif defined(MBEDTLS_HMAC_DRBG_C)
 
-#include "mbedtls/hmac_drbg.h"
-#if defined(MBEDTLS_SHA512_C) && defined(MBEDTLS_SHA256_C)
-#include <limits.h>
-#if SIZE_MAX > 0xffffffff
-/* Looks like a 64-bit system, so prefer SHA-512. */
-#define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA512
-#else
-/* Looks like a 32-bit system, so prefer SHA-256. */
-#define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA256
-#endif
-#elif defined(MBEDTLS_SHA512_C)
-#define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA512
-#elif defined(MBEDTLS_SHA256_C)
-#define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA256
-#else
-#error "No hash algorithm available for HMAC_DBRG."
-#endif
+    #include "mbedtls/hmac_drbg.h"
+    #if defined(MBEDTLS_SHA512_C) && defined(MBEDTLS_SHA256_C)
+        #include <limits.h>
+        #if SIZE_MAX > 0xffffffff
+            /* Looks like a 64-bit system, so prefer SHA-512. */
+            #define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA512
+        #else
+            /* Looks like a 32-bit system, so prefer SHA-256. */
+            #define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA256
+        #endif
+    #elif defined(MBEDTLS_SHA512_C)
+        #define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA512
+    #elif defined(MBEDTLS_SHA256_C)
+        #define MBEDTLS_PSA_HMAC_DRBG_MD_TYPE MBEDTLS_MD_SHA256
+    #else
+        #error "No hash algorithm available for HMAC_DBRG."
+    #endif
 
 #else
-#error "No DRBG module available for the psa_crypto module."
+    #error "No DRBG module available for the psa_crypto module."
 #endif
 
 #include "mbedtls/entropy.h"
@@ -91,11 +91,11 @@ int mbedtls_psa_get_random( void *p_rng,
  */
 static inline void mbedtls_psa_drbg_init( mbedtls_psa_drbg_context_t *p_rng )
 {
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_init( p_rng );
-    #elif defined(MBEDTLS_HMAC_DRBG_C)
+#elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_init( p_rng );
-    #endif
+#endif
 }
 
 /** Deinitialize the PSA DRBG.
@@ -104,11 +104,11 @@ static inline void mbedtls_psa_drbg_init( mbedtls_psa_drbg_context_t *p_rng )
  */
 static inline void mbedtls_psa_drbg_free( mbedtls_psa_drbg_context_t *p_rng )
 {
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_free( p_rng );
-    #elif defined(MBEDTLS_HMAC_DRBG_C)
+#elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_free( p_rng );
-    #endif
+#endif
 }
 
 /** The type of the PSA random generator context.
@@ -135,16 +135,16 @@ typedef struct
  * https://stackoverflow.com/questions/8146541/duplicate-external-static-declarations-not-allowed-in-visual-studio
  */
 #if !defined(_MSC_VER)
-static mbedtls_f_rng_t *const mbedtls_psa_get_random;
+    static mbedtls_f_rng_t *const mbedtls_psa_get_random;
 #endif
 
 /** The maximum number of bytes that mbedtls_psa_get_random() is expected to
  * return.
  */
 #if defined(MBEDTLS_CTR_DRBG_C)
-#define MBEDTLS_PSA_RANDOM_MAX_REQUEST MBEDTLS_CTR_DRBG_MAX_REQUEST
+    #define MBEDTLS_PSA_RANDOM_MAX_REQUEST MBEDTLS_CTR_DRBG_MAX_REQUEST
 #elif defined(MBEDTLS_HMAC_DRBG_C)
-#define MBEDTLS_PSA_RANDOM_MAX_REQUEST MBEDTLS_HMAC_DRBG_MAX_REQUEST
+    #define MBEDTLS_PSA_RANDOM_MAX_REQUEST MBEDTLS_HMAC_DRBG_MAX_REQUEST
 #endif
 
 /** A pointer to the PSA DRBG state.
@@ -184,12 +184,12 @@ static inline int mbedtls_psa_drbg_seed(
     mbedtls_entropy_context *entropy,
     const unsigned char *custom, size_t len )
 {
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#if defined(MBEDTLS_CTR_DRBG_C)
     return( mbedtls_ctr_drbg_seed( MBEDTLS_PSA_RANDOM_STATE,
                                    mbedtls_entropy_func,
                                    entropy,
                                    custom, len ) );
-    #elif defined(MBEDTLS_HMAC_DRBG_C)
+#elif defined(MBEDTLS_HMAC_DRBG_C)
     const mbedtls_md_info_t *md_info =
         mbedtls_md_info_from_type( MBEDTLS_PSA_HMAC_DRBG_MD_TYPE );
     return( mbedtls_hmac_drbg_seed( MBEDTLS_PSA_RANDOM_STATE,
@@ -197,7 +197,7 @@ static inline int mbedtls_psa_drbg_seed(
                                     mbedtls_entropy_func,
                                     entropy,
                                     custom, len ) );
-    #endif
+#endif
 }
 
 #endif /* MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG */

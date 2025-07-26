@@ -10,9 +10,9 @@
 #include <sys/param.h>
 #include "sdkconfig.h"
 #if CONFIG_RMT_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "esp_log.h"
 #include "esp_check.h"
@@ -179,12 +179,12 @@ static esp_err_t rmt_rx_destory(rmt_rx_channel_t *rx_channel)
     {
         ESP_RETURN_ON_ERROR(esp_pm_lock_delete(rx_channel->base.pm_lock), TAG, "delete pm_lock failed");
     }
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (rx_channel->base.dma_chan)
     {
         ESP_RETURN_ON_ERROR(gdma_del_channel(rx_channel->base.dma_chan), TAG, "delete dma channel failed");
     }
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     if (rx_channel->base.group)
     {
         // de-register channel from RMT group
@@ -196,18 +196,18 @@ static esp_err_t rmt_rx_destory(rmt_rx_channel_t *rx_channel)
 
 esp_err_t rmt_new_rx_channel(const rmt_rx_channel_config_t *config, rmt_channel_handle_t *ret_chan)
 {
-    #if CONFIG_RMT_ENABLE_DEBUG_LOG
+#if CONFIG_RMT_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     rmt_rx_channel_t *rx_channel = NULL;
     ESP_GOTO_ON_FALSE(config && ret_chan && config->resolution_hz, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
     ESP_GOTO_ON_FALSE(GPIO_IS_VALID_GPIO(config->gpio_num), ESP_ERR_INVALID_ARG, err, TAG, "invalid GPIO number");
     ESP_GOTO_ON_FALSE((config->mem_block_symbols & 0x01) == 0 && config->mem_block_symbols >= SOC_RMT_MEM_WORDS_PER_CHANNEL,
                       ESP_ERR_INVALID_ARG, err, TAG, "mem_block_symbols must be even and at least %d", SOC_RMT_MEM_WORDS_PER_CHANNEL);
-    #if !SOC_RMT_SUPPORT_DMA
+#if !SOC_RMT_SUPPORT_DMA
     ESP_GOTO_ON_FALSE(config->flags.with_dma == 0, ESP_ERR_NOT_SUPPORTED, err, TAG, "DMA not supported");
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     size_t num_dma_nodes = 0;
     if (config->flags.with_dma)
     {
@@ -239,9 +239,9 @@ esp_err_t rmt_new_rx_channel(const rmt_rx_channel_config_t *config, rmt_channel_
     // So we don't rely on RMT interrupt any more, GDMA event callback is sufficient
     if (config->flags.with_dma)
     {
-        #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
         ESP_GOTO_ON_ERROR(rmt_rx_init_dma_link(rx_channel, config), err, TAG, "install rx DMA failed");
-        #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     }
     else
     {
@@ -263,15 +263,15 @@ esp_err_t rmt_new_rx_channel(const rmt_rx_channel_config_t *config, rmt_channel_
     }
     rmt_ll_rx_set_mem_blocks(hal->regs, channel_id, rx_channel->base.mem_block_num);
     rmt_ll_rx_set_mem_owner(hal->regs, channel_id, RMT_LL_MEM_OWNER_HW);
-    #if SOC_RMT_SUPPORT_RX_PINGPONG
+#if SOC_RMT_SUPPORT_RX_PINGPONG
     rmt_ll_rx_set_limit(hal->regs, channel_id, rx_channel->ping_pong_symbols);
     // always enable rx wrap, both DMA mode and ping-pong mode rely this feature
     rmt_ll_rx_enable_wrap(hal->regs, channel_id, true);
-    #endif
-    #if SOC_RMT_SUPPORT_RX_DEMODULATION
+#endif
+#if SOC_RMT_SUPPORT_RX_DEMODULATION
     // disable carrier demodulation by default, can reenable by `rmt_apply_carrier()`
     rmt_ll_rx_enable_carrier_demodulation(hal->regs, channel_id, false);
-    #endif
+#endif
     // GPIO Matrix/MUX configuration
     rx_channel->base.gpio_num = config->gpio_num;
     gpio_config_t gpio_conf =
@@ -329,7 +329,7 @@ esp_err_t rmt_rx_register_event_callbacks(rmt_channel_handle_t channel, const rm
     ESP_RETURN_ON_FALSE(channel && cbs, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(channel->direction == RMT_CHANNEL_DIRECTION_RX, ESP_ERR_INVALID_ARG, TAG, "invalid channel direction");
     rmt_rx_channel_t *rx_chan = __containerof(channel, rmt_rx_channel_t, base);
-    #if CONFIG_RMT_ISR_IRAM_SAFE
+#if CONFIG_RMT_ISR_IRAM_SAFE
     if (cbs->on_recv_done)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_recv_done), ESP_ERR_INVALID_ARG, TAG, "on_recv_done callback not in IRAM");
@@ -338,7 +338,7 @@ esp_err_t rmt_rx_register_event_callbacks(rmt_channel_handle_t channel, const rm
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     rx_chan->on_recv_done = cbs->on_recv_done;
     rx_chan->user_data = user_data;
     return ESP_OK;
@@ -370,11 +370,11 @@ esp_err_t rmt_receive(rmt_channel_handle_t channel, void *buffer, size_t buffer_
     t->copy_dest_off = 0;
     if (channel->dma_chan)
     {
-        #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
         rmt_rx_mount_dma_buffer(rx_chan->dma_nodes, rx_chan->num_dma_nodes, buffer, buffer_size);
         gdma_reset(channel->dma_chan);
         gdma_start(channel->dma_chan, (intptr_t)rx_chan->dma_nodes);
-        #endif
+#endif
     }
     rx_chan->mem_off = 0;
     portENTER_CRITICAL(&channel->spinlock);
@@ -393,9 +393,9 @@ esp_err_t rmt_receive(rmt_channel_handle_t channel, void *buffer, size_t buffer_
 
 static esp_err_t rmt_rx_demodulate_carrier(rmt_channel_handle_t channel, const rmt_carrier_config_t *config)
 {
-    #if !SOC_RMT_SUPPORT_RX_DEMODULATION
+#if !SOC_RMT_SUPPORT_RX_DEMODULATION
     ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "rx demodulation not supported");
-    #else
+#else
     rmt_group_t *group = channel->group;
     rmt_hal_context_t *hal = &group->hal;
     int group_id = group->group_id;
@@ -427,7 +427,7 @@ static esp_err_t rmt_rx_demodulate_carrier(rmt_channel_handle_t channel, const r
         ESP_LOGD(TAG, "disable carrier demodulation for channel(%d, %d)", group_id, channel_id);
     }
     return ESP_OK;
-    #endif
+#endif
 }
 
 static esp_err_t rmt_rx_enable(rmt_channel_handle_t channel)
@@ -442,13 +442,13 @@ static esp_err_t rmt_rx_enable(rmt_channel_handle_t channel)
     }
     if (channel->dma_chan)
     {
-        #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
         // enable the DMA access mode
         portENTER_CRITICAL(&channel->spinlock);
         rmt_ll_rx_enable_dma(hal->regs, channel_id, true);
         portEXIT_CRITICAL(&channel->spinlock);
         gdma_connect(channel->dma_chan, GDMA_MAKE_TRIGGER(GDMA_TRIG_PERIPH_RMT, 0));
-        #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     }
     else
     {
@@ -470,13 +470,13 @@ static esp_err_t rmt_rx_disable(rmt_channel_handle_t channel)
     portEXIT_CRITICAL(&channel->spinlock);
     if (channel->dma_chan)
     {
-        #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
         gdma_stop(channel->dma_chan);
         gdma_disconnect(channel->dma_chan);
         portENTER_CRITICAL(&channel->spinlock);
         rmt_ll_rx_enable_dma(hal->regs, channel_id, false);
         portEXIT_CRITICAL(&channel->spinlock);
-        #endif
+#endif
     }
     else
     {
@@ -526,7 +526,7 @@ static bool IRAM_ATTR rmt_isr_handle_rx_done(rmt_rx_channel_t *rx_chan)
                                         trans_desc->buffer, trans_desc->copy_dest_off, trans_desc->buffer_size);
     rmt_ll_rx_set_mem_owner(hal->regs, channel_id, RMT_LL_MEM_OWNER_HW);
     portEXIT_CRITICAL_ISR(&channel->spinlock);
-    #if !SOC_RMT_SUPPORT_RX_PINGPONG
+#if !SOC_RMT_SUPPORT_RX_PINGPONG
     // for chips doesn't support ping-pong RX, we should check whether the receiver has encountered with a long frame,
     // whose length is longer than the channel capacity
     if (rmt_ll_rx_get_interrupt_status_raw(hal->regs, channel_id) & RMT_LL_EVENT_RX_ERROR(channel_id))
@@ -538,7 +538,7 @@ static bool IRAM_ATTR rmt_isr_handle_rx_done(rmt_rx_channel_t *rx_chan)
         rmt_ll_clear_interrupt_status(hal->regs, RMT_LL_EVENT_RX_ERROR(channel_id));
         ESP_DRAM_LOGE(TAG, "hw buffer too small, received symbols truncated");
     }
-    #endif // !SOC_RMT_SUPPORT_RX_PINGPONG
+#endif // !SOC_RMT_SUPPORT_RX_PINGPONG
     // check whether all symbols are copied
     if (copy_size != stream_symbols * sizeof(rmt_symbol_word_t))
     {
@@ -600,7 +600,7 @@ static void IRAM_ATTR rmt_rx_default_isr(void *args)
     uint32_t channel_id = channel->channel_id;
     bool need_yield = false;
     uint32_t status = rmt_ll_rx_get_interrupt_status(hal->regs, channel_id);
-    #if SOC_RMT_SUPPORT_RX_PINGPONG
+#if SOC_RMT_SUPPORT_RX_PINGPONG
     // RX threshold interrupt
     if (status & RMT_LL_EVENT_RX_THRES(channel_id))
     {
@@ -609,7 +609,7 @@ static void IRAM_ATTR rmt_rx_default_isr(void *args)
             need_yield = true;
         }
     }
-    #endif // SOC_RMT_SUPPORT_RX_PINGPONG
+#endif // SOC_RMT_SUPPORT_RX_PINGPONG
     // RX end interrupt
     if (status & RMT_LL_EVENT_RX_DONE(channel_id))
     {

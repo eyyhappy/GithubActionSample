@@ -23,11 +23,11 @@
 
 #include "mbedtls/platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_exit       exit
-#define mbedtls_printf     printf
-#define mbedtls_free       free
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_exit       exit
+    #define mbedtls_printf     printf
+    #define mbedtls_free       free
 #endif
 
 #if !defined(MBEDTLS_HAVE_TIME)
@@ -69,7 +69,7 @@ int main( void )
 #include "mbedtls/error.h"
 
 #ifndef asm
-#define asm __asm
+    #define asm __asm
 #endif
 
 #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
@@ -98,7 +98,7 @@ struct _hr_time
 #endif /* _WIN32 && !EFIX64 && !EFI32 */
 
 #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
-#include "mbedtls/memory_buffer_alloc.h"
+    #include "mbedtls/memory_buffer_alloc.h"
 #endif
 
 static void mbedtls_set_alarm( int seconds );
@@ -524,20 +524,20 @@ int main( int argc, char *argv[] )
     unsigned char tmp[200];
     char title[TITLE_LEN];
     todo_list todo;
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     unsigned char alloc_buf[HEAP_SIZE] = { 0 };
-    #endif
-    #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
     mbedtls_ecp_curve_info single_curve[2] =
     {
         { MBEDTLS_ECP_DP_NONE, 0, 0, NULL },
         { MBEDTLS_ECP_DP_NONE, 0, 0, NULL },
     };
     const mbedtls_ecp_curve_info *curve_list = mbedtls_ecp_curve_list( );
-    #endif
-    #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
     (void) curve_list; /* Unused in some configurations where no benchmark uses ECC */
-    #endif
+#endif
     if( argc <= 1 )
     {
         memset( &todo, 1, sizeof( todo ) );
@@ -595,10 +595,10 @@ int main( int argc, char *argv[] )
                 todo.ecdsa = 1;
             else if( strcmp( argv[i], "ecdh" ) == 0 )
                 todo.ecdh = 1;
-            #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
             else if( set_ecp_curve( argv[i], single_curve ) )
                 curve_list = single_curve;
-            #endif
+#endif
             else
             {
                 mbedtls_printf( "Unrecognized option: %s\n", argv[i] );
@@ -607,36 +607,36 @@ int main( int argc, char *argv[] )
         }
     }
     mbedtls_printf( "\n" );
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     mbedtls_memory_buffer_alloc_init( alloc_buf, sizeof( alloc_buf ) );
-    #endif
+#endif
     memset( buf, 0xAA, sizeof( buf ) );
     memset( tmp, 0xBB, sizeof( tmp ) );
     /* Avoid "unused static function" warning in configurations without
      * symmetric crypto. */
     (void) mbedtls_timing_hardclock;
-    #if defined(MBEDTLS_MD5_C)
+#if defined(MBEDTLS_MD5_C)
     if( todo.md5 )
         TIME_AND_TSC( "MD5", mbedtls_md5( buf, BUFSIZE, tmp ) );
-    #endif
-    #if defined(MBEDTLS_RIPEMD160_C)
+#endif
+#if defined(MBEDTLS_RIPEMD160_C)
     if( todo.ripemd160 )
         TIME_AND_TSC( "RIPEMD160", mbedtls_ripemd160( buf, BUFSIZE, tmp ) );
-    #endif
-    #if defined(MBEDTLS_SHA1_C)
+#endif
+#if defined(MBEDTLS_SHA1_C)
     if( todo.sha1 )
         TIME_AND_TSC( "SHA-1", mbedtls_sha1( buf, BUFSIZE, tmp ) );
-    #endif
-    #if defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_SHA256_C)
     if( todo.sha256 )
         TIME_AND_TSC( "SHA-256", mbedtls_sha256( buf, BUFSIZE, tmp, 0 ) );
-    #endif
-    #if defined(MBEDTLS_SHA512_C)
+#endif
+#if defined(MBEDTLS_SHA512_C)
     if( todo.sha512 )
         TIME_AND_TSC( "SHA-512", mbedtls_sha512( buf, BUFSIZE, tmp, 0 ) );
-    #endif
-    #if defined(MBEDTLS_DES_C)
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#endif
+#if defined(MBEDTLS_DES_C)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.des3 )
     {
         mbedtls_des3_context des3;
@@ -657,8 +657,8 @@ int main( int argc, char *argv[] )
                       mbedtls_des_crypt_cbc( &des, MBEDTLS_DES_ENCRYPT, BUFSIZE, tmp, buf, buf ) );
         mbedtls_des_free( &des );
     }
-    #endif /* MBEDTLS_CIPHER_MODE_CBC */
-    #if defined(MBEDTLS_CMAC_C)
+#endif /* MBEDTLS_CIPHER_MODE_CBC */
+#if defined(MBEDTLS_CMAC_C)
     if( todo.des3_cmac )
     {
         unsigned char output[8];
@@ -670,10 +670,10 @@ int main( int argc, char *argv[] )
                       mbedtls_cipher_cmac( cipher_info, tmp, 192, buf,
                                            BUFSIZE, output ) );
     }
-    #endif /* MBEDTLS_CMAC_C */
-    #endif /* MBEDTLS_DES_C */
-    #if defined(MBEDTLS_AES_C)
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#endif /* MBEDTLS_CMAC_C */
+#endif /* MBEDTLS_DES_C */
+#if defined(MBEDTLS_AES_C)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.aes_cbc )
     {
         int keysize;
@@ -690,8 +690,8 @@ int main( int argc, char *argv[] )
         }
         mbedtls_aes_free( &aes );
     }
-    #endif
-    #if defined(MBEDTLS_CIPHER_MODE_XTS)
+#endif
+#if defined(MBEDTLS_CIPHER_MODE_XTS)
     if( todo.aes_xts )
     {
         int keysize;
@@ -709,8 +709,8 @@ int main( int argc, char *argv[] )
             mbedtls_aes_xts_free( &ctx );
         }
     }
-    #endif
-    #if defined(MBEDTLS_GCM_C)
+#endif
+#if defined(MBEDTLS_GCM_C)
     if( todo.aes_gcm )
     {
         int keysize;
@@ -728,8 +728,8 @@ int main( int argc, char *argv[] )
             mbedtls_gcm_free( &gcm );
         }
     }
-    #endif
-    #if defined(MBEDTLS_CCM_C)
+#endif
+#if defined(MBEDTLS_CCM_C)
     if( todo.aes_ccm )
     {
         int keysize;
@@ -747,8 +747,8 @@ int main( int argc, char *argv[] )
             mbedtls_ccm_free( &ccm );
         }
     }
-    #endif
-    #if defined(MBEDTLS_CHACHAPOLY_C)
+#endif
+#if defined(MBEDTLS_CHACHAPOLY_C)
     if( todo.chachapoly )
     {
         mbedtls_chachapoly_context chachapoly;
@@ -762,8 +762,8 @@ int main( int argc, char *argv[] )
                               BUFSIZE, tmp, NULL, 0, buf, buf, tmp ) );
         mbedtls_chachapoly_free( &chachapoly );
     }
-    #endif
-    #if defined(MBEDTLS_CMAC_C)
+#endif
+#if defined(MBEDTLS_CMAC_C)
     if( todo.aes_cmac )
     {
         unsigned char output[16];
@@ -788,9 +788,9 @@ int main( int argc, char *argv[] )
                       mbedtls_aes_cmac_prf_128( tmp, 16, buf, BUFSIZE,
                                                 output ) );
     }
-    #endif /* MBEDTLS_CMAC_C */
-    #endif /* MBEDTLS_AES_C */
-    #if defined(MBEDTLS_ARIA_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
+#endif /* MBEDTLS_CMAC_C */
+#endif /* MBEDTLS_AES_C */
+#if defined(MBEDTLS_ARIA_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.aria )
     {
         int keysize;
@@ -808,8 +808,8 @@ int main( int argc, char *argv[] )
         }
         mbedtls_aria_free( &aria );
     }
-    #endif
-    #if defined(MBEDTLS_CAMELLIA_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
+#endif
+#if defined(MBEDTLS_CAMELLIA_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.camellia )
     {
         int keysize;
@@ -827,20 +827,20 @@ int main( int argc, char *argv[] )
         }
         mbedtls_camellia_free( &camellia );
     }
-    #endif
-    #if defined(MBEDTLS_CHACHA20_C)
+#endif
+#if defined(MBEDTLS_CHACHA20_C)
     if ( todo.chacha20 )
     {
         TIME_AND_TSC( "ChaCha20", mbedtls_chacha20_crypt( buf, buf, 0U, BUFSIZE, buf, buf ) );
     }
-    #endif
-    #if defined(MBEDTLS_POLY1305_C)
+#endif
+#if defined(MBEDTLS_POLY1305_C)
     if ( todo.poly1305 )
     {
         TIME_AND_TSC( "Poly1305", mbedtls_poly1305_mac( buf, buf, BUFSIZE, buf ) );
     }
-    #endif
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#endif
+#if defined(MBEDTLS_CTR_DRBG_C)
     if( todo.ctr_drbg )
     {
         mbedtls_ctr_drbg_context ctr_drbg;
@@ -858,14 +858,14 @@ int main( int argc, char *argv[] )
                       mbedtls_ctr_drbg_random( &ctr_drbg, buf, BUFSIZE ) );
         mbedtls_ctr_drbg_free( &ctr_drbg );
     }
-    #endif
-    #if defined(MBEDTLS_HMAC_DRBG_C)
+#endif
+#if defined(MBEDTLS_HMAC_DRBG_C)
     if( todo.hmac_drbg )
     {
         mbedtls_hmac_drbg_context hmac_drbg;
         const mbedtls_md_info_t *md_info;
         mbedtls_hmac_drbg_init( &hmac_drbg );
-        #if defined(MBEDTLS_SHA1_C)
+#if defined(MBEDTLS_SHA1_C)
         if( ( md_info = mbedtls_md_info_from_type( MBEDTLS_MD_SHA1 ) ) == NULL )
             mbedtls_exit(1);
         if( mbedtls_hmac_drbg_seed( &hmac_drbg, md_info, myrand, NULL, NULL, 0 ) != 0 )
@@ -878,8 +878,8 @@ int main( int argc, char *argv[] )
                 MBEDTLS_HMAC_DRBG_PR_ON );
         TIME_AND_TSC( "HMAC_DRBG SHA-1 (PR)",
                       mbedtls_hmac_drbg_random( &hmac_drbg, buf, BUFSIZE ) );
-        #endif
-        #if defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_SHA256_C)
         if( ( md_info = mbedtls_md_info_from_type( MBEDTLS_MD_SHA256 ) ) == NULL )
             mbedtls_exit(1);
         if( mbedtls_hmac_drbg_seed( &hmac_drbg, md_info, myrand, NULL, NULL, 0 ) != 0 )
@@ -892,11 +892,11 @@ int main( int argc, char *argv[] )
                 MBEDTLS_HMAC_DRBG_PR_ON );
         TIME_AND_TSC( "HMAC_DRBG SHA-256 (PR)",
                       mbedtls_hmac_drbg_random( &hmac_drbg, buf, BUFSIZE ) );
-        #endif
+#endif
         mbedtls_hmac_drbg_free( &hmac_drbg );
     }
-    #endif
-    #if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_GENPRIME)
+#endif
+#if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_GENPRIME)
     if( todo.rsa )
     {
         int keysize;
@@ -915,8 +915,8 @@ int main( int argc, char *argv[] )
             mbedtls_rsa_free( &rsa );
         }
     }
-    #endif
-    #if defined(MBEDTLS_DHM_C) && defined(MBEDTLS_BIGNUM_C)
+#endif
+#if defined(MBEDTLS_DHM_C) && defined(MBEDTLS_BIGNUM_C)
     if( todo.dhm )
     {
         int dhm_sizes[] = { 2048, 3072 };
@@ -964,8 +964,8 @@ int main( int argc, char *argv[] )
             mbedtls_dhm_free( &dhm );
         }
     }
-    #endif
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_SHA256_C)
     if( todo.ecdsa )
     {
         mbedtls_ecdsa_context ecdsa;
@@ -1009,20 +1009,20 @@ int main( int argc, char *argv[] )
             mbedtls_ecdsa_free( &ecdsa );
         }
     }
-    #endif
-    #if defined(MBEDTLS_ECDH_C) && defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
+#endif
+#if defined(MBEDTLS_ECDH_C) && defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
     if( todo.ecdh )
     {
         mbedtls_ecdh_context ecdh;
         mbedtls_mpi z;
         const mbedtls_ecp_curve_info montgomery_curve_list[] =
         {
-            #if defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED)
+#if defined(MBEDTLS_ECP_DP_CURVE25519_ENABLED)
             { MBEDTLS_ECP_DP_CURVE25519, 0, 0, "Curve25519" },
-            #endif
-            #if defined(MBEDTLS_ECP_DP_CURVE448_ENABLED)
+#endif
+#if defined(MBEDTLS_ECP_DP_CURVE448_ENABLED)
             { MBEDTLS_ECP_DP_CURVE448, 0, 0, "Curve448" },
-            #endif
+#endif
             { MBEDTLS_ECP_DP_NONE, 0, 0, 0 }
         };
         const mbedtls_ecp_curve_info *curve_info;
@@ -1120,8 +1120,8 @@ int main( int argc, char *argv[] )
             mbedtls_mpi_free( &z );
         }
     }
-    #endif
-    #if defined(MBEDTLS_ECDH_C)
+#endif
+#if defined(MBEDTLS_ECDH_C)
     if( todo.ecdh )
     {
         mbedtls_ecdh_context ecdh_srv, ecdh_cli;
@@ -1151,11 +1151,11 @@ int main( int argc, char *argv[] )
                        );
         }
     }
-    #endif
+#endif
     mbedtls_printf( "\n" );
-    #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
+#if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
     mbedtls_memory_buffer_alloc_free();
-    #endif
+#endif
     mbedtls_exit( 0 );
 }
 

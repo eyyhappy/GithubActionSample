@@ -24,34 +24,34 @@
 
 #if defined(PSA_CRYPTO_DRIVER_TEST_ALL)
 
-/* Enable the use of the test driver in the library, and build the generic
- * part of the test driver. */
-#define PSA_CRYPTO_DRIVER_TEST
+    /* Enable the use of the test driver in the library, and build the generic
+    * part of the test driver. */
+    #define PSA_CRYPTO_DRIVER_TEST
 
-/* Use the accelerator driver for all cryptographic mechanisms for which
- * the test driver implemented. */
-#define MBEDTLS_PSA_ACCEL_KEY_TYPE_AES
-#define MBEDTLS_PSA_ACCEL_KEY_TYPE_CAMELLIA
-#define MBEDTLS_PSA_ACCEL_KEY_TYPE_ECC_KEY_PAIR
-#define MBEDTLS_PSA_ACCEL_KEY_TYPE_RSA_KEY_PAIR
-#define MBEDTLS_PSA_ACCEL_ALG_CBC_NO_PADDING
-#define MBEDTLS_PSA_ACCEL_ALG_CBC_PKCS7
-#define MBEDTLS_PSA_ACCEL_ALG_CTR
-#define MBEDTLS_PSA_ACCEL_ALG_CFB
-#define MBEDTLS_PSA_ACCEL_ALG_ECDSA
-#define MBEDTLS_PSA_ACCEL_ALG_DETERMINISTIC_ECDSA
-#define MBEDTLS_PSA_ACCEL_ALG_MD5
-#define MBEDTLS_PSA_ACCEL_ALG_OFB
-#define MBEDTLS_PSA_ACCEL_ALG_RIPEMD160
-#define MBEDTLS_PSA_ACCEL_ALG_RSA_PKCS1V15_SIGN
-#define MBEDTLS_PSA_ACCEL_ALG_RSA_PSS
-#define MBEDTLS_PSA_ACCEL_ALG_SHA_1
-#define MBEDTLS_PSA_ACCEL_ALG_SHA_224
-#define MBEDTLS_PSA_ACCEL_ALG_SHA_256
-#define MBEDTLS_PSA_ACCEL_ALG_SHA_384
-#define MBEDTLS_PSA_ACCEL_ALG_SHA_512
-#define MBEDTLS_PSA_ACCEL_ALG_XTS
-#define MBEDTLS_PSA_ACCEL_ALG_CMAC
-#define MBEDTLS_PSA_ACCEL_ALG_HMAC
+    /* Use the accelerator driver for all cryptographic mechanisms for which
+    * the test driver implemented. */
+    #define MBEDTLS_PSA_ACCEL_KEY_TYPE_AES
+    #define MBEDTLS_PSA_ACCEL_KEY_TYPE_CAMELLIA
+    #define MBEDTLS_PSA_ACCEL_KEY_TYPE_ECC_KEY_PAIR
+    #define MBEDTLS_PSA_ACCEL_KEY_TYPE_RSA_KEY_PAIR
+    #define MBEDTLS_PSA_ACCEL_ALG_CBC_NO_PADDING
+    #define MBEDTLS_PSA_ACCEL_ALG_CBC_PKCS7
+    #define MBEDTLS_PSA_ACCEL_ALG_CTR
+    #define MBEDTLS_PSA_ACCEL_ALG_CFB
+    #define MBEDTLS_PSA_ACCEL_ALG_ECDSA
+    #define MBEDTLS_PSA_ACCEL_ALG_DETERMINISTIC_ECDSA
+    #define MBEDTLS_PSA_ACCEL_ALG_MD5
+    #define MBEDTLS_PSA_ACCEL_ALG_OFB
+    #define MBEDTLS_PSA_ACCEL_ALG_RIPEMD160
+    #define MBEDTLS_PSA_ACCEL_ALG_RSA_PKCS1V15_SIGN
+    #define MBEDTLS_PSA_ACCEL_ALG_RSA_PSS
+    #define MBEDTLS_PSA_ACCEL_ALG_SHA_1
+    #define MBEDTLS_PSA_ACCEL_ALG_SHA_224
+    #define MBEDTLS_PSA_ACCEL_ALG_SHA_256
+    #define MBEDTLS_PSA_ACCEL_ALG_SHA_384
+    #define MBEDTLS_PSA_ACCEL_ALG_SHA_512
+    #define MBEDTLS_PSA_ACCEL_ALG_XTS
+    #define MBEDTLS_PSA_ACCEL_ALG_CMAC
+    #define MBEDTLS_PSA_ACCEL_ALG_HMAC
 
 #endif  /* PSA_CRYPTO_DRIVER_TEST_ALL */

@@ -81,26 +81,26 @@ esp_err_t timer_get_counter_time_sec(timer_group_t group_num, timer_idx_t timer_
     // [clk_tree] TODO: replace the following switch table by clk_tree API
     switch (p_timer_obj[group_num][timer_num]->clk_src)
     {
-            #if SOC_TIMER_GROUP_SUPPORT_APB
+#if SOC_TIMER_GROUP_SUPPORT_APB
         case TIMER_SRC_CLK_APB:
             *time = (double)timer_val * div / esp_clk_apb_freq();
             break;
-            #endif
-            #if SOC_TIMER_GROUP_SUPPORT_XTAL
+#endif
+#if SOC_TIMER_GROUP_SUPPORT_XTAL
         case TIMER_SRC_CLK_XTAL:
             *time = (double)timer_val * div / esp_clk_xtal_freq();
             break;
-            #endif
-            #if SOC_TIMER_GROUP_SUPPORT_AHB
+#endif
+#if SOC_TIMER_GROUP_SUPPORT_AHB
         case TIMER_SRC_CLK_AHB:
             *time = (double)timer_val * div / (48 * 1000 * 1000);
             break;
-            #endif
-            #if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
+#endif
+#if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
         case TIMER_SRC_CLK_PLL_F40M:
             *time = (double)timer_val * div / (40 * 1000 * 1000);
             break;
-            #endif
+#endif
         default:
             ESP_RETURN_ON_FALSE(false, ESP_ERR_INVALID_ARG, TIMER_TAG, "invalid clock source");
             break;
@@ -410,12 +410,12 @@ uint32_t IRAM_ATTR timer_group_get_intr_status_in_isr(timer_group_t group_num)
     {
         intr_status = timer_ll_get_intr_status(TIMER_LL_GET_HW(group_num)) & TIMER_LL_EVENT_ALARM(0);
     }
-    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
     else if (p_timer_obj[group_num][TIMER_1] != NULL)
     {
         intr_status = timer_ll_get_intr_status(TIMER_LL_GET_HW(group_num)) & TIMER_LL_EVENT_ALARM(1);
     }
-    #endif
+#endif
     return intr_status;
 }
 

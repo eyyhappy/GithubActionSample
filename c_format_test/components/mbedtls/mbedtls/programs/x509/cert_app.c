@@ -20,17 +20,17 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_time            time
-#define mbedtls_time_t          time_t
-#define mbedtls_fprintf         fprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_time            time
+    #define mbedtls_time_t          time_t
+    #define mbedtls_fprintf         fprintf
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_ENTROPY_C) ||  \
@@ -162,13 +162,13 @@ int main( int argc, char *argv[] )
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
     mbedtls_x509_crt_init( &cacert );
-    #if defined(MBEDTLS_X509_CRL_PARSE_C)
+#if defined(MBEDTLS_X509_CRL_PARSE_C)
     mbedtls_x509_crl_init( &cacrl );
-    #else
+#else
     /* Zeroize structure as CRL parsing is not supported and we have to pass
        it to the verify function */
     memset( &cacrl, 0, sizeof(mbedtls_x509_crl) );
-    #endif
+#endif
     if( argc == 0 )
     {
     usage:
@@ -255,7 +255,7 @@ int main( int argc, char *argv[] )
         verify = 1;
     }
     mbedtls_printf( " ok (%d skipped)\n", ret );
-    #if defined(MBEDTLS_X509_CRL_PARSE_C)
+#if defined(MBEDTLS_X509_CRL_PARSE_C)
     if( strlen( opt.crl_file ) )
     {
         if( ( ret = mbedtls_x509_crl_parse_file( &cacrl, opt.crl_file ) ) != 0 )
@@ -265,7 +265,7 @@ int main( int argc, char *argv[] )
         }
         verify = 1;
     }
-    #endif
+#endif
     if( opt.mode == MODE_FILE )
     {
         mbedtls_x509_crt crt;
@@ -342,9 +342,9 @@ int main( int argc, char *argv[] )
             goto ssl_exit;
         }
         mbedtls_printf( " ok\n" );
-        #if defined(MBEDTLS_DEBUG_C)
+#if defined(MBEDTLS_DEBUG_C)
         mbedtls_debug_set_threshold( opt.debug_level );
-        #endif
+#endif
         /*
          * 2. Start the connection
          */
@@ -404,9 +404,9 @@ int main( int argc, char *argv[] )
         /*
          * 5. Print the certificate
          */
-        #if !defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
+#if !defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
         mbedtls_printf( "  . Peer certificate information    ... skipped\n" );
-        #else
+#else
         mbedtls_printf( "  . Peer certificate information    ...\n" );
         ret = mbedtls_x509_crt_info( (char *) buf, sizeof( buf ) - 1, "      ",
                                      mbedtls_ssl_get_peer_cert( &ssl ) );
@@ -416,7 +416,7 @@ int main( int argc, char *argv[] )
             goto ssl_exit;
         }
         mbedtls_printf( "%s\n", buf );
-        #endif /* MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
+#endif /* MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
         mbedtls_ssl_close_notify( &ssl );
     ssl_exit:
         mbedtls_ssl_free( &ssl );
@@ -428,9 +428,9 @@ int main( int argc, char *argv[] )
 exit:
     mbedtls_net_free( &server_fd );
     mbedtls_x509_crt_free( &cacert );
-    #if defined(MBEDTLS_X509_CRL_PARSE_C)
+#if defined(MBEDTLS_X509_CRL_PARSE_C)
     mbedtls_x509_crl_free( &cacrl );
-    #endif
+#endif
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
     mbedtls_exit( exit_code );

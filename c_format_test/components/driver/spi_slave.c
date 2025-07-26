@@ -38,15 +38,15 @@ static const char *SPI_TAG = "spi_slave";
     }
 
 #ifdef CONFIG_SPI_SLAVE_ISR_IN_IRAM
-#define SPI_SLAVE_ISR_ATTR IRAM_ATTR
+    #define SPI_SLAVE_ISR_ATTR IRAM_ATTR
 #else
-#define SPI_SLAVE_ISR_ATTR
+    #define SPI_SLAVE_ISR_ATTR
 #endif
 
 #ifdef CONFIG_SPI_SLAVE_IN_IRAM
-#define SPI_SLAVE_ATTR IRAM_ATTR
+    #define SPI_SLAVE_ATTR IRAM_ATTR
 #else
-#define SPI_SLAVE_ATTR
+    #define SPI_SLAVE_ATTR
 #endif
 
 typedef struct
@@ -64,9 +64,9 @@ typedef struct
     bool cs_iomux;
     uint32_t tx_dma_chan;
     uint32_t rx_dma_chan;
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_handle_t pm_lock;
-    #endif
+#endif
 } spi_slave_t;
 
 static spi_slave_t *spihost[SOC_SPI_PERIPH_NUM];
@@ -76,13 +76,13 @@ static void spi_intr(void *arg);
 static inline bool is_valid_host(spi_host_device_t host)
 {
 //SPI1 can be used as GPSPI only on ESP32
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     return host >= SPI1_HOST && host <= SPI3_HOST;
-    #elif (SOC_SPI_PERIPH_NUM == 2)
+#elif (SOC_SPI_PERIPH_NUM == 2)
     return host == SPI2_HOST;
-    #elif (SOC_SPI_PERIPH_NUM == 3)
+#elif (SOC_SPI_PERIPH_NUM == 3)
     return host >= SPI2_HOST && host <= SPI3_HOST;
-    #endif
+#endif
 }
 
 static inline bool SPI_SLAVE_ISR_ATTR bus_is_iomux(spi_slave_t *host)
@@ -117,17 +117,17 @@ esp_err_t spi_slave_initialize(spi_host_device_t host, const spi_bus_config_t *b
     esp_err_t ret = ESP_OK;
     esp_err_t err;
     SPI_CHECK(is_valid_host(host), "invalid host", ESP_ERR_INVALID_ARG);
-    #ifdef CONFIG_IDF_TARGET_ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32
     SPI_CHECK(dma_chan >= SPI_DMA_DISABLED && dma_chan <= SPI_DMA_CH_AUTO, "invalid dma channel", ESP_ERR_INVALID_ARG );
-    #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
     SPI_CHECK( dma_chan == SPI_DMA_DISABLED || dma_chan == (int)host || dma_chan == SPI_DMA_CH_AUTO, "invalid dma channel", ESP_ERR_INVALID_ARG );
-    #elif SOC_GDMA_SUPPORTED
+#elif SOC_GDMA_SUPPORTED
     SPI_CHECK( dma_chan == SPI_DMA_DISABLED || dma_chan == SPI_DMA_CH_AUTO, "invalid dma channel, chip only support spi dma channel auto-alloc", ESP_ERR_INVALID_ARG );
-    #endif
+#endif
     SPI_CHECK((bus_config->intr_flags & (ESP_INTR_FLAG_HIGH | ESP_INTR_FLAG_EDGE | ESP_INTR_FLAG_INTRDISABLED)) == 0, "intr flag not allowed", ESP_ERR_INVALID_ARG);
-    #ifndef CONFIG_SPI_SLAVE_ISR_IN_IRAM
+#ifndef CONFIG_SPI_SLAVE_ISR_IN_IRAM
     SPI_CHECK((bus_config->intr_flags & ESP_INTR_FLAG_IRAM) == 0, "ESP_INTR_FLAG_IRAM should be disabled when CONFIG_SPI_SLAVE_ISR_IN_IRAM is not set.", ESP_ERR_INVALID_ARG);
-    #endif
+#endif
     SPI_CHECK(slave_config->spics_io_num < 0 || GPIO_IS_VALID_GPIO(slave_config->spics_io_num), "spics pin invalid", ESP_ERR_INVALID_ARG);
     spi_chan_claimed = spicommon_periph_claim(host, "spi slave");
     SPI_CHECK(spi_chan_claimed, "host already in use", ESP_ERR_INVALID_STATE);
@@ -179,7 +179,7 @@ esp_err_t spi_slave_initialize(spi_host_device_t host, const spi_bus_config_t *b
         //We're limited to non-DMA transfers: the SPI work registers can hold 64 bytes at most.
         spihost[host]->max_transfer_sz = SOC_SPI_MAXIMUM_BUFFER_SIZE;
     }
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     err = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "spi_slave",
                              &spihost[host]->pm_lock);
     if (err != ESP_OK)
@@ -189,7 +189,7 @@ esp_err_t spi_slave_initialize(spi_host_device_t host, const spi_bus_config_t *b
     }
     // Lock APB frequency while SPI slave driver is in use
     esp_pm_lock_acquire(spihost[host]->pm_lock);
-    #endif //CONFIG_PM_ENABLE
+#endif //CONFIG_PM_ENABLE
     //Create queues
     spihost[host]->trans_queue = xQueueCreate(slave_config->queue_size, sizeof(spi_slave_transaction_t *));
     spihost[host]->ret_queue = xQueueCreate(slave_config->queue_size, sizeof(spi_slave_transaction_t *));
@@ -240,13 +240,13 @@ cleanup:
         if (spihost[host]->ret_queue) vQueueDelete(spihost[host]->ret_queue);
         free(spihost[host]->hal.dmadesc_tx);
         free(spihost[host]->hal.dmadesc_rx);
-        #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
         if (spihost[host]->pm_lock)
         {
             esp_pm_lock_release(spihost[host]->pm_lock);
             esp_pm_lock_delete(spihost[host]->pm_lock);
         }
-        #endif
+#endif
     }
     spi_slave_hal_deinit(&spihost[host]->hal);
     if (spihost[host]->dma_enabled)
@@ -272,10 +272,10 @@ esp_err_t spi_slave_free(spi_host_device_t host)
     free(spihost[host]->hal.dmadesc_tx);
     free(spihost[host]->hal.dmadesc_rx);
     esp_intr_free(spihost[host]->intr);
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_release(spihost[host]->pm_lock);
     esp_pm_lock_delete(spihost[host]->pm_lock);
-    #endif //CONFIG_PM_ENABLE
+#endif //CONFIG_PM_ENABLE
     free(spihost[host]);
     spihost[host] = NULL;
     spicommon_periph_free(host);
@@ -352,21 +352,21 @@ static void SPI_SLAVE_ISR_ATTR spi_intr(void *arg)
         if (use_dma) freeze_cs(host);
         spi_slave_hal_store_result(hal);
         host->cur_trans->trans_len = spi_slave_hal_get_rcv_bitlen(hal);
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         //This workaround is only for esp32
         if (spi_slave_hal_dma_need_reset(hal))
         {
             //On ESP32, actual_tx_dma_chan and actual_rx_dma_chan are always same
             spicommon_dmaworkaround_req_reset(host->tx_dma_chan, spi_slave_restart_after_dmareset, host);
         }
-        #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
         if (host->cfg.post_trans_cb) host->cfg.post_trans_cb(host->cur_trans);
         //Okay, transaction is done.
         //Return transaction descriptor.
         xQueueSendFromISR(host->ret_queue, &host->cur_trans, &do_yield);
         host->cur_trans = NULL;
     }
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     //This workaround is only for esp32
     if (use_dma)
     {
@@ -380,7 +380,7 @@ static void SPI_SLAVE_ISR_ATTR spi_intr(void *arg)
             return;
         }
     }
-    #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
     //Disable interrupt before checking to avoid concurrency issue.
     esp_intr_disable(host->intr);
     //Grab next transaction
@@ -396,14 +396,14 @@ static void SPI_SLAVE_ISR_ATTR spi_intr(void *arg)
         hal->bitlen = trans->length;
         hal->rx_buffer = trans->rx_buffer;
         hal->tx_buffer = trans->tx_buffer;
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         if (use_dma)
         {
             //This workaround is only for esp32
             //On ESP32, actual_tx_dma_chan and actual_rx_dma_chan are always same
             spicommon_dmaworkaround_transfer_active(host->tx_dma_chan);
         }
-        #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
         spi_slave_hal_prepare_data(hal);
         //The slave rx dma get disturbed by unexpected transaction. Only connect the CS when slave is ready.
         if (use_dma)

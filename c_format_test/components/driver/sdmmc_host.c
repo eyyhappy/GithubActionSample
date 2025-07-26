@@ -118,16 +118,16 @@ static void sdmmc_host_set_clk_div(int div)
     SDMMC.clock.div_factor_h = h;
     SDMMC.clock.div_factor_m = p;
     // Make sure 160 MHz source clock is used
-    #if SOC_SDMMC_SUPPORT_XTAL_CLOCK
+#if SOC_SDMMC_SUPPORT_XTAL_CLOCK
     SDMMC.clock.clk_sel = 1;
-    #endif
-    #if SOC_SDMMC_USE_GPIO_MATRIX
+#endif
+#if SOC_SDMMC_USE_GPIO_MATRIX
     // 90 degree phase on input and output clocks
     const int inout_clock_phase = 1;
-    #else
+#else
     // 180 degree phase on input and output clocks
     const int inout_clock_phase = 4;
-    #endif
+#endif
     // Set phases for in/out clocks
     SDMMC.clock.phase_dout = inout_clock_phase;
     SDMMC.clock.phase_din = inout_clock_phase;
@@ -401,7 +401,7 @@ esp_err_t sdmmc_host_init_slot(int slot, const sdmmc_slot_config_t* slot_config)
         return ESP_ERR_INVALID_ARG;
     }
     s_slot_width[slot] = slot_width;
-    #if SOC_SDMMC_USE_GPIO_MATRIX
+#if SOC_SDMMC_USE_GPIO_MATRIX
     /* Save pin configuration for this slot */
     s_sdmmc_slot_gpio_num[slot].clk = slot_config->clk;
     s_sdmmc_slot_gpio_num[slot].cmd = slot_config->cmd;
@@ -421,7 +421,7 @@ esp_err_t sdmmc_host_init_slot(int slot, const sdmmc_slot_config_t* slot_config)
         s_sdmmc_slot_gpio_num[slot].d6 = slot_config->d6;
         s_sdmmc_slot_gpio_num[slot].d7 = slot_config->d7;
     }
-    #endif
+#endif
     bool pullup = slot_config->flags & SDMMC_SLOT_FLAG_INTERNAL_PULLUP;
     if (pullup)
     {

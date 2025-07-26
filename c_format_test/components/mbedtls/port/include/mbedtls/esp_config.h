@@ -46,9 +46,9 @@
  * Comment if your system does not support time functions
  */
 #ifdef CONFIG_MBEDTLS_HAVE_TIME
-#define MBEDTLS_HAVE_TIME
+    #define MBEDTLS_HAVE_TIME
 #else
-#undef MBEDTLS_HAVE_TIME
+    #undef MBEDTLS_HAVE_TIME
 #endif
 
 /**
@@ -62,9 +62,9 @@
  * Comment if your system does not have a correct clock.
  */
 #ifdef CONFIG_MBEDTLS_HAVE_TIME_DATE
-#define MBEDTLS_HAVE_TIME_DATE
+    #define MBEDTLS_HAVE_TIME_DATE
 #else
-#undef MBEDTLS_HAVE_TIME_DATE
+    #undef MBEDTLS_HAVE_TIME_DATE
 #endif
 
 
@@ -82,9 +82,9 @@
  * Requires: MBEDTLS_PLATFORM_TIME_ALT requires MBEDTLS_HAVE_TIME
  */
 #ifdef CONFIG_MBEDTLS_PLATFORM_TIME_ALT
-#define MBEDTLS_PLATFORM_TIME_ALT
+    #define MBEDTLS_PLATFORM_TIME_ALT
 #else
-#undef MBEDTLS_PLATFORM_TIME_ALT
+    #undef MBEDTLS_PLATFORM_TIME_ALT
 #endif
 
 /**
@@ -113,9 +113,9 @@
 
 /** Override calloc(), free() except for case where memory allocation scheme is not set to custom */
 #ifndef CONFIG_MBEDTLS_CUSTOM_MEM_ALLOC
-#include "esp_mem.h"
-#define MBEDTLS_PLATFORM_STD_CALLOC     esp_mbedtls_mem_calloc
-#define MBEDTLS_PLATFORM_STD_FREE       esp_mbedtls_mem_free
+    #include "esp_mem.h"
+    #define MBEDTLS_PLATFORM_STD_CALLOC     esp_mbedtls_mem_calloc
+    #define MBEDTLS_PLATFORM_STD_FREE       esp_mbedtls_mem_free
 #endif
 
 /* \} name SECTION: System support */
@@ -132,41 +132,41 @@
    uncommenting each _ALT macro will use the
    hardware-accelerated implementation. */
 #ifdef CONFIG_MBEDTLS_HARDWARE_AES
-#define MBEDTLS_AES_ALT
+    #define MBEDTLS_AES_ALT
 #else
-#undef MBEDTLS_AES_ALT
+    #undef MBEDTLS_AES_ALT
 #endif
 
 #ifdef CONFIG_MBEDTLS_HARDWARE_AES
-#define MBEDTLS_GCM_ALT
+    #define MBEDTLS_GCM_ALT
 #endif
 
 /* MBEDTLS_SHAxx_ALT to enable hardware SHA support
    with software fallback.
 */
 #ifdef CONFIG_MBEDTLS_HARDWARE_SHA
-#define MBEDTLS_SHA1_ALT
-#define MBEDTLS_SHA256_ALT
+    #define MBEDTLS_SHA1_ALT
+    #define MBEDTLS_SHA256_ALT
 
-#if SOC_SHA_SUPPORT_SHA512
-#define MBEDTLS_SHA512_ALT
-#else
-#undef MBEDTLS_SHA512_ALT
-#endif
+    #if SOC_SHA_SUPPORT_SHA512
+        #define MBEDTLS_SHA512_ALT
+    #else
+        #undef MBEDTLS_SHA512_ALT
+    #endif
 
 #else
-#undef MBEDTLS_SHA1_ALT
-#undef MBEDTLS_SHA256_ALT
-#undef MBEDTLS_SHA512_ALT
+    #undef MBEDTLS_SHA1_ALT
+    #undef MBEDTLS_SHA256_ALT
+    #undef MBEDTLS_SHA512_ALT
 #endif
 
 /* MBEDTLS_MDx_ALT to enable ROM MD support
    with software fallback.
 */
 #ifdef CONFIG_MBEDTLS_ROM_MD5
-#define MBEDTLS_MD5_ALT
+    #define MBEDTLS_MD5_ALT
 #else
-#undef MBEDTLS_MD5_ALT
+    #undef MBEDTLS_MD5_ALT
 #endif
 
 /* The following MPI (bignum) functions have hardware support.
@@ -174,46 +174,46 @@
  * implementations.
  */
 #ifdef CONFIG_MBEDTLS_HARDWARE_MPI
-#ifdef CONFIG_MBEDTLS_LARGE_KEY_SOFTWARE_MPI
-/* Prefer hardware and fallback to software */
-#define MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
+    #ifdef CONFIG_MBEDTLS_LARGE_KEY_SOFTWARE_MPI
+        /* Prefer hardware and fallback to software */
+        #define MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
+    #else
+        /* Hardware only mode */
+        #define MBEDTLS_MPI_EXP_MOD_ALT
+    #endif
+    #define MBEDTLS_MPI_MUL_MPI_ALT
 #else
-/* Hardware only mode */
-#define MBEDTLS_MPI_EXP_MOD_ALT
-#endif
-#define MBEDTLS_MPI_MUL_MPI_ALT
-#else
-#undef MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
-#undef MBEDTLS_MPI_EXP_MOD_ALT
-#undef MBEDTLS_MPI_MUL_MPI_ALT
+    #undef MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK
+    #undef MBEDTLS_MPI_EXP_MOD_ALT
+    #undef MBEDTLS_MPI_MUL_MPI_ALT
 #endif
 
 #ifdef CONFIG_MBEDTLS_ATCA_HW_ECDSA_SIGN
-#define MBEDTLS_ECDSA_SIGN_ALT
+    #define MBEDTLS_ECDSA_SIGN_ALT
 #endif
 
 #ifdef CONFIG_MBEDTLS_ATCA_HW_ECDSA_VERIFY
-#define MBEDTLS_ECDSA_VERIFY_ALT
+    #define MBEDTLS_ECDSA_VERIFY_ALT
 #endif
 
 #ifdef CONFIG_MBEDTLS_HARDWARE_ECC
-#ifdef CONFIG_MBEDTLS_ECC_OTHER_CURVES_SOFT_FALLBACK
-/* Use hardware accelerator for SECP192R1 and SECP256R1 curves,
- * software implementation for rest of the curves
- */
-#define MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
-#define MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
-#else
-/* Only hardware accelerator support */
-#define MBEDTLS_ECP_MUL_ALT
-#define MBEDTLS_ECP_VERIFY_ALT
-#endif
+    #ifdef CONFIG_MBEDTLS_ECC_OTHER_CURVES_SOFT_FALLBACK
+        /* Use hardware accelerator for SECP192R1 and SECP256R1 curves,
+        * software implementation for rest of the curves
+        */
+        #define MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
+        #define MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
+    #else
+        /* Only hardware accelerator support */
+        #define MBEDTLS_ECP_MUL_ALT
+        #define MBEDTLS_ECP_VERIFY_ALT
+    #endif
 
 #else
-#undef MBEDTLS_ECP_MUL_ALT
-#undef MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
-#undef MBEDTLS_ECP_VERIFY_ALT
-#undef MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
+    #undef MBEDTLS_ECP_MUL_ALT
+    #undef MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK
+    #undef MBEDTLS_ECP_VERIFY_ALT
+    #undef MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK
 #endif
 /**
  * \def MBEDTLS_ENTROPY_HARDWARE_ALT
@@ -312,7 +312,7 @@
  *        and MBEDTLS_ECDH_LEGACY_CONTEXT.
  */
 #ifdef CONFIG_MBEDTLS_ECP_RESTARTABLE
-#define MBEDTLS_ECP_RESTARTABLE
+    #define MBEDTLS_ECP_RESTARTABLE
 #endif
 
 /**
@@ -342,7 +342,7 @@
  *       and may modify the layout of the new context type.
  */
 #ifdef CONFIG_MBEDTLS_ECDH_LEGACY_CONTEXT
-#define MBEDTLS_ECDH_LEGACY_CONTEXT
+    #define MBEDTLS_ECDH_LEGACY_CONTEXT
 #endif
 
 /**
@@ -362,7 +362,7 @@
  *
  */
 #ifdef CONFIG_MBEDTLS_CMAC_C
-#define MBEDTLS_CMAC_C
+    #define MBEDTLS_CMAC_C
 #endif
 
 /**
@@ -375,68 +375,68 @@
  */
 /* Short Weierstrass curves (supporting ECP, ECDH, ECDSA) */
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP192R1_ENABLED
-#define MBEDTLS_ECP_DP_SECP192R1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP192R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP192R1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP192R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP224R1_ENABLED
-#define MBEDTLS_ECP_DP_SECP224R1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP224R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP224R1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP224R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP256R1_ENABLED
-#define MBEDTLS_ECP_DP_SECP256R1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP256R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP256R1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP256R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP384R1_ENABLED
-#define MBEDTLS_ECP_DP_SECP384R1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP384R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP384R1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP384R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP521R1_ENABLED
-#define MBEDTLS_ECP_DP_SECP521R1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP521R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP521R1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP521R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP192K1_ENABLED
-#define MBEDTLS_ECP_DP_SECP192K1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP192K1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP192K1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP192K1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP224K1_ENABLED
-#define MBEDTLS_ECP_DP_SECP224K1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP224K1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP224K1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP224K1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_SECP256K1_ENABLED
-#define MBEDTLS_ECP_DP_SECP256K1_ENABLED
+    #define MBEDTLS_ECP_DP_SECP256K1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_SECP256K1_ENABLED
+    #undef MBEDTLS_ECP_DP_SECP256K1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_BP256R1_ENABLED
-#define MBEDTLS_ECP_DP_BP256R1_ENABLED
+    #define MBEDTLS_ECP_DP_BP256R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_BP256R1_ENABLED
+    #undef MBEDTLS_ECP_DP_BP256R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_BP384R1_ENABLED
-#define MBEDTLS_ECP_DP_BP384R1_ENABLED
+    #define MBEDTLS_ECP_DP_BP384R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_BP384R1_ENABLED
+    #undef MBEDTLS_ECP_DP_BP384R1_ENABLED
 #endif
 #ifdef CONFIG_MBEDTLS_ECP_DP_BP512R1_ENABLED
-#define MBEDTLS_ECP_DP_BP512R1_ENABLED
+    #define MBEDTLS_ECP_DP_BP512R1_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_BP512R1_ENABLED
+    #undef MBEDTLS_ECP_DP_BP512R1_ENABLED
 #endif
 /* Montgomery curves (supporting ECP) */
 #ifdef CONFIG_MBEDTLS_ECP_DP_CURVE25519_ENABLED
-#define MBEDTLS_ECP_DP_CURVE25519_ENABLED
+    #define MBEDTLS_ECP_DP_CURVE25519_ENABLED
 #else
-#undef MBEDTLS_ECP_DP_CURVE25519_ENABLED
+    #undef MBEDTLS_ECP_DP_CURVE25519_ENABLED
 #endif
 #ifdef MBEDTLS_ECP_DP_CURVE448_ENABLED
-#undef MBEDTLS_ECP_DP_CURVE448_ENABLED
+    #undef MBEDTLS_ECP_DP_CURVE448_ENABLED
 #endif
 
 /**
@@ -449,9 +449,9 @@
  * Comment this macro to disable NIST curves optimisation.
  */
 #ifdef CONFIG_MBEDTLS_ECP_NIST_OPTIM
-#define MBEDTLS_ECP_NIST_OPTIM
+    #define MBEDTLS_ECP_NIST_OPTIM
 #else
-#undef MBEDTLS_ECP_NIST_OPTIM
+    #undef MBEDTLS_ECP_NIST_OPTIM
 #endif
 
 /**
@@ -467,9 +467,9 @@
  * Comment this macro to disable deterministic ECDSA.
  */
 #ifdef CONFIG_MBEDTLS_ECDSA_DETERMINISTIC
-#define MBEDTLS_ECDSA_DETERMINISTIC
+    #define MBEDTLS_ECDSA_DETERMINISTIC
 #else
-#undef MBEDTLS_ECDSA_DETERMINISTIC
+    #undef MBEDTLS_ECDSA_DETERMINISTIC
 #endif
 
 /**
@@ -492,9 +492,9 @@
  *      MBEDTLS_TLS_PSK_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_PSK
-#define MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_PSK_ENABLED
 #endif
 
 /**
@@ -519,9 +519,9 @@
  *      MBEDTLS_TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_DHE_PSK
-#define MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED
 #endif
 
 /**
@@ -542,9 +542,9 @@
  *      MBEDTLS_TLS_ECDHE_PSK_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_PSK
-#define MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED
 #endif
 
 /**
@@ -570,9 +570,9 @@
  *      MBEDTLS_TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_RSA_PSK
-#define MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED
 #endif
 
 /**
@@ -600,9 +600,9 @@
  *      MBEDTLS_TLS_RSA_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_RSA
-#define MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_RSA_ENABLED
 #endif
 
 /**
@@ -630,9 +630,9 @@
  *      MBEDTLS_TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_DHE_RSA
-#define MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED
 #endif
 
 /**
@@ -658,9 +658,9 @@
  *      MBEDTLS_TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_RSA
-#define MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED
 #endif
 
 /**
@@ -685,9 +685,9 @@
  *      MBEDTLS_TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA
-#define MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED
 #endif
 
 /**
@@ -712,9 +712,9 @@
  *      MBEDTLS_TLS_ECDH_ECDSA_WITH_CAMELLIA_256_GCM_SHA384
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA
-#define MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED
 #endif
 
 /**
@@ -739,9 +739,9 @@
  *      MBEDTLS_TLS_ECDH_RSA_WITH_CAMELLIA_256_GCM_SHA384
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECDH_RSA
-#define MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED
 #endif
 
 /**
@@ -762,9 +762,9 @@
  *      MBEDTLS_TLS_ECJPAKE_WITH_AES_128_CCM_8
  */
 #ifdef CONFIG_MBEDTLS_KEY_EXCHANGE_ECJPAKE
-#define MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
+    #define MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
 #else
-#undef MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
+    #undef MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED
 #endif
 
 /**
@@ -902,9 +902,9 @@
  * Uncomment to enable the Connection ID extension.
  */
 #ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
-#define MBEDTLS_SSL_DTLS_CONNECTION_ID
+    #define MBEDTLS_SSL_DTLS_CONNECTION_ID
 #else
-#undef MBEDTLS_SSL_DTLS_CONNECTION_ID
+    #undef MBEDTLS_SSL_DTLS_CONNECTION_ID
 #endif
 
 /**
@@ -933,9 +933,9 @@
  * Comment to disable the context serialization APIs.
  */
 #ifdef CONFIG_MBEDTLS_SSL_CONTEXT_SERIALIZATION
-#define MBEDTLS_SSL_CONTEXT_SERIALIZATION
+    #define MBEDTLS_SSL_CONTEXT_SERIALIZATION
 #else
-#undef MBEDTLS_SSL_CONTEXT_SERIALIZATION
+    #undef MBEDTLS_SSL_CONTEXT_SERIALIZATION
 #endif
 
 /** \def MBEDTLS_SSL_ENCRYPT_THEN_MAC
@@ -953,9 +953,9 @@
  * Comment this macro to disable support for Encrypt-then-MAC
  */
 #ifdef CONFIG_MBEDTLS_TLS_ENABLED
-#define MBEDTLS_SSL_ENCRYPT_THEN_MAC
+    #define MBEDTLS_SSL_ENCRYPT_THEN_MAC
 #else
-#undef MBEDTLS_SSL_ENCRYPT_THEN_MAC
+    #undef MBEDTLS_SSL_ENCRYPT_THEN_MAC
 #endif
 
 /** \def MBEDTLS_SSL_EXTENDED_MASTER_SECRET
@@ -973,9 +973,9 @@
  * Comment this macro to disable support for Extended Master Secret.
  */
 #ifdef CONFIG_MBEDTLS_TLS_ENABLED
-#define MBEDTLS_SSL_EXTENDED_MASTER_SECRET
+    #define MBEDTLS_SSL_EXTENDED_MASTER_SECRET
 #else
-#undef MBEDTLS_SSL_EXTENDED_MASTER_SECRET
+    #undef MBEDTLS_SSL_EXTENDED_MASTER_SECRET
 #endif
 
 /**
@@ -1017,9 +1017,9 @@
  * after the handshake.
  */
 #ifdef CONFIG_MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
-#define MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
+    #define MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
 #else
-#undef MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
+    #undef MBEDTLS_SSL_KEEP_PEER_CERTIFICATE
 #endif
 
 /**
@@ -1033,9 +1033,9 @@
  * Comment this macro to disable 1/n-1 record splitting.
  */
 #if defined(MBEDTLS_SSL_PROTO_SSL3) || defined(MBEDTLS_SSL_PROTO_TLS1)
-#define MBEDTLS_SSL_CBC_RECORD_SPLITTING
+    #define MBEDTLS_SSL_CBC_RECORD_SPLITTING
 #else
-#undef MBEDTLS_SSL_CBC_RECORD_SPLITTING
+    #undef MBEDTLS_SSL_CBC_RECORD_SPLITTING
 #endif
 
 /**
@@ -1059,9 +1059,9 @@
  *
  */
 #ifdef CONFIG_MBEDTLS_SSL_RENEGOTIATION
-#define MBEDTLS_SSL_RENEGOTIATION
+    #define MBEDTLS_SSL_RENEGOTIATION
 #else
-#undef MBEDTLS_SSL_RENEGOTIATION
+    #undef MBEDTLS_SSL_RENEGOTIATION
 #endif
 
 /**
@@ -1085,9 +1085,9 @@
  * Comment this macro to disable support for TLS 1.2 / DTLS 1.2
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_TLS1_2
-#define MBEDTLS_SSL_PROTO_TLS1_2
+    #define MBEDTLS_SSL_PROTO_TLS1_2
 #else
-#undef MBEDTLS_SSL_PROTO_TLS1_2
+    #undef MBEDTLS_SSL_PROTO_TLS1_2
 #endif
 
 /**
@@ -1104,9 +1104,9 @@
  *
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_TLS1_3
-#define MBEDTLS_SSL_PROTO_TLS1_3
+    #define MBEDTLS_SSL_PROTO_TLS1_3
 #else
-#undef MBEDTLS_SSL_PROTO_TLS1_3
+    #undef MBEDTLS_SSL_PROTO_TLS1_3
 #endif
 
 /**
@@ -1130,9 +1130,9 @@
  *
  */
 #ifdef CONFIG_MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
-#define MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
+    #define MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
 #else
-#undef MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
+    #undef MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE
 #endif
 
 /**
@@ -1147,9 +1147,9 @@
  * Comment this macro to disable support for DTLS
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_DTLS
-#define MBEDTLS_SSL_PROTO_DTLS
+    #define MBEDTLS_SSL_PROTO_DTLS
 #else
-#undef MBEDTLS_SSL_PROTO_DTLS
+    #undef MBEDTLS_SSL_PROTO_DTLS
 #endif
 
 /**
@@ -1160,9 +1160,9 @@
  * Comment this macro to disable support for ALPN.
  */
 #ifdef CONFIG_MBEDTLS_SSL_ALPN
-#define MBEDTLS_SSL_ALPN
+    #define MBEDTLS_SSL_ALPN
 #else
-#undef MBEDTLS_SSL_ALPN
+    #undef MBEDTLS_SSL_ALPN
 #endif
 
 /**
@@ -1179,9 +1179,9 @@
  * Comment this to disable anti-replay in DTLS.
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_DTLS
-#define MBEDTLS_SSL_DTLS_ANTI_REPLAY
+    #define MBEDTLS_SSL_DTLS_ANTI_REPLAY
 #else
-#undef MBEDTLS_SSL_DTLS_ANTI_REPLAY
+    #undef MBEDTLS_SSL_DTLS_ANTI_REPLAY
 #endif
 
 /**
@@ -1201,9 +1201,9 @@
  * Comment this to disable support for HelloVerifyRequest.
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_DTLS
-#define MBEDTLS_SSL_DTLS_HELLO_VERIFY
+    #define MBEDTLS_SSL_DTLS_HELLO_VERIFY
 #else
-#undef MBEDTLS_SSL_DTLS_HELLO_VERIFY
+    #undef MBEDTLS_SSL_DTLS_HELLO_VERIFY
 #endif
 
 /**
@@ -1236,9 +1236,9 @@
  * Uncomment this to enable support for use_srtp extension.
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_DTLS
-#define MBEDTLS_SSL_DTLS_SRTP
+    #define MBEDTLS_SSL_DTLS_SRTP
 #else
-#undef MBEDTLS_SSL_DTLS_SRTP
+    #undef MBEDTLS_SSL_DTLS_SRTP
 #endif
 
 /**
@@ -1256,9 +1256,9 @@
  * Comment this to disable support for clients reusing the source port.
  */
 #ifdef CONFIG_MBEDTLS_SSL_PROTO_DTLS
-#define MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
+    #define MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 #else
-#undef MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
+    #undef MBEDTLS_SSL_DTLS_CLIENT_PORT_REUSE
 #endif
 
 /**
@@ -1274,9 +1274,9 @@
  * Comment this macro to disable support for SSL session tickets
  */
 #ifdef CONFIG_MBEDTLS_CLIENT_SSL_SESSION_TICKETS
-#define MBEDTLS_SSL_SESSION_TICKETS
+    #define MBEDTLS_SSL_SESSION_TICKETS
 #else
-#undef MBEDTLS_SSL_SESSION_TICKETS
+    #undef MBEDTLS_SSL_SESSION_TICKETS
 #endif
 
 /**
@@ -1310,9 +1310,9 @@
  * Requires: MBEDTLS_SSL_MAX_FRAGMENT_LENGTH
  */
 #ifdef CONFIG_MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH
-#define MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH
+    #define MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH
 #else
-#undef MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH
+    #undef MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH
 #endif
 
 /**
@@ -1438,9 +1438,9 @@
  * PEM_PARSE uses AES for decrypting encrypted keys.
  */
 #ifdef CONFIG_MBEDTLS_AES_C
-#define MBEDTLS_AES_C
+    #define MBEDTLS_AES_C
 #else
-#undef MBEDTLS_AES_C
+    #undef MBEDTLS_AES_C
 #endif
 
 /**
@@ -1507,9 +1507,9 @@
  * Module:  library/blowfish.c
  */
 #ifdef CONFIG_MBEDTLS_BLOWFISH_C
-#define MBEDTLS_BLOWFISH_C
+    #define MBEDTLS_BLOWFISH_C
 #else
-#undef MBEDTLS_BLOWFISH_C
+    #undef MBEDTLS_BLOWFISH_C
 #endif
 
 /**
@@ -1566,9 +1566,9 @@
  *      MBEDTLS_TLS_PSK_WITH_CAMELLIA_128_CBC_SHA256
  */
 #ifdef CONFIG_MBEDTLS_CAMELLIA_C
-#define MBEDTLS_CAMELLIA_C
+    #define MBEDTLS_CAMELLIA_C
 #else
-#undef MBEDTLS_CAMELLIA_C
+    #undef MBEDTLS_CAMELLIA_C
 #endif
 
 /**
@@ -1584,9 +1584,9 @@
  * enabled as well.
  */
 #ifdef CONFIG_MBEDTLS_CCM_C
-#define MBEDTLS_CCM_C
+    #define MBEDTLS_CCM_C
 #else
-#undef MBEDTLS_CCM_C
+    #undef MBEDTLS_CCM_C
 #endif
 
 /**
@@ -1609,9 +1609,9 @@
  * Module:  library/chacha20.c
  */
 #ifdef CONFIG_MBEDTLS_CHACHA20_C
-#define MBEDTLS_CHACHA20_C
+    #define MBEDTLS_CHACHA20_C
 #else
-#undef MBEDTLS_CHACHA20_C
+    #undef MBEDTLS_CHACHA20_C
 #endif
 
 /**
@@ -1624,9 +1624,9 @@
  * This module requires: MBEDTLS_CHACHA20_C, MBEDTLS_POLY1305_C
  */
 #ifdef CONFIG_MBEDTLS_CHACHAPOLY_C
-#define MBEDTLS_CHACHAPOLY_C
+    #define MBEDTLS_CHACHAPOLY_C
 #else
-#undef MBEDTLS_CHACHAPOLY_C
+    #undef MBEDTLS_CHACHAPOLY_C
 #endif
 
 /**
@@ -1668,9 +1668,9 @@
  * This module provides debugging functions.
  */
 #if CONFIG_MBEDTLS_DEBUG
-#define MBEDTLS_DEBUG_C
+    #define MBEDTLS_DEBUG_C
 #else
-#undef MBEDTLS_DEBUG_C
+    #undef MBEDTLS_DEBUG_C
 #endif
 
 /**
@@ -1698,9 +1698,9 @@
  * PEM_PARSE uses DES/3DES for decrypting encrypted keys.
  */
 #ifdef CONFIG_MBEDTLS_DES_C
-#define MBEDTLS_DES_C
+    #define MBEDTLS_DES_C
 #else
-#undef MBEDTLS_DES_C
+    #undef MBEDTLS_DES_C
 #endif
 
 /**
@@ -1716,9 +1716,9 @@
  *      DHE-RSA, DHE-PSK
  */
 #ifdef CONFIG_MBEDTLS_DHM_C
-#define MBEDTLS_DHM_C
+    #define MBEDTLS_DHM_C
 #else
-#undef MBEDTLS_DHM_C
+    #undef MBEDTLS_DHM_C
 #endif
 
 /**
@@ -1736,9 +1736,9 @@
  * Requires: MBEDTLS_ECP_C
  */
 #ifdef CONFIG_MBEDTLS_ECDH_C
-#define MBEDTLS_ECDH_C
+    #define MBEDTLS_ECDH_C
 #else
-#undef MBEDTLS_ECDH_C
+    #undef MBEDTLS_ECDH_C
 #endif
 
 /**
@@ -1757,9 +1757,9 @@
  *           short Weierstrass curve.
  */
 #ifdef CONFIG_MBEDTLS_ECDSA_C
-#define MBEDTLS_ECDSA_C
+    #define MBEDTLS_ECDSA_C
 #else
-#undef MBEDTLS_ECDSA_C
+    #undef MBEDTLS_ECDSA_C
 #endif
 
 /**
@@ -1780,9 +1780,9 @@
  * Requires: MBEDTLS_ECP_C, MBEDTLS_MD_C
  */
 #ifdef CONFIG_MBEDTLS_ECJPAKE_C
-#define MBEDTLS_ECJPAKE_C
+    #define MBEDTLS_ECJPAKE_C
 #else
-#undef MBEDTLS_ECJPAKE_C
+    #undef MBEDTLS_ECJPAKE_C
 #endif
 
 /**
@@ -1798,9 +1798,9 @@
  * Requires: MBEDTLS_BIGNUM_C and at least one MBEDTLS_ECP_DP_XXX_ENABLED
  */
 #ifdef CONFIG_MBEDTLS_ECP_C
-#define MBEDTLS_ECP_C
+    #define MBEDTLS_ECP_C
 #else
-#undef MBEDTLS_ECP_C
+    #undef MBEDTLS_ECP_C
 #endif
 
 /**
@@ -1842,9 +1842,9 @@
  * requisites are enabled as well.
  */
 #ifdef CONFIG_MBEDTLS_GCM_C
-#define MBEDTLS_GCM_C
+    #define MBEDTLS_GCM_C
 #else
-#undef MBEDTLS_GCM_C
+    #undef MBEDTLS_GCM_C
 #endif
 
 /**
@@ -1861,9 +1861,9 @@
  * (HMAC)-based key derivation function (HKDF).
  */
 #ifdef CONFIG_MBEDTLS_HKDF_C
-#define MBEDTLS_HKDF_C
+    #define MBEDTLS_HKDF_C
 #else
-#undef MBEDTLS_HKDF_C
+    #undef MBEDTLS_HKDF_C
 #endif
 
 /**
@@ -1917,7 +1917,7 @@
  * This module provides TCP/IP networking routines.
  */
 #ifdef MBEDTLS_NET_C
-#undef MBEDTLS_NET_C
+    #undef MBEDTLS_NET_C
 #endif
 
 /**
@@ -1974,9 +1974,9 @@
  * This modules adds support for decoding / parsing PEM files.
  */
 #ifdef CONFIG_MBEDTLS_PEM_PARSE_C
-#define MBEDTLS_PEM_PARSE_C
+    #define MBEDTLS_PEM_PARSE_C
 #else
-#undef MBEDTLS_PEM_PARSE_C
+    #undef MBEDTLS_PEM_PARSE_C
 #endif
 
 /**
@@ -1994,9 +1994,9 @@
  * This modules adds support for encoding / writing PEM files.
  */
 #ifdef CONFIG_MBEDTLS_PEM_WRITE_C
-#define MBEDTLS_PEM_WRITE_C
+    #define MBEDTLS_PEM_WRITE_C
 #else
-#undef MBEDTLS_PEM_WRITE_C
+    #undef MBEDTLS_PEM_WRITE_C
 #endif
 
 /**
@@ -2101,9 +2101,9 @@
  * Caller:  library/chachapoly.c
  */
 #ifdef CONFIG_MBEDTLS_POLY1305_C
-#define MBEDTLS_POLY1305_C
+    #define MBEDTLS_POLY1305_C
 #else
-#undef MBEDTLS_POLY1305_C
+    #undef MBEDTLS_POLY1305_C
 #endif
 
 /**
@@ -2116,9 +2116,9 @@
  *
  */
 #ifdef CONFIG_MBEDTLS_RIPEMD160_C
-#define MBEDTLS_RIPEMD160_C
+    #define MBEDTLS_RIPEMD160_C
 #else
-#undef MBEDTLS_RIPEMD160_C
+    #undef MBEDTLS_RIPEMD160_C
 #endif
 
 /**
@@ -2186,11 +2186,11 @@
  * This module adds support for SHA-384 and SHA-512.
  */
 #ifdef CONFIG_MBEDTLS_SHA512_C
-#define MBEDTLS_SHA384_C
-#define MBEDTLS_SHA512_C
+    #define MBEDTLS_SHA384_C
+    #define MBEDTLS_SHA512_C
 #else
-#undef MBEDTLS_SHA384_C
-#undef MBEDTLS_SHA512_C
+    #undef MBEDTLS_SHA384_C
+    #undef MBEDTLS_SHA512_C
 #endif
 
 /**
@@ -2226,9 +2226,9 @@
  * Requires: MBEDTLS_CIPHER_C
  */
 #ifdef CONFIG_MBEDTLS_SERVER_SSL_SESSION_TICKETS
-#define MBEDTLS_SSL_TICKET_C
+    #define MBEDTLS_SSL_TICKET_C
 #else
-#undef MBEDTLS_SSL_TICKET_C
+    #undef MBEDTLS_SSL_TICKET_C
 #endif
 
 /**
@@ -2244,9 +2244,9 @@
  * This module is required for SSL/TLS client support.
  */
 #ifdef CONFIG_MBEDTLS_TLS_CLIENT
-#define MBEDTLS_SSL_CLI_C
+    #define MBEDTLS_SSL_CLI_C
 #else
-#undef MBEDTLS_SSL_CLI_C
+    #undef MBEDTLS_SSL_CLI_C
 #endif
 
 /**
@@ -2262,9 +2262,9 @@
  * This module is required for SSL/TLS server support.
  */
 #ifdef CONFIG_MBEDTLS_TLS_SERVER
-#define MBEDTLS_SSL_SRV_C
+    #define MBEDTLS_SSL_SRV_C
 #else
-#undef MBEDTLS_SSL_SRV_C
+    #undef MBEDTLS_SSL_SRV_C
 #endif
 
 /**
@@ -2282,9 +2282,9 @@
  * This module is required for SSL/TLS.
  */
 #ifdef CONFIG_MBEDTLS_TLS_ENABLED
-#define MBEDTLS_SSL_TLS_C
+    #define MBEDTLS_SSL_TLS_C
 #else
-#undef MBEDTLS_SSL_TLS_C
+    #undef MBEDTLS_SSL_TLS_C
 #endif
 
 /**
@@ -2309,7 +2309,7 @@
  * This module is used by the HAVEGE random number generator.
  */
 #ifdef MBEDTLS_TIMING_C
-#undef MBEDTLS_TIMING_C
+    #undef MBEDTLS_TIMING_C
 #endif
 
 /**
@@ -2369,9 +2369,9 @@
  * This module is required for X.509 CRL parsing.
  */
 #ifdef CONFIG_MBEDTLS_X509_CRL_PARSE_C
-#define MBEDTLS_X509_CRL_PARSE_C
+    #define MBEDTLS_X509_CRL_PARSE_C
 #else
-#undef MBEDTLS_X509_CRL_PARSE_C
+    #undef MBEDTLS_X509_CRL_PARSE_C
 #endif
 
 /**
@@ -2387,9 +2387,9 @@
  * This module is used for reading X.509 certificate request.
  */
 #ifdef CONFIG_MBEDTLS_X509_CSR_PARSE_C
-#define MBEDTLS_X509_CSR_PARSE_C
+    #define MBEDTLS_X509_CSR_PARSE_C
 #else
-#undef MBEDTLS_X509_CSR_PARSE_C
+    #undef MBEDTLS_X509_CSR_PARSE_C
 #endif
 
 /**
@@ -2432,9 +2432,9 @@
  * may not be supported by mbedtls.
  */
 #ifdef CONFIG_MBEDTLS_ALLOW_UNSUPPORTED_CRITICAL_EXT
-#define MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
+    #define MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
 #else
-#undef MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
+    #undef MBEDTLS_X509_ALLOW_UNSUPPORTED_CRITICAL_EXTENSION
 #endif
 
 /**
@@ -2455,9 +2455,9 @@
  * Uncomment to enable trusted certificate callbacks.
  */
 #ifdef CONFIG_MBEDTLS_X509_TRUSTED_CERT_CALLBACK
-#define MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
+    #define MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 #else
-#undef MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
+    #undef MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK
 #endif
 
 /**
@@ -2482,9 +2482,9 @@
  * Caller:
  */
 #ifdef CONFIG_MBEDTLS_XTEA_C
-#define MBEDTLS_XTEA_C
+    #define MBEDTLS_XTEA_C
 #else
-#undef MBEDTLS_XTEA_C
+    #undef MBEDTLS_XTEA_C
 #endif
 
 /* \} name SECTION: mbed TLS modules */
@@ -2507,86 +2507,86 @@
 /* SSL options */
 #ifndef CONFIG_MBEDTLS_ASYMMETRIC_CONTENT_LEN
 
-#define MBEDTLS_SSL_MAX_CONTENT_LEN             CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN /**< Maxium fragment length in bytes, determines the size of each of the two internal I/O buffers */
+    #define MBEDTLS_SSL_MAX_CONTENT_LEN             CONFIG_MBEDTLS_SSL_MAX_CONTENT_LEN /**< Maxium fragment length in bytes, determines the size of each of the two internal I/O buffers */
 
 #else
 
-/** \def MBEDTLS_SSL_IN_CONTENT_LEN
- *
- * Maximum incoming fragment length in bytes.
- *
- * Uncomment to set the size of the inward TLS buffer independently of the
- * outward buffer.
- */
-#define MBEDTLS_SSL_IN_CONTENT_LEN              CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN
+    /** \def MBEDTLS_SSL_IN_CONTENT_LEN
+    *
+    * Maximum incoming fragment length in bytes.
+    *
+    * Uncomment to set the size of the inward TLS buffer independently of the
+    * outward buffer.
+    */
+    #define MBEDTLS_SSL_IN_CONTENT_LEN              CONFIG_MBEDTLS_SSL_IN_CONTENT_LEN
 
-/** \def MBEDTLS_SSL_CID_IN_LEN_MAX
- *
- * The maximum length of CIDs used for incoming DTLS messages.
- *
- */
-#ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
-#define MBEDTLS_SSL_CID_IN_LEN_MAX              CONFIG_MBEDTLS_SSL_CID_IN_LEN_MAX
-#else
-#undef MBEDTLS_SSL_CID_IN_LEN_MAX
-#endif
-
-
-/** \def MBEDTLS_SSL_CID_OUT_LEN_MAX
- *
- * The maximum length of CIDs used for outgoing DTLS messages.
- *
- */
-#ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
-#define MBEDTLS_SSL_CID_OUT_LEN_MAX            CONFIG_MBEDTLS_SSL_CID_OUT_LEN_MAX
-#else
-#undef MBEDTLS_SSL_CID_OUT_LEN_MAX
-#endif
-
-/** \def MBEDTLS_SSL_CID_PADDING_GRANULARITY
- *
- * This option controls the use of record plaintext padding
- * when using the Connection ID extension in DTLS 1.2.
- *
- * The padding will always be chosen so that the length of the
- * padded plaintext is a multiple of the value of this option.
- *
- * Note: A value of \c 1 means that no padding will be used
- *       for outgoing records.
- *
- * Note: On systems lacking division instructions,
- *       a power of two should be preferred.
- *
- */
-#ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
-#define MBEDTLS_SSL_CID_PADDING_GRANULARITY    CONFIG_MBEDTLS_SSL_CID_PADDING_GRANULARITY
-#else
-#undef MBEDTLS_SSL_CID_PADDING_GRANULARITY
-#endif
+    /** \def MBEDTLS_SSL_CID_IN_LEN_MAX
+    *
+    * The maximum length of CIDs used for incoming DTLS messages.
+    *
+    */
+    #ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
+        #define MBEDTLS_SSL_CID_IN_LEN_MAX              CONFIG_MBEDTLS_SSL_CID_IN_LEN_MAX
+    #else
+        #undef MBEDTLS_SSL_CID_IN_LEN_MAX
+    #endif
 
 
-/** \def MBEDTLS_SSL_OUT_CONTENT_LEN
- *
- * Maximum outgoing fragment length in bytes.
- *
- * Uncomment to set the size of the outward TLS buffer independently of the
- * inward buffer.
- *
- * It is possible to save RAM by setting a smaller outward buffer, while keeping
- * the default inward 16384 byte buffer to conform to the TLS specification.
- *
- * The minimum required outward buffer size is determined by the handshake
- * protocol's usage. Handshaking will fail if the outward buffer is too small.
- * The specific size requirement depends on the configured ciphers and any
- * certificate data which is sent during the handshake.
- *
- * For absolute minimum RAM usage, it's best to enable
- * MBEDTLS_SSL_MAX_FRAGMENT_LENGTH and reduce MBEDTLS_SSL_MAX_CONTENT_LEN. This
- * reduces both incoming and outgoing buffer sizes. However this is only
- * guaranteed if the other end of the connection also supports the TLS
- * max_fragment_len extension. Otherwise the connection may fail.
- */
-#define MBEDTLS_SSL_OUT_CONTENT_LEN             CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN
+    /** \def MBEDTLS_SSL_CID_OUT_LEN_MAX
+    *
+    * The maximum length of CIDs used for outgoing DTLS messages.
+    *
+    */
+    #ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
+        #define MBEDTLS_SSL_CID_OUT_LEN_MAX            CONFIG_MBEDTLS_SSL_CID_OUT_LEN_MAX
+    #else
+        #undef MBEDTLS_SSL_CID_OUT_LEN_MAX
+    #endif
+
+    /** \def MBEDTLS_SSL_CID_PADDING_GRANULARITY
+    *
+    * This option controls the use of record plaintext padding
+    * when using the Connection ID extension in DTLS 1.2.
+    *
+    * The padding will always be chosen so that the length of the
+    * padded plaintext is a multiple of the value of this option.
+    *
+    * Note: A value of \c 1 means that no padding will be used
+    *       for outgoing records.
+    *
+    * Note: On systems lacking division instructions,
+    *       a power of two should be preferred.
+    *
+    */
+    #ifdef CONFIG_MBEDTLS_SSL_DTLS_CONNECTION_ID
+        #define MBEDTLS_SSL_CID_PADDING_GRANULARITY    CONFIG_MBEDTLS_SSL_CID_PADDING_GRANULARITY
+    #else
+        #undef MBEDTLS_SSL_CID_PADDING_GRANULARITY
+    #endif
+
+
+    /** \def MBEDTLS_SSL_OUT_CONTENT_LEN
+    *
+    * Maximum outgoing fragment length in bytes.
+    *
+    * Uncomment to set the size of the outward TLS buffer independently of the
+    * inward buffer.
+    *
+    * It is possible to save RAM by setting a smaller outward buffer, while keeping
+    * the default inward 16384 byte buffer to conform to the TLS specification.
+    *
+    * The minimum required outward buffer size is determined by the handshake
+    * protocol's usage. Handshaking will fail if the outward buffer is too small.
+    * The specific size requirement depends on the configured ciphers and any
+    * certificate data which is sent during the handshake.
+    *
+    * For absolute minimum RAM usage, it's best to enable
+    * MBEDTLS_SSL_MAX_FRAGMENT_LENGTH and reduce MBEDTLS_SSL_MAX_CONTENT_LEN. This
+    * reduces both incoming and outgoing buffer sizes. However this is only
+    * guaranteed if the other end of the connection also supports the TLS
+    * max_fragment_len extension. Otherwise the connection may fail.
+    */
+    #define MBEDTLS_SSL_OUT_CONTENT_LEN             CONFIG_MBEDTLS_SSL_OUT_CONTENT_LEN
 
 #endif /* !CONFIG_MBEDTLS_ASYMMETRIC_CONTENT_LEN */
 
@@ -2626,9 +2626,9 @@
  * Enable this layer to allow use of mutexes within mbed TLS
  */
 #ifdef CONFIG_MBEDTLS_THREADING_C
-#define MBEDTLS_THREADING_C
+    #define MBEDTLS_THREADING_C
 #else
-#undef MBEDTLS_THREADING_C
+    #undef MBEDTLS_THREADING_C
 #endif
 
 /**
@@ -2641,9 +2641,9 @@
  * Uncomment this to allow your own alternate threading implementation.
  */
 #ifdef CONFIG_MBEDTLS_THREADING_ALT
-#define MBEDTLS_THREADING_ALT
+    #define MBEDTLS_THREADING_ALT
 #else
-#undef MBEDTLS_THREADING_ALT
+    #undef MBEDTLS_THREADING_ALT
 #endif
 
 /**
@@ -2656,9 +2656,9 @@
  * Uncomment this to enable pthread mutexes.
  */
 #ifdef CONFIG_MBEDTLS_THREADING_PTHREAD
-#define MBEDTLS_THREADING_PTHREAD
+    #define MBEDTLS_THREADING_PTHREAD
 #else
-#undef MBEDTLS_THREADING_PTHREAD
+    #undef MBEDTLS_THREADING_PTHREAD
 #endif
 
 /**
@@ -2671,15 +2671,15 @@
  * Uncomment this to enable aes key wrap.
  */
 #ifdef CONFIG_MBEDTLS_NIST_KW_C
-#define MBEDTLS_NIST_KW_C
+    #define MBEDTLS_NIST_KW_C
 #else
-#undef MBEDTLS_NIST_KW_C
+    #undef MBEDTLS_NIST_KW_C
 #endif
 
 /* \} name SECTION: Module configuration options */
 
 #if defined(TARGET_LIKE_MBED)
-#include "mbedtls/target_config.h"
+    #include "mbedtls/target_config.h"
 #endif
 
 /*
@@ -2690,9 +2690,9 @@
  * - without yotta is looks weird to have a YOTTA prefix.
  */
 #if defined(YOTTA_CFG_MBEDTLS_USER_CONFIG_FILE)
-#include YOTTA_CFG_MBEDTLS_USER_CONFIG_FILE
+    #include YOTTA_CFG_MBEDTLS_USER_CONFIG_FILE
 #elif defined(MBEDTLS_USER_CONFIG_FILE)
-#include MBEDTLS_USER_CONFIG_FILE
+    #include MBEDTLS_USER_CONFIG_FILE
 #endif
 
 /* This flag makes sure that we are not using

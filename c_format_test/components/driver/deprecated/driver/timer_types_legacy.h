@@ -22,9 +22,9 @@ extern "C" {
 typedef enum
 {
     TIMER_GROUP_0 = 0, /*!< Hw timer group 0 */
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     TIMER_GROUP_1 = 1, /*!< Hw timer group 1 */
-    #endif
+#endif
     TIMER_GROUP_MAX    /*!< Maximum number of Hw timer groups */
 } timer_group_t;
 
@@ -34,9 +34,9 @@ typedef enum
 typedef enum
 {
     TIMER_0 = 0, /*!< Select timer0 of GROUPx*/
-    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
     TIMER_1 = 1, /*!< Select timer1 of GROUPx*/
-    #endif
+#endif
     TIMER_MAX,
 } timer_idx_t;
 
@@ -46,12 +46,12 @@ typedef enum
 typedef enum
 {
     TIMER_INTR_T0 = 1 << 0,  /*!< interrupt of timer 0 */
-    #if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
+#if SOC_TIMER_GROUP_TIMERS_PER_GROUP > 1
     TIMER_INTR_T1 = 1 << 1,  /*!< interrupt of timer 1 */
     TIMER_INTR_WDT = 1 << 2, /*!< interrupt of watchdog */
-    #else
+#else
     TIMER_INTR_WDT = 1 << 1, /*!< interrupt of watchdog */
-    #endif
+#endif
     TIMER_INTR_NONE = 0
 } timer_intr_t;
 FLAG_ATTR(timer_intr_t)

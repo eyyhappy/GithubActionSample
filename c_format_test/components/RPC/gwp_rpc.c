@@ -28,7 +28,7 @@
 //#include "gwp_mem_manager.h"
 
 #ifdef FREERTOS
-#include "task.h"
+    #include "task.h"
 #else
 
 #endif
@@ -41,28 +41,28 @@
 #define RPC_UART
 
 #ifdef RPC_UART
-// #include "gwp_rpc_uart.h"
+    // #include "gwp_rpc_uart.h"
 #elif  RPC_SPI
-#include "gwp_rpc_spi.h"
+    #include "gwp_rpc_spi.h"
 #else
-#error "Please define RPC_UART or  RPC_SPI"
+    #error "Please define RPC_UART or  RPC_SPI"
 #endif
 
 #if defined(NRF52840_XXAA)
 
-#include "gwp_ota_process.h"
+    #include "gwp_ota_process.h"
 
 #elif defined(STM32WB55xx)
 
-#define CODE_PAGE_SIZE (MBR_PAGE_SIZE_IN_WORDS * sizeof(uint32_t))
+    #define CODE_PAGE_SIZE (MBR_PAGE_SIZE_IN_WORDS * sizeof(uint32_t))
 
 #elif defined(CONFIG_IDF_TARGET_ESP32S3)
 
 
-#define CODE_PAGE_SIZE (1024)
+    #define CODE_PAGE_SIZE (1024)
 #else
 
-#error "Architecture not set."
+    #error "Architecture not set."
 
 #endif
 static slip_t m_slip;
@@ -280,11 +280,11 @@ static ret_code_t gwp_frame_parse(uint8_t*  buf, uint32_t length, rpc_frame_t *r
     {
         return RPC_ERROR_FRAME_VERIFY;
     }
-    #ifdef DEBUG_RPC_PROTOCOL
+#ifdef DEBUG_RPC_PROTOCOL
     GWP_LOG_INFO("receive decoded data :<<<<<<<<<<<<< ");
     GWP_LOG_HEXDUMP_INFO(rpc_frame->u.payload, rpc_frame->payload_length);
     NRF_LOG_FLUSH();
-    #endif
+#endif
     return GWP_SUCCESS;
 }
 
@@ -323,12 +323,12 @@ static ret_code_t gwp_frame_package(rpc_frame_t *rpc_frame, uint8_t *out_data, u
         out_data += sizeof(uint16_t);
         *out_len += sizeof(uint16_t);
         // generate iv
-        #ifdef DEBUG_RPC_PROTOCOL
+#ifdef DEBUG_RPC_PROTOCOL
         const uint8_t fix_iv[16] = {0x51, 0xf2, 0xff, 0x13, 0x23, 0x77, 0x6a, 0x49, 0x6f, 0x36, 0x58, 0xa7, 0xd4, 0xcd, 0x99, 0xf8};
         memcpy(out_data, fix_iv, IV_SIZE);
-        #else
+#else
         gwpFunctions.rngVectorGenerate(out_data, IV_SIZE);
-        #endif /* DEBUG_RPC_PROTOCOL */
+#endif /* DEBUG_RPC_PROTOCOL */
         iv = out_data;
         out_data += IV_SIZE;
         *out_len += IV_SIZE;
@@ -342,12 +342,12 @@ static ret_code_t gwp_frame_package(rpc_frame_t *rpc_frame, uint8_t *out_data, u
         *out_len += rpc_frame->payload_length;
         //copy hmac
         calculate_verify_data(tail, *out_len, hmac, sizeof(hmac));
-        #ifdef DEBUG_RPC_PROTOCOL
+#ifdef DEBUG_RPC_PROTOCOL
         print_hex(hmac, sizeof(hmac), "hmac print");
         GWP_LOG_INFO("send origin payload: \t\t\t\t>>>>>>>>>");
         GWP_LOG_HEXDUMP_INFO(encrypted_payload_tail, rpc_frame->payload_length);
         NRF_LOG_FLUSH();
-        #endif
+#endif
         //copy encrypted payload
         ret_code = encrypted_payload(encrypted_payload_tail, rpc_frame->payload_length, rpc_frame->u.payload, iv);
         if(ret_code != GWP_SUCCESS)
@@ -511,9 +511,9 @@ static ret_code_t gwp_type_init_process(rpc_frame_t *rpc_frame)
     rpc_frame->payload_length = SEQ_SIZE + INIT_CMD_SIZE;
     memcpy(rpc_frame->u.payload_init.payload, result, out_len);
     rpc_frame->payload_length += out_len;
-    #ifdef RPC_TOOL_PYTHON_SUPPORT
+#ifdef RPC_TOOL_PYTHON_SUPPORT
     out_len = 0;
-    #endif
+#endif
     ret_code = gwp_frame_package(rpc_frame, frame_data, &out_len);
     if(ret_code != GWP_SUCCESS)
     {
@@ -561,25 +561,25 @@ static ret_code_t gwp_lc_frame_handle(rpc_frame_t *rpc_frame)
         case TYPE_LC_FW_INSTALL:
             gwp_rpc_func_lc_fw_install(response, &out_size);
             break;
-            #if (defined NONE_SELF_CONTAIN)&&(defined APPLICATION_CODE )
+#if (defined NONE_SELF_CONTAIN)&&(defined APPLICATION_CODE )
         case TYPE_LC_DFU_REQUEST:
             gwp_rpc_func_lc_dfu_request(response, &out_size);
             break;
-            #else //Compile for board with external flash
+#else //Compile for board with external flash
         case TYPE_LC_FW_GET_DL_STATUS:
             gwp_rpc_func_lc_get_dl_status(response, &out_size);
             break;
         case TYPE_LC_GET_OTA_STATUS:
             gwp_rpc_func_lc_get_OTA_status(response, &out_size);
             break;
-            #endif
-            #if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
+#endif
+#if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
 // bootloader without ble related code h145764
-            #else
+#else
         case TYPE_LC_BLE_CMD:
             gwp_rpc_func_lc_ble_cmd(payload_command->data.parameter, rpc_frame->payload_length, response, &out_size);
             break;
-            #endif
+#endif
         default:
             break;
     }
@@ -736,15 +736,15 @@ static ret_code_t gwp_type_data_process(rpc_frame_t *rpc_frame)
     }
     gwp_rpc.pdu_seq ++;
     command = payload_command->command;
-    #if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
+#if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
     if(gwp_is_lc_request(command))
-    #else
+#else
     if(gwp_is_rm_request(command))
     {
         gwp_rm_frame_handle(rpc_frame);
     }
     else if(gwp_is_lc_request(command))
-    #endif
+#endif
     {
         gwp_lc_frame_handle(rpc_frame);
     }
@@ -758,22 +758,22 @@ static ret_code_t gwp_type_data_process(rpc_frame_t *rpc_frame)
         return ret_code;
     }
     gwp_rpc_slip_port_send(frame_data, out_len);
-    #if defined(NRF52840_XXAA)
+#if defined(NRF52840_XXAA)
     if(OTA_install_Flag == 1)
     {
-        #ifdef RPC_APPLICATION_CODE
+#ifdef RPC_APPLICATION_CODE
         vTaskDelay(pdMS_TO_TICKS(100));
-        #else
+#else
 //todo: h145764 add delay
-        #endif
+#endif
         OTA_install_Flag = 0;
         NVIC_SystemReset();
     }
-    #elif defined(STM32WB55xx)
-    #elif defined(CONFIG_IDF_TARGET_ESP32S3)
-    #else
+#elif defined(STM32WB55xx)
+#elif defined(CONFIG_IDF_TARGET_ESP32S3)
+#else
 #error "Architecture not set."
-    #endif
+#endif
     return GWP_SUCCESS;
 }
 
@@ -866,7 +866,7 @@ static ret_code_t gwp_rpc_data_handle(uint8_t *data, uint16_t length)
 
 bool check_is_pduseq(gwp_item_header_t * item, uint32_t seq)
 {
-    #if 0
+#if 0
     if(item->pdu_seq == seq)
     {
         return true;
@@ -875,9 +875,9 @@ bool check_is_pduseq(gwp_item_header_t * item, uint32_t seq)
     {
         return false;
     }
-    #else
+#else
     return true;
-    #endif
+#endif
 }
 
 
@@ -1214,7 +1214,7 @@ ret_code_t gwp_rpc_init()
     gwp_list_init(&gwp_rm_send_queue);
     ota_storage_init(&ota_status.ota_process);
     ret_code = gwp_rpc_port_init();
-    #ifdef CONFIG_GWP_CRYPTO_SUPPORT
+#ifdef CONFIG_GWP_CRYPTO_SUPPORT
     if(!nrf_crypto_is_initialized())
     {
         ret_code = nrf_crypto_init();
@@ -1223,7 +1223,7 @@ ret_code_t gwp_rpc_init()
             return ret_code;
         }
     }
-    #endif
+#endif
     return ret_code;
 }
 
@@ -1242,7 +1242,7 @@ ret_code_t gwp_rpc_init()
     gwp_list_init(&gwp_rm_send_queue);
 //    ota_storage_init(&ota_status.ota_process); rpcPortInit .rpcPortReceive
     ret_code = gwpFunctions.rpcPortInit();
-    #ifdef CONFIG_GWP_CRYPTO_SUPPORT
+#ifdef CONFIG_GWP_CRYPTO_SUPPORT
     if(!nrf_crypto_is_initialized())
     {
         ret_code = nrf_crypto_init();
@@ -1251,7 +1251,7 @@ ret_code_t gwp_rpc_init()
             return ret_code;
         }
     }
-    #endif
+#endif
     return ret_code;
 }
 

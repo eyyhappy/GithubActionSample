@@ -33,12 +33,12 @@
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 #if !defined(MBEDTLS_CAMELLIA_ALT)
@@ -961,14 +961,14 @@ int mbedtls_camellia_self_test( int verbose )
     unsigned char buf[64];
     unsigned char src[16];
     unsigned char dst[16];
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     unsigned char iv[16];
-    #endif
-    #if defined(MBEDTLS_CIPHER_MODE_CTR)
+#endif
+#if defined(MBEDTLS_CIPHER_MODE_CTR)
     size_t offset, len;
     unsigned char nonce_counter[16];
     unsigned char stream_block[16];
-    #endif
+#endif
     int ret = 1;
     mbedtls_camellia_context ctx;
     mbedtls_camellia_init( &ctx );
@@ -1008,7 +1008,7 @@ int mbedtls_camellia_self_test( int verbose )
     }
     if( verbose != 0 )
         mbedtls_printf( "\n" );
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     /*
      * CBC mode
      */
@@ -1055,10 +1055,10 @@ int mbedtls_camellia_self_test( int verbose )
         if( verbose != 0 )
             mbedtls_printf( "passed\n" );
     }
-    #endif /* MBEDTLS_CIPHER_MODE_CBC */
+#endif /* MBEDTLS_CIPHER_MODE_CBC */
     if( verbose != 0 )
         mbedtls_printf( "\n" );
-    #if defined(MBEDTLS_CIPHER_MODE_CTR)
+#if defined(MBEDTLS_CIPHER_MODE_CTR)
     /*
      * CTR mode
      */
@@ -1104,7 +1104,7 @@ int mbedtls_camellia_self_test( int verbose )
     }
     if( verbose != 0 )
         mbedtls_printf( "\n" );
-    #endif /* MBEDTLS_CIPHER_MODE_CTR */
+#endif /* MBEDTLS_CIPHER_MODE_CTR */
     ret = 0;
 exit:
     mbedtls_camellia_free( &ctx );

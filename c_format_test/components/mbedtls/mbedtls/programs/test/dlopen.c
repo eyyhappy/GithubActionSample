@@ -20,25 +20,25 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_fprintf    fprintf
-#define mbedtls_printf     printf
-#define mbedtls_exit       exit
-#define MBEDTLS_EXIT_SUCCESS EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_printf     printf
+    #define mbedtls_exit       exit
+    #define MBEDTLS_EXIT_SUCCESS EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE EXIT_FAILURE
 #endif
 
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
-#include "mbedtls/x509_crt.h"
+    #include "mbedtls/x509_crt.h"
 #endif
 
 #if defined(__APPLE__)
-#define SO_SUFFIX ".dylib"
+    #define SO_SUFFIX ".dylib"
 #else
-#define SO_SUFFIX ".so"
+    #define SO_SUFFIX ".so"
 #endif
 
 #define CRYPTO_SO_FILENAME "libmbedcrypto" SO_SUFFIX
@@ -62,10 +62,10 @@
 
 int main( void )
 {
-    #if defined(MBEDTLS_MD_C) || defined(MBEDTLS_SSL_TLS_C)
+#if defined(MBEDTLS_MD_C) || defined(MBEDTLS_SSL_TLS_C)
     unsigned n;
-    #endif
-    #if defined(MBEDTLS_SSL_TLS_C)
+#endif
+#if defined(MBEDTLS_SSL_TLS_C)
     void *tls_so = dlopen( TLS_SO_FILENAME, RTLD_NOW );
     CHECK_DLERROR( "dlopen", TLS_SO_FILENAME );
     const int *( *ssl_list_ciphersuites )( void ) =
@@ -78,8 +78,8 @@ int main( void )
                     TLS_SO_FILENAME, n );
     dlclose( tls_so );
     CHECK_DLERROR( "dlclose", TLS_SO_FILENAME );
-    #endif  /* MBEDTLS_SSL_TLS_C */
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#endif  /* MBEDTLS_SSL_TLS_C */
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     void *x509_so = dlopen( X509_SO_FILENAME, RTLD_NOW );
     CHECK_DLERROR( "dlopen", X509_SO_FILENAME );
     const mbedtls_x509_crt_profile *profile =
@@ -89,8 +89,8 @@ int main( void )
                     X509_SO_FILENAME, (unsigned) profile->allowed_mds );
     dlclose( x509_so );
     CHECK_DLERROR( "dlclose", X509_SO_FILENAME );
-    #endif  /* MBEDTLS_X509_CRT_PARSE_C */
-    #if defined(MBEDTLS_MD_C)
+#endif  /* MBEDTLS_X509_CRT_PARSE_C */
+#if defined(MBEDTLS_MD_C)
     void *crypto_so = dlopen( CRYPTO_SO_FILENAME, RTLD_NOW );
     CHECK_DLERROR( "dlopen", CRYPTO_SO_FILENAME );
     const int *( *md_list )( void ) =
@@ -103,7 +103,7 @@ int main( void )
                     CRYPTO_SO_FILENAME, n );
     dlclose( crypto_so );
     CHECK_DLERROR( "dlclose", CRYPTO_SO_FILENAME );
-    #endif  /* MBEDTLS_MD_C */
+#endif  /* MBEDTLS_MD_C */
     return( 0 );
 }
 

@@ -34,12 +34,12 @@
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 #if !defined(MBEDTLS_DES_ALT)
@@ -799,10 +799,10 @@ int mbedtls_des_self_test( int verbose )
     mbedtls_des_context ctx;
     mbedtls_des3_context ctx3;
     unsigned char buf[8];
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     unsigned char prv[8];
     unsigned char iv[8];
-    #endif
+#endif
     mbedtls_des_init( &ctx );
     mbedtls_des3_init( &ctx3 );
     /*
@@ -866,7 +866,7 @@ int mbedtls_des_self_test( int verbose )
     }
     if( verbose != 0 )
         mbedtls_printf( "\n" );
-    #if defined(MBEDTLS_CIPHER_MODE_CBC)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     /*
      * CBC mode
      */
@@ -948,7 +948,7 @@ int mbedtls_des_self_test( int verbose )
         if( verbose != 0 )
             mbedtls_printf( "passed\n" );
     }
-    #endif /* MBEDTLS_CIPHER_MODE_CBC */
+#endif /* MBEDTLS_CIPHER_MODE_CBC */
     if( verbose != 0 )
         mbedtls_printf( "\n" );
 exit:

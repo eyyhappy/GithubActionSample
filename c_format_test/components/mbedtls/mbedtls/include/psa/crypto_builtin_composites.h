@@ -40,8 +40,8 @@
  * MAC multi-part operation definitions.
  */
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
-#define MBEDTLS_PSA_BUILTIN_MAC
+    defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+    #define MBEDTLS_PSA_BUILTIN_MAC
 #endif
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC) || defined(PSA_CRYPTO_DRIVER_TEST)
@@ -66,21 +66,21 @@ typedef struct
     union
     {
         unsigned MBEDTLS_PRIVATE(dummy); /* Make the union non-empty even with no supported algorithms. */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC) || defined(PSA_CRYPTO_DRIVER_TEST)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC) || defined(PSA_CRYPTO_DRIVER_TEST)
         mbedtls_psa_hmac_operation_t MBEDTLS_PRIVATE(hmac);
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC) || defined(PSA_CRYPTO_DRIVER_TEST)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC) || defined(PSA_CRYPTO_DRIVER_TEST)
         mbedtls_cipher_context_t MBEDTLS_PRIVATE(cmac);
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
     } MBEDTLS_PRIVATE(ctx);
 } mbedtls_psa_mac_operation_t;
 
 #define MBEDTLS_PSA_MAC_OPERATION_INIT {0, {0}}
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_GCM) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CCM) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305)
-#define MBEDTLS_PSA_BUILTIN_AEAD  1
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CCM) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305)
+    #define MBEDTLS_PSA_BUILTIN_AEAD  1
 #endif
 
 /* Context structure for the Mbed TLS AEAD implementation. */
@@ -96,15 +96,15 @@ typedef struct
     union
     {
         unsigned dummy; /* Enable easier initializing of the union. */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_CCM)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CCM)
         mbedtls_ccm_context MBEDTLS_PRIVATE(ccm);
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_CCM */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_GCM)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CCM */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_GCM)
         mbedtls_gcm_context MBEDTLS_PRIVATE(gcm);
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_GCM */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_GCM */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305)
         mbedtls_chachapoly_context MBEDTLS_PRIVATE(chachapoly);
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305 */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CHACHA20_POLY1305 */
 
     } ctx;
 

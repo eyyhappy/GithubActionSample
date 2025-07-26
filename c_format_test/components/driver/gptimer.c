@@ -8,9 +8,9 @@
 #include <sys/lock.h>
 #include "sdkconfig.h"
 #if CONFIG_GPTIMER_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -32,15 +32,15 @@
 // If ISR handler is allowed to run whilst cache is disabled,
 // Make sure all the code and related variables used by the handler are in the SRAM
 #if CONFIG_GPTIMER_ISR_IRAM_SAFE || CONFIG_GPTIMER_CTRL_FUNC_IN_IRAM
-#define GPTIMER_MEM_ALLOC_CAPS      (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
+    #define GPTIMER_MEM_ALLOC_CAPS      (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
 #else
-#define GPTIMER_MEM_ALLOC_CAPS      MALLOC_CAP_DEFAULT
+    #define GPTIMER_MEM_ALLOC_CAPS      MALLOC_CAP_DEFAULT
 #endif
 
 #if CONFIG_GPTIMER_ISR_IRAM_SAFE
-#define GPTIMER_INTR_ALLOC_FLAGS    (ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_INTRDISABLED)
+    #define GPTIMER_INTR_ALLOC_FLAGS    (ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_INTRDISABLED)
 #else
-#define GPTIMER_INTR_ALLOC_FLAGS    ESP_INTR_FLAG_INTRDISABLED
+    #define GPTIMER_INTR_ALLOC_FLAGS    ESP_INTR_FLAG_INTRDISABLED
 #endif
 
 #define GPTIMER_PM_LOCK_NAME_LEN_MAX 16
@@ -86,9 +86,9 @@ struct gptimer_t
     gptimer_alarm_cb_t on_alarm;
     void *user_ctx;
     esp_pm_lock_handle_t pm_lock; // power management lock
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     char pm_lock_name[GPTIMER_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-    #endif
+#endif
     struct
     {
         uint32_t intr_shared: 1;
@@ -172,9 +172,9 @@ static esp_err_t gptimer_destory(gptimer_t *timer)
 
 esp_err_t gptimer_new_timer(const gptimer_config_t *config, gptimer_handle_t *ret_timer)
 {
-    #if CONFIG_GPTIMER_ENABLE_DEBUG_LOG
+#if CONFIG_GPTIMER_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     gptimer_t *timer = NULL;
     ESP_GOTO_ON_FALSE(config && ret_timer, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -257,7 +257,7 @@ esp_err_t gptimer_register_event_callbacks(gptimer_handle_t timer, const gptimer
     group = timer->group;
     int group_id = group->group_id;
     int timer_id = timer->timer_id;
-    #if CONFIG_GPTIMER_ISR_IRAM_SAFE
+#if CONFIG_GPTIMER_ISR_IRAM_SAFE
     if (cbs->on_alarm)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_alarm), ESP_ERR_INVALID_ARG, TAG, "on_alarm callback not in IRAM");
@@ -266,7 +266,7 @@ esp_err_t gptimer_register_event_callbacks(gptimer_handle_t timer, const gptimer
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!timer->intr)
     {
@@ -445,40 +445,40 @@ static esp_err_t gptimer_select_periph_clock(gptimer_t *timer, gptimer_clock_sou
     // [clk_tree] TODO: replace the following switch table by clk_tree API
     switch (src_clk)
     {
-            #if SOC_TIMER_GROUP_SUPPORT_APB
+#if SOC_TIMER_GROUP_SUPPORT_APB
         case GPTIMER_CLK_SRC_APB:
             counter_src_hz = esp_clk_apb_freq();
-            #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
             sprintf(timer->pm_lock_name, "gptimer_%d_%d", timer->group->group_id, timer_id); // e.g. gptimer_0_0
             ret  = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, timer->pm_lock_name, &timer->pm_lock);
             ESP_RETURN_ON_ERROR(ret, TAG, "create APB_FREQ_MAX lock failed");
             ESP_LOGD(TAG, "install APB_FREQ_MAX lock for timer (%d,%d)", timer->group->group_id, timer_id);
-            #endif
+#endif
             break;
-            #endif // SOC_TIMER_GROUP_SUPPORT_APB
-            #if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
+#endif // SOC_TIMER_GROUP_SUPPORT_APB
+#if SOC_TIMER_GROUP_SUPPORT_PLL_F40M
         case GPTIMER_CLK_SRC_PLL_F40M:
             counter_src_hz = 40 * 1000 * 1000;
-            #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
             sprintf(timer->pm_lock_name, "gptimer_%d_%d", timer->group->group_id, timer_id); // e.g. gptimer_0_0
             // PLL_F40M will be turned off when DFS switches CPU clock source to XTAL
             ret  = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, timer->pm_lock_name, &timer->pm_lock);
             ESP_RETURN_ON_ERROR(ret, TAG, "create APB_FREQ_MAX lock failed");
             ESP_LOGD(TAG, "install APB_FREQ_MAX lock for timer (%d,%d)", timer->group->group_id, timer_id);
-            #endif
+#endif
             break;
-            #endif // SOC_TIMER_GROUP_SUPPORT_PLL_F40M
-            #if SOC_TIMER_GROUP_SUPPORT_AHB
+#endif // SOC_TIMER_GROUP_SUPPORT_PLL_F40M
+#if SOC_TIMER_GROUP_SUPPORT_AHB
         case GPTIMER_CLK_SRC_AHB:
             // TODO: decide which kind of PM lock we should use for such clock
             counter_src_hz = 48 * 1000 * 1000;
             break;
-            #endif // SOC_TIMER_GROUP_SUPPORT_AHB
-            #if SOC_TIMER_GROUP_SUPPORT_XTAL
+#endif // SOC_TIMER_GROUP_SUPPORT_AHB
+#if SOC_TIMER_GROUP_SUPPORT_XTAL
         case GPTIMER_CLK_SRC_XTAL:
             counter_src_hz = esp_clk_xtal_freq();
             break;
-            #endif // SOC_TIMER_GROUP_SUPPORT_XTAL
+#endif // SOC_TIMER_GROUP_SUPPORT_XTAL
         default:
             ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "clock source %d is not support", src_clk);
             break;

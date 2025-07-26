@@ -9,9 +9,9 @@
 #include <sys/cdefs.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -175,9 +175,9 @@ static esp_err_t mcpwm_gpio_sync_src_destory(mcpwm_gpio_sync_src_t *gpio_sync_sr
 
 esp_err_t mcpwm_new_gpio_sync_src(const mcpwm_gpio_sync_src_config_t *config, mcpwm_sync_handle_t *ret_sync)
 {
-    #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
+#if CONFIG_MCPWM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     mcpwm_gpio_sync_src_t *gpio_sync_src = NULL;
     ESP_GOTO_ON_FALSE(config && ret_sync, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");

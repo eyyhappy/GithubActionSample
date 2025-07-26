@@ -31,11 +31,11 @@
 #include <stddef.h>
 
 #if defined(MBEDTLS_CIPHER_C)
-#include "mbedtls/cipher.h"
+    #include "mbedtls/cipher.h"
 #endif
 
 #if defined(MBEDTLS_MD_C)
-#include "mbedtls/md.h"
+    #include "mbedtls/md.h"
 #endif
 
 /** OID is not found. */
@@ -433,10 +433,10 @@ typedef struct mbedtls_oid_descriptor_t
 {
     const char *MBEDTLS_PRIVATE(asn1);               /*!< OID ASN.1 representation       */
     size_t MBEDTLS_PRIVATE(asn1_len);                /*!< length of asn1                 */
-    #if !defined(MBEDTLS_X509_REMOVE_INFO)
+#if !defined(MBEDTLS_X509_REMOVE_INFO)
     const char *MBEDTLS_PRIVATE(name);               /*!< official name (e.g. from RFC)  */
     const char *MBEDTLS_PRIVATE(description);        /*!< human friendly description     */
-    #endif
+#endif
 } mbedtls_oid_descriptor_t;
 
 /**

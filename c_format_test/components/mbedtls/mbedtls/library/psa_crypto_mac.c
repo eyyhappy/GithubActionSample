@@ -141,14 +141,14 @@ static psa_status_t cmac_setup( mbedtls_psa_mac_operation_t *operation,
                                 const uint8_t *key_buffer )
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    #if defined(PSA_WANT_KEY_TYPE_DES)
+#if defined(PSA_WANT_KEY_TYPE_DES)
     /* Mbed TLS CMAC does not accept 3DES with only two keys, nor does it accept
      * to do CMAC with pure DES, so return NOT_SUPPORTED here. */
     if( psa_get_key_type( attributes ) == PSA_KEY_TYPE_DES &&
         ( psa_get_key_bits( attributes ) == 64 ||
           psa_get_key_bits( attributes ) == 128 ) )
         return( PSA_ERROR_NOT_SUPPORTED );
-    #endif
+#endif
     const mbedtls_cipher_info_t * cipher_info =
         mbedtls_cipher_info_from_psa(
             PSA_ALG_CMAC,
@@ -179,15 +179,15 @@ static psa_status_t mac_init(
 {
     psa_status_t status = PSA_ERROR_CORRUPTION_DETECTED;
     operation->alg = alg;
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
     if( PSA_ALG_FULL_LENGTH_MAC( operation->alg ) == PSA_ALG_CMAC )
     {
         mbedtls_cipher_init( &operation->ctx.cmac );
         status = PSA_SUCCESS;
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
         if( PSA_ALG_IS_HMAC( operation->alg ) )
         {
             /* We'll set up the hash operation later in psa_hmac_setup_internal. */
@@ -195,7 +195,7 @@ static psa_status_t mac_init(
             status = PSA_SUCCESS;
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
         {
             (void) operation;
             status = PSA_ERROR_NOT_SUPPORTED;
@@ -215,20 +215,20 @@ psa_status_t mbedtls_psa_mac_abort( mbedtls_psa_mac_operation_t *operation )
         return( PSA_SUCCESS );
     }
     else
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
         if( PSA_ALG_FULL_LENGTH_MAC( operation->alg ) == PSA_ALG_CMAC )
         {
             mbedtls_cipher_free( &operation->ctx.cmac );
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
             if( PSA_ALG_IS_HMAC( operation->alg ) )
             {
                 psa_hmac_abort_internal( &operation->ctx.hmac );
             }
             else
-        #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
             {
                 /* Sanity check (shouldn't happen: operation->alg should
                  * always have been initialized to a valid value). */
@@ -258,7 +258,7 @@ static psa_status_t psa_mac_setup( mbedtls_psa_mac_operation_t *operation,
     status = mac_init( operation, alg );
     if( status != PSA_SUCCESS )
         return( status );
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
     if( PSA_ALG_FULL_LENGTH_MAC( alg ) == PSA_ALG_CMAC )
     {
         /* Key buffer size for CMAC is dictated by the key bits set on the
@@ -267,8 +267,8 @@ static psa_status_t psa_mac_setup( mbedtls_psa_mac_operation_t *operation,
         status = cmac_setup( operation, attributes, key_buffer );
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
         if( PSA_ALG_IS_HMAC( alg ) )
         {
             status = psa_hmac_setup_internal( &operation->ctx.hmac,
@@ -277,7 +277,7 @@ static psa_status_t psa_mac_setup( mbedtls_psa_mac_operation_t *operation,
                                               PSA_ALG_HMAC_GET_HASH( alg ) );
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
         {
             (void) attributes;
             (void) key_buffer;
@@ -318,7 +318,7 @@ psa_status_t mbedtls_psa_mac_update(
 {
     if( operation->alg == 0 )
         return( PSA_ERROR_BAD_STATE );
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
     if( PSA_ALG_FULL_LENGTH_MAC( operation->alg ) == PSA_ALG_CMAC )
     {
         return( mbedtls_to_psa_error(
@@ -326,15 +326,15 @@ psa_status_t mbedtls_psa_mac_update(
                                                 input, input_length ) ) );
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
         if( PSA_ALG_IS_HMAC( operation->alg ) )
         {
             return( psa_hmac_update_internal( &operation->ctx.hmac,
                                               input, input_length ) );
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
         {
             /* This shouldn't happen if `operation` was initialized by
              * a setup function. */
@@ -348,7 +348,7 @@ static psa_status_t psa_mac_finish_internal(
     mbedtls_psa_mac_operation_t *operation,
     uint8_t *mac, size_t mac_size )
 {
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_CMAC)
     if( PSA_ALG_FULL_LENGTH_MAC( operation->alg ) == PSA_ALG_CMAC )
     {
         uint8_t tmp[PSA_BLOCK_CIPHER_BLOCK_MAX_SIZE];
@@ -359,15 +359,15 @@ static psa_status_t psa_mac_finish_internal(
         return( mbedtls_to_psa_error( ret ) );
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_CMAC */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HMAC)
         if( PSA_ALG_IS_HMAC( operation->alg ) )
         {
             return( psa_hmac_finish_internal( &operation->ctx.hmac,
                                               mac, mac_size ) );
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_HMAC */
         {
             /* This shouldn't happen if `operation` was initialized by
              * a setup function. */

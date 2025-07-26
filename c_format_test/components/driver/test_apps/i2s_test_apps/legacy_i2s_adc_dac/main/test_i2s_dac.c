@@ -92,14 +92,14 @@ static void example_set_file_play_mode(void)
 static int example_i2s_dac_data_scale(uint8_t *d_buff, uint8_t *s_buff, uint32_t len)
 {
     uint32_t j = 0;
-    #if (EXAMPLE_I2S_SAMPLE_BITS == 16)
+#if (EXAMPLE_I2S_SAMPLE_BITS == 16)
     for (int i = 0; i < len; i++)
     {
         d_buff[j++] = 0;
         d_buff[j++] = s_buff[i];
     }
     return (len * 2);
-    #else
+#else
     for (int i = 0; i < len; i++)
     {
         d_buff[j++] = 0;
@@ -108,7 +108,7 @@ static int example_i2s_dac_data_scale(uint8_t *d_buff, uint8_t *s_buff, uint32_t
         d_buff[j++] = s_buff[i];
     }
     return (len * 4);
-    #endif
+#endif
 }
 /**
  * @brief debug buffer data

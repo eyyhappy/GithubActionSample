@@ -31,16 +31,16 @@
 #include "psa_crypto_se.h"
 
 #if defined(MBEDTLS_PSA_ITS_FILE_C)
-#include "psa_crypto_its.h"
+    #include "psa_crypto_its.h"
 #else /* Native ITS implementation */
-#include "psa/error.h"
-#include "psa/internal_trusted_storage.h"
+    #include "psa/error.h"
+    #include "psa/internal_trusted_storage.h"
 #endif
 
 #include "mbedtls/platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
-#define mbedtls_calloc calloc
-#define mbedtls_free   free
+    #define mbedtls_calloc calloc
+    #define mbedtls_free   free
 #endif
 
 
@@ -127,11 +127,11 @@ static psa_status_t psa_get_se_driver_its_file_uid(
 {
     if( driver->location > PSA_MAX_SE_LOCATION )
         return( PSA_ERROR_NOT_SUPPORTED );
-    #if SIZE_MAX > UINT32_MAX
+#if SIZE_MAX > UINT32_MAX
     /* ITS file sizes are limited to 32 bits. */
     if( driver->u.internal.persistent_data_size > UINT32_MAX )
         return( PSA_ERROR_NOT_SUPPORTED );
-    #endif
+#endif
     /* See the documentation of PSA_CRYPTO_SE_DRIVER_ITS_UID_BASE. */
     *uid = PSA_CRYPTO_SE_DRIVER_ITS_UID_BASE + driver->location;
     return( PSA_SUCCESS );
@@ -302,10 +302,10 @@ psa_status_t psa_register_se_driver(
         return( PSA_ERROR_NOT_SUPPORTED );
     /* Driver table entries are 0-initialized. 0 is not a valid driver
      * location because it means a transparent key. */
-    #if defined(static_assert)
+#if defined(static_assert)
     static_assert( PSA_KEY_LOCATION_LOCAL_STORAGE == 0,
                    "Secure element support requires 0 to mean a local key" );
-    #endif
+#endif
     if( location == PSA_KEY_LOCATION_LOCAL_STORAGE )
         return( PSA_ERROR_INVALID_ARGUMENT );
     if( location > PSA_MAX_SE_LOCATION )

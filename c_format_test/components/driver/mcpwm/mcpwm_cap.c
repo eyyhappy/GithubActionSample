@@ -9,9 +9,9 @@
 #include <sys/cdefs.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -82,9 +82,9 @@ static esp_err_t mcpwm_cap_timer_destory(mcpwm_cap_timer_t *cap_timer)
 
 esp_err_t mcpwm_new_capture_timer(const mcpwm_capture_timer_config_t *config, mcpwm_cap_timer_handle_t *ret_cap_timer)
 {
-    #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
+#if CONFIG_MCPWM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     mcpwm_cap_timer_t *cap_timer = NULL;
     ESP_GOTO_ON_FALSE(config && ret_cap_timer, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -96,10 +96,10 @@ esp_err_t mcpwm_new_capture_timer(const mcpwm_capture_timer_config_t *config, mc
     {
         case MCPWM_CAPTURE_CLK_SRC_APB:
             cap_timer->resolution_hz = esp_clk_apb_freq();
-            #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
             ret  = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "mcpwm_cap_timer", &cap_timer->pm_lock);
             ESP_GOTO_ON_ERROR(ret, err, TAG, "create ESP_PM_APB_FREQ_MAX lock failed");
-            #endif // CONFIG_PM_ENABLE
+#endif // CONFIG_PM_ENABLE
             break;
         default:
             ESP_GOTO_ON_FALSE(false, ESP_ERR_INVALID_ARG, err, TAG, "invalid clock source:%d", config->clk_src);
@@ -337,7 +337,7 @@ esp_err_t mcpwm_capture_channel_register_event_callbacks(mcpwm_cap_channel_handl
     mcpwm_hal_context_t *hal = &group->hal;
     int group_id = group->group_id;
     int cap_chan_id = cap_channel->cap_chan_id;
-    #if CONFIG_MCWPM_ISR_IRAM_SAFE
+#if CONFIG_MCWPM_ISR_IRAM_SAFE
     if (cbs->on_cap)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_cap), ESP_ERR_INVALID_ARG, TAG, "on_cap callback not in IRAM");
@@ -346,7 +346,7 @@ esp_err_t mcpwm_capture_channel_register_event_callbacks(mcpwm_cap_channel_handl
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!cap_channel->intr)
     {

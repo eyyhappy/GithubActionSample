@@ -26,11 +26,11 @@
 #if defined(MBEDTLS_SSL_CACHE_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc    calloc
-#define mbedtls_free      free
+    #include <stdlib.h>
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free      free
 #endif
 
 #include "mbedtls/ssl_cache.h"
@@ -43,9 +43,9 @@ void mbedtls_ssl_cache_init( mbedtls_ssl_cache_context *cache )
     memset( cache, 0, sizeof( mbedtls_ssl_cache_context ) );
     cache->timeout = MBEDTLS_SSL_CACHE_DEFAULT_TIMEOUT;
     cache->max_entries = MBEDTLS_SSL_CACHE_DEFAULT_MAX_ENTRIES;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_init( &cache->mutex );
-    #endif
+#endif
 }
 
 MBEDTLS_CHECK_RETURN_CRITICAL
@@ -55,17 +55,17 @@ static int ssl_cache_find_entry( mbedtls_ssl_cache_context *cache,
                                  mbedtls_ssl_cache_entry **dst )
 {
     int ret = 1;
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     mbedtls_time_t t = mbedtls_time( NULL );
-    #endif
+#endif
     mbedtls_ssl_cache_entry *cur;
     for( cur = cache->chain; cur != NULL; cur = cur->next )
     {
-        #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
         if( cache->timeout != 0 &&
             (int) ( t - cur->timestamp ) > cache->timeout )
             continue;
-        #endif
+#endif
         if( session_id_len != cur->session_id_len ||
             memcmp( session_id, cur->session_id,
                     cur->session_id_len ) != 0 )
@@ -91,10 +91,10 @@ int mbedtls_ssl_cache_get( void *data,
     int ret = 1;
     mbedtls_ssl_cache_context *cache = (mbedtls_ssl_cache_context *) data;
     mbedtls_ssl_cache_entry *entry;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_lock( &cache->mutex ) != 0 )
         return( 1 );
-    #endif
+#endif
     ret = ssl_cache_find_entry( cache, session_id, session_id_len, &entry );
     if( ret != 0 )
         goto exit;
@@ -105,10 +105,10 @@ int mbedtls_ssl_cache_get( void *data,
         goto exit;
     ret = 0;
 exit:
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &cache->mutex ) != 0 )
         ret = 1;
-    #endif
+#endif
     return( ret );
 }
 
@@ -118,9 +118,9 @@ static int ssl_cache_pick_writing_slot( mbedtls_ssl_cache_context *cache,
                                         size_t session_id_len,
                                         mbedtls_ssl_cache_entry **dst )
 {
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     mbedtls_time_t t = mbedtls_time( NULL ), oldest = 0;
-    #endif /* MBEDTLS_HAVE_TIME */
+#endif /* MBEDTLS_HAVE_TIME */
     mbedtls_ssl_cache_entry *old = NULL;
     int count = 0;
     mbedtls_ssl_cache_entry *cur, *last;
@@ -148,7 +148,7 @@ static int ssl_cache_pick_writing_slot( mbedtls_ssl_cache_context *cache,
      *
      * If not, remember the oldest entry in `old` for later.
      */
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     for( cur = cache->chain; cur != NULL; cur = cur->next )
     {
         if( cache->timeout != 0 &&
@@ -162,7 +162,7 @@ static int ssl_cache_pick_writing_slot( mbedtls_ssl_cache_context *cache,
             old = cur;
         }
     }
-    #endif /* MBEDTLS_HAVE_TIME */
+#endif /* MBEDTLS_HAVE_TIME */
     /* Check 3: Is there free space in the cache? */
     if( count < cache->max_entries )
     {
@@ -180,14 +180,14 @@ static int ssl_cache_pick_writing_slot( mbedtls_ssl_cache_context *cache,
     /* Last resort: The cache is full and doesn't contain any outdated
      * elements. In this case, we evict the oldest one, judged by timestamp
      * (if present) or cache-order. */
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     if( old == NULL )
     {
         /* This should only happen on an ill-configured cache
          * with max_entries == 0. */
         return( 1 );
     }
-    #else /* MBEDTLS_HAVE_TIME */
+#else /* MBEDTLS_HAVE_TIME */
     /* Reuse first entry in chain, but move to last place. */
     if( cache->chain == NULL )
         return( 1 );
@@ -195,13 +195,13 @@ static int ssl_cache_pick_writing_slot( mbedtls_ssl_cache_context *cache,
     cache->chain = old->next;
     old->next = NULL;
     last->next = old;
-    #endif /* MBEDTLS_HAVE_TIME */
+#endif /* MBEDTLS_HAVE_TIME */
     /* Now `old` points to the oldest entry to be overwritten. */
     cur = old;
 found:
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     cur->timestamp = t;
-    #endif
+#endif
     /* If we're reusing an entry, free it first. */
     if( cur->session != NULL )
     {
@@ -225,10 +225,10 @@ int mbedtls_ssl_cache_set( void *data,
     mbedtls_ssl_cache_entry *cur;
     size_t session_serialized_len;
     unsigned char *session_serialized = NULL;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( ( ret = mbedtls_mutex_lock( &cache->mutex ) ) != 0 )
         return( ret );
-    #endif
+#endif
     ret = ssl_cache_pick_writing_slot( cache,
                                        session_id, session_id_len,
                                        &cur );
@@ -267,10 +267,10 @@ int mbedtls_ssl_cache_set( void *data,
     session_serialized = NULL;
     ret = 0;
 exit:
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &cache->mutex ) != 0 )
         ret = 1;
-    #endif
+#endif
     if( session_serialized != NULL )
     {
         mbedtls_platform_zeroize( session_serialized, session_serialized_len );
@@ -305,9 +305,9 @@ void mbedtls_ssl_cache_free( mbedtls_ssl_cache_context *cache )
         mbedtls_free( prv->session );
         mbedtls_free( prv );
     }
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_free( &cache->mutex );
-    #endif
+#endif
     cache->chain = NULL;
 }
 

@@ -28,9 +28,9 @@
 #include "mbedtls/ssl.h"
 
 #if !defined(MBEDTLS_USE_PSA_CRYPTO)
-#if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
-#endif
+    #if defined(MBEDTLS_THREADING_C)
+        #include "mbedtls/threading.h"
+    #endif
 #endif /* !MBEDTLS_USE_PSA_CRYPTO */
 
 /**
@@ -41,7 +41,7 @@
  * \{
  */
 #ifndef MBEDTLS_SSL_COOKIE_TIMEOUT
-#define MBEDTLS_SSL_COOKIE_TIMEOUT     60 /**< Default expiration delay of DTLS cookies, in seconds if HAVE_TIME, or in number of cookies issued */
+    #define MBEDTLS_SSL_COOKIE_TIMEOUT     60 /**< Default expiration delay of DTLS cookies, in seconds if HAVE_TIME, or in number of cookies issued */
 #endif
 
 /** \} name SECTION: Module settings */
@@ -55,23 +55,23 @@ extern "C" {
  */
 typedef struct mbedtls_ssl_cookie_ctx
 {
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     mbedtls_svc_key_id_t    MBEDTLS_PRIVATE(psa_hmac_key);  /*!< key id for the HMAC portion   */
     psa_algorithm_t         MBEDTLS_PRIVATE(psa_hmac_alg);  /*!< key algorithm for the HMAC portion   */
-    #else
+#else
     mbedtls_md_context_t    MBEDTLS_PRIVATE(hmac_ctx);   /*!< context for the HMAC portion   */
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
-    #if !defined(MBEDTLS_HAVE_TIME)
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
+#if !defined(MBEDTLS_HAVE_TIME)
     unsigned long   MBEDTLS_PRIVATE(serial);     /*!< serial number for expiration   */
-    #endif
+#endif
     unsigned long   MBEDTLS_PRIVATE(timeout);    /*!< timeout delay, in seconds if HAVE_TIME,
                                      or in number of tickets issued */
 
-    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
-    #if defined(MBEDTLS_THREADING_C)
+#if !defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);
-    #endif
-    #endif /* !MBEDTLS_USE_PSA_CRYPTO */
+#endif
+#endif /* !MBEDTLS_USE_PSA_CRYPTO */
 } mbedtls_ssl_cookie_ctx;
 
 /**

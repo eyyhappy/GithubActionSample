@@ -36,14 +36,14 @@ int main( void )
 #else
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_DEPRECATE)
-#define _CRT_SECURE_NO_DEPRECATE 1
+    #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 
 #include <stdint.h>
 #include <stdarg.h>
 #include <string.h>
 #if defined(MBEDTLS_HAVE_TIME)
-#include <time.h>
+    #include <time.h>
 #endif
 #include "mbedtls/ssl.h"
 #include "mbedtls/error.h"
@@ -304,7 +304,7 @@ void print_hex( const uint8_t *b, size_t len,
  */
 void print_time( const uint64_t *time )
 {
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     char buf[20];
     struct tm *t = gmtime( (time_t*) time );
     static const char format[] = "%Y-%m-%d %H:%M:%S";
@@ -317,10 +317,10 @@ void print_time( const uint64_t *time )
     {
         printf( "unknown\n" );
     }
-    #else
+#else
     (void) time;
     printf( "not supported\n" );
-    #endif
+#endif
 }
 
 /*
@@ -659,9 +659,9 @@ void print_deserialized_ssl_session( const uint8_t *ssl, uint32_t len,
             if( cert_len > 0 )
             {
                 CHECK_SSL_END( cert_len );
-                #if !defined(MBEDTLS_X509_REMOVE_INFO)
+#if !defined(MBEDTLS_X509_REMOVE_INFO)
                 print_deserialized_ssl_cert( ssl, cert_len );
-                #endif
+#endif
                 ssl += cert_len;
             }
         }

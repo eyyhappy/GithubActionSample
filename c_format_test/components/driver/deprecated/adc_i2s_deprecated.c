@@ -18,7 +18,7 @@
 #include "hal/adc_types.h"
 #include "hal/adc_hal_conf.h"
 #ifdef CONFIG_PM_ENABLE
-#include "esp_pm.h"
+    #include "esp_pm.h"
 #endif
 #include "freertos/FreeRTOS.h"
 
@@ -49,7 +49,7 @@ extern portMUX_TYPE rtc_spinlock; //TODO: Will be placed in the appropriate posi
 #define ADC_EXIT_CRITICAL()  portEXIT_CRITICAL(&rtc_spinlock)
 
 #ifdef CONFIG_PM_ENABLE
-esp_pm_lock_handle_t adc_digi_arbiter_lock = NULL;
+    esp_pm_lock_handle_t adc_digi_arbiter_lock = NULL;
 #endif  //CONFIG_PM_ENABLE
 
 

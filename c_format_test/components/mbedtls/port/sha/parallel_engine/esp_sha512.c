@@ -22,20 +22,20 @@
 #include "mbedtls/sha512.h"
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
-#define UL64(x) x##ui64
+    #define UL64(x) x##ui64
 #else
-#define UL64(x) x##ULL
+    #define UL64(x) x##ULL
 #endif
 
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 #include "sha/sha_parallel_engine.h"

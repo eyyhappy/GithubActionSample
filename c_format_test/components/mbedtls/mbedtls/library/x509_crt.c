@@ -41,47 +41,47 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+    #include "psa/crypto.h"
+    #include "mbedtls/psa_util.h"
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_free       free
-#define mbedtls_calloc    calloc
-#define mbedtls_snprintf   snprintf
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_free       free
+    #define mbedtls_calloc    calloc
+    #define mbedtls_snprintf   snprintf
 #endif
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+    #include "mbedtls/threading.h"
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
-#include <windows.h>
-#else
-#include <time.h>
-#endif
+    #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
+        #include <windows.h>
+    #else
+        #include <time.h>
+    #endif
 #endif
 
 #if defined(MBEDTLS_FS_IO)
-#include <stdio.h>
-#if !defined(_WIN32) || defined(EFIX64) || defined(EFI32)
-#include <sys/types.h>
-#include <sys/stat.h>
-#if defined(__MBED__)
-#include <platform/mbed_retarget.h>
-#else
-#include <dirent.h>
-#endif /* __MBED__ */
-#endif /* !_WIN32 || EFIX64 || EFI32 */
+    #include <stdio.h>
+    #if !defined(_WIN32) || defined(EFIX64) || defined(EFI32)
+        #include <sys/types.h>
+        #include <sys/stat.h>
+        #if defined(__MBED__)
+            #include <platform/mbed_retarget.h>
+        #else
+            #include <dirent.h>
+        #endif /* __MBED__ */
+    #endif /* !_WIN32 || EFIX64 || EFI32 */
 #endif
 
 /*
@@ -108,7 +108,7 @@ const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_default =
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
     0xFFFFFFF, /* Any PK alg    */
-    #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
     /* Curves at or above 128-bit security level. Note that this selection
      * should be aligned with ssl_preset_default_curves in ssl_tls.c. */
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP256R1 ) |
@@ -118,9 +118,9 @@ const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_default =
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_BP384R1 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_BP512R1 ) |
     0,
-    #else
+#else
     0,
-    #endif
+#endif
     2048,
 };
 
@@ -133,7 +133,7 @@ const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_next =
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA384 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_MD_SHA512 ),
     0xFFFFFFF, /* Any PK alg    */
-    #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
     /* Curves at or above 128-bit security level. */
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP256R1 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP384R1 ) |
@@ -142,9 +142,9 @@ const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_next =
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_BP384R1 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_BP512R1 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP256K1 ),
-    #else
+#else
     0,
-    #endif
+#endif
     2048,
 };
 
@@ -159,13 +159,13 @@ const mbedtls_x509_crt_profile mbedtls_x509_crt_profile_suiteb =
     /* Only ECDSA */
     MBEDTLS_X509_ID_FLAG( MBEDTLS_PK_ECDSA ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_PK_ECKEY ),
-    #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
     /* Only NIST P-256 and P-384 */
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP256R1 ) |
     MBEDTLS_X509_ID_FLAG( MBEDTLS_ECP_DP_SECP384R1 ),
-    #else
+#else
     0,
-    #endif
+#endif
     0,
 };
 
@@ -216,15 +216,15 @@ static int x509_profile_check_key( const mbedtls_x509_crt_profile *profile,
                                    const mbedtls_pk_context *pk )
 {
     const mbedtls_pk_type_t pk_alg = mbedtls_pk_get_type( pk );
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     if( pk_alg == MBEDTLS_PK_RSA || pk_alg == MBEDTLS_PK_RSASSA_PSS )
     {
         if( mbedtls_pk_get_bitlen( pk ) >= profile->rsa_min_bitlen )
             return( 0 );
         return( -1 );
     }
-    #endif
-    #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
     if( pk_alg == MBEDTLS_PK_ECDSA ||
         pk_alg == MBEDTLS_PK_ECKEY ||
         pk_alg == MBEDTLS_PK_ECKEY_DH )
@@ -236,7 +236,7 @@ static int x509_profile_check_key( const mbedtls_x509_crt_profile *profile,
             return( 0 );
         return( -1 );
     }
-    #endif
+#endif
     return( -1 );
 }
 
@@ -366,9 +366,9 @@ static void x509_crt_verify_chain_reset(
         ver_chain->items[i].flags = (uint32_t) -1;
     }
     ver_chain->len = 0;
-    #if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
+#if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
     ver_chain->trust_ca_cb_result = NULL;
-    #endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
+#endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
 }
 
 /*
@@ -1257,10 +1257,10 @@ int mbedtls_x509_crt_parse( mbedtls_x509_crt *chain,
                             const unsigned char *buf,
                             size_t buflen )
 {
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     int success = 0, first_error = 0, total_failed = 0;
     int buf_format = MBEDTLS_X509_FORMAT_DER;
-    #endif
+#endif
     /*
      * Check for valid input
      */
@@ -1270,7 +1270,7 @@ int mbedtls_x509_crt_parse( mbedtls_x509_crt *chain,
      * Determine buffer content. Buffer contains either one DER certificate or
      * one or more PEM certificates.
      */
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     if( buflen != 0 && buf[buflen - 1] == '\0' &&
         strstr( (const char *) buf, "-----BEGIN CERTIFICATE-----" ) != NULL )
     {
@@ -1278,10 +1278,10 @@ int mbedtls_x509_crt_parse( mbedtls_x509_crt *chain,
     }
     if( buf_format == MBEDTLS_X509_FORMAT_DER )
         return mbedtls_x509_crt_parse_der( chain, buf, buflen );
-    #else
+#else
     return mbedtls_x509_crt_parse_der( chain, buf, buflen );
-    #endif
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#endif
+#if defined(MBEDTLS_PEM_PARSE_C)
     if( buf_format == MBEDTLS_X509_FORMAT_PEM )
     {
         int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
@@ -1346,7 +1346,7 @@ int mbedtls_x509_crt_parse( mbedtls_x509_crt *chain,
         return( first_error );
     else
         return( MBEDTLS_ERR_X509_CERT_UNKNOWN_FORMAT );
-    #endif /* MBEDTLS_PEM_PARSE_C */
+#endif /* MBEDTLS_PEM_PARSE_C */
 }
 
 #if defined(MBEDTLS_FS_IO)
@@ -1369,7 +1369,7 @@ int mbedtls_x509_crt_parse_file( mbedtls_x509_crt *chain, const char *path )
 int mbedtls_x509_crt_parse_path( mbedtls_x509_crt *chain, const char *path )
 {
     int ret = 0;
-    #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
+#if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
     int w_ret;
     WCHAR szDir[MAX_PATH];
     char filename[MAX_PATH];
@@ -1418,7 +1418,7 @@ int mbedtls_x509_crt_parse_path( mbedtls_x509_crt *chain, const char *path )
         ret = MBEDTLS_ERR_X509_FILE_IO_ERROR;
 cleanup:
     FindClose( hFind );
-    #else /* _WIN32 */
+#else /* _WIN32 */
     int t_ret;
     int snp_ret;
     struct stat sb;
@@ -1427,13 +1427,13 @@ cleanup:
     DIR *dir = opendir( path );
     if( dir == NULL )
         return( MBEDTLS_ERR_X509_FILE_IO_ERROR );
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( ( ret = mbedtls_mutex_lock( &mbedtls_threading_readdir_mutex ) ) != 0 )
     {
         closedir( dir );
         return( ret );
     }
-    #endif /* MBEDTLS_THREADING_C */
+#endif /* MBEDTLS_THREADING_C */
     memset( &sb, 0, sizeof( sb ) );
     while( ( entry = readdir( dir ) ) != NULL )
     {
@@ -1461,11 +1461,11 @@ cleanup:
     }
 cleanup:
     closedir( dir );
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &mbedtls_threading_readdir_mutex ) != 0 )
         ret = MBEDTLS_ERR_THREADING_MUTEX_ERROR;
-    #endif /* MBEDTLS_THREADING_C */
-    #endif /* _WIN32 */
+#endif /* MBEDTLS_THREADING_C */
+#endif /* _WIN32 */
     return( ret );
 }
 #endif /* MBEDTLS_FS_IO */
@@ -2025,13 +2025,13 @@ static int x509_crt_verifycrl( mbedtls_x509_crt *crt, mbedtls_x509_crt *ca,
                                const mbedtls_x509_crt_profile *profile )
 {
     int flags = 0;
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     unsigned char hash[PSA_HASH_MAX_SIZE];
     psa_algorithm_t psa_algorithm;
-    #else
+#else
     unsigned char hash[MBEDTLS_MD_MAX_SIZE];
     const mbedtls_md_info_t *md_info;
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     size_t hash_length;
     if( ca == NULL )
         return( flags );
@@ -2059,7 +2059,7 @@ static int x509_crt_verifycrl( mbedtls_x509_crt *crt, mbedtls_x509_crt *ca,
             flags |= MBEDTLS_X509_BADCRL_BAD_MD;
         if( x509_profile_check_pk_alg( profile, crl_list->sig_pk ) != 0 )
             flags |= MBEDTLS_X509_BADCRL_BAD_PK;
-        #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
         psa_algorithm = mbedtls_psa_translate_md( crl_list->sig_md );
         if( psa_hash_compute( psa_algorithm,
                               crl_list->tbs.p,
@@ -2072,7 +2072,7 @@ static int x509_crt_verifycrl( mbedtls_x509_crt *crt, mbedtls_x509_crt *ca,
             flags |= MBEDTLS_X509_BADCRL_NOT_TRUSTED;
             break;
         }
-        #else
+#else
         md_info = mbedtls_md_info_from_type( crl_list->sig_md );
         hash_length = mbedtls_md_get_size( md_info );
         if( mbedtls_md( md_info,
@@ -2084,7 +2084,7 @@ static int x509_crt_verifycrl( mbedtls_x509_crt *crt, mbedtls_x509_crt *ca,
             flags |= MBEDTLS_X509_BADCRL_NOT_TRUSTED;
             break;
         }
-        #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
         if( x509_profile_check_key( profile, &ca->pk ) != 0 )
             flags |= MBEDTLS_X509_BADCERT_BAD_KEY;
         if( mbedtls_pk_verify_ext( crl_list->sig_pk, crl_list->sig_opts, &ca->pk,
@@ -2123,7 +2123,7 @@ static int x509_crt_check_signature( const mbedtls_x509_crt *child,
                                      mbedtls_x509_crt_restart_ctx *rs_ctx )
 {
     size_t hash_len;
-    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
+#if !defined(MBEDTLS_USE_PSA_CRYPTO)
     unsigned char hash[MBEDTLS_MD_MAX_SIZE];
     const mbedtls_md_info_t *md_info;
     md_info = mbedtls_md_info_from_type( child->sig_md );
@@ -2131,7 +2131,7 @@ static int x509_crt_check_signature( const mbedtls_x509_crt *child,
     /* Note: hash errors can happen only after an internal error */
     if( mbedtls_md( md_info, child->tbs.p, child->tbs.len, hash ) != 0 )
         return( -1 );
-    #else
+#else
     unsigned char hash[PSA_HASH_MAX_SIZE];
     psa_algorithm_t hash_alg = mbedtls_psa_translate_md( child->sig_md );
     psa_status_t status = PSA_ERROR_CORRUPTION_DETECTED;
@@ -2145,20 +2145,20 @@ static int x509_crt_check_signature( const mbedtls_x509_crt *child,
     {
         return( MBEDTLS_ERR_PLATFORM_HW_ACCEL_FAILED );
     }
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     /* Skip expensive computation on obvious mismatch */
     if( ! mbedtls_pk_can_do( &parent->pk, child->sig_pk ) )
         return( -1 );
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     if( rs_ctx != NULL && child->sig_pk == MBEDTLS_PK_ECDSA )
     {
         return( mbedtls_pk_verify_restartable( &parent->pk,
                                                child->sig_md, hash, hash_len,
                                                child->sig.p, child->sig.len, &rs_ctx->pk ) );
     }
-    #else
+#else
     (void) rs_ctx;
-    #endif
+#endif
     return( mbedtls_pk_verify_ext( child->sig_pk, child->sig_opts, &parent->pk,
                                    child->sig_md, hash, hash_len,
                                    child->sig.p, child->sig.len ) );
@@ -2249,7 +2249,7 @@ static int x509_crt_find_parent_in(
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     mbedtls_x509_crt *parent, *fallback_parent;
     int signature_is_good = 0, fallback_signature_is_good;
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /* did we have something in progress? */
     if( rs_ctx != NULL && rs_ctx->parent != NULL )
     {
@@ -2264,7 +2264,7 @@ static int x509_crt_find_parent_in(
         /* resume where we left */
         goto check_signature;
     }
-    #endif
+#endif
     fallback_parent = NULL;
     fallback_signature_is_good = 0;
     for( parent = candidates; parent != NULL; parent = parent->next )
@@ -2279,11 +2279,11 @@ static int x509_crt_find_parent_in(
             continue;
         }
         /* Signature */
-        #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     check_signature:
-        #endif
+#endif
         ret = x509_crt_check_signature( child, parent, rs_ctx );
-        #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
         if( rs_ctx != NULL && ret == MBEDTLS_ERR_ECP_IN_PROGRESS )
         {
             /* save state */
@@ -2292,9 +2292,9 @@ static int x509_crt_find_parent_in(
             rs_ctx->fallback_signature_is_good = fallback_signature_is_good;
             return( ret );
         }
-        #else
+#else
         (void) ret;
-        #endif
+#endif
         signature_is_good = ret == 0;
         if( top && ! signature_is_good )
             continue;
@@ -2356,14 +2356,14 @@ static int x509_crt_find_parent(
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     mbedtls_x509_crt *search_list;
     *parent_is_trusted = 1;
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /* restore then clear saved state if we have some stored */
     if( rs_ctx != NULL && rs_ctx->parent_is_trusted != -1 )
     {
         *parent_is_trusted = rs_ctx->parent_is_trusted;
         rs_ctx->parent_is_trusted = -1;
     }
-    #endif
+#endif
     while( 1 )
     {
         search_list = *parent_is_trusted ? trust_ca : child->next;
@@ -2371,16 +2371,16 @@ static int x509_crt_find_parent(
                                        parent, signature_is_good,
                                        *parent_is_trusted,
                                        path_cnt, self_cnt, rs_ctx );
-        #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
         if( rs_ctx != NULL && ret == MBEDTLS_ERR_ECP_IN_PROGRESS )
         {
             /* save state */
             rs_ctx->parent_is_trusted = *parent_is_trusted;
             return( ret );
         }
-        #else
+#else
         (void) ret;
-        #endif
+#endif
         /* stop here if found or already in second iteration */
         if( *parent != NULL || *parent_is_trusted == 0 )
             break;
@@ -2485,7 +2485,7 @@ static int x509_crt_verify_chain(
     int signature_is_good;
     unsigned self_cnt;
     mbedtls_x509_crt *cur_trust_ca = NULL;
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     /* resume if we had an operation in progress */
     if( rs_ctx != NULL && rs_ctx->in_progress == x509_crt_rs_find_parent )
     {
@@ -2498,7 +2498,7 @@ static int x509_crt_verify_chain(
         flags = &cur->flags;
         goto find_parent;
     }
-    #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
+#endif /* MBEDTLS_ECDSA_C && MBEDTLS_ECP_RESTARTABLE */
     child = crt;
     self_cnt = 0;
     parent_is_trusted = 0;
@@ -2530,12 +2530,12 @@ static int x509_crt_verify_chain(
         {
             return( 0 );
         }
-        #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     find_parent:
-        #endif
+#endif
         /* Obtain list of potential trusted signers from CA callback,
          * or use statically provided list. */
-        #if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
+#if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
         if( f_ca_cb != NULL )
         {
             mbedtls_x509_crt_free( ver_chain->trust_ca_cb_result );
@@ -2547,7 +2547,7 @@ static int x509_crt_verify_chain(
             cur_trust_ca = ver_chain->trust_ca_cb_result;
         }
         else
-        #endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
+#endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
         {
             ((void) f_ca_cb);
             ((void) p_ca_cb);
@@ -2557,7 +2557,7 @@ static int x509_crt_verify_chain(
         ret = x509_crt_find_parent( child, cur_trust_ca, &parent,
                                     &parent_is_trusted, &signature_is_good,
                                     ver_chain->len - 1, self_cnt, rs_ctx );
-        #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
         if( rs_ctx != NULL && ret == MBEDTLS_ERR_ECP_IN_PROGRESS )
         {
             /* save state */
@@ -2566,9 +2566,9 @@ static int x509_crt_verify_chain(
             rs_ctx->ver_chain = *ver_chain; /* struct copy */
             return( ret );
         }
-        #else
+#else
         (void) ret;
-        #endif
+#endif
         /* No parent? We're done here */
         if( parent == NULL )
         {
@@ -2597,12 +2597,12 @@ static int x509_crt_verify_chain(
         /* check size of signing key */
         if( x509_profile_check_key( profile, &parent->pk ) != 0 )
             *flags |= MBEDTLS_X509_BADCERT_BAD_KEY;
-        #if defined(MBEDTLS_X509_CRL_PARSE_C)
+#if defined(MBEDTLS_X509_CRL_PARSE_C)
         /* Check trusted CA's CRL for the given crt */
         *flags |= x509_crt_verifycrl( child, parent, ca_crl, profile );
-        #else
+#else
         (void) ca_crl;
-        #endif
+#endif
         /* prepare for next iteration */
         child = parent;
         parent = NULL;
@@ -2767,15 +2767,15 @@ static int x509_crt_verify_restartable_ca_cb( mbedtls_x509_crt *crt,
     /* Build final flags, calling callback on the way if any */
     ret = x509_crt_merge_flags_with_cb( flags, &ver_chain, f_vrfy, p_vrfy );
 exit:
-    #if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
+#if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
     mbedtls_x509_crt_free( ver_chain.trust_ca_cb_result );
     mbedtls_free( ver_chain.trust_ca_cb_result );
     ver_chain.trust_ca_cb_result = NULL;
-    #endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
-    #if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
+#endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
+#if defined(MBEDTLS_ECDSA_C) && defined(MBEDTLS_ECP_RESTARTABLE)
     if( rs_ctx != NULL && ret != MBEDTLS_ERR_ECP_IN_PROGRESS )
         mbedtls_x509_crt_restart_free( rs_ctx );
-    #endif
+#endif
     /* prevent misuse of the vrfy callback - VERIFY_FAILED would be ignored by
      * the SSL module for authmode optional, but non-zero return from the
      * callback means a fatal error so it shouldn't be ignored */
@@ -2886,9 +2886,9 @@ void mbedtls_x509_crt_free( mbedtls_x509_crt *crt )
     do
     {
         mbedtls_pk_free( &cert_cur->pk );
-        #if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
+#if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
         mbedtls_free( cert_cur->sig_opts );
-        #endif
+#endif
         name_cur = cert_cur->issuer.next;
         while( name_cur != NULL )
         {

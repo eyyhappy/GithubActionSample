@@ -20,28 +20,28 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_PK_PARSE_C) && defined(MBEDTLS_PK_WRITE_C) && \
-defined(MBEDTLS_FS_IO) && \
-defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
-#include "mbedtls/error.h"
-#include "mbedtls/pk.h"
-#include "mbedtls/error.h"
+    defined(MBEDTLS_FS_IO) && \
+    defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
+    #include "mbedtls/error.h"
+    #include "mbedtls/pk.h"
+    #include "mbedtls/error.h"
 
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
+    #include "mbedtls/entropy.h"
+    #include "mbedtls/ctr_drbg.h"
 
-#include <stdio.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <string.h>
 #endif
 
 #if defined(MBEDTLS_PEM_WRITE_C)
@@ -55,11 +55,11 @@ defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
 #endif
 
 #if defined(MBEDTLS_PEM_WRITE_C)
-#define DFL_OUTPUT_FILENAME     "keyfile.pem"
-#define DFL_OUTPUT_FORMAT       OUTPUT_FORMAT_PEM
+    #define DFL_OUTPUT_FILENAME     "keyfile.pem"
+    #define DFL_OUTPUT_FORMAT       OUTPUT_FORMAT_PEM
 #else
-#define DFL_OUTPUT_FILENAME     "keyfile.der"
-#define DFL_OUTPUT_FORMAT       OUTPUT_FORMAT_DER
+    #define DFL_OUTPUT_FILENAME     "keyfile.der"
+    #define DFL_OUTPUT_FORMAT       OUTPUT_FORMAT_DER
 #endif
 
 #define DFL_MODE                MODE_NONE
@@ -122,7 +122,7 @@ static int write_public_key( mbedtls_pk_context *key, const char *output_file )
     unsigned char *c = output_buf;
     size_t len = 0;
     memset(output_buf, 0, 16000);
-    #if defined(MBEDTLS_PEM_WRITE_C)
+#if defined(MBEDTLS_PEM_WRITE_C)
     if( opt.output_format == OUTPUT_FORMAT_PEM )
     {
         if( ( ret = mbedtls_pk_write_pubkey_pem( key, output_buf, 16000 ) ) != 0 )
@@ -130,7 +130,7 @@ static int write_public_key( mbedtls_pk_context *key, const char *output_file )
         len = strlen( (char *) output_buf );
     }
     else
-    #endif
+#endif
     {
         if( ( ret = mbedtls_pk_write_pubkey_der( key, output_buf, 16000 ) ) < 0 )
             return( ret );
@@ -156,7 +156,7 @@ static int write_private_key( mbedtls_pk_context *key, const char *output_file )
     unsigned char *c = output_buf;
     size_t len = 0;
     memset(output_buf, 0, 16000);
-    #if defined(MBEDTLS_PEM_WRITE_C)
+#if defined(MBEDTLS_PEM_WRITE_C)
     if( opt.output_format == OUTPUT_FORMAT_PEM )
     {
         if( ( ret = mbedtls_pk_write_key_pem( key, output_buf, 16000 ) ) != 0 )
@@ -164,7 +164,7 @@ static int write_private_key( mbedtls_pk_context *key, const char *output_file )
         len = strlen( (char *) output_buf );
     }
     else
-    #endif
+#endif
     {
         if( ( ret = mbedtls_pk_write_key_der( key, output_buf, 16000 ) ) < 0 )
             return( ret );
@@ -186,9 +186,9 @@ int main( int argc, char *argv[] )
 {
     int ret = 1;
     int exit_code = MBEDTLS_EXIT_FAILURE;
-    #if defined(MBEDTLS_ERROR_C)
+#if defined(MBEDTLS_ERROR_C)
     char buf[200];
-    #endif
+#endif
     int i;
     char *p, *q;
     const char *pers = "pkey/key_app";
@@ -202,9 +202,9 @@ int main( int argc, char *argv[] )
     mbedtls_entropy_init( &entropy );
     mbedtls_ctr_drbg_init( &ctr_drbg );
     mbedtls_pk_init( &key );
-    #if defined(MBEDTLS_ERROR_C)
+#if defined(MBEDTLS_ERROR_C)
     memset( buf, 0, sizeof( buf ) );
-    #endif
+#endif
     mbedtls_mpi_init( &N );
     mbedtls_mpi_init( &P );
     mbedtls_mpi_init( &Q );
@@ -250,11 +250,11 @@ int main( int argc, char *argv[] )
         }
         else if( strcmp( p, "output_format" ) == 0 )
         {
-            #if defined(MBEDTLS_PEM_WRITE_C)
+#if defined(MBEDTLS_PEM_WRITE_C)
             if( strcmp( q, "pem" ) == 0 )
                 opt.output_format = OUTPUT_FORMAT_PEM;
             else
-            #endif
+#endif
                 if( strcmp( q, "der" ) == 0 )
                     opt.output_format = OUTPUT_FORMAT_DER;
                 else
@@ -303,7 +303,7 @@ int main( int argc, char *argv[] )
          * 1.2 Print the key
          */
         mbedtls_printf( "  . Key information    ...\n" );
-        #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( &key ) == MBEDTLS_PK_RSA )
         {
             mbedtls_rsa_context *rsa = mbedtls_pk_rsa( key );
@@ -323,8 +323,8 @@ int main( int argc, char *argv[] )
             mbedtls_mpi_write_file( "QP:  ", &QP, 16, NULL );
         }
         else
-        #endif
-        #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
             if( mbedtls_pk_get_type( &key ) == MBEDTLS_PK_ECKEY )
             {
                 mbedtls_ecp_keypair *ecp = mbedtls_pk_ec( key );
@@ -334,7 +334,7 @@ int main( int argc, char *argv[] )
                 mbedtls_mpi_write_file( "D   : ", &ecp->MBEDTLS_PRIVATE(d), 16, NULL );
             }
             else
-        #endif
+#endif
                 mbedtls_printf("key type not supported yet\n");
     }
     else if( opt.mode == MODE_PUBLIC )
@@ -355,7 +355,7 @@ int main( int argc, char *argv[] )
          * 1.2 Print the key
          */
         mbedtls_printf( "  . Key information    ...\n" );
-        #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( &key ) == MBEDTLS_PK_RSA )
         {
             mbedtls_rsa_context *rsa = mbedtls_pk_rsa( key );
@@ -369,8 +369,8 @@ int main( int argc, char *argv[] )
             mbedtls_mpi_write_file( "E: ", &E, 16, NULL );
         }
         else
-        #endif
-        #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
             if( mbedtls_pk_get_type( &key ) == MBEDTLS_PK_ECKEY )
             {
                 mbedtls_ecp_keypair *ecp = mbedtls_pk_ec( key );
@@ -379,7 +379,7 @@ int main( int argc, char *argv[] )
                 mbedtls_mpi_write_file( "Q(Z): ", &ecp->MBEDTLS_PRIVATE(Q).MBEDTLS_PRIVATE(Z), 16, NULL );
             }
             else
-        #endif
+#endif
                 mbedtls_printf("key type not supported yet\n");
     }
     else
@@ -396,12 +396,12 @@ int main( int argc, char *argv[] )
 exit:
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
-        #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, sizeof( buf ) );
         mbedtls_printf( " - %s\n", buf );
-        #else
+#else
         mbedtls_printf("\n");
-        #endif
+#endif
     }
     mbedtls_mpi_free( &N );
     mbedtls_mpi_free( &P );

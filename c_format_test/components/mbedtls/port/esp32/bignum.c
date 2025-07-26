@@ -82,7 +82,7 @@ mpi_to_mem_block(uint32_t mem_base, const mbedtls_mpi *mpi, size_t hw_words)
     {
         pbase[i] = 0;
     }
-    #if _INTERNAL_DEBUG_PURPOSE
+#if _INTERNAL_DEBUG_PURPOSE
     /*
      * With Xtensa GCC 11.2.0 (from ESP-IDF v5.x), it was observed that above zero initialization
      * loop gets optimized to `memset` call from the ROM library. This was causing an issue that
@@ -99,7 +99,7 @@ mpi_to_mem_block(uint32_t mem_base, const mbedtls_mpi *mpi, size_t hw_words)
      * Please see IDF-6029 for more details.
      */
     //for (uint32_t i = copy_words; i < hw_words; i++) { assert(pbase[i] == 0); }
-    #endif
+#endif
 }
 
 /* Read mbedTLS MPI bignum back from hardware memory block.

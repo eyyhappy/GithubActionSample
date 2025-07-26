@@ -16,7 +16,7 @@
 #include "hal/adc_types.h"
 
 #if !CONFIG_ADC_SUPPRESS_DEPRECATE_WARN
-#warning "legacy adc driver is deprecated, please migrate to use esp_adc/adc_oneshot.h and esp_adc/adc_continuous.h for oneshot mode and continuous mode drivers respectively"
+    #warning "legacy adc driver is deprecated, please migrate to use esp_adc/adc_oneshot.h and esp_adc/adc_continuous.h for oneshot mode and continuous mode drivers respectively"
 #endif
 
 #ifdef __cplusplus

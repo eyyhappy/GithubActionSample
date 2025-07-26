@@ -21,9 +21,9 @@ extern "C" {
 typedef enum
 {
     I2S_NUM_0 = 0,                 /*!< I2S controller port 0 */
-    #if SOC_I2S_NUM > 1
+#if SOC_I2S_NUM > 1
     I2S_NUM_1 = 1,                 /*!< I2S controller port 1 */
-    #endif
+#endif
     I2S_NUM_AUTO,                  /*!< Select whichever port is available */
 } i2s_port_t;
 
@@ -33,12 +33,12 @@ typedef enum
 typedef enum
 {
     I2S_COMM_MODE_STD,              /*!< I2S controller using standard communication mode, support philips/MSB/PCM format */
-    #if SOC_I2S_SUPPORTS_PDM
+#if SOC_I2S_SUPPORTS_PDM
     I2S_COMM_MODE_PDM,              /*!< I2S controller using PDM communication mode, support PDM output or input */
-    #endif
-    #if SOC_I2S_SUPPORTS_TDM
+#endif
+#if SOC_I2S_SUPPORTS_TDM
     I2S_COMM_MODE_TDM,              /*!< I2S controller using TDM communication mode, support up to 16 slots per frame */
-    #endif
+#endif
     I2S_COMM_MODE_NONE,             /*!< Unspecified I2S controller mode */
 } i2s_comm_mode_t;
 

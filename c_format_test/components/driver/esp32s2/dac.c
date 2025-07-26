@@ -25,7 +25,7 @@ extern portMUX_TYPE rtc_spinlock; //TODO: Will be placed in the appropriate posi
 #define DAC_EXIT_CRITICAL()  portEXIT_CRITICAL(&rtc_spinlock)
 
 #ifdef CONFIG_PM_ENABLE
-static esp_pm_lock_handle_t s_dac_digi_lock = NULL;
+    static esp_pm_lock_handle_t s_dac_digi_lock = NULL;
 #endif  //CONFIG_PM_ENABLE
 
 /*---------------------------------------------------------------
@@ -42,13 +42,13 @@ esp_err_t dac_digi_init(void)
 
 esp_err_t dac_digi_deinit(void)
 {
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     if (s_dac_digi_lock)
     {
         esp_pm_lock_delete(s_dac_digi_lock);
         s_dac_digi_lock = NULL;
     }
-    #endif
+#endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_deinit();
     DAC_EXIT_CRITICAL();
@@ -62,7 +62,7 @@ esp_err_t dac_digi_controller_config(const dac_digi_config_t *cfg)
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_num < 256, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_num error");
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_b > 0 && cfg->dig_clk.div_b < 64, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_b error");
     ESP_RETURN_ON_FALSE(cfg->dig_clk.div_a < 64, ESP_ERR_INVALID_ARG, TAG, "DAC clk div_a error");
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_err_t err;
     if (s_dac_digi_lock == NULL)
     {
@@ -81,7 +81,7 @@ esp_err_t dac_digi_controller_config(const dac_digi_config_t *cfg)
             return err;
         }
     }
-    #endif //CONFIG_PM_ENABLE
+#endif //CONFIG_PM_ENABLE
     DAC_ENTER_CRITICAL();
     dac_hal_digi_controller_config(cfg);
     DAC_EXIT_CRITICAL();
@@ -90,10 +90,10 @@ esp_err_t dac_digi_controller_config(const dac_digi_config_t *cfg)
 
 esp_err_t dac_digi_start(void)
 {
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     ESP_RETURN_ON_FALSE(s_dac_digi_lock, ESP_FAIL, TAG, "Should start after call `dac_digi_controller_config`");
     esp_pm_lock_acquire(s_dac_digi_lock);
-    #endif
+#endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_start();
     DAC_EXIT_CRITICAL();
@@ -102,12 +102,12 @@ esp_err_t dac_digi_start(void)
 
 esp_err_t dac_digi_stop(void)
 {
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     if (s_dac_digi_lock)
     {
         esp_pm_lock_release(s_dac_digi_lock);
     }
-    #endif
+#endif
     DAC_ENTER_CRITICAL();
     dac_hal_digi_stop();
     DAC_EXIT_CRITICAL();

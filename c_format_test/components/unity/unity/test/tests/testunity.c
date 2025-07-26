@@ -11,11 +11,11 @@
 // Dividing by these constants produces +/- infinity.
 // The rationale is given in UnityAssertFloatIsInf's body.
 #ifndef UNITY_EXCLUDE_FLOAT
-static const UNITY_FLOAT f_zero = 0.0f;
+    static const UNITY_FLOAT f_zero = 0.0f;
 #endif
 
 #ifndef UNITY_EXCLUDE_DOUBLE
-static const UNITY_DOUBLE d_zero = 0.0;
+    static const UNITY_DOUBLE d_zero = 0.0;
 #endif
 
 #define EXPECT_ABORT_BEGIN \
@@ -92,7 +92,7 @@ void testUnitySizeInitializationReminder(void)
                           "the initialization of the Unity symbol in unity.c is "
                           "still correct.";
     /* Define a structure with all the same fields as `struct UNITY_STORAGE_T`. */
-    #ifdef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_EXCLUDE_DETAILS
     struct
     {
         const char* TestFile;
@@ -103,15 +103,15 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
-        #ifdef UNITY_INCLUDE_EXEC_TIME
+#ifdef UNITY_INCLUDE_EXEC_TIME
         UNITY_COUNTER_TYPE CurrentTestStartTime;
         UNITY_COUNTER_TYPE CurrentTestStopTime;
-        #endif
-        #ifndef UNITY_EXCLUDE_SETJMP_H
+#endif
+#ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
-        #endif
+#endif
     } _Expected_Unity;
-    #else
+#else
     struct
     {
         const char* TestFile;
@@ -124,15 +124,15 @@ void testUnitySizeInitializationReminder(void)
         UNITY_COUNTER_TYPE TestIgnores;
         UNITY_COUNTER_TYPE CurrentTestFailed;
         UNITY_COUNTER_TYPE CurrentTestIgnored;
-        #ifdef UNITY_INCLUDE_EXEC_TIME
+#ifdef UNITY_INCLUDE_EXEC_TIME
         UNITY_COUNTER_TYPE CurrentTestStartTime;
         UNITY_COUNTER_TYPE CurrentTestStopTime;
-        #endif
-        #ifndef UNITY_EXCLUDE_SETJMP_H
+#endif
+#ifndef UNITY_EXCLUDE_SETJMP_H
         jmp_buf AbortFrame;
-        #endif
+#endif
     } _Expected_Unity;
-    #endif
+#endif
     /* Compare our fake structure's size to the actual structure's size. They
      * should be the same.
      *
@@ -3059,13 +3059,13 @@ void testIgnoredAndThenFailInTearDown(void)
 #define EXPAND_AND_USE_2ND(a, b)  SECOND_PARAM(a, b, throwaway)
 #define SECOND_PARAM(a, b, ...)   b
 #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
-#define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putcharSpy
+    #define USING_OUTPUT_SPY // true only if UNITY_OUTPUT_CHAR = putcharSpy
 #endif
 
 #ifdef USING_OUTPUT_SPY
-#include <stdio.h>
-#define SPY_BUFFER_MAX 40
-static char putcharSpyBuffer[SPY_BUFFER_MAX];
+    #include <stdio.h>
+    #define SPY_BUFFER_MAX 40
+    static char putcharSpyBuffer[SPY_BUFFER_MAX];
 #endif
 static int indexSpyBuffer;
 static int putcharSpyEnabled;
@@ -3083,17 +3083,17 @@ void endPutcharSpy(void)
 
 char* getBufferPutcharSpy(void)
 {
-    #ifdef USING_OUTPUT_SPY
+#ifdef USING_OUTPUT_SPY
     putcharSpyBuffer[indexSpyBuffer] = '\0';
     return putcharSpyBuffer;
-    #else
+#else
     return NULL;
-    #endif
+#endif
 }
 
 void putcharSpy(int c)
 {
-    #ifdef USING_OUTPUT_SPY
+#ifdef USING_OUTPUT_SPY
     if (putcharSpyEnabled)
     {
         if (indexSpyBuffer < SPY_BUFFER_MAX - 1)
@@ -3101,7 +3101,7 @@ void putcharSpy(int c)
     }
     else
         putchar((char)c);
-    #endif
+#endif
 }
 
 /* This is for counting the calls to the flushSpy */
@@ -3141,11 +3141,11 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
     UnityConcludeTest();
     endPutcharSpy();
     TEST_ASSERT_EQUAL(savedFailures + 1, Unity.TestFailures);
-    #if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
+#if defined(UNITY_OUTPUT_FLUSH) && defined(UNITY_OUTPUT_FLUSH_HEADER_DECLARATION)
     TEST_ASSERT_EQUAL(1, getFlushSpyCalls());
-    #else
+#else
     TEST_ASSERT_EQUAL(0, getFlushSpyCalls());
-    #endif
+#endif
     endFlushSpy();
     startPutcharSpy(); // Suppress output
     int failures = UnityEnd();
@@ -3156,26 +3156,26 @@ void testFailureCountIncrementsAndIsReturnedAtEnd(void)
 
 void testCstringsEscapeSequence(void)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     startPutcharSpy();
     UnityPrint("\x16\x10");
     endPutcharSpy();
     TEST_ASSERT_EQUAL_STRING("\\x16\\x10", getBufferPutcharSpy());
-    #endif
+#endif
 }
 
 void testHexPrintsUpToMaxNumberOfNibbles(void)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     startPutcharSpy();
     UnityPrintNumberHex(0xBEE, 21);
     endPutcharSpy();
     TEST_ASSERT_EQUAL_INT(sizeof(UNITY_INT) * 2, strlen(getBufferPutcharSpy()));
-    #endif
+#endif
 }
 
 #define TEST_ASSERT_EQUAL_PRINT_NUMBERS(expected, actual) {             \
@@ -3190,29 +3190,29 @@ void testHexPrintsUpToMaxNumberOfNibbles(void)
 
 void testPrintNumbers32(void)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE_MESSAGE("Compile with '-D UNITY_OUTPUT_CHAR=putcharSpy' to enable print testing");
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("1", 1);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", -1);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("2000000000", 2000000000);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("-2147483648", (UNITY_INT32)0x80000000);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1",          (UNITY_INT32)0xFFFFFFFF);
-    #endif
+#endif
 }
 
 void testPrintNumbersUnsigned32(void)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1", 1);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("1500000000", 1500000000);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("2147483648", (UNITY_UINT32)0x80000000);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("4294967295", (UNITY_UINT32)0xFFFFFFFF);
-    #endif
+#endif
 }
 
 
@@ -3220,41 +3220,41 @@ void testPrintNumbersUnsigned32(void)
 
 void testPrintNumbersInt64(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
-    #ifndef USING_OUTPUT_SPY
+#else
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("0", 0);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("10000000000", 10000000000);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("-9223372036854775808", (UNITY_INT)0x8000000000000000);
     TEST_ASSERT_EQUAL_PRINT_NUMBERS("-1", (UNITY_INT)0xFFFFFFFFFFFFFFFF);
-    #endif
-    #endif
+#endif
+#endif
 }
 
 void testPrintNumbersUInt64(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
-    #ifndef USING_OUTPUT_SPY
+#else
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("0", 0);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("70000000000", 70000000000);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("9223372036854775808",  (UNITY_UINT)0x8000000000000000);
     TEST_ASSERT_EQUAL_PRINT_UNSIGNED_NUMBERS("18446744073709551615", (UNITY_UINT)0xFFFFFFFFFFFFFFFF);
-    #endif
-    #endif
+#endif
+#endif
 }
 
 void testEqualHex64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 v0, v1;
     UNITY_UINT64 *p0, *p1;
     v0 = 0x9876543201234567;
@@ -3268,14 +3268,14 @@ void testEqualHex64s(void)
     TEST_ASSERT_EQUAL_HEX64(*p0, v1);
     TEST_ASSERT_EQUAL_HEX64(*p0, *p1);
     TEST_ASSERT_EQUAL_HEX64(*p0, 0x9876543201234567);
-    #endif
+#endif
 }
 
 void testEqualUint64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 v0, v1;
     UNITY_UINT64 *p0, *p1;
     v0 = 0x9876543201234567;
@@ -3289,14 +3289,14 @@ void testEqualUint64s(void)
     TEST_ASSERT_EQUAL_UINT64(*p0, v1);
     TEST_ASSERT_EQUAL_UINT64(*p0, *p1);
     TEST_ASSERT_EQUAL_UINT64(*p0, 0x9876543201234567);
-    #endif
+#endif
 }
 
 void testEqualInt64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_INT64 v0, v1;
     UNITY_INT64 *p0, *p1;
     v0 = (UNITY_INT64)0x9876543201234567;
@@ -3310,170 +3310,170 @@ void testEqualInt64s(void)
     TEST_ASSERT_EQUAL_INT64(*p0, v1);
     TEST_ASSERT_EQUAL_INT64(*p0, *p1);
     TEST_ASSERT_EQUAL_INT64(*p0, 0x9876543201234567);
-    #endif
+#endif
 }
 
 
 void testNotEqualHex64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 v0, v1;
     v0 = 9000000000;
     v1 = 9100000000;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64(v0, v1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualUint64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 v0, v1;
     v0 = 9000000000;
     v1 = 9100000000;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT64(v0, v1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualInt64s(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_INT64 v0, v1;
     v0 = -9000000000;
     v1 = 9100000000;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64(v0, v1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualHex64sIfSigned(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_INT64 v0, v1;
     v0 = -9000000000;
     v1 = 9000000000;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64(v0, v1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testHEX64sWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFE);
     TEST_ASSERT_HEX64_WITHIN(5, 5000, 4996);
     TEST_ASSERT_HEX64_WITHIN(5, 5000, 5005);
-    #endif
+#endif
 }
 
 void testHEX64sNotWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testHEX64sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_HEX64_WITHIN(5, 1, -1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testUINT64sWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_UINT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFE);
     TEST_ASSERT_UINT64_WITHIN(5, 5000, 4996);
     TEST_ASSERT_UINT64_WITHIN(5, 5000, 5005);
-    #endif
+#endif
 }
 
 void testUINT64sNotWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testUINT64sNotWithinDeltaEvenThoughASignedIntWouldPass(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_UINT64_WITHIN(5, 1, -1);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testINT64sWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_INT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFE);
     TEST_ASSERT_INT64_WITHIN(5, 5000, 4996);
     TEST_ASSERT_INT64_WITHIN(5, 5000, 5005);
-    #endif
+#endif
 }
 
 void testINT64sNotWithinDelta(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT64_WITHIN(1, 0x7FFFFFFFFFFFFFFF, 0x7FFFFFFFFFFFFFFC);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testINT64sNotWithinDeltaAndDifferenceOverflows(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_INT64_WITHIN(1, 0x8000000000000000, 0x7FFFFFFFFFFFFFFF);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualHEX64Arrays(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p1[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p2[] = {1, 8, 987, 2};
@@ -3483,14 +3483,14 @@ void testEqualHEX64Arrays(void)
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p3, 1);
-    #endif
+#endif
 }
 
 void testEqualUint64Arrays(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p1[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p2[] = {1, 8, 987, 2};
@@ -3500,14 +3500,14 @@ void testEqualUint64Arrays(void)
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p3, 1);
-    #endif
+#endif
 }
 
 void testEqualInt64Arrays(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_INT64 p0[] = {1, 8, 987, -65132};
     UNITY_INT64 p1[] = {1, 8, 987, -65132};
     UNITY_INT64 p2[] = {1, 8, 987, -2};
@@ -3517,420 +3517,420 @@ void testEqualInt64Arrays(void)
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p1, 4);
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p3, 1);
-    #endif
+#endif
 }
 
 
 void testNotEqualHEX64Arrays1(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p1[] = {1, 8, 987, 65131u};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualHEX64Arrays2(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p1[] = {2, 8, 987, 65132u};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX64_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualUint64Arrays(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_UINT64 p0[] = {1, 8, 987, 65132u};
     UNITY_UINT64 p1[] = {1, 8, 987, 65131u};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_UINT64_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualInt64Arrays(void)
 {
-    #ifndef UNITY_SUPPORT_64
+#ifndef UNITY_SUPPORT_64
     TEST_IGNORE();
-    #else
+#else
     UNITY_INT64 p0[] = {1, 8, 987, -65132};
     UNITY_INT64 p1[] = {1, 8, 987, -65131};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT64_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES FLOAT SUPPORT ==================
 
 void testFloatsWithinDelta(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_WITHIN(0.00003f, 187245.03485f, 187245.03488f);
     TEST_ASSERT_FLOAT_WITHIN(1.0f, 187245.0f, 187246.0f);
     TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2549f, 9273.2049f);
     TEST_ASSERT_FLOAT_WITHIN(0.007f, -726.93724f, -726.94424f);
-    #endif
+#endif
 }
 
 void testFloatsNotWithinDelta(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_WITHIN(0.05f, 9273.2649f, 9273.2049f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_FLOAT(187245.0f, 187246.0f);
     TEST_ASSERT_EQUAL_FLOAT(18724.5f, 18724.6f);
     TEST_ASSERT_EQUAL_FLOAT(9273.2549f, 9273.2599f);
     TEST_ASSERT_EQUAL_FLOAT(-726.93724f, -726.9374f);
-    #endif
+#endif
 }
 
 void testFloatsNotEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(9273.9649f, 9273.0049f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.9649f, -9273.0049f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(-9273.0049f, -9273.9649f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualActualNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(85.963f, 0.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualExpectedNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 85.963f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsEqualBothNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 0.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatsNotEqualInfNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 0.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualNaNInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(0.0f / f_zero, 1.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualActualInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(321.642f, 1.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsNotEqualExpectedInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 321.642f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatsEqualBothInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, 1.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatsNotEqualPlusMinusInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT(1.0f / f_zero, -1.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsPosInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_INF(2.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatIsPosInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_INF(2.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNegInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_NEG_INF(-3.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatIsNegInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_NEG_INF(-3.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNotPosInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_INF(2.0f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNotPosInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_NOT_INF(2.0f);
-    #endif
+#endif
 }
 
 void testFloatIsNotNegInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NEG_INF(-999.876f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNan1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_NAN(0.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatIsNan2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_NAN(0.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNotNan1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NAN(234.9f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNotNan2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_NOT_NAN(234.9f);
-    #endif
+#endif
 }
 
 void testFloatInfIsNotNan(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NAN(1.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatNanIsNotInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_INF(0.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsDeterminate1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_DETERMINATE(0.0f);
     TEST_ASSERT_FLOAT_IS_DETERMINATE(123.3f);
     TEST_ASSERT_FLOAT_IS_DETERMINATE(-88.3f);
-    #endif
+#endif
 }
 
 void testFloatIsDeterminate2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(-88.3f);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatIsNotDeterminate1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(1.0f / f_zero);
     TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(-1.0f / f_zero);
     TEST_ASSERT_FLOAT_IS_NOT_DETERMINATE(0.0f / f_zero);
-    #endif
+#endif
 }
 
 void testFloatIsNotDeterminate2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_FLOAT_IS_DETERMINATE(-1.0f / f_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testFloatTraitFailsOnInvalidTrait(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     UnityAssertFloatSpecial(1.0f, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 
 void testEqualFloatArrays(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, -8.0f,  25.4f, -0.123f};
     float p1[] = {1.0f, -8.0f,  25.4f, -0.123f};
     float p2[] = {1.0f, -8.0f,  25.4f, -0.2f};
@@ -3941,153 +3941,153 @@ void testEqualFloatArrays(void)
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p3, 1);
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(NULL, NULL, 1);
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysExpectedNull(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float* p0 = NULL;
     float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysActualNull(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
     float* p1 = NULL;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArrays1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
     float p1[] = {1.0f, 8.0f, 25.4f, 0.252f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArrays2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
     float p1[] = {2.0f, 8.0f, 25.4f, 0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArrays3(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 8.0f, 25.4f, 0.253f};
     float p1[] = {1.0f, 8.0f, 25.5f, 0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
     float p1[] = {-1.0f, -8.0f, -25.4f, -0.252f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
     float p1[] = {-2.0f, -8.0f, -25.4f, -0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysNegative3(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-1.0f, -8.0f, -25.4f, -0.253f};
     float p1[] = {-1.0f, -8.0f, -25.5f, -0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualFloatArraysNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 0.0f / f_zero, 25.4f, 0.253f};
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    #endif
+#endif
 }
 
 void testEqualFloatArraysInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
     float p1[] = {1.0f, 1.0f / f_zero, 25.4f, 0.253f};
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 4);
-    #endif
+#endif
 }
 
 void testNotEqualFloatArraysLengthZero(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[1] = {0.0f};
     float p1[1] = {0.0f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_FLOAT_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualFloatEachEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 1.0f, 1.0f, 1.0f};
     float p1[] = {-0.123f, -0.123f, -0.123f, -0.123f};
     float p2[] = {25.4f, 25.4f, 25.4f, -0.2f};
@@ -4097,123 +4097,123 @@ void testEqualFloatEachEqual(void)
     TEST_ASSERT_EACH_EQUAL_FLOAT(-0.123f, p1, 4);
     TEST_ASSERT_EACH_EQUAL_FLOAT(25.4f, p2, 3);
     TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p3, 1);
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqualActualNull(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float* p0 = NULL;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(5, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqual1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {0.253f, 8.0f, 0.253f, 0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(0.253f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqual2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {8.0f, 8.0f, 8.0f, 0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(8.0f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqual3(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f, 1.0f, 1.0f, 0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqualNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-1.0f, -0.253f, -0.253f, -0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(-0.253f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqualNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-25.4f, -8.0f, -25.4f, -25.4f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(-25.4f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqualNegative3(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {-8.0f, -8.0f, -8.0f, -0.253f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(-8.0f, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualFloatEachEqualNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {0.0f / f_zero, 0.0f / f_zero, 0.0f / f_zero, 0.0f / f_zero};
     TEST_ASSERT_EACH_EQUAL_FLOAT(0.0f / f_zero, p0, 4);
-    #endif
+#endif
 }
 
 void testEqualFloatEachEqualInf(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[] = {1.0f / f_zero, 1.0f / f_zero, 25.4f, 0.253f};
     TEST_ASSERT_EACH_EQUAL_FLOAT(1.0f / f_zero, p0, 2);
-    #endif
+#endif
 }
 
 void testNotEqualFloatEachEqualLengthZero(void)
 {
-    #ifdef UNITY_EXCLUDE_FLOAT
+#ifdef UNITY_EXCLUDE_FLOAT
     TEST_IGNORE();
-    #else
+#else
     float p0[1] = {0.0f};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_FLOAT(0.0f, p0, 0);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 #define TEST_ASSERT_EQUAL_PRINT_FLOATING(expected, actual) {            \
@@ -4223,9 +4223,9 @@ void testNotEqualFloatEachEqualLengthZero(void)
 
 void testFloatPrinting(void)
 {
-    #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0",         0.0f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.99e-07",  0.000000499f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("5e-07",     0.00000050000005f);
@@ -4263,18 +4263,18 @@ void testFloatPrinting(void)
     TEST_ASSERT_EQUAL_PRINT_FLOATING("3.40282e+38", 3.40282346638e38f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-1e+10",       -1.0e+10f);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-3.40282e+38", -3.40282346638e38f);
-    #endif
+#endif
 }
 
 void testFloatPrintingInfinityAndNaN(void)
 {
-    #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("inf",   1.0f / f_zero);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-inf", -1.0f / f_zero);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0f / f_zero);
-    #endif
+#endif
 }
 
 #if defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) && defined(USING_OUTPUT_SPY)
@@ -4307,9 +4307,9 @@ static void printFloatValue(float f)
 
 void testFloatPrintingRandomSamples(void)
 {
-    #if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
+#if !defined(UNITY_TEST_ALL_FLOATS_PRINT_OK) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
-    #else
+#else
     union
     {
         float f_value;
@@ -4335,368 +4335,368 @@ void testFloatPrintingRandomSamples(void)
         u.int_value = a | 0x80000000;
         printFloatValue(u.f_value);
     }
-    #endif
+#endif
 }
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DOUBLE SUPPORT ==================
 
 void testDoublesWithinDelta(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_WITHIN(0.00003, 187245.03485, 187245.03488);
     TEST_ASSERT_DOUBLE_WITHIN(1.0, 187245.0, 187246.0);
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2549, 9273.2049);
     TEST_ASSERT_DOUBLE_WITHIN(0.007, -726.93725, -726.94424);
-    #endif
+#endif
 }
 
 void testDoublesNotWithinDelta(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_WITHIN(0.05, 9273.2649, 9273.2049);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 
 void testDoublesEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_DOUBLE(187245123456.0, 187245123456.0);
     TEST_ASSERT_EQUAL_DOUBLE(187241234567.5, 187241234567.6);
     TEST_ASSERT_EQUAL_DOUBLE(9273.2512345649, 9273.25123455699);
     TEST_ASSERT_EQUAL_DOUBLE(-726.12345693724, -726.1234569374);
-    #endif
+#endif
 }
 
 void testDoublesNotEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(9273.9649, 9273.0049);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.9649, -9273.0049);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(-9273.0049, -9273.9649);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualActualNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(85.963, 0.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualExpectedNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 85.963);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesEqualBothNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 0.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoublesNotEqualInfNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 0.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualNaNInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(0.0 / d_zero, 1.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualActualInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(321.642, 1.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesNotEqualExpectedInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 321.642);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublesEqualBothInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, 1.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoublesNotEqualPlusMinusInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE(1.0 / d_zero, -1.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsPosInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_INF(2.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoubleIsPosInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_INF(2.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNegInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_NEG_INF(-3.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoubleIsNegInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_NEG_INF(-3.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNotPosInf1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(2.0);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNotPosInf2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_NOT_INF(2.0);
-    #endif
+#endif
 }
 
 void testDoubleIsNotNegInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NEG_INF(-999.876);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNan1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_NAN(0.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoubleIsNan2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_NAN(0.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNotNan1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NAN(234.9);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNotNan2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_NOT_NAN(234.9);
-    #endif
+#endif
 }
 
 void testDoubleInfIsNotNan(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NAN(1.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleNanIsNotInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_INF(0.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsDeterminate1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(0.0);
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(123.3);
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(-88.3);
-    #endif
+#endif
 }
 
 void testDoubleIsDeterminate2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(-88.3);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleIsNotDeterminate1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(1.0 / d_zero);
     TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(-1.0 / d_zero);
     TEST_ASSERT_DOUBLE_IS_NOT_DETERMINATE(0.0 / d_zero);
-    #endif
+#endif
 }
 
 void testDoubleIsNotDeterminate2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_DOUBLE_IS_DETERMINATE(-1.0 / d_zero);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoubleTraitFailsOnInvalidTrait(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     EXPECT_ABORT_BEGIN
     UnityAssertDoubleSpecial(1.0, NULL, __LINE__, UNITY_FLOAT_INVALID_TRAIT);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualDoubleArrays(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, -8.0,  25.4, -0.123};
     double p1[] = {1.0, -8.0,  25.4, -0.123};
     double p2[] = {1.0, -8.0,  25.4, -0.2};
@@ -4707,153 +4707,153 @@ void testEqualDoubleArrays(void)
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p2, 3);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p3, 1);
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(NULL, NULL, 1);
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysExpectedNull(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double* p0 = NULL;
     double p1[] = {1.0, 8.0, 25.4, 0.252};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysActualNull(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 8.0, 25.4, 0.253};
     double* p1 = NULL;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArrays1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 8.0, 25.4, 0.25666666667};
     double p1[] = {1.0, 8.0, 25.4, 0.25666666666};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArrays2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 8.0, 25.4, 0.253};
     double p1[] = {2.0, 8.0, 25.4, 0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArrays3(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 8.0, 25.4, 0.253};
     double p1[] = {1.0, 8.0, 25.5, 0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-1.0, -8.0, -25.4, -0.2566666667};
     double p1[] = {-1.0, -8.0, -25.4, -0.2566666666};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-1.0, -8.0, -25.4, -0.253};
     double p1[] = {-2.0, -8.0, -25.4, -0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysNegative3(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-1.0, -8.0, -25.4, -0.253};
     double p1[] = {-1.0, -8.0, -25.5, -0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualDoubleArraysNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 0.0 / d_zero, 25.4, 0.253};
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    #endif
+#endif
 }
 
 void testEqualDoubleArraysInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
     double p1[] = {1.0, 1.0 / d_zero, 25.4, 0.253};
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 4);
-    #endif
+#endif
 }
 
 void testNotEqualDoubleArraysLengthZero(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[1] = {0.0};
     double p1[1] = {0.0};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_DOUBLE_ARRAY(p0, p1, 0);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualDoubleEachEqual(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 1.0, 1.0, 1.0};
     double p1[] = {-0.123, -0.123, -0.123, -0.123};
     double p2[] = {25.4, 25.4, 25.4, -0.2};
@@ -4863,130 +4863,130 @@ void testEqualDoubleEachEqual(void)
     TEST_ASSERT_EACH_EQUAL_DOUBLE(-0.123, p1, 4);
     TEST_ASSERT_EACH_EQUAL_DOUBLE(25.4, p2, 3);
     TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p3, 1);
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqualActualNull(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double* p0 = NULL;
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(5, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqual1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {0.253, 8.0, 0.253, 0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(0.253, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqual2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {8.0, 8.0, 8.0, 0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(8.0, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqual3(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0, 1.0, 1.0, 0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqualNegative1(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-1.0, -0.253, -0.253, -0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(-0.253, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqualNegative2(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-25.4, -8.0, -25.4, -25.4};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(-25.4, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqualNegative3(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {-8.0, -8.0, -8.0, -0.253};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(-8.0, p0, 4);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testEqualDoubleEachEqualNaN(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {0.0 / d_zero, 0.0 / d_zero, 0.0 / d_zero, 0.0 / d_zero};
     TEST_ASSERT_EACH_EQUAL_DOUBLE(0.0 / d_zero, p0, 4);
-    #endif
+#endif
 }
 
 void testEqualDoubleEachEqualInf(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[] = {1.0 / d_zero, 1.0 / d_zero, 25.4, 0.253};
     TEST_ASSERT_EACH_EQUAL_DOUBLE(1.0 / d_zero, p0, 2);
-    #endif
+#endif
 }
 
 void testNotEqualDoubleEachEqualLengthZero(void)
 {
-    #ifdef UNITY_EXCLUDE_DOUBLE
+#ifdef UNITY_EXCLUDE_DOUBLE
     TEST_IGNORE();
-    #else
+#else
     double p0[1] = {0.0};
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EACH_EQUAL_DOUBLE(0.0, p0, 0);
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testDoublePrinting(void)
 {
-    #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("0.100469",     0.10046949999999999);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.29497e+09",  4294967295.999999);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("4.29497e+09",  4294967295.9999995);
@@ -5000,67 +5000,67 @@ void testDoublePrinting(void)
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.29497e+09", -4294967295.999999);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-4.29497e+09", -4294967295.9999995);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-7e+100",      -7.0e+100);
-    #endif
+#endif
 }
 
 void testDoublePrintingInfinityAndNaN(void)
 {
-    #if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
+#if defined(UNITY_EXCLUDE_FLOAT_PRINT) || defined(UNITY_EXCLUDE_DOUBLE) || !defined(USING_OUTPUT_SPY)
     TEST_IGNORE();
-    #else
+#else
     TEST_ASSERT_EQUAL_PRINT_FLOATING("inf",   1.0 / d_zero);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("-inf", -1.0 / d_zero);
     TEST_ASSERT_EQUAL_PRINT_FLOATING("nan",   0.0 / d_zero);
-    #endif
+#endif
 }
 
 // ===================== THESE TEST WILL RUN IF YOUR CONFIG INCLUDES DETAIL SUPPORT ==================
 
 void testThatDetailsCanBeHandleOneDetail(void)
 {
-    #ifdef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_EXCLUDE_DETAILS
     TEST_IGNORE();
-    #else
+#else
     UNITY_SET_DETAIL("Detail1");
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_INT_MESSAGE(5, 6, "Should Fail And Say Detail1");
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testThatDetailsCanHandleTestFail(void)
 {
-    #ifdef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_EXCLUDE_DETAILS
     TEST_IGNORE();
-    #else
+#else
     UNITY_SET_DETAILS("Detail1", "Detail2");
     EXPECT_ABORT_BEGIN
     TEST_FAIL_MESSAGE("Should Fail And Say Detail1 and Detail2");
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testThatDetailsCanBeHandleTwoDetails(void)
 {
-    #ifdef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_EXCLUDE_DETAILS
     TEST_IGNORE();
-    #else
+#else
     UNITY_SET_DETAILS("Detail1", "Detail2");
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_HEX8_MESSAGE(7, 8, "Should Fail And Say Detail1 and Detail2");
     VERIFY_FAILS_END
-    #endif
+#endif
 }
 
 void testThatDetailsCanBeHandleSingleDetailClearingTwoDetails(void)
 {
-    #ifdef UNITY_EXCLUDE_DETAILS
+#ifdef UNITY_EXCLUDE_DETAILS
     TEST_IGNORE();
-    #else
+#else
     UNITY_SET_DETAILS("Detail1", "Detail2");
     UNITY_SET_DETAIL("DetailNew");
     EXPECT_ABORT_BEGIN
     TEST_ASSERT_EQUAL_STRING_MESSAGE("MEH", "GUH", "Should Fail And Say DetailNew");
     VERIFY_FAILS_END
-    #endif
+#endif
 }

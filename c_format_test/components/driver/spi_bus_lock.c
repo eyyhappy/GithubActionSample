@@ -476,11 +476,11 @@ IRAM_ATTR static inline void acquire_end_core(spi_bus_lock_dev_t *dev_handle)
 SPI_MASTER_ISR_ATTR static inline void update_pend_core(spi_bus_lock_t *lock, uint32_t status)
 {
     uint32_t active_req_bits = status & REQ_MASK;
-    #if PENDING_SHIFT > REQ_SHIFT
+#if PENDING_SHIFT > REQ_SHIFT
     uint32_t pending_mask = active_req_bits << (PENDING_SHIFT - REQ_SHIFT);
-    #else
+#else
     uint32_t pending_mask = active_req_bits >> (REQ_SHIFT - PENDING_SHIFT);
-    #endif
+#endif
     // We have to set the PEND bits and then clear the REQ bits, since BG bits are using bitwise OR logic,
     // this will not influence the effectiveness of the BG bits of every device.
     lock_status_fetch_set(lock, pending_mask);

@@ -21,10 +21,10 @@
  * be set before mbedtls_config.h, which pulls in glibc's features.h indirectly.
  * Harmless on other platforms. */
 #ifndef _POSIX_C_SOURCE
-#define _POSIX_C_SOURCE 200112L
+    #define _POSIX_C_SOURCE 200112L
 #endif
 #ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 600 /* sockaddr_storage */
+    #define _XOPEN_SOURCE 600 /* sockaddr_storage */
 #endif
 
 #include "common.h"
@@ -32,15 +32,15 @@
 #if defined(MBEDTLS_NET_C)
 
 #if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
-!defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
-!defined(__HAIKU__) && !defined(__midipix__)
-#error "This module only works on Unix and Windows, see MBEDTLS_NET_C in mbedtls_config.h"
+    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
+    !defined(__HAIKU__) && !defined(__midipix__)
+    #error "This module only works on Unix and Windows, see MBEDTLS_NET_C in mbedtls_config.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
+    #include <stdlib.h>
 #endif
 
 #include "mbedtls/net_sockets.h"
@@ -49,66 +49,66 @@
 #include <string.h>
 
 #if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
-!defined(EFI32)
+    !defined(EFI32)
 
-#define IS_EINTR( ret ) ( ( ret ) == WSAEINTR )
+    #define IS_EINTR( ret ) ( ( ret ) == WSAEINTR )
 
-#if !defined(_WIN32_WINNT)
-/* Enables getaddrinfo() & Co */
-#define _WIN32_WINNT 0x0501
-#endif
+    #if !defined(_WIN32_WINNT)
+        /* Enables getaddrinfo() & Co */
+        #define _WIN32_WINNT 0x0501
+    #endif
 
-#include <ws2tcpip.h>
+    #include <ws2tcpip.h>
 
-#include <winsock2.h>
-#include <windows.h>
-#if (_WIN32_WINNT < 0x0501)
-#include <wspiapi.h>
-#endif
+    #include <winsock2.h>
+    #include <windows.h>
+    #if (_WIN32_WINNT < 0x0501)
+        #include <wspiapi.h>
+    #endif
 
-#if defined(_MSC_VER)
-#if defined(_WIN32_WCE)
-#pragma comment( lib, "ws2.lib" )
-#else
-#pragma comment( lib, "ws2_32.lib" )
-#endif
-#endif /* _MSC_VER */
+    #if defined(_MSC_VER)
+        #if defined(_WIN32_WCE)
+            #pragma comment( lib, "ws2.lib" )
+        #else
+            #pragma comment( lib, "ws2_32.lib" )
+        #endif
+    #endif /* _MSC_VER */
 
-#define read(fd,buf,len)        recv( fd, (char*)( buf ), (int)( len ), 0 )
-#define write(fd,buf,len)       send( fd, (char*)( buf ), (int)( len ), 0 )
-#define close(fd)               closesocket(fd)
+    #define read(fd,buf,len)        recv( fd, (char*)( buf ), (int)( len ), 0 )
+    #define write(fd,buf,len)       send( fd, (char*)( buf ), (int)( len ), 0 )
+    #define close(fd)               closesocket(fd)
 
-static int wsa_init_done = 0;
+    static int wsa_init_done = 0;
 
 #else /* ( _WIN32 || _WIN32_WCE ) && !EFIX64 && !EFI32 */
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/time.h>
-#include <unistd.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <errno.h>
+    #include <sys/types.h>
+    #include <sys/socket.h>
+    #include <netinet/in.h>
+    #include <arpa/inet.h>
+    #include <sys/time.h>
+    #include <unistd.h>
+    #include <signal.h>
+    #include <fcntl.h>
+    #include <netdb.h>
+    #include <errno.h>
 
-#define IS_EINTR( ret ) ( ( ret ) == EINTR )
+    #define IS_EINTR( ret ) ( ( ret ) == EINTR )
 
 #endif /* ( _WIN32 || _WIN32_WCE ) && !EFIX64 && !EFI32 */
 
 /* Some MS functions want int and MSVC warns if we pass size_t,
  * but the standard functions use socklen_t, so cast only for MSVC */
 #if defined(_MSC_VER)
-#define MSVC_INT_CAST   (int)
+    #define MSVC_INT_CAST   (int)
 #else
-#define MSVC_INT_CAST
+    #define MSVC_INT_CAST
 #endif
 
 #include <stdio.h>
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include <time.h>
+    #include <time.h>
 #endif
 
 #include <stdint.h>
@@ -118,7 +118,7 @@ static int wsa_init_done = 0;
  */
 static int net_prepare( void )
 {
-    #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
     !defined(EFI32)
     WSADATA wsaData;
     if( wsa_init_done == 0 )
@@ -127,11 +127,11 @@ static int net_prepare( void )
             return( MBEDTLS_ERR_NET_SOCKET_FAILED );
         wsa_init_done = 1;
     }
-    #else
-    #if !defined(EFIX64) && !defined(EFI32)
+#else
+#if !defined(EFIX64) && !defined(EFI32)
     signal( SIGPIPE, SIG_IGN );
-    #endif
-    #endif
+#endif
+#endif
     return( 0 );
 }
 
@@ -144,17 +144,17 @@ static int check_fd( int fd, int for_select )
 {
     if( fd < 0 )
         return( MBEDTLS_ERR_NET_INVALID_CONTEXT );
-    #if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
+#if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
     !defined(EFI32)
     (void) for_select;
-    #else
+#else
     /* A limitation of select() is that it only works with file descriptors
      * that are strictly less than FD_SETSIZE. This is a limitation of the
      * fd_set type. Error out early, because attempting to call FD_SET on a
      * large file descriptor is a buffer overflow on typical platforms. */
     if( for_select && fd >= FD_SETSIZE )
         return( MBEDTLS_ERR_NET_POLL_FAILED );
-    #endif
+#endif
     return( 0 );
 }
 
@@ -298,12 +298,12 @@ static int net_would_block( const mbedtls_net_context *ctx )
     }
     switch( errno = err )
     {
-            #if defined EAGAIN
+#if defined EAGAIN
         case EAGAIN:
-            #endif
-            #if defined EWOULDBLOCK && EWOULDBLOCK != EAGAIN
+#endif
+#if defined EWOULDBLOCK && EWOULDBLOCK != EAGAIN
         case EWOULDBLOCK:
-            #endif
+#endif
             return( 1 );
     }
     return( 0 );
@@ -320,15 +320,15 @@ int mbedtls_net_accept( mbedtls_net_context *bind_ctx,
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     int type;
     struct sockaddr_storage client_addr;
-    #if defined(__socklen_t_defined) || defined(_SOCKLEN_T) ||  \
+#if defined(__socklen_t_defined) || defined(_SOCKLEN_T) ||  \
     defined(_SOCKLEN_T_DECLARED) || defined(__DEFINED_socklen_t) || \
     defined(socklen_t) || (defined(_POSIX_VERSION) && _POSIX_VERSION >= 200112L)
     socklen_t n = (socklen_t) sizeof( client_addr );
     socklen_t type_len = (socklen_t) sizeof( type );
-    #else
+#else
     int n = (int) sizeof( client_addr );
     int type_len = (int) sizeof( type );
-    #endif
+#endif
     /* Is this a TCP or UDP socket? */
     if( getsockopt( bind_ctx->fd, SOL_SOCKET, SO_TYPE,
                     (void *) &type, &type_len ) != 0 ||
@@ -348,14 +348,14 @@ int mbedtls_net_accept( mbedtls_net_context *bind_ctx,
         char buf[1] = { 0 };
         ret = (int) recvfrom( bind_ctx->fd, buf, sizeof( buf ), MSG_PEEK,
                               (struct sockaddr *) &client_addr, &n );
-        #if defined(_WIN32)
+#if defined(_WIN32)
         if( ret == SOCKET_ERROR &&
             WSAGetLastError() == WSAEMSGSIZE )
         {
             /* We know buf is too small, thanks, just peeking here */
             ret = 0;
         }
-        #endif
+#endif
     }
     if( ret < 0 )
     {
@@ -415,24 +415,24 @@ int mbedtls_net_accept( mbedtls_net_context *bind_ctx,
  */
 int mbedtls_net_set_block( mbedtls_net_context *ctx )
 {
-    #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
     !defined(EFI32)
     u_long n = 0;
     return( ioctlsocket( ctx->fd, FIONBIO, &n ) );
-    #else
+#else
     return( fcntl( ctx->fd, F_SETFL, fcntl( ctx->fd, F_GETFL ) & ~O_NONBLOCK ) );
-    #endif
+#endif
 }
 
 int mbedtls_net_set_nonblock( mbedtls_net_context *ctx )
 {
-    #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
     !defined(EFI32)
     u_long n = 1;
     return( ioctlsocket( ctx->fd, FIONBIO, &n ) );
-    #else
+#else
     return( fcntl( ctx->fd, F_SETFL, fcntl( ctx->fd, F_GETFL ) | O_NONBLOCK ) );
-    #endif
+#endif
 }
 
 /*
@@ -449,15 +449,15 @@ int mbedtls_net_poll( mbedtls_net_context *ctx, uint32_t rw, uint32_t timeout )
     ret = check_fd( fd, 1 );
     if( ret != 0 )
         return( ret );
-    #if defined(__has_feature)
-    #if __has_feature(memory_sanitizer)
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer)
     /* Ensure that memory sanitizers consider read_fds and write_fds as
      * initialized even on platforms such as Glibc/x86_64 where FD_ZERO
      * is implemented in assembly. */
     memset( &read_fds, 0, sizeof( read_fds ) );
     memset( &write_fds, 0, sizeof( write_fds ) );
-    #endif
-    #endif
+#endif
+#endif
     FD_ZERO( &read_fds );
     if( rw & MBEDTLS_NET_POLL_READ )
     {
@@ -495,19 +495,19 @@ int mbedtls_net_poll( mbedtls_net_context *ctx, uint32_t rw, uint32_t timeout )
  */
 void mbedtls_net_usleep( unsigned long usec )
 {
-    #if defined(_WIN32)
+#if defined(_WIN32)
     Sleep( ( usec + 999 ) / 1000 );
-    #else
+#else
     struct timeval tv;
     tv.tv_sec  = usec / 1000000;
-    #if defined(__unix__) || defined(__unix) || \
+#if defined(__unix__) || defined(__unix) || \
     ( defined(__APPLE__) && defined(__MACH__) )
     tv.tv_usec = (suseconds_t) usec % 1000000;
-    #else
+#else
     tv.tv_usec = usec % 1000000;
-    #endif
+#endif
     select( 0, NULL, NULL, NULL, &tv );
-    #endif
+#endif
 }
 
 /*
@@ -525,16 +525,16 @@ int mbedtls_net_recv( void *ctx, unsigned char *buf, size_t len )
     {
         if( net_would_block( ctx ) != 0 )
             return( MBEDTLS_ERR_SSL_WANT_READ );
-        #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
         !defined(EFI32)
         if( WSAGetLastError() == WSAECONNRESET )
             return( MBEDTLS_ERR_NET_CONN_RESET );
-        #else
+#else
         if( errno == EPIPE || errno == ECONNRESET )
             return( MBEDTLS_ERR_NET_CONN_RESET );
         if( errno == EINTR )
             return( MBEDTLS_ERR_SSL_WANT_READ );
-        #endif
+#endif
         return( MBEDTLS_ERR_NET_RECV_FAILED );
     }
     return( ret );
@@ -563,14 +563,14 @@ int mbedtls_net_recv_timeout( void *ctx, unsigned char *buf,
         return( MBEDTLS_ERR_SSL_TIMEOUT );
     if( ret < 0 )
     {
-        #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
         !defined(EFI32)
         if( WSAGetLastError() == WSAEINTR )
             return( MBEDTLS_ERR_SSL_WANT_READ );
-        #else
+#else
         if( errno == EINTR )
             return( MBEDTLS_ERR_SSL_WANT_READ );
-        #endif
+#endif
         return( MBEDTLS_ERR_NET_RECV_FAILED );
     }
     /* This call will not block */
@@ -592,16 +592,16 @@ int mbedtls_net_send( void *ctx, const unsigned char *buf, size_t len )
     {
         if( net_would_block( ctx ) != 0 )
             return( MBEDTLS_ERR_SSL_WANT_WRITE );
-        #if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
+#if ( defined(_WIN32) || defined(_WIN32_WCE) ) && !defined(EFIX64) && \
         !defined(EFI32)
         if( WSAGetLastError() == WSAECONNRESET )
             return( MBEDTLS_ERR_NET_CONN_RESET );
-        #else
+#else
         if( errno == EPIPE || errno == ECONNRESET )
             return( MBEDTLS_ERR_NET_CONN_RESET );
         if( errno == EINTR )
             return( MBEDTLS_ERR_SSL_WANT_WRITE );
-        #endif
+#endif
         return( MBEDTLS_ERR_NET_SEND_FAILED );
     }
     return( ret );

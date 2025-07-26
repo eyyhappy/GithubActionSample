@@ -26,9 +26,9 @@
  * for arc4random_buf() from <stdlib.h>
  */
 #if defined(__NetBSD__)
-#define _NETBSD_SOURCE 1
+    #define _NETBSD_SOURCE 1
 #elif defined(__OpenBSD__)
-#define _BSD_SOURCE 1
+    #define _BSD_SOURCE 1
 #endif
 
 #include <test/macros.h>
@@ -41,17 +41,17 @@ int mbedtls_test_rnd_std_rand( void *rng_state,
                                unsigned char *output,
                                size_t len )
 {
-    #if !defined(__OpenBSD__) && !defined(__NetBSD__)
+#if !defined(__OpenBSD__) && !defined(__NetBSD__)
     size_t i;
     if( rng_state != NULL )
         rng_state  = NULL;
     for( i = 0; i < len; ++i )
         output[i] = rand();
-    #else
+#else
     if( rng_state != NULL )
         rng_state = NULL;
     arc4random_buf( output, len );
-    #endif /* !OpenBSD && !NetBSD */
+#endif /* !OpenBSD && !NetBSD */
     return( 0 );
 }
 

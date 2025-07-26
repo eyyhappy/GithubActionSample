@@ -15,11 +15,11 @@ mbedtls_time_t dummy_constant_time( mbedtls_time_t* time )
 
 void dummy_init()
 {
-    #if defined(MBEDTLS_PLATFORM_TIME_ALT)
+#if defined(MBEDTLS_PLATFORM_TIME_ALT)
     mbedtls_platform_set_time( dummy_constant_time );
-    #else
+#else
     fprintf(stderr, "Warning: fuzzing without constant time\n");
-    #endif
+#endif
 }
 
 int dummy_send( void *ctx, const unsigned char *buf, size_t len )
@@ -62,7 +62,7 @@ int dummy_random( void *p_rng, unsigned char *output, size_t output_len )
 {
     int ret;
     size_t i;
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#if defined(MBEDTLS_CTR_DRBG_C)
     //mbedtls_ctr_drbg_random requires a valid mbedtls_ctr_drbg_context in p_rng
     if( p_rng != NULL )
     {
@@ -74,10 +74,10 @@ int dummy_random( void *p_rng, unsigned char *output, size_t output_len )
         //fall through to pseudo-random
         ret = 0;
     }
-    #else
+#else
     (void) p_rng;
     ret = 0;
-    #endif
+#endif
     for (i = 0; i < output_len; i++)
     {
         //replace result with pseudo random

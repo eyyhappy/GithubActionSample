@@ -23,21 +23,21 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_calloc     calloc
-#define mbedtls_free       free
-#define mbedtls_time       time
-#define mbedtls_time_t     time_t
-#define mbedtls_printf     printf
-#define mbedtls_fprintf    fprintf
-#define mbedtls_snprintf   snprintf
-#define mbedtls_setbuf     setbuf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_calloc     calloc
+    #define mbedtls_free       free
+    #define mbedtls_time       time
+    #define mbedtls_time_t     time_t
+    #define mbedtls_printf     printf
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_snprintf   snprintf
+    #define mbedtls_setbuf     setbuf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif
 
 #undef HAVE_RNG
@@ -83,12 +83,12 @@
 #include "test/certs.h"
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO) || defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+    #include "psa/crypto.h"
+    #include "mbedtls/psa_util.h"
 #endif
 
 #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C)
-#include "mbedtls/memory_buffer_alloc.h"
+    #include "mbedtls/memory_buffer_alloc.h"
 #endif
 
 #include <test/helpers.h>
@@ -131,50 +131,50 @@ void my_debug( void *ctx, int level,
                const char *str );
 
 #if defined(MBEDTLS_HAVE_TIME)
-mbedtls_time_t dummy_constant_time( mbedtls_time_t* time );
+    mbedtls_time_t dummy_constant_time( mbedtls_time_t* time );
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO) && !defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
-/* If MBEDTLS_TEST_USE_PSA_CRYPTO_RNG is defined, the SSL test programs will use
- * mbedtls_psa_get_random() rather than entropy+DRBG as a random generator.
- *
- * The constraints are:
- * - Without the entropy module, the PSA RNG is the only option.
- * - Without at least one of the DRBG modules, the PSA RNG is the only option.
- * - The PSA RNG does not support explicit seeding, so it is incompatible with
- *   the reproducible mode used by test programs.
- * - For good overall test coverage, there should be at least one configuration
- *   where the test programs use the PSA RNG while the PSA RNG is itself based
- *   on entropy+DRBG, and at least one configuration where the test programs
- *   do not use the PSA RNG even though it's there.
- *
- * A simple choice that meets the constraints is to use the PSA RNG whenever
- * MBEDTLS_USE_PSA_CRYPTO is enabled. There's no real technical reason the
- * choice to use the PSA RNG in the test programs and the choice to use
- * PSA crypto when TLS code needs crypto have to be tied together, but it
- * happens to be a good match. It's also a good match from an application
- * perspective: either PSA is preferred for TLS (both for crypto and for
- * random generation) or it isn't.
- */
-#define MBEDTLS_TEST_USE_PSA_CRYPTO_RNG
+    /* If MBEDTLS_TEST_USE_PSA_CRYPTO_RNG is defined, the SSL test programs will use
+    * mbedtls_psa_get_random() rather than entropy+DRBG as a random generator.
+    *
+    * The constraints are:
+    * - Without the entropy module, the PSA RNG is the only option.
+    * - Without at least one of the DRBG modules, the PSA RNG is the only option.
+    * - The PSA RNG does not support explicit seeding, so it is incompatible with
+    *   the reproducible mode used by test programs.
+    * - For good overall test coverage, there should be at least one configuration
+    *   where the test programs use the PSA RNG while the PSA RNG is itself based
+    *   on entropy+DRBG, and at least one configuration where the test programs
+    *   do not use the PSA RNG even though it's there.
+    *
+    * A simple choice that meets the constraints is to use the PSA RNG whenever
+    * MBEDTLS_USE_PSA_CRYPTO is enabled. There's no real technical reason the
+    * choice to use the PSA RNG in the test programs and the choice to use
+    * PSA crypto when TLS code needs crypto have to be tied together, but it
+    * happens to be a good match. It's also a good match from an application
+    * perspective: either PSA is preferred for TLS (both for crypto and for
+    * random generation) or it isn't.
+    */
+    #define MBEDTLS_TEST_USE_PSA_CRYPTO_RNG
 #endif
 
 /** A context for random number generation (RNG).
  */
 typedef struct
 {
-    #if defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
+#if defined(MBEDTLS_TEST_USE_PSA_CRYPTO_RNG)
     unsigned char dummy;
-    #else /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
+#else /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
     mbedtls_entropy_context entropy;
-    #if defined(MBEDTLS_CTR_DRBG_C)
+#if defined(MBEDTLS_CTR_DRBG_C)
     mbedtls_ctr_drbg_context drbg;
-    #elif defined(MBEDTLS_HMAC_DRBG_C)
+#elif defined(MBEDTLS_HMAC_DRBG_C)
     mbedtls_hmac_drbg_context drbg;
-    #else
+#else
 #error "No DRBG available"
-    #endif
-    #endif /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
+#endif
+#endif /* MBEDTLS_TEST_USE_PSA_CRYPTO_RNG */
 } rng_context_t;
 
 /** Initialize the RNG.
@@ -265,11 +265,11 @@ int key_opaque_set_alg_usage( const char *alg1, const char *alg2,
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO) && defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG)
-/* The test implementation of the PSA external RNG is insecure. When
- * MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG is enabled, before using any PSA crypto
- * function that makes use of an RNG, you must call
- * mbedtls_test_enable_insecure_external_rng(). */
-#include <test/fake_external_rng_for_test.h>
+    /* The test implementation of the PSA external RNG is insecure. When
+    * MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG is enabled, before using any PSA crypto
+    * function that makes use of an RNG, you must call
+    * mbedtls_test_enable_insecure_external_rng(). */
+    #include <test/fake_external_rng_for_test.h>
 #endif
 
 #if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
@@ -289,40 +289,40 @@ int delayed_send( void *ctx, const unsigned char *buf, size_t len );
  * (Used in event-driven IO mode).
  */
 int idle( mbedtls_net_context *fd,
-          #if defined(MBEDTLS_TIMING_C)
-          mbedtls_timing_delay_context *timer,
-          #endif
+#if defined(MBEDTLS_TIMING_C)
+    mbedtls_timing_delay_context *timer,
+#endif
           int idle_reason );
 
 #if defined(MBEDTLS_TEST_HOOKS)
-/** Initialize whatever test hooks are enabled by the compile-time
- * configuration and make sense for the TLS test programs. */
-void test_hooks_init( void );
+    /** Initialize whatever test hooks are enabled by the compile-time
+    * configuration and make sense for the TLS test programs. */
+    void test_hooks_init( void );
 
-/** Check if any test hooks detected a problem.
- *
- * If a problem was detected, it's ok for the calling program to keep going,
- * but it should ultimately exit with an error status.
- *
- * \note When implementing a test hook that detects errors on its own
- *       (as opposed to e.g. leaving the error for a memory sanitizer to
- *       report), make sure to print a message to standard error either at
- *       the time the problem is detected or during the execution of this
- *       function. This function does not indicate what problem was detected,
- *       so printing a message is the only way to provide feedback in the
- *       logs of the calling program.
- *
- * \return Nonzero if a problem was detected.
- *         \c 0 if no problem was detected.
- */
-int test_hooks_failure_detected( void );
+    /** Check if any test hooks detected a problem.
+    *
+    * If a problem was detected, it's ok for the calling program to keep going,
+    * but it should ultimately exit with an error status.
+    *
+    * \note When implementing a test hook that detects errors on its own
+    *       (as opposed to e.g. leaving the error for a memory sanitizer to
+    *       report), make sure to print a message to standard error either at
+    *       the time the problem is detected or during the execution of this
+    *       function. This function does not indicate what problem was detected,
+    *       so printing a message is the only way to provide feedback in the
+    *       logs of the calling program.
+    *
+    * \return Nonzero if a problem was detected.
+    *         \c 0 if no problem was detected.
+    */
+    int test_hooks_failure_detected( void );
 
-/** Free any resources allocated for the sake of test hooks.
- *
- * Call this at the end of the program so that resource leak analyzers
- * don't complain.
- */
-void test_hooks_free( void );
+    /** Free any resources allocated for the sake of test hooks.
+    *
+    * Call this at the end of the program so that resource leak analyzers
+    * don't complain.
+    */
+    void test_hooks_free( void );
 
 #endif /* !MBEDTLS_TEST_HOOKS */
 

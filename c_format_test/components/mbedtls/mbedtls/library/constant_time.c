@@ -29,19 +29,19 @@
 #include "mbedtls/platform_util.h"
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+    #include "mbedtls/bignum.h"
 #endif
 
 #if defined(MBEDTLS_SSL_TLS_C)
-#include "ssl_misc.h"
+    #include "ssl_misc.h"
 #endif
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+    #include "mbedtls/rsa.h"
 #endif
 
 #if defined(MBEDTLS_BASE64_C)
-#include "constant_time_invasive.h"
+    #include "constant_time_invasive.h"
 #endif
 
 #include <string.h>
@@ -69,14 +69,14 @@ unsigned mbedtls_ct_uint_mask( unsigned value )
 {
     /* MSVC has a warning about unary minus on unsigned, but this is
      * well-defined and precisely what we want to do here */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     return( - ( ( value | - value ) >> ( sizeof( value ) * 8 - 1 ) ) );
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
 }
 
 #if defined(MBEDTLS_SSL_SOME_SUITES_USE_TLS_CBC)
@@ -85,14 +85,14 @@ size_t mbedtls_ct_size_mask( size_t value )
 {
     /* MSVC has a warning about unary minus on unsigned integer types,
      * but this is well-defined and precisely what we want to do here. */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     return( - ( ( value | - value ) >> ( sizeof( value ) * 8 - 1 ) ) );
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
 }
 
 #endif /* MBEDTLS_SSL_SOME_SUITES_USE_TLS_CBC */
@@ -103,14 +103,14 @@ mbedtls_mpi_uint mbedtls_ct_mpi_uint_mask( mbedtls_mpi_uint value )
 {
     /* MSVC has a warning about unary minus on unsigned, but this is
      * well-defined and precisely what we want to do here */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     return( - ( ( value | - value ) >> ( sizeof( value ) * 8 - 1 ) ) );
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
 }
 
 #endif /* MBEDTLS_BIGNUM_C */
@@ -176,15 +176,15 @@ unsigned mbedtls_ct_size_bool_eq( size_t x,
     const size_t diff = x ^ y;
     /* MSVC has a warning about unary minus on unsigned integer types,
      * but this is well-defined and precisely what we want to do here. */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     /* diff_msb's most significant bit is equal to x != y */
     const size_t diff_msb = ( diff | (size_t) - diff );
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
     /* diff1 = (x != y) ? 1 : 0 */
     const unsigned diff1 = diff_msb >> ( sizeof( diff_msb ) * 8 - 1 );
     return( 1 ^ diff1 );
@@ -289,15 +289,15 @@ void mbedtls_ct_mpi_uint_cond_assign( size_t n,
     size_t i;
     /* MSVC has a warning about unary minus on unsigned integer types,
      * but this is well-defined and precisely what we want to do here. */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     /* all-bits 1 if condition is 1, all-bits 0 if condition is 0 */
     const mbedtls_mpi_uint mask = -condition;
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
     for( i = 0; i < n; i++ )
         dest[i] = ( src[i] & mask ) | ( dest[i] & ~mask );
 }
@@ -417,11 +417,11 @@ void mbedtls_ct_memcpy_offset( unsigned char *dest,
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
 
 #if defined(PSA_WANT_ALG_SHA_384)
-#define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_384 )
+    #define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_384 )
 #elif defined(PSA_WANT_ALG_SHA_256)
-#define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_256 )
+    #define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_256 )
 #else /* See check_config.h */
-#define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_1 )
+    #define MAX_HASH_BLOCK_LENGTH PSA_HASH_BLOCK_LENGTH( PSA_ALG_SHA_1 )
 #endif
 
 int mbedtls_ct_hmac( mbedtls_svc_key_id_t key,
@@ -615,11 +615,11 @@ cleanup:
  * (Leaking information about the respective sizes of X and Y is ok however.)
  */
 #if defined(_MSC_VER) && defined(_M_ARM64) && (_MSC_FULL_VER < 193131103)
-/*
- * MSVC miscompiles this function if it's inlined prior to Visual Studio 2022 version 17.1. See:
- * https://developercommunity.visualstudio.com/t/c-compiler-miscompiles-part-of-mbedtls-library-on/1646989
- */
-__declspec(noinline)
+    /*
+    * MSVC miscompiles this function if it's inlined prior to Visual Studio 2022 version 17.1. See:
+    * https://developercommunity.visualstudio.com/t/c-compiler-miscompiles-part-of-mbedtls-library-on/1646989
+    */
+    __declspec(noinline)
 #endif
 int mbedtls_mpi_safe_cond_assign( mbedtls_mpi *X,
                                   const mbedtls_mpi *Y,

@@ -29,7 +29,7 @@
 #include <stdint.h>
 
 #if defined(MBEDTLS_FS_IO)
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 /** An error occurred while reading from or writing to a file. */
@@ -62,27 +62,27 @@
 #define MBEDTLS_MPI_MAX_LIMBS                             10000
 
 #if !defined(MBEDTLS_MPI_WINDOW_SIZE)
-/*
- * Maximum window size used for modular exponentiation. Default: 6
- * Minimum value: 1. Maximum value: 6.
- *
- * Result is an array of ( 2 ** MBEDTLS_MPI_WINDOW_SIZE ) MPIs used
- * for the sliding window calculation. (So 64 by default)
- *
- * Reduction in size, reduces speed.
- */
-#define MBEDTLS_MPI_WINDOW_SIZE                           6        /**< Maximum window size used. */
+    /*
+    * Maximum window size used for modular exponentiation. Default: 6
+    * Minimum value: 1. Maximum value: 6.
+    *
+    * Result is an array of ( 2 ** MBEDTLS_MPI_WINDOW_SIZE ) MPIs used
+    * for the sliding window calculation. (So 64 by default)
+    *
+    * Reduction in size, reduces speed.
+    */
+    #define MBEDTLS_MPI_WINDOW_SIZE                           6        /**< Maximum window size used. */
 #endif /* !MBEDTLS_MPI_WINDOW_SIZE */
 
 #if !defined(MBEDTLS_MPI_MAX_SIZE)
-/*
- * Maximum size of MPIs allowed in bits and bytes for user-MPIs.
- * ( Default: 512 bytes => 4096 bits, Maximum tested: 2048 bytes => 16384 bits )
- *
- * Note: Calculations can temporarily result in larger MPIs. So the number
- * of limbs required (MBEDTLS_MPI_MAX_LIMBS) is higher.
- */
-#define MBEDTLS_MPI_MAX_SIZE                              1024     /**< Maximum number of bytes for usable MPIs. */
+    /*
+    * Maximum size of MPIs allowed in bits and bytes for user-MPIs.
+    * ( Default: 512 bytes => 4096 bits, Maximum tested: 2048 bytes => 16384 bits )
+    *
+    * Note: Calculations can temporarily result in larger MPIs. So the number
+    * of limbs required (MBEDTLS_MPI_MAX_LIMBS) is higher.
+    */
+    #define MBEDTLS_MPI_MAX_SIZE                              1024     /**< Maximum number of bytes for usable MPIs. */
 #endif /* !MBEDTLS_MPI_MAX_SIZE */
 
 #define MBEDTLS_MPI_MAX_BITS                              ( 8 * MBEDTLS_MPI_MAX_SIZE )    /**< Maximum number of bits for usable MPIs. */
@@ -125,7 +125,7 @@
 #if defined(_MSC_VER) && defined(_M_AMD64)
 /* Always choose 64-bit when using MSC */
 #if !defined(MBEDTLS_HAVE_INT64)
-#define MBEDTLS_HAVE_INT64
+    #define MBEDTLS_HAVE_INT64
 #endif /* !MBEDTLS_HAVE_INT64 */
 typedef  int64_t mbedtls_mpi_sint;
 typedef uint64_t mbedtls_mpi_uint;
@@ -137,14 +137,14 @@ defined(__ia64__)  || defined(__alpha__)      || \
 defined(__s390x__) || defined(__mips64)       || \
 defined(__aarch64__) )
 #if !defined(MBEDTLS_HAVE_INT64)
-#define MBEDTLS_HAVE_INT64
+    #define MBEDTLS_HAVE_INT64
 #endif /* MBEDTLS_HAVE_INT64 */
 typedef  int64_t mbedtls_mpi_sint;
 typedef uint64_t mbedtls_mpi_uint;
 #if !defined(MBEDTLS_NO_UDBL_DIVISION)
-/* mbedtls_t_udbl defined as 128-bit unsigned int */
-typedef unsigned int mbedtls_t_udbl __attribute__((mode(TI)));
-#define MBEDTLS_HAVE_UDBL
+    /* mbedtls_t_udbl defined as 128-bit unsigned int */
+    typedef unsigned int mbedtls_t_udbl __attribute__((mode(TI)));
+    #define MBEDTLS_HAVE_UDBL
 #endif /* !MBEDTLS_NO_UDBL_DIVISION */
 #elif defined(__ARMCC_VERSION) && defined(__aarch64__)
 /*
@@ -152,14 +152,14 @@ typedef unsigned int mbedtls_t_udbl __attribute__((mode(TI)));
  * __aarch64__ is only defined by armclang when compiling 64-bit code
  */
 #if !defined(MBEDTLS_HAVE_INT64)
-#define MBEDTLS_HAVE_INT64
+    #define MBEDTLS_HAVE_INT64
 #endif /* !MBEDTLS_HAVE_INT64 */
 typedef  int64_t mbedtls_mpi_sint;
 typedef uint64_t mbedtls_mpi_uint;
 #if !defined(MBEDTLS_NO_UDBL_DIVISION)
-/* mbedtls_t_udbl defined as 128-bit unsigned int */
-typedef __uint128_t mbedtls_t_udbl;
-#define MBEDTLS_HAVE_UDBL
+    /* mbedtls_t_udbl defined as 128-bit unsigned int */
+    typedef __uint128_t mbedtls_t_udbl;
+    #define MBEDTLS_HAVE_UDBL
 #endif /* !MBEDTLS_NO_UDBL_DIVISION */
 #elif defined(MBEDTLS_HAVE_INT64)
 /* Force 64-bit integers with unknown compiler */
@@ -169,16 +169,16 @@ typedef uint64_t mbedtls_mpi_uint;
 #endif /* !MBEDTLS_HAVE_INT32 */
 
 #if !defined(MBEDTLS_HAVE_INT64)
-/* Default to 32-bit compilation */
-#if !defined(MBEDTLS_HAVE_INT32)
-#define MBEDTLS_HAVE_INT32
-#endif /* !MBEDTLS_HAVE_INT32 */
-typedef  int32_t mbedtls_mpi_sint;
-typedef uint32_t mbedtls_mpi_uint;
-#if !defined(MBEDTLS_NO_UDBL_DIVISION)
-typedef uint64_t mbedtls_t_udbl;
-#define MBEDTLS_HAVE_UDBL
-#endif /* !MBEDTLS_NO_UDBL_DIVISION */
+    /* Default to 32-bit compilation */
+    #if !defined(MBEDTLS_HAVE_INT32)
+        #define MBEDTLS_HAVE_INT32
+    #endif /* !MBEDTLS_HAVE_INT32 */
+    typedef  int32_t mbedtls_mpi_sint;
+    typedef uint32_t mbedtls_mpi_uint;
+    #if !defined(MBEDTLS_NO_UDBL_DIVISION)
+        typedef uint64_t mbedtls_t_udbl;
+        #define MBEDTLS_HAVE_UDBL
+    #endif /* !MBEDTLS_NO_UDBL_DIVISION */
 #endif /* !MBEDTLS_HAVE_INT64 */
 
 #ifdef __cplusplus

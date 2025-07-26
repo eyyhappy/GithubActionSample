@@ -30,18 +30,18 @@
 #include "mbedtls/platform_util.h"
 
 #if defined(MBEDTLS_PSA_ITS_FILE_C)
-#include "psa_crypto_its.h"
+    #include "psa_crypto_its.h"
 #else /* Native ITS implementation */
-#include "psa/error.h"
-#include "psa/internal_trusted_storage.h"
+    #include "psa/error.h"
+    #include "psa/internal_trusted_storage.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc   calloc
-#define mbedtls_free     free
+    #include <stdlib.h>
+    #define mbedtls_calloc   calloc
+    #define mbedtls_free     free
 #endif
 
 
@@ -57,7 +57,7 @@
  * 0xFFFFFF52. */
 static psa_storage_uid_t psa_its_identifier_of_slot( mbedtls_svc_key_id_t key )
 {
-    #if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
+#if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
     /* Encode the owner in the upper 32 bits. This means that if
      * owner values are nonzero (as they are on a PSA platform),
      * no key file will ever have a value less than 0x100000000, so
@@ -65,13 +65,13 @@ static psa_storage_uid_t psa_its_identifier_of_slot( mbedtls_svc_key_id_t key )
     uint32_t unsigned_owner_id = MBEDTLS_SVC_KEY_ID_GET_OWNER_ID( key );
     return(  ( (uint64_t) unsigned_owner_id << 32 ) |
              MBEDTLS_SVC_KEY_ID_GET_KEY_ID( key ) );
-    #else
+#else
     /* Use the key id directly as a file name.
      * psa_is_key_id_valid() in psa_crypto_slot_management.c
      * is responsible for ensuring that key identifiers do not have a
      * value that is reserved for non-key files. */
     return( key );
-    #endif
+#endif
 }
 
 /**

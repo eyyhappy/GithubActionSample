@@ -10,23 +10,23 @@
 #include "sdkconfig.h"
 
 #ifdef CONFIG_UNITY_ENABLE_FLOAT
-#define UNITY_INCLUDE_FLOAT
+    #define UNITY_INCLUDE_FLOAT
 #else
-#define UNITY_EXCLUDE_FLOAT
+    #define UNITY_EXCLUDE_FLOAT
 #endif //CONFIG_UNITY_ENABLE_FLOAT
 
 #ifdef CONFIG_UNITY_ENABLE_DOUBLE
-#define UNITY_INCLUDE_DOUBLE
+    #define UNITY_INCLUDE_DOUBLE
 #else
-#define UNITY_EXCLUDE_DOUBLE
+    #define UNITY_EXCLUDE_DOUBLE
 #endif //CONFIG_UNITY_ENABLE_DOUBLE
 
 #ifdef CONFIG_UNITY_ENABLE_64BIT
-#define UNITY_SUPPORT_64
+    #define UNITY_SUPPORT_64
 #endif
 
 #ifdef CONFIG_UNITY_ENABLE_COLOR
-#define UNITY_OUTPUT_COLOR
+    #define UNITY_OUTPUT_COLOR
 #endif
 
 #define UNITY_EXCLUDE_TIME_H
@@ -46,12 +46,12 @@ uint32_t unity_exec_time_get_ms(void);
 
 #ifdef CONFIG_UNITY_ENABLE_IDF_TEST_RUNNER
 
-#include "unity_test_runner.h"
+    #include "unity_test_runner.h"
 
 #endif //CONFIG_UNITY_ENABLE_IDF_TEST_RUNNER
 
 #ifdef CONFIG_UNITY_ENABLE_FIXTURE
-#include "unity_fixture_extras.h"
+    #include "unity_fixture_extras.h"
 #endif // CONFIG_UNITY_ENABLE_FIXTURE
 
 // shorthand to check esp_err_t return code

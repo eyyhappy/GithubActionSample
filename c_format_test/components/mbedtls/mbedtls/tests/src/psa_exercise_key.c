@@ -68,7 +68,7 @@ static int check_key_attributes_sanity( mbedtls_svc_key_id_t key )
             ( PSA_KEY_ID_USER_MIN <= MBEDTLS_SVC_KEY_ID_GET_KEY_ID( id ) ) &&
             ( MBEDTLS_SVC_KEY_ID_GET_KEY_ID( id ) <= PSA_KEY_ID_USER_MAX ) );
     }
-    #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
+#if defined(MBEDTLS_PSA_CRYPTO_SE_C)
     /* randomly-generated 64-bit constant, should never appear in test data */
     psa_key_slot_number_t slot_number = 0xec94d4a5058a1a21;
     psa_status_t status = psa_get_key_slot_number( &attributes, &slot_number );
@@ -84,7 +84,7 @@ static int check_key_attributes_sanity( mbedtls_svc_key_id_t key )
     {
         TEST_EQUAL( status, PSA_ERROR_INVALID_ARGUMENT );
     }
-    #endif
+#endif
     /* Type and size */
     TEST_ASSERT( type != 0 );
     TEST_ASSERT( bits != 0 );
@@ -295,12 +295,12 @@ static int exercise_signature_key( mbedtls_svc_key_id_t key,
         /* If the policy allows signing with any hash, just pick one. */
         if( PSA_ALG_IS_SIGN_HASH( alg ) && hash_alg == PSA_ALG_ANY_HASH )
         {
-            #if defined(KNOWN_MBEDTLS_SUPPORTED_HASH_ALG)
+#if defined(KNOWN_MBEDTLS_SUPPORTED_HASH_ALG)
             hash_alg = KNOWN_MBEDTLS_SUPPORTED_HASH_ALG;
             alg ^= PSA_ALG_ANY_HASH ^ hash_alg;
-            #else
+#else
             TEST_ASSERT( ! "No hash algorithm for hash-and-sign testing" );
-            #endif
+#endif
         }
         /* Some algorithms require the payload to have the size of
          * the hash encoded in the algorithm. Use this input size
@@ -641,7 +641,7 @@ int mbedtls_test_psa_exported_key_sanity_check(
     if( PSA_KEY_TYPE_IS_UNSTRUCTURED( type ) )
         TEST_EQUAL( exported_length, PSA_BITS_TO_BYTES( bits ) );
     else
-    #if defined(MBEDTLS_ASN1_PARSE_C)
+#if defined(MBEDTLS_ASN1_PARSE_C)
         if( type == PSA_KEY_TYPE_RSA_KEY_PAIR )
         {
             uint8_t *p = (uint8_t*) exported;
@@ -687,8 +687,8 @@ int mbedtls_test_psa_exported_key_sanity_check(
             TEST_ASSERT( exported_length <= PSA_EXPORT_KEY_PAIR_MAX_SIZE );
         }
         else
-    #endif /* MBEDTLS_ASN1_PARSE_C */
-        #if defined(MBEDTLS_ECP_C)
+#endif /* MBEDTLS_ASN1_PARSE_C */
+#if defined(MBEDTLS_ECP_C)
             if( PSA_KEY_TYPE_IS_ECC_KEY_PAIR( type ) )
             {
                 /* Just the secret value */
@@ -696,8 +696,8 @@ int mbedtls_test_psa_exported_key_sanity_check(
                 TEST_ASSERT( exported_length <= PSA_EXPORT_KEY_PAIR_MAX_SIZE );
             }
             else
-        #endif /* MBEDTLS_ECP_C */
-            #if defined(MBEDTLS_ASN1_PARSE_C)
+#endif /* MBEDTLS_ECP_C */
+#if defined(MBEDTLS_ASN1_PARSE_C)
                 if( type == PSA_KEY_TYPE_RSA_PUBLIC_KEY )
                 {
                     uint8_t *p = (uint8_t*) exported;
@@ -723,8 +723,8 @@ int mbedtls_test_psa_exported_key_sanity_check(
                                  PSA_EXPORT_PUBLIC_KEY_MAX_SIZE );
                 }
                 else
-            #endif /* MBEDTLS_ASN1_PARSE_C */
-                #if defined(MBEDTLS_ECP_C)
+#endif /* MBEDTLS_ASN1_PARSE_C */
+#if defined(MBEDTLS_ECP_C)
                     if( PSA_KEY_TYPE_IS_ECC_PUBLIC_KEY( type ) )
                     {
                         TEST_ASSERT( exported_length <=
@@ -750,12 +750,12 @@ int mbedtls_test_psa_exported_key_sanity_check(
                         }
                     }
                     else
-                #endif /* MBEDTLS_ECP_C */
+#endif /* MBEDTLS_ECP_C */
                     {
                         (void) exported;
                         TEST_ASSERT( ! "Sanity check not implemented for this key type" );
                     }
-    #if defined(MBEDTLS_DES_C)
+#if defined(MBEDTLS_DES_C)
     if( type == PSA_KEY_TYPE_DES )
     {
         /* Check the parity bits. */
@@ -772,7 +772,7 @@ int mbedtls_test_psa_exported_key_sanity_check(
             TEST_ASSERT( bit_count % 2 != 0 );
         }
     }
-    #endif
+#endif
     return( 1 );
 exit:
     return( 0 );

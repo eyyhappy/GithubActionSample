@@ -15,9 +15,9 @@
 #include "test_util_rmt_encoders.h"
 
 #if CONFIG_RMT_ISR_IRAM_SAFE
-#define TEST_RMT_CALLBACK_ATTR IRAM_ATTR
+    #define TEST_RMT_CALLBACK_ATTR IRAM_ATTR
 #else
-#define TEST_RMT_CALLBACK_ATTR
+    #define TEST_RMT_CALLBACK_ATTR
 #endif
 
 typedef struct
@@ -112,7 +112,7 @@ static void test_rmt_rx_nec_carrier(size_t mem_block_symbols, bool with_dma, rmt
     }, 4, &transmit_config));
     TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     TEST_ASSERT_EQUAL(34, test_user_data.received_symbol_num);
-    #if SOC_RMT_SUPPORT_RX_PINGPONG
+#if SOC_RMT_SUPPORT_RX_PINGPONG
     // ready to receive
     TEST_ESP_OK(rmt_receive(rx_channel, remote_codes, sizeof(remote_codes), &receive_config));
     printf("send customized NEC frame without carrier\r\n");
@@ -122,7 +122,7 @@ static void test_rmt_rx_nec_carrier(size_t mem_block_symbols, bool with_dma, rmt
     }, 8, &transmit_config));
     TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     TEST_ASSERT_EQUAL(66, test_user_data.received_symbol_num);
-    #else
+#else
     // ready to receive
     TEST_ESP_OK(rmt_receive(rx_channel, remote_codes, sizeof(remote_codes), &receive_config));
     printf("send customized NEC frame without carrier\r\n");
@@ -133,8 +133,8 @@ static void test_rmt_rx_nec_carrier(size_t mem_block_symbols, bool with_dma, rmt
     }, 10, &transmit_config));
     TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     TEST_ASSERT_EQUAL(test_user_data.received_symbol_num, mem_block_symbols);
-    #endif // SOC_RMT_SUPPORT_RX_PINGPONG
-    #if SOC_RMT_SUPPORT_RX_DEMODULATION
+#endif // SOC_RMT_SUPPORT_RX_PINGPONG
+#if SOC_RMT_SUPPORT_RX_DEMODULATION
     rmt_carrier_config_t carrier_cfg =
     {
         .duty_cycle = 0.33,
@@ -155,7 +155,7 @@ static void test_rmt_rx_nec_carrier(size_t mem_block_symbols, bool with_dma, rmt
     }, 4, &transmit_config));
     TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     TEST_ASSERT_EQUAL(34, test_user_data.received_symbol_num);
-    #if SOC_RMT_SUPPORT_RX_PINGPONG
+#if SOC_RMT_SUPPORT_RX_PINGPONG
     TEST_ESP_OK(rmt_receive(rx_channel, remote_codes, sizeof(remote_codes), &receive_config));
     printf("send customized frame with carrier\r\n");
     TEST_ESP_OK(rmt_transmit(tx_channel, nec_encoder, (uint16_t[])
@@ -164,11 +164,11 @@ static void test_rmt_rx_nec_carrier(size_t mem_block_symbols, bool with_dma, rmt
     }, 8, &transmit_config));
     TEST_ASSERT_NOT_EQUAL(0, ulTaskNotifyTake(pdFALSE, pdMS_TO_TICKS(1000)));
     TEST_ASSERT_EQUAL(66, test_user_data.received_symbol_num);
-    #endif // SOC_RMT_SUPPORT_RX_PINGPONG
+#endif // SOC_RMT_SUPPORT_RX_PINGPONG
     printf("disable modulation and demodulation for tx and rx channels\r\n");
     TEST_ESP_OK(rmt_apply_carrier(tx_channel, NULL));
     TEST_ESP_OK(rmt_apply_carrier(rx_channel, NULL));
-    #endif // SOC_RMT_SUPPORT_RX_DEMODULATION
+#endif // SOC_RMT_SUPPORT_RX_DEMODULATION
     TEST_ESP_OK(rmt_receive(rx_channel, remote_codes, sizeof(remote_codes), &receive_config));
     printf("send NEC frame without carrier\r\n");
     TEST_ESP_OK(rmt_transmit(tx_channel, nec_encoder, (uint16_t[])

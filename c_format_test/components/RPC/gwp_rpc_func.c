@@ -19,12 +19,12 @@
 #include "secure_storage_ota.h"
 #include "secure_storage_api.h"
 #if (defined NONE_SELF_CONTAIN)&&(defined BOOTLOADER_CODE )
-#include "gwp_dfu_process.h"
+    #include "gwp_dfu_process.h"
 #else
-#include "gwp_ble_interface.h"
-#include "gwp_ble_tunnel.h"
+    #include "gwp_ble_interface.h"
+    #include "gwp_ble_tunnel.h"
 
-#include "secure_storage_api.h"//h145764
+    #include "secure_storage_api.h"//h145764
 #endif
 
 

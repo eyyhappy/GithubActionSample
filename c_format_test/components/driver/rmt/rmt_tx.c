@@ -10,9 +10,9 @@
 #include <sys/param.h>
 #include "sdkconfig.h"
 #if CONFIG_RMT_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "esp_log.h"
 #include "esp_check.h"
@@ -192,12 +192,12 @@ static esp_err_t rmt_tx_destory(rmt_tx_channel_t *tx_channel)
     {
         ESP_RETURN_ON_ERROR(esp_pm_lock_delete(tx_channel->base.pm_lock), TAG, "delete pm_lock failed");
     }
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (tx_channel->base.dma_chan)
     {
         ESP_RETURN_ON_ERROR(gdma_del_channel(tx_channel->base.dma_chan), TAG, "delete dma channel failed");
     }
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     for (int i = 0; i < RMT_TX_QUEUE_MAX; i++)
     {
         if (tx_channel->trans_queues[i])
@@ -224,22 +224,22 @@ static esp_err_t rmt_tx_destory(rmt_tx_channel_t *tx_channel)
 
 esp_err_t rmt_new_tx_channel(const rmt_tx_channel_config_t *config, rmt_channel_handle_t *ret_chan)
 {
-    #if CONFIG_RMT_ENABLE_DEBUG_LOG
+#if CONFIG_RMT_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     rmt_tx_channel_t *tx_channel = NULL;
     ESP_GOTO_ON_FALSE(config && ret_chan && config->resolution_hz && config->trans_queue_depth, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
     ESP_GOTO_ON_FALSE(GPIO_IS_VALID_GPIO(config->gpio_num), ESP_ERR_INVALID_ARG, err, TAG, "invalid GPIO number");
     ESP_GOTO_ON_FALSE((config->mem_block_symbols & 0x01) == 0 && config->mem_block_symbols >= SOC_RMT_MEM_WORDS_PER_CHANNEL,
                       ESP_ERR_INVALID_ARG, err, TAG, "mem_block_symbols must be even and at least %d", SOC_RMT_MEM_WORDS_PER_CHANNEL);
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     // we only support 2 nodes ping-pong, if the configured memory block size needs more than two DMA descriptors, should treat it as invalid
     ESP_GOTO_ON_FALSE(config->mem_block_symbols <= RMT_DMA_DESC_BUF_MAX_SIZE * RMT_DMA_NODES_PING_PONG, ESP_ERR_INVALID_ARG, err, TAG,
                       "mem_block_symbols can't exceed %d", RMT_DMA_DESC_BUF_MAX_SIZE * RMT_DMA_NODES_PING_PONG);
-    #else
+#else
     ESP_GOTO_ON_FALSE(config->flags.with_dma == 0, ESP_ERR_NOT_SUPPORTED, err, TAG, "DMA not supported");
-    #endif
+#endif
     // malloc channel memory
     uint32_t mem_caps = RMT_MEM_ALLOC_CAPS;
     if (config->flags.with_dma)
@@ -271,12 +271,12 @@ esp_err_t rmt_new_tx_channel(const rmt_tx_channel_config_t *config, rmt_channel_
                                     RMT_LL_EVENT_TX_MASK(channel_id), rmt_tx_default_isr, tx_channel, &tx_channel->base.intr);
     ESP_GOTO_ON_ERROR(ret, err, TAG, "install tx interrupt failed");
     // install DMA service
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (config->flags.with_dma)
     {
         ESP_GOTO_ON_ERROR(rmt_tx_init_dma_link(tx_channel, config), err, TAG, "install tx DMA failed");
     }
-    #endif
+#endif
     // set channel clock resolution
     uint32_t real_div = group->resolution_hz / config->resolution_hz;
     rmt_ll_tx_set_channel_clock_div(hal->regs, channel_id, real_div);
@@ -348,9 +348,9 @@ static esp_err_t rmt_del_tx_channel(rmt_channel_handle_t channel)
 
 esp_err_t rmt_new_sync_manager(const rmt_sync_manager_config_t *config, rmt_sync_manager_handle_t *ret_synchro)
 {
-    #if !SOC_RMT_SUPPORT_TX_SYNCHRO
+#if !SOC_RMT_SUPPORT_TX_SYNCHRO
     ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "sync manager not supported");
-    #else
+#else
     esp_err_t ret = ESP_OK;
     rmt_sync_manager_t *synchro = NULL;
     ESP_GOTO_ON_FALSE(config && ret_synchro && config->tx_channel_array && config->array_size, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -413,14 +413,14 @@ err:
         free(synchro);
     }
     return ret;
-    #endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
+#endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
 }
 
 esp_err_t rmt_sync_reset(rmt_sync_manager_handle_t synchro)
 {
-    #if !SOC_RMT_SUPPORT_TX_SYNCHRO
+#if !SOC_RMT_SUPPORT_TX_SYNCHRO
     ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "sync manager not supported");
-    #else
+#else
     ESP_RETURN_ON_FALSE(synchro, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     rmt_group_t *group = synchro->group;
     portENTER_CRITICAL(&group->spinlock);
@@ -431,14 +431,14 @@ esp_err_t rmt_sync_reset(rmt_sync_manager_handle_t synchro)
     }
     portEXIT_CRITICAL(&group->spinlock);
     return ESP_OK;
-    #endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
+#endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
 }
 
 esp_err_t rmt_del_sync_manager(rmt_sync_manager_handle_t synchro)
 {
-    #if !SOC_RMT_SUPPORT_TX_SYNCHRO
+#if !SOC_RMT_SUPPORT_TX_SYNCHRO
     ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "sync manager not supported");
-    #else
+#else
     ESP_RETURN_ON_FALSE(synchro, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     rmt_group_t *group = synchro->group;
     int group_id = group->group_id;
@@ -452,7 +452,7 @@ esp_err_t rmt_del_sync_manager(rmt_sync_manager_handle_t synchro)
     ESP_LOGD(TAG, "del sync manager in group(%d)", group_id);
     rmt_release_group_handle(group);
     return ESP_OK;
-    #endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
+#endif // !SOC_RMT_SUPPORT_TX_SYNCHRO
 }
 
 esp_err_t rmt_tx_register_event_callbacks(rmt_channel_handle_t channel, const rmt_tx_event_callbacks_t *cbs, void *user_data)
@@ -460,7 +460,7 @@ esp_err_t rmt_tx_register_event_callbacks(rmt_channel_handle_t channel, const rm
     ESP_RETURN_ON_FALSE(channel && cbs, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(channel->direction == RMT_CHANNEL_DIRECTION_TX, ESP_ERR_INVALID_ARG, TAG, "invalid channel direction");
     rmt_tx_channel_t *tx_chan = __containerof(channel, rmt_tx_channel_t, base);
-    #if CONFIG_RMT_ISR_IRAM_SAFE
+#if CONFIG_RMT_ISR_IRAM_SAFE
     if (cbs->on_trans_done)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_trans_done), ESP_ERR_INVALID_ARG, TAG, "on_trans_done callback not in IRAM");
@@ -469,7 +469,7 @@ esp_err_t rmt_tx_register_event_callbacks(rmt_channel_handle_t channel, const rm
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     tx_chan->on_trans_done = cbs->on_trans_done;
     tx_chan->user_data = user_data;
     return ESP_OK;
@@ -480,9 +480,9 @@ esp_err_t rmt_transmit(rmt_channel_handle_t channel, rmt_encoder_t *encoder, con
     ESP_RETURN_ON_FALSE(channel && encoder && payload && payload_bytes && config, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(channel->direction == RMT_CHANNEL_DIRECTION_TX, ESP_ERR_INVALID_ARG, TAG, "invalid channel direction");
     ESP_RETURN_ON_FALSE(channel->fsm == RMT_FSM_ENABLE, ESP_ERR_INVALID_STATE, TAG, "channel not in enable state");
-    #if !SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if !SOC_RMT_SUPPORT_TX_LOOP_COUNT
     ESP_RETURN_ON_FALSE(config->loop_count <= 0, ESP_ERR_NOT_SUPPORTED, TAG, "loop count is not supported");
-    #endif // !SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // !SOC_RMT_SUPPORT_TX_LOOP_COUNT
     rmt_group_t *group = channel->group;
     rmt_hal_context_t *hal = &group->hal;
     int channel_id = channel->channel_id;
@@ -625,7 +625,7 @@ static void IRAM_ATTR rmt_tx_do_transaction(rmt_tx_channel_t *tx_chan, rmt_tx_tr
     rmt_group_t *group = channel->group;
     rmt_hal_context_t *hal = &group->hal;
     int channel_id = channel->channel_id;
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (channel->dma_chan)
     {
         gdma_reset(channel->dma_chan);
@@ -637,15 +637,15 @@ static void IRAM_ATTR rmt_tx_do_transaction(rmt_tx_channel_t *tx_chan, rmt_tx_tr
         }
         tx_chan->dma_nodes[1].next = &tx_chan->dma_nodes[0];
     }
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     // set transaction specific parameters
     portENTER_CRITICAL_ISR(&channel->spinlock);
     rmt_ll_tx_reset_pointer(hal->regs, channel_id); // reset pointer for new transaction
     rmt_ll_tx_enable_loop(hal->regs, channel_id, t->loop_count != 0);
-    #if SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
+#if SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
     rmt_ll_tx_enable_loop_autostop(hal->regs, channel_id, true);
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     rmt_ll_tx_reset_loop_count(hal->regs, channel_id);
     rmt_ll_tx_enable_loop_count(hal->regs, channel_id, t->loop_count > 0);
     // transfer loops in batches
@@ -655,13 +655,13 @@ static void IRAM_ATTR rmt_tx_do_transaction(rmt_tx_channel_t *tx_chan, rmt_tx_tr
         rmt_ll_tx_set_loop_count(hal->regs, channel_id, this_loop_count);
         t->remain_loop_count -= this_loop_count;
     }
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
     portEXIT_CRITICAL_ISR(&channel->spinlock);
     // enable/disable specific interrupts
     portENTER_CRITICAL_ISR(&group->spinlock);
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     rmt_ll_enable_interrupt(hal->regs, RMT_LL_EVENT_TX_LOOP_END(channel_id), t->loop_count > 0);
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
     // in DMA mode, DMA eof event plays the similar functionality to this threshold interrupt, so only enable it for non-DMA mode
     if (!channel->dma_chan)
     {
@@ -683,14 +683,14 @@ static void IRAM_ATTR rmt_tx_do_transaction(rmt_tx_channel_t *tx_chan, rmt_tx_tr
     t->transmitted_symbol_num = rmt_encode_check_result(tx_chan, t);
     // we're going to perform ping-pong operation, so the next encoding end position is the middle
     tx_chan->mem_end = tx_chan->ping_pong_symbols;
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (channel->dma_chan)
     {
         gdma_start(channel->dma_chan, (intptr_t)tx_chan->dma_nodes);
         // delay a while, wait for DMA data going to RMT memory block
         esp_rom_delay_us(1);
     }
-    #endif
+#endif
     // turn on the TX machine
     portENTER_CRITICAL_ISR(&channel->spinlock);
     rmt_ll_tx_fix_idle_level(hal->regs, channel_id, t->flags.eot_level, true);
@@ -712,10 +712,10 @@ static esp_err_t rmt_tx_enable(rmt_channel_handle_t channel)
     portENTER_CRITICAL(&channel->spinlock);
     rmt_ll_tx_reset_pointer(hal->regs, channel_id);
     rmt_ll_tx_enable_loop(hal->regs, channel_id, false);
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     rmt_ll_tx_reset_loop_count(hal->regs, channel_id);
     rmt_ll_tx_enable_loop_count(hal->regs, channel_id, false);
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
     // trigger a quick trans done event by sending a EOF symbol, no signal should appear on the GPIO
     tx_chan->cur_trans = NULL;
     channel->hw_mem_base[0].val = 0;
@@ -723,7 +723,7 @@ static esp_err_t rmt_tx_enable(rmt_channel_handle_t channel)
     portEXIT_CRITICAL(&channel->spinlock);
     // wait the RMT interrupt line goes active, we won't go into the ISR handler until we enable the `RMT_LL_EVENT_TX_DONE` interrupt
     while (!(rmt_ll_tx_get_interrupt_status_raw(hal->regs, channel_id) & RMT_LL_EVENT_TX_DONE(channel_id))) {}
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (channel->dma_chan)
     {
         // enable the DMA access mode
@@ -732,7 +732,7 @@ static esp_err_t rmt_tx_enable(rmt_channel_handle_t channel)
         portEXIT_CRITICAL(&channel->spinlock);
         gdma_connect(channel->dma_chan, GDMA_MAKE_TRIGGER(GDMA_TRIG_PERIPH_RMT, 0));
     }
-    #endif // SOC_RMT_SUPPORT_DMA
+#endif // SOC_RMT_SUPPORT_DMA
     channel->fsm = RMT_FSM_ENABLE;
     // enable channel interrupt, dispatch transactions in ISR (in case there're transaction descriptors in the queue, then we should start them)
     portENTER_CRITICAL(&group->spinlock);
@@ -749,21 +749,21 @@ static esp_err_t rmt_tx_disable(rmt_channel_handle_t channel)
     int channel_id = channel->channel_id;
     portENTER_CRITICAL(&channel->spinlock);
     rmt_ll_tx_enable_loop(hal->regs, channel->channel_id, false);
-    #if SOC_RMT_SUPPORT_TX_ASYNC_STOP
+#if SOC_RMT_SUPPORT_TX_ASYNC_STOP
     rmt_ll_tx_stop(hal->regs, channel->channel_id);
-    #endif
+#endif
     portEXIT_CRITICAL(&channel->spinlock);
     portENTER_CRITICAL(&group->spinlock);
     rmt_ll_enable_interrupt(hal->regs, RMT_LL_EVENT_TX_MASK(channel_id), false);
-    #if !SOC_RMT_SUPPORT_TX_ASYNC_STOP
+#if !SOC_RMT_SUPPORT_TX_ASYNC_STOP
     // we do a trick to stop the undergoing transmission
     // stop interrupt, insert EOF marker to the RMT memory, polling the trans_done event
     channel->hw_mem_base[0].val = 0;
     while (!(rmt_ll_tx_get_interrupt_status_raw(hal->regs, channel_id) & RMT_LL_EVENT_TX_DONE(channel_id))) {}
-    #endif
+#endif
     rmt_ll_clear_interrupt_status(hal->regs, RMT_LL_EVENT_TX_MASK(channel_id));
     portEXIT_CRITICAL(&group->spinlock);
-    #if SOC_RMT_SUPPORT_DMA
+#if SOC_RMT_SUPPORT_DMA
     if (channel->dma_chan)
     {
         gdma_stop(channel->dma_chan);
@@ -773,7 +773,7 @@ static esp_err_t rmt_tx_disable(rmt_channel_handle_t channel)
         rmt_ll_tx_enable_dma(hal->regs, channel_id, false);
         portEXIT_CRITICAL(&channel->spinlock);
     }
-    #endif
+#endif
     // recycle the interrupted transaction
     if (tx_chan->cur_trans)
     {
@@ -807,9 +807,9 @@ static esp_err_t rmt_tx_modulate_carrier(rmt_channel_handle_t channel, const rmt
         portENTER_CRITICAL(&channel->spinlock);
         rmt_ll_tx_set_carrier_level(hal->regs, channel_id, !config->flags.polarity_active_low);
         rmt_ll_tx_set_carrier_high_low_ticks(hal->regs, channel_id, high_ticks, low_ticks);
-        #if SOC_RMT_SUPPORT_TX_CARRIER_DATA_ONLY
+#if SOC_RMT_SUPPORT_TX_CARRIER_DATA_ONLY
         rmt_ll_tx_enable_carrier_always_on(hal->regs, channel_id, config->flags.always_on);
-        #endif
+#endif
         portEXIT_CRITICAL(&channel->spinlock);
         // save real carrier frequency
         real_frequency = group->resolution_hz / total_ticks;
@@ -939,13 +939,13 @@ static bool IRAM_ATTR rmt_isr_handle_tx_loop_end(rmt_tx_channel_t *tx_chan)
     trans_desc = tx_chan->cur_trans;
     if (trans_desc)
     {
-        #if !SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
+#if !SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
         portENTER_CRITICAL_ISR(&channel->spinlock);
         // This is a workaround for chips that don't support auto stop
         // Although we stop the transaction immediately in ISR handler, it's still possible that some rmt symbols have sneaked out
         rmt_ll_tx_stop(hal->regs, channel_id);
         portEXIT_CRITICAL_ISR(&channel->spinlock);
-        #endif // SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
+#endif // SOC_RMT_SUPPORT_TX_LOOP_AUTO_STOP
         // continue unfinished loop transaction
         if (trans_desc->remain_loop_count)
         {
@@ -1043,7 +1043,7 @@ static void IRAM_ATTR rmt_tx_default_isr(void *args)
             need_yield = true;
         }
     }
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     // Tx loop end interrupt
     if (status & RMT_LL_EVENT_TX_LOOP_END(channel_id))
     {
@@ -1052,7 +1052,7 @@ static void IRAM_ATTR rmt_tx_default_isr(void *args)
             need_yield = true;
         }
     }
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
     if (need_yield)
     {
         portYIELD_FROM_ISR();

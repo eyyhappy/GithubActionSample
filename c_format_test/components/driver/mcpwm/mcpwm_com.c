@@ -8,9 +8,9 @@
 #include <sys/lock.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "esp_log.h"
 #include "esp_check.h"
@@ -126,12 +126,12 @@ esp_err_t mcpwm_select_periph_clock(mcpwm_group_t *group, mcpwm_timer_clock_sour
         {
             case MCPWM_TIMER_CLK_SRC_DEFAULT:
                 periph_src_clk_hz = 160000000;
-                #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
                 sprintf(group->pm_lock_name, "mcpwm_%d", group->group_id); // e.g. mcpwm_0
                 ret  = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, group->pm_lock_name, &group->pm_lock);
                 ESP_RETURN_ON_ERROR(ret, TAG, "create ESP_PM_APB_FREQ_MAX lock failed");
                 ESP_LOGD(TAG, "install ESP_PM_APB_FREQ_MAX lock for MCPWM group(%d)", group->group_id);
-                #endif // CONFIG_PM_ENABLE
+#endif // CONFIG_PM_ENABLE
                 break;
             default:
                 ESP_RETURN_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, TAG, "clock source %d is not supported", clk_src);

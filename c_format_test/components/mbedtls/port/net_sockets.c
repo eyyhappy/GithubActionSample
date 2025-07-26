@@ -16,13 +16,13 @@
 #if !defined(MBEDTLS_NET_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc    calloc
-#define mbedtls_free      free
-#define mbedtls_time      time
-#define mbedtls_time_t    time_t
+    #include <stdlib.h>
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free      free
+    #define mbedtls_time      time
+    #define mbedtls_time_t    time_t
 #endif
 
 #include "mbedtls/net_sockets.h"
@@ -104,9 +104,9 @@ int mbedtls_net_bind( mbedtls_net_context *ctx, const char *bind_ip, const char 
     int ret;
     struct addrinfo hints, *addr_list, *cur;
     struct sockaddr_in *serv_addr = NULL;
-    #if SO_REUSE
+#if SO_REUSE
     int n = 1;
-    #endif
+#endif
     if ( ( ret = net_prepare() ) != 0 )
     {
         return ( ret );
@@ -131,7 +131,7 @@ int mbedtls_net_bind( mbedtls_net_context *ctx, const char *bind_ip, const char 
             continue;
         }
         /*SO_REUSEADDR option dafault is disable in source code(lwip)*/
-        #if SO_REUSE
+#if SO_REUSE
         if ( setsockopt( fd, SOL_SOCKET, SO_REUSEADDR,
                          (const char *) &n, sizeof( n ) ) != 0 )
         {
@@ -139,7 +139,7 @@ int mbedtls_net_bind( mbedtls_net_context *ctx, const char *bind_ip, const char 
             ret = MBEDTLS_ERR_NET_SOCKET_FAILED;
             continue;
         }
-        #endif
+#endif
         /*bind interface dafault don't process the addr is 0xffffffff for TCP Protocol*/
         serv_addr = (struct sockaddr_in *)cur->ai_addr;
         serv_addr->sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
@@ -179,12 +179,12 @@ static int net_would_block( const mbedtls_net_context *ctx )
     int error = errno;
     switch ( errno = error )
     {
-            #if defined EAGAIN
+#if defined EAGAIN
         case EAGAIN:
-            #endif
-            #if defined EWOULDBLOCK && EWOULDBLOCK != EAGAIN
+#endif
+#if defined EWOULDBLOCK && EWOULDBLOCK != EAGAIN
         case EWOULDBLOCK:
-            #endif
+#endif
             return ( 1 );
     }
     return ( 0 );

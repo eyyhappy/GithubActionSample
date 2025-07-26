@@ -9,9 +9,9 @@
 #include <sys/cdefs.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -87,9 +87,9 @@ static esp_err_t mcpwm_timer_destory(mcpwm_timer_t *timer)
 
 esp_err_t mcpwm_new_timer(const mcpwm_timer_config_t *config, mcpwm_timer_handle_t *ret_timer)
 {
-    #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
+#if CONFIG_MCPWM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     mcpwm_timer_t *timer = NULL;
     ESP_GOTO_ON_FALSE(config && ret_timer, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -170,7 +170,7 @@ esp_err_t mcpwm_timer_register_event_callbacks(mcpwm_timer_handle_t timer, const
     int group_id = group->group_id;
     int timer_id = timer->timer_id;
     mcpwm_hal_context_t *hal = &group->hal;
-    #if CONFIG_MCWPM_ISR_IRAM_SAFE
+#if CONFIG_MCWPM_ISR_IRAM_SAFE
     if (cbs->on_empty)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_empty), ESP_ERR_INVALID_ARG, TAG, "on_empty callback not in IRAM");
@@ -187,7 +187,7 @@ esp_err_t mcpwm_timer_register_event_callbacks(mcpwm_timer_handle_t timer, const
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!timer->intr)
     {

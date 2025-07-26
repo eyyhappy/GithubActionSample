@@ -6,14 +6,14 @@
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 {
-    #ifdef MBEDTLS_PK_PARSE_C
+#ifdef MBEDTLS_PK_PARSE_C
     int ret;
     mbedtls_pk_context pk;
     mbedtls_pk_init( &pk );
     ret = mbedtls_pk_parse_public_key( &pk, Data, Size );
     if (ret == 0)
     {
-        #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_RSA )
         {
             mbedtls_mpi N, P, Q, D, E, DP, DQ, QP;
@@ -49,8 +49,8 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
             mbedtls_mpi_free( &QP );
         }
         else
-        #endif
-        #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
             if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_ECKEY ||
                 mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_ECKEY_DH )
             {
@@ -68,7 +68,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
                     abort( );
             }
             else
-        #endif
+#endif
             {
                 /* The key is valid but is not of a supported type.
                  * This should not happen. */
@@ -76,9 +76,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
             }
     }
     mbedtls_pk_free( &pk );
-    #else
+#else
     (void) Data;
     (void) Size;
-    #endif //MBEDTLS_PK_PARSE_C
+#endif //MBEDTLS_PK_PARSE_C
     return 0;
 }

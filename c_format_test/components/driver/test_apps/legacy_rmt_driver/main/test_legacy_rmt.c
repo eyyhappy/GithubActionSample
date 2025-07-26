@@ -47,13 +47,13 @@ static void rmt_setup_testbench(int tx_channel, int rx_channel, uint32_t flags)
         {
             tx_config.tx_config.carrier_en = true;
         }
-        #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
         if (flags & RMT_TESTBENCH_FLAGS_LOOP_ON)
         {
             tx_config.tx_config.loop_en = true;
             tx_config.tx_config.loop_count = 10;
         }
-        #endif
+#endif
         TEST_ESP_OK(rmt_config(&tx_config));
     }
     if (rx_channel >= 0)
@@ -63,7 +63,7 @@ static void rmt_setup_testbench(int tx_channel, int rx_channel, uint32_t flags)
         {
             rx_config.flags |= RMT_CHANNEL_FLAGS_AWARE_DFS;
         }
-        #if SOC_RMT_SUPPORT_RX_DEMODULATION
+#if SOC_RMT_SUPPORT_RX_DEMODULATION
         if (flags & RMT_TESTBENCH_FLAGS_CARRIER_ON)
         {
             rx_config.rx_config.rm_carrier = true;
@@ -71,7 +71,7 @@ static void rmt_setup_testbench(int tx_channel, int rx_channel, uint32_t flags)
             rx_config.rx_config.carrier_duty_percent = 33;
             rx_config.rx_config.carrier_level = RMT_CARRIER_LEVEL_HIGH;
         }
-        #endif
+#endif
         TEST_ESP_OK(rmt_config(&rx_config));
     }
     // Routing internal signals by IO Matrix (bind rmt tx and rx signal on the same GPIO)
@@ -146,16 +146,16 @@ TEST_CASE("RMT miscellaneous functions", "[rmt]")
     TEST_ESP_OK(rmt_set_clk_div(channel, 160));
     TEST_ESP_OK(rmt_get_clk_div(channel, &div_cnt));
     TEST_ASSERT_EQUAL_UINT8(160, div_cnt);
-    #if SOC_RMT_SUPPORT_REF_TICK
+#if SOC_RMT_SUPPORT_REF_TICK
     TEST_ESP_OK(rmt_set_source_clk(channel, RMT_BASECLK_REF));
     TEST_ESP_OK(rmt_get_source_clk(channel, &src_clk));
     TEST_ASSERT_EQUAL_INT(RMT_BASECLK_REF, src_clk);
-    #endif
-    #if SOC_RMT_SUPPORT_XTAL
+#endif
+#if SOC_RMT_SUPPORT_XTAL
     TEST_ESP_OK(rmt_set_source_clk(channel, RMT_BASECLK_XTAL));
     TEST_ESP_OK(rmt_get_source_clk(channel, &src_clk));
     TEST_ASSERT_EQUAL_INT(RMT_BASECLK_XTAL, src_clk);
-    #endif
+#endif
     TEST_ESP_OK(rmt_set_tx_carrier(channel, 0, 10, 10, 1));
     TEST_ESP_OK(rmt_set_idle_level(channel, 1, 0));
     rmt_clean_testbench(channel, -1);

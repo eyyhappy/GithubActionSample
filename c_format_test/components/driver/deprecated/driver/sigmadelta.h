@@ -12,7 +12,7 @@
 #include "driver/sigmadelta_types_legacy.h"
 
 #if !CONFIG_SDM_SUPPRESS_DEPRECATE_WARN
-#warning "The legacy sigma-delta driver is deprecated, please use driver/sdm.h"
+    #warning "The legacy sigma-delta driver is deprecated, please use driver/sdm.h"
 #endif
 
 #ifdef __cplusplus

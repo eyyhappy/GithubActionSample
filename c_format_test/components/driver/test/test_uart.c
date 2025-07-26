@@ -100,14 +100,14 @@ TEST_CASE("test uart_wait_tx_done is not blocked when ticks_to_wait=0", "[uart]"
 
 TEST_CASE("test uart get baud-rate", "[uart]")
 {
-    #if SOC_UART_SUPPORT_REF_TICK
+#if SOC_UART_SUPPORT_REF_TICK
     uint32_t baud_rate1 = 0;
     printf("init uart%d, use reftick, baud rate : %d\n", (int)UART_NUM1, (int)UART_BAUD_11520);
     uart_config(UART_BAUD_11520, UART_SCLK_REF_TICK);
     uart_get_baudrate(UART_NUM1, &baud_rate1);
     printf("get  baud rate when use reftick: %d\n", (int)baud_rate1);
     TEST_ASSERT_UINT32_WITHIN(UART_BAUD_11520 * TOLERANCE, UART_BAUD_11520, baud_rate1);
-    #endif
+#endif
     uint32_t baud_rate2 = 0;
     printf("init uart%d, unuse reftick, baud rate : %d\n", (int)UART_NUM1, (int)UART_BAUD_115200);
     uart_config(UART_BAUD_115200, UART_SCLK_DEFAULT);

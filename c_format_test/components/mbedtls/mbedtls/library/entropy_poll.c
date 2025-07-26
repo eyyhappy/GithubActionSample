@@ -18,8 +18,8 @@
  */
 
 #if defined(__linux__) && !defined(_GNU_SOURCE)
-/* Ensure that syscall() is available even when compiling with -std=c99 */
-#define _GNU_SOURCE
+    /* Ensure that syscall() is available even when compiling with -std=c99 */
+    #define _GNU_SOURCE
 #endif
 
 #include "common.h"
@@ -33,24 +33,24 @@
 #include "mbedtls/error.h"
 
 #if defined(MBEDTLS_TIMING_C)
-#include "mbedtls/timing.h"
+    #include "mbedtls/timing.h"
 #endif
 #if defined(MBEDTLS_ENTROPY_NV_SEED) || !defined(HAVE_SYSCTL_ARND)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #endif
 
 #if !defined(MBEDTLS_NO_PLATFORM_ENTROPY)
 
 #if !defined(unix) && !defined(__unix__) && !defined(__unix) && \
-!defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
-!defined(__HAIKU__) && !defined(__midipix__)
-#error "Platform entropy sources only work on Unix and Windows, see MBEDTLS_NO_PLATFORM_ENTROPY in mbedtls_config.h"
+    !defined(__APPLE__) && !defined(_WIN32) && !defined(__QNXNTO__) && \
+    !defined(__HAIKU__) && !defined(__midipix__)
+    #error "Platform entropy sources only work on Unix and Windows, see MBEDTLS_NO_PLATFORM_ENTROPY in mbedtls_config.h"
 #endif
 
 #if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32)
 
 #if !defined(_WIN32_WINNT)
-#define _WIN32_WINNT 0x0400
+    #define _WIN32_WINNT 0x0400
 #endif
 #include <windows.h>
 #include <wincrypt.h>
@@ -92,11 +92,11 @@ int mbedtls_platform_entropy_poll( void *data, unsigned char *output, size_t len
 static int getrandom_wrapper( void *buf, size_t buflen, unsigned int flags )
 {
     /* MemSan cannot understand that the syscall writes to the buffer */
-    #if defined(__has_feature)
-    #if __has_feature(memory_sanitizer)
+#if defined(__has_feature)
+#if __has_feature(memory_sanitizer)
     memset( buf, 0, buflen );
-    #endif
-    #endif
+#endif
+#endif
     return( syscall( SYS_getrandom, buf, buflen, flags ) );
 }
 #endif /* SYS_getrandom */
@@ -159,7 +159,7 @@ int mbedtls_platform_entropy_poll( void *data,
     size_t read_len;
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     ((void) data);
-    #if defined(HAVE_GETRANDOM)
+#if defined(HAVE_GETRANDOM)
     ret = getrandom_wrapper( output, len, 0 );
     if( ret >= 0 )
     {
@@ -169,17 +169,17 @@ int mbedtls_platform_entropy_poll( void *data,
     else if( errno != ENOSYS )
         return( MBEDTLS_ERR_ENTROPY_SOURCE_FAILED );
     /* Fall through if the system call isn't known. */
-    #else
+#else
     ((void) ret);
-    #endif /* HAVE_GETRANDOM */
-    #if defined(HAVE_SYSCTL_ARND)
+#endif /* HAVE_GETRANDOM */
+#if defined(HAVE_SYSCTL_ARND)
     ((void) file);
     ((void) read_len);
     if( sysctl_arnd_wrapper( output, len ) == -1 )
         return( MBEDTLS_ERR_ENTROPY_SOURCE_FAILED );
     *olen = len;
     return( 0 );
-    #else
+#else
     *olen = 0;
     file = fopen( "/dev/urandom", "rb" );
     if( file == NULL )
@@ -195,7 +195,7 @@ int mbedtls_platform_entropy_poll( void *data,
     fclose( file );
     *olen = len;
     return( 0 );
-    #endif /* HAVE_SYSCTL_ARND */
+#endif /* HAVE_SYSCTL_ARND */
 }
 #endif /* _WIN32 && !EFIX64 && !EFI32 */
 #endif /* !MBEDTLS_NO_PLATFORM_ENTROPY */

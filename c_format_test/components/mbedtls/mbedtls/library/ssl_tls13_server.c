@@ -30,15 +30,15 @@
 #include "ssl_debug_helpers.h"
 
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/ecp.h"
+    #include "mbedtls/ecp.h"
 #endif /* MBEDTLS_ECP_C */
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc    calloc
-#define mbedtls_free       free
+    #include <stdlib.h>
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free       free
 #endif /* MBEDTLS_PLATFORM_C */
 
 #include "ssl_misc.h"
@@ -271,20 +271,20 @@ static void ssl_tls13_debug_print_client_hello_exts( mbedtls_ssl_context *ssl )
                              ( ( ssl->handshake->extensions_present
                                  & MBEDTLS_SSL_EXT_SUPPORTED_VERSIONS ) > 0 ) ?
                              "TRUE" : "FALSE" ) );
-    #if defined ( MBEDTLS_SSL_SERVER_NAME_INDICATION )
+#if defined ( MBEDTLS_SSL_SERVER_NAME_INDICATION )
     MBEDTLS_SSL_DEBUG_MSG( 3,
                            ( "- SERVERNAME_EXTENSION    ( %s )",
                              ( ( ssl->handshake->extensions_present
                                  & MBEDTLS_SSL_EXT_SERVERNAME ) > 0 ) ?
                              "TRUE" : "FALSE" ) );
-    #endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
-    #if defined ( MBEDTLS_SSL_ALPN )
+#endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
+#if defined ( MBEDTLS_SSL_ALPN )
     MBEDTLS_SSL_DEBUG_MSG( 3,
                            ( "- ALPN_EXTENSION   ( %s )",
                              ( ( ssl->handshake->extensions_present
                                  & MBEDTLS_SSL_EXT_ALPN ) > 0 ) ?
                              "TRUE" : "FALSE" ) );
-    #endif /* MBEDTLS_SSL_ALPN */
+#endif /* MBEDTLS_SSL_ALPN */
 }
 #endif /* MBEDTLS_DEBUG_C */
 
@@ -329,11 +329,11 @@ static int ssl_tls13_pick_key_cert( mbedtls_ssl_context *ssl )
 {
     mbedtls_ssl_key_cert *key_cert, *key_cert_list;
     const uint16_t *sig_alg = ssl->handshake->received_sig_algs;
-    #if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
+#if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
     if( ssl->handshake->sni_key_cert != NULL )
         key_cert_list = ssl->handshake->sni_key_cert;
     else
-    #endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
+#endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
         key_cert_list = ssl->conf->key_cert;
     if( key_cert_list == NULL )
     {
@@ -608,7 +608,7 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
         extension_data_end = p + extension_data_len;
         switch( extension_type )
         {
-                #if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
+#if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
             case MBEDTLS_TLS_EXT_SERVERNAME:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found ServerName extension" ) );
                 ret = mbedtls_ssl_parse_server_name_ext( ssl, p,
@@ -621,8 +621,8 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_SERVERNAME;
                 break;
-                #endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
-                #if defined(MBEDTLS_ECDH_C)
+#endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
+#if defined(MBEDTLS_ECDH_C)
             case MBEDTLS_TLS_EXT_SUPPORTED_GROUPS:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found supported group extension" ) );
                 /* Supported Groups Extension
@@ -641,8 +641,8 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_SUPPORTED_GROUPS;
                 break;
-                #endif /* MBEDTLS_ECDH_C */
-                #if defined(MBEDTLS_ECDH_C)
+#endif /* MBEDTLS_ECDH_C */
+#if defined(MBEDTLS_ECDH_C)
             case MBEDTLS_TLS_EXT_KEY_SHARE:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found key share extension" ) );
                 /*
@@ -667,7 +667,7 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_KEY_SHARE;
                 break;
-                #endif /* MBEDTLS_ECDH_C */
+#endif /* MBEDTLS_ECDH_C */
             case MBEDTLS_TLS_EXT_SUPPORTED_VERSIONS:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found supported versions extension" ) );
                 ret = ssl_tls13_parse_supported_versions_ext(
@@ -680,7 +680,7 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_SUPPORTED_VERSIONS;
                 break;
-                #if defined(MBEDTLS_SSL_ALPN)
+#if defined(MBEDTLS_SSL_ALPN)
             case MBEDTLS_TLS_EXT_ALPN:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found alpn extension" ) );
                 ret = mbedtls_ssl_parse_alpn_ext( ssl, p, extension_data_end );
@@ -692,8 +692,8 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_ALPN;
                 break;
-                #endif /* MBEDTLS_SSL_ALPN */
-                #if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
+#endif /* MBEDTLS_SSL_ALPN */
+#if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
             case MBEDTLS_TLS_EXT_SIG_ALG:
                 MBEDTLS_SSL_DEBUG_MSG( 3, ( "found signature_algorithms extension" ) );
                 ret = mbedtls_ssl_parse_sig_alg_ext(
@@ -707,7 +707,7 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
                 }
                 ssl->handshake->extensions_present |= MBEDTLS_SSL_EXT_SIG_ALG;
                 break;
-                #endif /* MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED */
+#endif /* MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED */
             default:
                 MBEDTLS_SSL_DEBUG_MSG( 3,
                                        ( "unknown extension found: %ud ( ignoring )",
@@ -722,9 +722,9 @@ static int ssl_tls13_parse_client_hello( mbedtls_ssl_context *ssl,
     mbedtls_ssl_add_hs_msg_to_checksum( ssl, MBEDTLS_SSL_HS_CLIENT_HELLO,
                                         buf, p - buf );
     /* List all the extensions we have received */
-    #if defined(MBEDTLS_DEBUG_C)
+#if defined(MBEDTLS_DEBUG_C)
     ssl_tls13_debug_print_client_hello_exts( ssl );
-    #endif /* MBEDTLS_DEBUG_C */
+#endif /* MBEDTLS_DEBUG_C */
     return( hrr_required ? SSL_CLIENT_HELLO_HRR_REQUIRED : SSL_CLIENT_HELLO_OK );
 }
 
@@ -754,10 +754,10 @@ static int ssl_tls13_postprocess_client_hello( mbedtls_ssl_context* ssl )
         MBEDTLS_SSL_DEBUG_RET( 1, "f_cert_cb", ret );
         return( ret );
     }
-    #if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
+#if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
     ssl->handshake->sni_name = NULL;
     ssl->handshake->sni_name_len = 0;
-    #endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
+#endif /* MBEDTLS_SSL_SERVER_NAME_INDICATION */
     ret = mbedtls_ssl_tls13_key_schedule_stage_early( ssl );
     if( ret != 0 )
     {
@@ -822,9 +822,9 @@ static int ssl_tls13_prepare_server_hello( mbedtls_ssl_context *ssl )
     }
     MBEDTLS_SSL_DEBUG_BUF( 3, "server hello, random bytes", server_randbytes,
                            MBEDTLS_SERVER_HELLO_RANDOM_LEN );
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     ssl->session_negotiate->start = time( NULL );
-    #endif /* MBEDTLS_HAVE_TIME */
+#endif /* MBEDTLS_HAVE_TIME */
     return( ret );
 }
 
@@ -874,7 +874,7 @@ static int ssl_tls13_generate_and_write_key_share( mbedtls_ssl_context *ssl,
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     *out_len = 0;
-    #if defined(MBEDTLS_ECDH_C)
+#if defined(MBEDTLS_ECDH_C)
     if( mbedtls_ssl_tls13_named_group_is_ecdhe( named_group ) )
     {
         ret = mbedtls_ssl_tls13_generate_and_write_ecdh_key_exchange(
@@ -888,7 +888,7 @@ static int ssl_tls13_generate_and_write_key_share( mbedtls_ssl_context *ssl,
         }
     }
     else
-    #endif /* MBEDTLS_ECDH_C */
+#endif /* MBEDTLS_ECDH_C */
         if( 0 /* Other kinds of KEMs */ )
         {
         }
@@ -1165,16 +1165,16 @@ static int ssl_tls13_write_server_hello( mbedtls_ssl_context *ssl )
     MBEDTLS_SSL_PROC_CHK( mbedtls_ssl_finish_handshake_msg(
                               ssl, buf_len, msg_len ) );
     MBEDTLS_SSL_PROC_CHK( ssl_tls13_finalize_write_server_hello( ssl ) );
-    #if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
+#if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
     /* The server sends a dummy change_cipher_spec record immediately
      * after its first handshake message. This may either be after
      * a ServerHello or a HelloRetryRequest.
      */
     mbedtls_ssl_handshake_set_state(
         ssl, MBEDTLS_SSL_SERVER_CCS_AFTER_SERVER_HELLO );
-    #else
+#else
     mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_ENCRYPTED_EXTENSIONS );
-    #endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
+#endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
 cleanup:
     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= write server hello" ) );
     return( ret );
@@ -1229,16 +1229,16 @@ static int ssl_tls13_write_hello_retry_request( mbedtls_ssl_context *ssl )
     MBEDTLS_SSL_PROC_CHK( mbedtls_ssl_finish_handshake_msg( ssl, buf_len,
                           msg_len ) );
     ssl->handshake->hello_retry_request_count++;
-    #if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
+#if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
     /* The server sends a dummy change_cipher_spec record immediately
      * after its first handshake message. This may either be after
      * a ServerHello or a HelloRetryRequest.
      */
     mbedtls_ssl_handshake_set_state(
         ssl, MBEDTLS_SSL_SERVER_CCS_AFTER_HELLO_RETRY_REQUEST );
-    #else
+#else
     mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_CLIENT_HELLO );
-    #endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
+#endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
 cleanup:
     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= write hello retry request" ) );
     return( ret );
@@ -1272,12 +1272,12 @@ static int ssl_tls13_write_encrypted_extensions_body( mbedtls_ssl_context *ssl,
     ((void) ssl);
     ((void) ret);
     ((void) output_len);
-    #if defined(MBEDTLS_SSL_ALPN)
+#if defined(MBEDTLS_SSL_ALPN)
     ret = mbedtls_ssl_write_alpn_ext( ssl, p, end, &output_len );
     if( ret != 0 )
         return( ret );
     p += output_len;
-    #endif /* MBEDTLS_SSL_ALPN */
+#endif /* MBEDTLS_SSL_ALPN */
     extensions_len = ( p - p_extensions_len ) - 2;
     MBEDTLS_PUT_UINT16_BE( extensions_len, p_extensions_len, 0 );
     *out_len = p - buf;
@@ -1304,14 +1304,14 @@ static int ssl_tls13_write_encrypted_extensions( mbedtls_ssl_context *ssl )
         ssl, MBEDTLS_SSL_HS_ENCRYPTED_EXTENSIONS, buf, msg_len );
     MBEDTLS_SSL_PROC_CHK( mbedtls_ssl_finish_handshake_msg(
                               ssl, buf_len, msg_len ) );
-    #if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
     if( mbedtls_ssl_tls13_some_psk_enabled( ssl ) )
         mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_SERVER_FINISHED );
     else
         mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_CERTIFICATE_REQUEST );
-    #else
+#else
     mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_SERVER_FINISHED );
-    #endif
+#endif
 cleanup:
     MBEDTLS_SSL_DEBUG_MSG( 2, ( "<= write encrypted extensions" ) );
     return( ret );
@@ -1332,11 +1332,11 @@ MBEDTLS_CHECK_RETURN_CRITICAL
 static int ssl_tls13_certificate_request_coordinate( mbedtls_ssl_context *ssl )
 {
     int authmode;
-    #if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
+#if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
     if( ssl->handshake->sni_authmode != MBEDTLS_SSL_VERIFY_UNSET )
         authmode = ssl->handshake->sni_authmode;
     else
-    #endif
+#endif
         authmode = ssl->conf->authmode;
     if( authmode == MBEDTLS_SSL_VERIFY_NONE )
         return( SSL_CERTIFICATE_REQUEST_SKIP );
@@ -1434,7 +1434,7 @@ MBEDTLS_CHECK_RETURN_CRITICAL
 static int ssl_tls13_write_server_certificate( mbedtls_ssl_context *ssl )
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( ( ssl_tls13_pick_key_cert( ssl ) != 0 ) ||
         mbedtls_ssl_own_cert( ssl ) == NULL )
     {
@@ -1443,7 +1443,7 @@ static int ssl_tls13_write_server_certificate( mbedtls_ssl_context *ssl )
                                       MBEDTLS_ERR_SSL_HANDSHAKE_FAILURE);
         return( MBEDTLS_ERR_SSL_HANDSHAKE_FAILURE );
     }
-    #endif /* MBEDTLS_X509_CRT_PARSE_C */
+#endif /* MBEDTLS_X509_CRT_PARSE_C */
     ret = mbedtls_ssl_tls13_write_certificate( ssl );
     if( ret != 0 )
         return( ret );
@@ -1570,7 +1570,7 @@ int mbedtls_ssl_tls13_handshake_server_step( mbedtls_ssl_context *ssl )
                 return( ret );
             }
             break;
-            #if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
         case MBEDTLS_SSL_CERTIFICATE_REQUEST:
             ret = ssl_tls13_write_certificate_request( ssl );
             break;
@@ -1580,11 +1580,11 @@ int mbedtls_ssl_tls13_handshake_server_step( mbedtls_ssl_context *ssl )
         case MBEDTLS_SSL_CERTIFICATE_VERIFY:
             ret = ssl_tls13_write_certificate_verify( ssl );
             break;
-            #endif /* MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED */
+#endif /* MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED */
             /*
              * Injection of dummy-CCS's for middlebox compatibility
              */
-            #if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
+#if defined(MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE)
         case MBEDTLS_SSL_SERVER_CCS_AFTER_HELLO_RETRY_REQUEST:
             ret = mbedtls_ssl_tls13_write_change_cipher_spec( ssl );
             if( ret == 0 )
@@ -1595,7 +1595,7 @@ int mbedtls_ssl_tls13_handshake_server_step( mbedtls_ssl_context *ssl )
             if( ret == 0 )
                 mbedtls_ssl_handshake_set_state( ssl, MBEDTLS_SSL_ENCRYPTED_EXTENSIONS );
             break;
-            #endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
+#endif /* MBEDTLS_SSL_TLS1_3_COMPATIBILITY_MODE */
         case MBEDTLS_SSL_SERVER_FINISHED:
             ret = ssl_tls13_write_server_finished( ssl );
             break;

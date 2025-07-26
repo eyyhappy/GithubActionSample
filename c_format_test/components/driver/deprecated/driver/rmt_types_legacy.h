@@ -65,12 +65,12 @@ typedef enum
     RMT_CHANNEL_1,  /*!< RMT channel number 1 */
     RMT_CHANNEL_2,  /*!< RMT channel number 2 */
     RMT_CHANNEL_3,  /*!< RMT channel number 3 */
-    #if SOC_RMT_CHANNELS_PER_GROUP > 4
+#if SOC_RMT_CHANNELS_PER_GROUP > 4
     RMT_CHANNEL_4,  /*!< RMT channel number 4 */
     RMT_CHANNEL_5,  /*!< RMT channel number 5 */
     RMT_CHANNEL_6,  /*!< RMT channel number 6 */
     RMT_CHANNEL_7,  /*!< RMT channel number 7 */
-    #endif
+#endif
     RMT_CHANNEL_MAX /*!< Number of RMT channels */
 } rmt_channel_t;
 
@@ -163,9 +163,9 @@ typedef struct
     rmt_carrier_level_t carrier_level; /*!< Level of the RMT output, when the carrier is applied */
     rmt_idle_level_t idle_level;       /*!< RMT idle level */
     uint8_t carrier_duty_percent;      /*!< RMT carrier duty (%) */
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     uint32_t loop_count;               /*!< Maximum loop count */
-    #endif
+#endif
     bool carrier_en;                   /*!< RMT carrier enable */
     bool loop_en;                      /*!< Enable sending RMT items in a loop */
     bool idle_output_en;               /*!< RMT idle level output enable */
@@ -179,12 +179,12 @@ typedef struct
     uint16_t idle_threshold;     /*!< RMT RX idle threshold */
     uint8_t filter_ticks_thresh; /*!< RMT filter tick number */
     bool filter_en;              /*!< RMT receiver filter enable */
-    #if SOC_RMT_SUPPORT_RX_DEMODULATION
+#if SOC_RMT_SUPPORT_RX_DEMODULATION
     bool rm_carrier;                   /*!< RMT receiver remove carrier enable */
     uint32_t carrier_freq_hz;          /*!< RMT carrier frequency */
     uint8_t carrier_duty_percent;      /*!< RMT carrier duty (%) */
     rmt_carrier_level_t carrier_level; /*!< The level to remove the carrier */
-    #endif
+#endif
 } rmt_rx_config_t;
 
 /**

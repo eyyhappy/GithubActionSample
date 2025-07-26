@@ -7,7 +7,7 @@
 #include "esp_heap_caps.h"
 #include "unity_test_utils.h"
 #ifdef CONFIG_HEAP_TRACING
-#include "esp_heap_trace.h"
+    #include "esp_heap_trace.h"
 #endif
 
 static size_t s_before_free_8bit;
@@ -21,7 +21,7 @@ void unity_utils_record_free_mem(void)
 
 void unity_utils_setup_heap_record(size_t num_heap_records)
 {
-    #ifdef CONFIG_HEAP_TRACING
+#ifdef CONFIG_HEAP_TRACING
     static heap_trace_record_t *record_buffer;
     if (!record_buffer)
     {
@@ -29,7 +29,7 @@ void unity_utils_setup_heap_record(size_t num_heap_records)
         assert(record_buffer);
         heap_trace_init_standalone(record_buffer, num_heap_records);
     }
-    #endif
+#endif
 }
 
 void unity_utils_evaluate_leaks_direct(size_t threshold)

@@ -827,7 +827,7 @@ typedef enum
     PSA_KEY_CREATION_DERIVE, /**< During psa_key_derivation_output_key() */
     PSA_KEY_CREATION_COPY, /**< During psa_copy_key() */
 
-    #ifndef __DOXYGEN_ONLY__
+#ifndef __DOXYGEN_ONLY__
     /** A key is being registered with mbedtls_psa_register_se_key().
      *
      * The core only passes this value to
@@ -846,7 +846,7 @@ typedef enum
      * This is an Mbed Crypto extension.
      */
     PSA_KEY_CREATION_REGISTER,
-    #endif
+#endif
 } psa_key_creation_method_t;
 
 /** \brief A function that allocates a slot for a key.

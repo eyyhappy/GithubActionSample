@@ -15,7 +15,7 @@
 //These will only be enabled on chips with 2 or more SPI peripherals
 
 #ifndef MIN
-#define MIN(a, b)((a) > (b)? (b): (a))
+    #define MIN(a, b)((a) > (b)? (b): (a))
 #endif
 
 /********************************************************************************
@@ -233,7 +233,7 @@ static void local_test_loop(const void* arg1, void* arg2)
 static spitest_param_set_t timing_pgroup[] =
 {
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "FULL_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -252,7 +252,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-    #endif
+#endif
     {
         .pset_name = "FULL_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -263,7 +263,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_tv_ns = TV_INT_CONNECT_GPIO,
     },
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "MISO_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -282,7 +282,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-    #endif
+#endif
     {
         .pset_name = "MISO_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -293,7 +293,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_tv_ns = TV_INT_CONNECT_GPIO,
     },
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
-    #if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
+#if !DISABLED_FOR_TARGETS(ESP32S2, ESP32S3)
     {
         .pset_name = "MOSI_DUP, MASTER IOMUX",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -312,7 +312,7 @@ static spitest_param_set_t timing_pgroup[] =
         .slave_iomux = true,
         .slave_tv_ns = TV_INT_CONNECT,
     },
-    #endif
+#endif
     {
         .pset_name = "MOSI_DUP, BOTH GPIO",
         .freq_limit = ESP_SPI_SLAVE_MAX_FREQ_SYNC,
@@ -341,28 +341,28 @@ static int test_freq_mode_local[] =
 
 //signals are not fed to peripherals through iomux if the functions are not selected to iomux
 #ifdef CONFIG_IDF_TARGET_ESP32
-#define LOCAL_MODE_TEST_SLAVE_IOMUX     true
+    #define LOCAL_MODE_TEST_SLAVE_IOMUX     true
 
-/*
- * When DMA is enabled in mode 0 and 2, an special workaround is used. The MISO (slave's output) is
- * half an SPI clock ahead, but then delay 3 apb clocks.
+    /*
+    * When DMA is enabled in mode 0 and 2, an special workaround is used. The MISO (slave's output) is
+    * half an SPI clock ahead, but then delay 3 apb clocks.
 
- * Compared to the normal timing, the MISO is not slower than when the frequency is below 13.3MHz,
- * under which there's no need for the master to compensate the MISO signal. However compensation
- * is required when the frequency is beyond 16MHz, at this time, an extra positive delay is added
- * to the normal delay (3 apb clocks).
- *
- * It's is hard to tell the master driver that kind of delay logic. This magic delay value happens
- * to compensate master timing beyond 16MHz.
- *
- * If the master or slave's timing is changed again, and the test no longer passes, above 16MHz,
- * it's OK to use `master_limit` to disable master data check or skip the test above some
- * frequencies above 10MHz (the design target value).
- */
-#define SLAVE_EXTRA_DELAY_DMA           12.5
+    * Compared to the normal timing, the MISO is not slower than when the frequency is below 13.3MHz,
+    * under which there's no need for the master to compensate the MISO signal. However compensation
+    * is required when the frequency is beyond 16MHz, at this time, an extra positive delay is added
+    * to the normal delay (3 apb clocks).
+    *
+    * It's is hard to tell the master driver that kind of delay logic. This magic delay value happens
+    * to compensate master timing beyond 16MHz.
+    *
+    * If the master or slave's timing is changed again, and the test no longer passes, above 16MHz,
+    * it's OK to use `master_limit` to disable master data check or skip the test above some
+    * frequencies above 10MHz (the design target value).
+    */
+    #define SLAVE_EXTRA_DELAY_DMA           12.5
 #else
-#define LOCAL_MODE_TEST_SLAVE_IOMUX     false
-#define SLAVE_EXTRA_DELAY_DMA           0
+    #define LOCAL_MODE_TEST_SLAVE_IOMUX     false
+    #define SLAVE_EXTRA_DELAY_DMA           0
 #endif
 
 

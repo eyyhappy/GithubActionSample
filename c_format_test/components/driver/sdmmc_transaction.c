@@ -63,7 +63,7 @@ static sdmmc_transfer_state_t s_cur_transfer = { 0 };
 static QueueHandle_t s_request_mutex;
 static bool s_is_app_cmd;   // This flag is set if the next command is an APP command
 #ifdef CONFIG_PM_ENABLE
-static esp_pm_lock_handle_t s_pm_lock;
+    static esp_pm_lock_handle_t s_pm_lock;
 #endif
 
 static esp_err_t handle_idle_state_events(void);
@@ -86,7 +86,7 @@ esp_err_t sdmmc_host_transaction_handler_init(void)
         return ESP_ERR_NO_MEM;
     }
     s_is_app_cmd = false;
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_err_t err = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "sdmmc", &s_pm_lock);
     if (err != ESP_OK)
     {
@@ -94,17 +94,17 @@ esp_err_t sdmmc_host_transaction_handler_init(void)
         s_request_mutex = NULL;
         return err;
     }
-    #endif
+#endif
     return ESP_OK;
 }
 
 void sdmmc_host_transaction_handler_deinit(void)
 {
     assert(s_request_mutex);
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_delete(s_pm_lock);
     s_pm_lock = NULL;
-    #endif
+#endif
     vSemaphoreDelete(s_request_mutex);
     s_request_mutex = NULL;
 }
@@ -113,9 +113,9 @@ esp_err_t sdmmc_host_do_transaction(int slot, sdmmc_command_t* cmdinfo)
 {
     esp_err_t ret;
     xSemaphoreTake(s_request_mutex, portMAX_DELAY);
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_acquire(s_pm_lock);
-    #endif
+#endif
     // dispose of any events which happened asynchronously
     handle_idle_state_events();
     // convert cmdinfo to hardware register value
@@ -178,9 +178,9 @@ esp_err_t sdmmc_host_do_transaction(int slot, sdmmc_command_t* cmdinfo)
     }
     s_is_app_cmd = (ret == ESP_OK && cmdinfo->opcode == MMC_APP_CMD);
 out:
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_release(s_pm_lock);
-    #endif
+#endif
     xSemaphoreGive(s_request_mutex);
     return ret;
 }

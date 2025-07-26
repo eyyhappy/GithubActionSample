@@ -26,8 +26,8 @@
 #include "hal/touch_sensor_hal.h"
 
 #ifndef NDEBUG
-// Enable built-in checks in queue.h in debug builds
-#define INVARIANTS
+    // Enable built-in checks in queue.h in debug builds
+    #define INVARIANTS
 #endif
 #include "sys/queue.h"
 
@@ -109,12 +109,12 @@ esp_err_t touch_pad_isr_register(intr_handler_t fn, void *arg, touch_pad_intr_ma
     {
         en_msk |= RTC_CNTL_TOUCH_TIMEOUT_INT_ST_M;
     }
-    #if SOC_TOUCH_PROXIMITY_MEAS_DONE_SUPPORTED
+#if SOC_TOUCH_PROXIMITY_MEAS_DONE_SUPPORTED
     if (intr_mask & TOUCH_PAD_INTR_MASK_PROXI_MEAS_DONE)
     {
         en_msk |= RTC_CNTL_TOUCH_APPROACH_LOOP_DONE_INT_ST_M;
     }
-    #endif
+#endif
     esp_err_t ret = rtc_isr_register(fn, arg, en_msk, 0);
     /* Must ensure: After being registered, it is executed first. */
     if ( (ret == ESP_OK) && (reg_flag == false) && (intr_mask & (TOUCH_PAD_INTR_MASK_SCAN_DONE | TOUCH_PAD_INTR_MASK_TIMEOUT)) )

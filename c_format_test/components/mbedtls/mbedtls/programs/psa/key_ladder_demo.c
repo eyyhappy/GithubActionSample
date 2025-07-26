@@ -365,14 +365,14 @@ static psa_status_t wrap_data( const char *input_file_name,
     mbedtls_setbuf( input_file, NULL );
     SYS_CHECK( fseek( input_file, 0, SEEK_END ) == 0 );
     SYS_CHECK( ( input_position = ftell( input_file ) ) != -1 );
-    #if LONG_MAX > SIZE_MAX
+#if LONG_MAX > SIZE_MAX
     if( input_position > SIZE_MAX )
     {
         printf( "Input file too large.\n" );
         status = DEMO_ERROR;
         goto exit;
     }
-    #endif
+#endif
     input_size = input_position;
     PSA_CHECK( psa_get_key_attributes( wrapping_key, &attributes ) );
     key_type = psa_get_key_type( &attributes );

@@ -34,16 +34,16 @@
 #include <string.h>
 
 #if defined(MBEDTLS_FS_IO)
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_SELF_TEST */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_SELF_TEST */
 #endif /* MBEDTLS_PLATFORM_C */
 
 /*
@@ -110,9 +110,9 @@ int mbedtls_hmac_drbg_seed_buf( mbedtls_hmac_drbg_context *ctx,
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     if( ( ret = mbedtls_md_setup( &ctx->md_ctx, md_info, 1 ) ) != 0 )
         return( ret );
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_init( &ctx->mutex );
-    #endif
+#endif
     /*
      * Set initial working state.
      * Use the V memory location, which is currently all 0, to initialize the
@@ -223,9 +223,9 @@ int mbedtls_hmac_drbg_seed( mbedtls_hmac_drbg_context *ctx,
     if( ( ret = mbedtls_md_setup( &ctx->md_ctx, md_info, 1 ) ) != 0 )
         return( ret );
     /* The mutex is initialized iff the md context is set up. */
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_init( &ctx->mutex );
-    #endif
+#endif
     md_size = mbedtls_md_get_size( md_info );
     /*
      * Set initial working state.
@@ -351,15 +351,15 @@ int mbedtls_hmac_drbg_random( void *p_rng, unsigned char *output, size_t out_len
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     mbedtls_hmac_drbg_context *ctx = (mbedtls_hmac_drbg_context *) p_rng;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( ( ret = mbedtls_mutex_lock( &ctx->mutex ) ) != 0 )
         return( ret );
-    #endif
+#endif
     ret = mbedtls_hmac_drbg_random_with_add( ctx, output, out_len, NULL, 0 );
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &ctx->mutex ) != 0 )
         return( MBEDTLS_ERR_THREADING_MUTEX_ERROR );
-    #endif
+#endif
     return( ret );
 }
 
@@ -371,11 +371,11 @@ void mbedtls_hmac_drbg_free( mbedtls_hmac_drbg_context *ctx )
 {
     if( ctx == NULL )
         return;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     /* The mutex is initialized iff the md context is set up. */
     if( ctx->md_ctx.md_info != NULL )
         mbedtls_mutex_free( &ctx->mutex );
-    #endif
+#endif
     mbedtls_md_free( &ctx->md_ctx );
     mbedtls_platform_zeroize( ctx, sizeof( mbedtls_hmac_drbg_context ) );
     ctx->reseed_interval = MBEDTLS_HMAC_DRBG_RESEED_INTERVAL;

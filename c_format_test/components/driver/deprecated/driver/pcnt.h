@@ -12,7 +12,7 @@
 #include "driver/pcnt_types_legacy.h"
 
 #if !CONFIG_PCNT_SUPPRESS_DEPRECATE_WARN
-#warning "legacy pcnt driver is deprecated, please migrate to use driver/pulse_cnt.h"
+    #warning "legacy pcnt driver is deprecated, please migrate to use driver/pulse_cnt.h"
 #endif
 
 #ifdef __cplusplus

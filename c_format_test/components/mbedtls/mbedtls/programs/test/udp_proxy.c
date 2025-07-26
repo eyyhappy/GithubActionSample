@@ -28,21 +28,21 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#if defined(MBEDTLS_HAVE_TIME)
-#include <time.h>
-#define mbedtls_time            time
-#define mbedtls_time_t          time_t
-#endif
-#define mbedtls_printf          printf
-#define mbedtls_calloc          calloc
-#define mbedtls_free            free
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #if defined(MBEDTLS_HAVE_TIME)
+        #include <time.h>
+        #define mbedtls_time            time
+        #define mbedtls_time_t          time_t
+    #endif
+    #define mbedtls_printf          printf
+    #define mbedtls_calloc          calloc
+    #define mbedtls_free            free
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_NET_C)
@@ -62,23 +62,23 @@ int main( void )
 
 /* For select() */
 #if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
-!defined(EFI32)
-#include <winsock2.h>
-#include <windows.h>
-#if defined(_MSC_VER)
-#if defined(_WIN32_WCE)
-#pragma comment( lib, "ws2.lib" )
-#else
-#pragma comment( lib, "ws2_32.lib" )
-#endif
-#endif /* _MSC_VER */
+    !defined(EFI32)
+    #include <winsock2.h>
+    #include <windows.h>
+    #if defined(_MSC_VER)
+        #if defined(_WIN32_WCE)
+            #pragma comment( lib, "ws2.lib" )
+        #else
+            #pragma comment( lib, "ws2_32.lib" )
+        #endif
+    #endif /* _MSC_VER */
 #else /* ( _WIN32 || _WIN32_WCE ) && !EFIX64 && !EFI32 */
-#if defined(MBEDTLS_HAVE_TIME) || (defined(MBEDTLS_TIMING_C) && !defined(MBEDTLS_TIMING_ALT))
-#include <sys/time.h>
-#endif
-#include <sys/select.h>
-#include <sys/types.h>
-#include <unistd.h>
+    #if defined(MBEDTLS_HAVE_TIME) || (defined(MBEDTLS_TIMING_C) && !defined(MBEDTLS_TIMING_ALT))
+        #include <sys/time.h>
+    #endif
+    #include <sys/select.h>
+    #include <sys/types.h>
+    #include <unistd.h>
 #endif /* ( _WIN32 || _WIN32_WCE ) && !EFIX64 && !EFI32 */
 
 #define MAX_MSG_SIZE            16384 + 2048 /* max record/datagram size */
@@ -272,12 +272,12 @@ static void get_options( int argc, char *argv[] )
         }
         else if( strcmp( p, "pack" ) == 0 )
         {
-            #if defined(MBEDTLS_TIMING_C)
+#if defined(MBEDTLS_TIMING_C)
             opt.pack = (unsigned) atoi( q );
-            #else
+#else
             mbedtls_printf( " option pack only defined if MBEDTLS_TIMING_C is enabled\n" );
             exit( 1 );
-            #endif
+#endif
         }
         else if( strcmp( p, "mtu" ) == 0 )
         {
@@ -291,12 +291,12 @@ static void get_options( int argc, char *argv[] )
             if( opt.bad_ad < 0 || opt.bad_ad > 1 )
                 exit_usage( p, q );
         }
-        #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
         else if( strcmp( p, "bad_cid" ) == 0 )
         {
             opt.bad_cid = (unsigned) atoi( q );
         }
-        #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
         else if( strcmp( p, "protect_hvr" ) == 0 )
         {
             opt.protect_hvr = atoi( q );
@@ -470,7 +470,7 @@ static int dispatch_data( mbedtls_net_context *ctx,
                           size_t len )
 {
     int ret;
-    #if defined(MBEDTLS_TIMING_C)
+#if defined(MBEDTLS_TIMING_C)
     ctx_buffer *buf = NULL;
     if( opt.pack > 0 )
     {
@@ -482,7 +482,7 @@ static int dispatch_data( mbedtls_net_context *ctx,
             return( -1 );
         return( ctx_buffer_append( buf, data, len ) );
     }
-    #endif /* MBEDTLS_TIMING_C */
+#endif /* MBEDTLS_TIMING_C */
     ret = mbedtls_net_send( ctx, data, len );
     if( ret < 0 )
     {
@@ -503,21 +503,21 @@ typedef struct
 /* Print packet. Outgoing packets come with a reason (forward, dupl, etc.) */
 void print_packet( const packet *p, const char *why )
 {
-    #if defined(MBEDTLS_TIMING_C)
+#if defined(MBEDTLS_TIMING_C)
     if( why == NULL )
         mbedtls_printf( "  %05u dispatch %s %s (%u bytes)\n",
                         ellapsed_time(), p->way, p->type, p->len );
     else
         mbedtls_printf( "  %05u dispatch %s %s (%u bytes): %s\n",
                         ellapsed_time(), p->way, p->type, p->len, why );
-    #else
+#else
     if( why == NULL )
         mbedtls_printf( "        dispatch %s %s (%u bytes)\n",
                         p->way, p->type, p->len );
     else
         mbedtls_printf( "        dispatch %s %s (%u bytes): %s\n",
                         p->way, p->type, p->len, why );
-    #endif
+#endif
     fflush( stdout );
 }
 
@@ -770,9 +770,9 @@ int main( int argc, char *argv[] )
     int exit_code = MBEDTLS_EXIT_FAILURE;
     uint8_t delay_idx;
     mbedtls_net_context listen_fd, client_fd, server_fd;
-    #if defined( MBEDTLS_TIMING_C )
+#if defined( MBEDTLS_TIMING_C )
     struct timeval tm;
-    #endif
+#endif
     struct timeval *tm_ptr = NULL;
     int nb_fds;
     fd_set read_fds;
@@ -790,11 +790,11 @@ int main( int argc, char *argv[] )
      */
     if( opt.seed == 0 )
     {
-        #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
         opt.seed = (unsigned int) mbedtls_time( NULL );
-        #else
+#else
         opt.seed = 1;
-        #endif /* MBEDTLS_HAVE_TIME */
+#endif /* MBEDTLS_HAVE_TIME */
         mbedtls_printf( "  . Pseudo-random seed: %u\n", opt.seed );
     }
     srand( opt.seed );
@@ -849,7 +849,7 @@ accept:
     if( nb_fds < listen_fd.fd )
         nb_fds = listen_fd.fd;
     ++nb_fds;
-    #if defined(MBEDTLS_TIMING_C)
+#if defined(MBEDTLS_TIMING_C)
     if( opt.pack > 0 )
     {
         outbuf[0].ctx = &server_fd;
@@ -861,10 +861,10 @@ accept:
         outbuf[1].num_datagrams = 0;
         outbuf[1].len = 0;
     }
-    #endif /* MBEDTLS_TIMING_C */
+#endif /* MBEDTLS_TIMING_C */
     while( 1 )
     {
-        #if defined(MBEDTLS_TIMING_C)
+#if defined(MBEDTLS_TIMING_C)
         if( opt.pack > 0 )
         {
             unsigned max_wait_server, max_wait_client, max_wait;
@@ -893,7 +893,7 @@ accept:
                 tm_ptr = NULL;
             }
         }
-        #endif /* MBEDTLS_TIMING_C */
+#endif /* MBEDTLS_TIMING_C */
         FD_ZERO( &read_fds );
         FD_SET( server_fd.fd, &read_fds );
         FD_SET( client_fd.fd, &read_fds );
@@ -920,7 +920,7 @@ accept:
     }
     exit_code = MBEDTLS_EXIT_SUCCESS;
 exit:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         char error_buf[100];
@@ -928,7 +928,7 @@ exit:
         mbedtls_printf( "Last error was: -0x%04X - %s\n\n", (unsigned int) - ret, error_buf );
         fflush( stdout );
     }
-    #endif
+#endif
     for( delay_idx = 0; delay_idx < MAX_DELAYED_HS; delay_idx++ )
     {
         mbedtls_free( opt.delay_cli[delay_idx] );

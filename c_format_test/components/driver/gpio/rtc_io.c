@@ -211,11 +211,11 @@ esp_err_t rtc_gpio_wakeup_disable(gpio_num_t gpio_num)
 
 bool rtc_gpio_is_valid_gpio(gpio_num_t gpio_num)
 {
-    #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
+#if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED
     return (gpio_num < GPIO_PIN_COUNT && rtc_io_num_map[gpio_num] >= 0);
-    #else
+#else
     return false;
-    #endif
+#endif
 }
 
 #if SOC_RTCIO_INPUT_OUTPUT_SUPPORTED

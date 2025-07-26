@@ -20,17 +20,17 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_time            time
-#define mbedtls_time_t          time_t
-#define mbedtls_fprintf         fprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_time            time
+    #define mbedtls_time_t          time_t
+    #define mbedtls_fprintf         fprintf
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_ENTROPY_C) ||     \
@@ -88,9 +88,9 @@ int main( void )
     mbedtls_ssl_context ssl;
     mbedtls_ssl_config conf;
     mbedtls_x509_crt cacert;
-    #if defined(MBEDTLS_DEBUG_C)
+#if defined(MBEDTLS_DEBUG_C)
     mbedtls_debug_set_threshold( DEBUG_LEVEL );
-    #endif
+#endif
     /*
      * 0. Initialize the RNG and the session data
      */
@@ -187,14 +187,14 @@ int main( void )
     /* In real life, we probably want to bail out when ret != 0 */
     if( ( flags = mbedtls_ssl_get_verify_result( &ssl ) ) != 0 )
     {
-        #if !defined(MBEDTLS_X509_REMOVE_INFO)
+#if !defined(MBEDTLS_X509_REMOVE_INFO)
         char vrfy_buf[512];
-        #endif
+#endif
         mbedtls_printf( " failed\n" );
-        #if !defined(MBEDTLS_X509_REMOVE_INFO)
+#if !defined(MBEDTLS_X509_REMOVE_INFO)
         mbedtls_x509_crt_verify_info( vrfy_buf, sizeof( vrfy_buf ), "  ! ", flags );
         mbedtls_printf( "%s\n", vrfy_buf );
-        #endif
+#endif
     }
     else
         mbedtls_printf( " ok\n" );
@@ -245,14 +245,14 @@ int main( void )
     mbedtls_ssl_close_notify( &ssl );
     exit_code = MBEDTLS_EXIT_SUCCESS;
 exit:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
         mbedtls_printf("Last error was: %d - %s\n\n", ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( &server_fd );
     mbedtls_x509_crt_free( &cacert );
     mbedtls_ssl_free( &ssl );

@@ -262,25 +262,25 @@ int send_cb( void *ctx, unsigned char const *buf, size_t len )
 #endif
 uint16_t ssl_sig_algs_for_test[] =
 {
-    #if defined(MBEDTLS_SHA512_C)
+#if defined(MBEDTLS_SHA512_C)
     MBEDTLS_SSL_SIG_ALG( MBEDTLS_SSL_HASH_SHA512 )
-    #endif
-    #if defined(MBEDTLS_SHA384_C)
+#endif
+#if defined(MBEDTLS_SHA384_C)
     MBEDTLS_SSL_SIG_ALG( MBEDTLS_SSL_HASH_SHA384 )
-    #endif
-    #if defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_SHA256_C)
     MBEDTLS_SSL_SIG_ALG( MBEDTLS_SSL_HASH_SHA256 )
-    #endif
-    #if defined(MBEDTLS_SHA224_C)
+#endif
+#if defined(MBEDTLS_SHA224_C)
     MBEDTLS_SSL_SIG_ALG( MBEDTLS_SSL_HASH_SHA224 )
-    #endif
-    #if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_RSA_C) && defined(MBEDTLS_SHA256_C)
     MBEDTLS_TLS1_3_SIG_RSA_PSS_RSAE_SHA256,
-    #endif /* MBEDTLS_RSA_C && MBEDTLS_SHA256_C */
-    #if defined(MBEDTLS_SHA1_C)
+#endif /* MBEDTLS_RSA_C && MBEDTLS_SHA256_C */
+#if defined(MBEDTLS_SHA1_C)
     /* Allow SHA-1 as we use it extensively in tests. */
     MBEDTLS_SSL_SIG_ALG( MBEDTLS_SSL_HASH_SHA1 )
-    #endif
+#endif
     MBEDTLS_TLS1_3_SIG_NONE
 };
 #endif /* MBEDTLS_X509_CRT_PARSE_C */
@@ -292,9 +292,9 @@ uint16_t ssl_sig_algs_for_test[] =
 int x509_crt_verify_info( char *buf, size_t size, const char *prefix,
                           uint32_t flags )
 {
-    #if !defined(MBEDTLS_X509_REMOVE_INFO)
+#if !defined(MBEDTLS_X509_REMOVE_INFO)
     return( mbedtls_x509_crt_verify_info( buf, size, prefix, flags ) );
-    #else /* !MBEDTLS_X509_REMOVE_INFO */
+#else /* !MBEDTLS_X509_REMOVE_INFO */
     int ret;
     char *p = buf;
     size_t n = size;
@@ -314,7 +314,7 @@ int x509_crt_verify_info( char *buf, size_t size, const char *prefix,
         MBEDTLS_X509_SAFE_SNPRINTF;
     }
     return( (int) ( size - n ) );
-    #endif /* MBEDTLS_X509_REMOVE_INFO */
+#endif /* MBEDTLS_X509_REMOVE_INFO */
 }
 #endif /* MBEDTLS_X509_CRT_PARSE_C */
 

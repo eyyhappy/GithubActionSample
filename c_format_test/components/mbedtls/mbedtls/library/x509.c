@@ -40,26 +40,26 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_free      free
-#define mbedtls_calloc    calloc
-#define mbedtls_printf    printf
-#define mbedtls_snprintf  snprintf
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_free      free
+    #define mbedtls_calloc    calloc
+    #define mbedtls_printf    printf
+    #define mbedtls_snprintf  snprintf
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+    #include "mbedtls/platform_time.h"
 #endif
 #if defined(MBEDTLS_HAVE_TIME_DATE)
-#include "mbedtls/platform_util.h"
-#include <time.h>
+    #include "mbedtls/platform_util.h"
+    #include <time.h>
 #endif
 
 #define CHECK(code) if( ( ret = ( code ) ) != 0 ){ return( ret ); }
@@ -128,34 +128,34 @@ static inline const char* md_type_to_string( mbedtls_md_type_t md_alg )
 {
     switch( md_alg )
     {
-            #if defined(MBEDTLS_MD5_C)
+#if defined(MBEDTLS_MD5_C)
         case MBEDTLS_MD_MD5:
             return( "MD5" );
-            #endif
-            #if defined(MBEDTLS_SHA1_C)
+#endif
+#if defined(MBEDTLS_SHA1_C)
         case MBEDTLS_MD_SHA1:
             return( "SHA1" );
-            #endif
-            #if defined(MBEDTLS_SHA224_C)
+#endif
+#if defined(MBEDTLS_SHA224_C)
         case MBEDTLS_MD_SHA224:
             return( "SHA224" );
-            #endif
-            #if defined(MBEDTLS_SHA256_C)
+#endif
+#if defined(MBEDTLS_SHA256_C)
         case MBEDTLS_MD_SHA256:
             return( "SHA256" );
-            #endif
-            #if defined(MBEDTLS_SHA384_C)
+#endif
+#if defined(MBEDTLS_SHA384_C)
         case MBEDTLS_MD_SHA384:
             return( "SHA384" );
-            #endif
-            #if defined(MBEDTLS_SHA512_C)
+#endif
+#if defined(MBEDTLS_SHA512_C)
         case MBEDTLS_MD_SHA512:
             return( "SHA512" );
-            #endif
-            #if defined(MBEDTLS_RIPEMD160_C)
+#endif
+#if defined(MBEDTLS_RIPEMD160_C)
         case MBEDTLS_MD_RIPEMD160:
             return( "RIPEMD160" );
-            #endif
+#endif
         case MBEDTLS_MD_NONE:
             return( NULL );
         default:
@@ -613,7 +613,7 @@ int mbedtls_x509_get_sig_alg( const mbedtls_x509_buf *sig_oid, const mbedtls_x50
         return( MBEDTLS_ERR_X509_BAD_INPUT_DATA );
     if( ( ret = mbedtls_oid_get_sig_alg( sig_oid, md_alg, pk_alg ) ) != 0 )
         return( MBEDTLS_ERROR_ADD( MBEDTLS_ERR_X509_UNKNOWN_SIG_ALG, ret ) );
-    #if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
+#if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
     if( *pk_alg == MBEDTLS_PK_RSASSA_PSS )
     {
         mbedtls_pk_rsassa_pss_options *pss_opts;
@@ -632,7 +632,7 @@ int mbedtls_x509_get_sig_alg( const mbedtls_x509_buf *sig_oid, const mbedtls_x50
         *sig_opts = (void *) pss_opts;
     }
     else
-    #endif /* MBEDTLS_X509_RSASSA_PSS_SUPPORT */
+#endif /* MBEDTLS_X509_RSASSA_PSS_SUPPORT */
     {
         /* Make sure parameters are absent or NULL */
         if( ( sig_params->tag != MBEDTLS_ASN1_NULL && sig_params->tag != 0 ) ||
@@ -779,7 +779,7 @@ int mbedtls_x509_sig_alg_gets( char *buf, size_t size, const mbedtls_x509_buf *s
     else
         ret = mbedtls_snprintf( p, n, "%s", desc );
     MBEDTLS_X509_SAFE_SNPRINTF;
-    #if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
+#if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
     if( pk_alg == MBEDTLS_PK_RSASSA_PSS )
     {
         const mbedtls_pk_rsassa_pss_options *pss_opts;
@@ -792,11 +792,11 @@ int mbedtls_x509_sig_alg_gets( char *buf, size_t size, const mbedtls_x509_buf *s
                                 (unsigned int) pss_opts->expected_salt_len );
         MBEDTLS_X509_SAFE_SNPRINTF;
     }
-    #else
+#else
     ((void) pk_alg);
     ((void) md_alg);
     ((void) sig_opts);
-    #endif /* MBEDTLS_X509_RSASSA_PSS_SUPPORT */
+#endif /* MBEDTLS_X509_RSASSA_PSS_SUPPORT */
     return( (int)( size - n ) );
 }
 #endif /* MBEDTLS_X509_REMOVE_INFO */

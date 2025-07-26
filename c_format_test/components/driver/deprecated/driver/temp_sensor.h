@@ -12,7 +12,7 @@
 #include "driver/temp_sensor_types_legacy.h"
 
 #if !CONFIG_TEMP_SENSOR_SUPPRESS_DEPRECATE_WARN
-#warning "legacy temperature sensor driver is deprecated, please migrate to driver/temperature_sensor.h"
+    #warning "legacy temperature sensor driver is deprecated, please migrate to driver/temperature_sensor.h"
 #endif
 
 #ifdef __cplusplus

@@ -10,8 +10,8 @@
 #include "freertos/semphr.h"
 #include "sdkconfig.h"
 #if !CONFIG_FREERTOS_UNICORE
-#include "esp_ipc.h"
-#include "esp_freertos_hooks.h"
+    #include "esp_ipc.h"
+    #include "esp_freertos_hooks.h"
 #endif
 
 #if !CONFIG_FREERTOS_UNICORE
@@ -38,9 +38,9 @@ void unity_utils_task_delete(TaskHandle_t thandle)
      * hence not recommended for test scenarios */
     TEST_ASSERT_NOT_NULL_MESSAGE(thandle, "unity_utils_task_delete: handle is NULL");
     TEST_ASSERT_NOT_EQUAL_MESSAGE(thandle, xTaskGetCurrentTaskHandle(), "unity_utils_task_delete: handle is of currently executing task");
-    #if CONFIG_FREERTOS_UNICORE
+#if CONFIG_FREERTOS_UNICORE
     vTaskDelete(thandle);
-    #else // CONFIG_FREERTOS_UNICORE
+#else // CONFIG_FREERTOS_UNICORE
     const BaseType_t tsk_affinity = xTaskGetAffinity(thandle);
     const BaseType_t core_id = xPortGetCoreID();
     printf("Task_affinity: 0x%x, current_core: %d\n", tsk_affinity, core_id);
@@ -68,5 +68,5 @@ void unity_utils_task_delete(TaskHandle_t thandle)
         /* Task affinity and current core are same, so we can safely proceed for deletion */
         vTaskDelete(thandle);
     }
-    #endif // !CONFIG_FREERTOS_UNICORE
+#endif // !CONFIG_FREERTOS_UNICORE
 }

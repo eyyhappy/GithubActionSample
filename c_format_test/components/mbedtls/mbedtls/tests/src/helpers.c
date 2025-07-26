@@ -23,7 +23,7 @@
 /* Static global variables */
 
 #if defined(MBEDTLS_PLATFORM_C)
-static mbedtls_platform_context platform_ctx;
+    static mbedtls_platform_context platform_ctx;
 #endif
 
 mbedtls_test_info_t mbedtls_test_info;
@@ -34,17 +34,17 @@ mbedtls_test_info_t mbedtls_test_info;
 int mbedtls_test_platform_setup( void )
 {
     int ret = 0;
-    #if defined(MBEDTLS_PLATFORM_C)
+#if defined(MBEDTLS_PLATFORM_C)
     ret = mbedtls_platform_setup( &platform_ctx );
-    #endif /* MBEDTLS_PLATFORM_C */
+#endif /* MBEDTLS_PLATFORM_C */
     return( ret );
 }
 
 void mbedtls_test_platform_teardown( void )
 {
-    #if defined(MBEDTLS_PLATFORM_C)
+#if defined(MBEDTLS_PLATFORM_C)
     mbedtls_platform_teardown( &platform_ctx );
-    #endif /* MBEDTLS_PLATFORM_C */
+#endif /* MBEDTLS_PLATFORM_C */
 }
 
 static int ascii2uc(const char c, unsigned char *uc)

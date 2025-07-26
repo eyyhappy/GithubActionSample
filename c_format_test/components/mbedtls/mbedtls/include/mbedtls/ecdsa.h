@@ -108,9 +108,9 @@ typedef struct
                                               shared administrative info    */
     mbedtls_ecdsa_restart_ver_ctx *MBEDTLS_PRIVATE(ver); /*!<  ecdsa_verify() sub-context    */
     mbedtls_ecdsa_restart_sig_ctx *MBEDTLS_PRIVATE(sig); /*!<  ecdsa_sign() sub-context      */
-    #if defined(MBEDTLS_ECDSA_DETERMINISTIC)
+#if defined(MBEDTLS_ECDSA_DETERMINISTIC)
     mbedtls_ecdsa_restart_det_ctx *MBEDTLS_PRIVATE(det); /*!<  ecdsa_sign_det() sub-context  */
-    #endif
+#endif
 } mbedtls_ecdsa_restart_ctx;
 
 #else /* MBEDTLS_ECP_RESTARTABLE */

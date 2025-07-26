@@ -9,9 +9,9 @@
 #include <sys/cdefs.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -142,7 +142,7 @@ esp_err_t mcpwm_comparator_register_event_callbacks(mcpwm_cmpr_handle_t cmpr, co
     int group_id = group->group_id;
     int oper_id = oper->oper_id;
     int cmpr_id = cmpr->cmpr_id;
-    #if CONFIG_MCWPM_ISR_IRAM_SAFE
+#if CONFIG_MCWPM_ISR_IRAM_SAFE
     if (cbs->on_reach)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_reach), ESP_ERR_INVALID_ARG, TAG, "on_reach callback not in IRAM");
@@ -151,7 +151,7 @@ esp_err_t mcpwm_comparator_register_event_callbacks(mcpwm_cmpr_handle_t cmpr, co
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!cmpr->intr)
     {

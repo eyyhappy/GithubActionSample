@@ -178,13 +178,13 @@ void esp_sha_unlock_engine(esp_sha_type sha_type)
 
 void esp_sha_read_digest_state(esp_sha_type sha_type, void *digest_state)
 {
-    #ifndef NDEBUG
+#ifndef NDEBUG
     {
         SemaphoreHandle_t engine_state = sha_get_engine_state(sha_type);
         assert(uxSemaphoreGetCount(engine_state) == 0 &&
                "SHA engine should be locked" );
     }
-    #endif
+#endif
     // preemptively do this before entering the critical section, then re-check once in it
     sha_hal_wait_idle();
     esp_sha_lock_memory_block();
@@ -194,13 +194,13 @@ void esp_sha_read_digest_state(esp_sha_type sha_type, void *digest_state)
 
 void esp_sha_block(esp_sha_type sha_type, const void *data_block, bool first_block)
 {
-    #ifndef NDEBUG
+#ifndef NDEBUG
     {
         SemaphoreHandle_t engine_state = sha_get_engine_state(sha_type);
         assert(uxSemaphoreGetCount(engine_state) == 0 &&
                "SHA engine should be locked" );
     }
-    #endif
+#endif
     // preemptively do this before entering the critical section, then re-check once in it
     sha_hal_wait_idle();
     esp_sha_lock_memory_block();

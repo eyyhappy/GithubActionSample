@@ -33,8 +33,8 @@
 #include <string.h>
 #include "mbedtls/platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
-#define mbedtls_calloc calloc
-#define mbedtls_free   free
+    #define mbedtls_calloc calloc
+    #define mbedtls_free   free
 #endif
 
 #include <mbedtls/rsa.h>
@@ -164,7 +164,7 @@ psa_status_t mbedtls_psa_rsa_export_key( psa_key_type_t type,
         size_t data_size,
         size_t *data_length )
 {
-    #if defined(MBEDTLS_PK_WRITE_C)
+#if defined(MBEDTLS_PK_WRITE_C)
     int ret;
     mbedtls_pk_context pk;
     uint8_t *pos = data + data_size;
@@ -199,14 +199,14 @@ psa_status_t mbedtls_psa_rsa_export_key( psa_key_type_t type,
     }
     *data_length = ret;
     return( PSA_SUCCESS );
-    #else
+#else
     (void) type;
     (void) rsa;
     (void) data;
     (void) data_size;
     (void) data_length;
     return( PSA_ERROR_NOT_SUPPORTED );
-    #endif /* MBEDTLS_PK_WRITE_C */
+#endif /* MBEDTLS_PK_WRITE_C */
 }
 
 psa_status_t mbedtls_psa_rsa_export_public_key(
@@ -307,10 +307,10 @@ static psa_status_t psa_rsa_decode_md_type( psa_algorithm_t alg,
     /* The Mbed TLS RSA module uses an unsigned int for hash length
      * parameters. Validate that it fits so that we don't risk an
      * overflow later. */
-    #if SIZE_MAX > UINT_MAX
+#if SIZE_MAX > UINT_MAX
     if( hash_length > UINT_MAX )
         return( PSA_ERROR_INVALID_ARGUMENT );
-    #endif
+#endif
     /* For signatures using a hash, the hash length must be correct. */
     if( alg != PSA_ALG_RSA_PKCS1V15_SIGN_RAW )
     {
@@ -346,7 +346,7 @@ psa_status_t mbedtls_psa_rsa_sign_hash(
         status = PSA_ERROR_BUFFER_TOO_SMALL;
         goto exit;
     }
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN)
     if( PSA_ALG_IS_RSA_PKCS1V15_SIGN( alg ) )
     {
         ret = mbedtls_rsa_set_padding( rsa, MBEDTLS_RSA_PKCS_V15,
@@ -363,8 +363,8 @@ psa_status_t mbedtls_psa_rsa_sign_hash(
         }
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
         if( PSA_ALG_IS_RSA_PSS( alg ) )
         {
             ret = mbedtls_rsa_set_padding( rsa, MBEDTLS_RSA_PKCS_V21, md_alg );
@@ -380,7 +380,7 @@ psa_status_t mbedtls_psa_rsa_sign_hash(
             }
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS */
         {
             status = PSA_ERROR_INVALID_ARGUMENT;
             goto exit;
@@ -439,7 +439,7 @@ psa_status_t mbedtls_psa_rsa_verify_hash(
         status = PSA_ERROR_INVALID_SIGNATURE;
         goto exit;
     }
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN)
     if( PSA_ALG_IS_RSA_PKCS1V15_SIGN( alg ) )
     {
         ret = mbedtls_rsa_set_padding( rsa, MBEDTLS_RSA_PKCS_V15,
@@ -454,8 +454,8 @@ psa_status_t mbedtls_psa_rsa_verify_hash(
         }
     }
     else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN */
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_SIGN */
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS)
         if( PSA_ALG_IS_RSA_PSS( alg ) )
         {
             ret = mbedtls_rsa_set_padding( rsa, MBEDTLS_RSA_PKCS_V21, md_alg );
@@ -472,7 +472,7 @@ psa_status_t mbedtls_psa_rsa_verify_hash(
             }
         }
         else
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PSS */
         {
             status = PSA_ERROR_INVALID_ARGUMENT;
             goto exit;
@@ -531,7 +531,7 @@ psa_status_t mbedtls_psa_asymmetric_encrypt( const psa_key_attributes_t *attribu
     (void) output_length;
     if( PSA_KEY_TYPE_IS_RSA( attributes->core.type ) )
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
         mbedtls_rsa_context *rsa = NULL;
         status = mbedtls_psa_rsa_load_representation( attributes->core.type,
@@ -545,11 +545,11 @@ psa_status_t mbedtls_psa_asymmetric_encrypt( const psa_key_attributes_t *attribu
             status = PSA_ERROR_BUFFER_TOO_SMALL;
             goto rsa_exit;
         }
-        #endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
+#endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
         * defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP) */
         if( alg == PSA_ALG_RSA_PKCS1V15_CRYPT )
         {
-            #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT)
             status = mbedtls_to_psa_error(
                          mbedtls_rsa_pkcs1_encrypt( rsa,
                                                     mbedtls_psa_get_random,
@@ -557,13 +557,13 @@ psa_status_t mbedtls_psa_asymmetric_encrypt( const psa_key_attributes_t *attribu
                                                     input_length,
                                                     input,
                                                     output ) );
-            #else
+#else
             status = PSA_ERROR_NOT_SUPPORTED;
-            #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT */
         }
         else if( PSA_ALG_IS_RSA_OAEP( alg ) )
         {
-            #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
             status = mbedtls_to_psa_error(
                          psa_rsa_oaep_set_padding_mode( alg, rsa ) );
             if( status != PSA_SUCCESS )
@@ -576,22 +576,22 @@ psa_status_t mbedtls_psa_asymmetric_encrypt( const psa_key_attributes_t *attribu
                                  input_length,
                                  input,
                                  output ) );
-            #else
+#else
             status = PSA_ERROR_NOT_SUPPORTED;
-            #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP */
         }
         else
         {
             status = PSA_ERROR_INVALID_ARGUMENT;
         }
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
     rsa_exit:
         if( status == PSA_SUCCESS )
             *output_length = mbedtls_rsa_get_len( rsa );
         mbedtls_rsa_free( rsa );
         mbedtls_free( rsa );
-        #endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
+#endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
         * defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP) */
     }
     else
@@ -626,7 +626,7 @@ psa_status_t mbedtls_psa_asymmetric_decrypt( const psa_key_attributes_t *attribu
     *output_length = 0;
     if( attributes->core.type == PSA_KEY_TYPE_RSA_KEY_PAIR )
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
         mbedtls_rsa_context *rsa = NULL;
         status = mbedtls_psa_rsa_load_representation( attributes->core.type,
@@ -640,11 +640,11 @@ psa_status_t mbedtls_psa_asymmetric_decrypt( const psa_key_attributes_t *attribu
             status = PSA_ERROR_INVALID_ARGUMENT;
             goto rsa_exit;
         }
-        #endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
+#endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
         * defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP) */
         if( alg == PSA_ALG_RSA_PKCS1V15_CRYPT )
         {
-            #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT)
             status = mbedtls_to_psa_error(
                          mbedtls_rsa_pkcs1_decrypt( rsa,
                                                     mbedtls_psa_get_random,
@@ -653,13 +653,13 @@ psa_status_t mbedtls_psa_asymmetric_decrypt( const psa_key_attributes_t *attribu
                                                     input,
                                                     output,
                                                     output_size ) );
-            #else
+#else
             status = PSA_ERROR_NOT_SUPPORTED;
-            #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT */
         }
         else if( PSA_ALG_IS_RSA_OAEP( alg ) )
         {
-            #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
             status = mbedtls_to_psa_error(
                          psa_rsa_oaep_set_padding_mode( alg, rsa ) );
             if( status != PSA_SUCCESS )
@@ -673,20 +673,20 @@ psa_status_t mbedtls_psa_asymmetric_decrypt( const psa_key_attributes_t *attribu
                                  input,
                                  output,
                                  output_size ) );
-            #else
+#else
             status = PSA_ERROR_NOT_SUPPORTED;
-            #endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP */
         }
         else
         {
             status = PSA_ERROR_INVALID_ARGUMENT;
         }
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP)
     rsa_exit:
         mbedtls_rsa_free( rsa );
         mbedtls_free( rsa );
-        #endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
+#endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_PKCS1V15_CRYPT) ||
         * defined(MBEDTLS_PSA_BUILTIN_ALG_RSA_OAEP) */
     }
     else

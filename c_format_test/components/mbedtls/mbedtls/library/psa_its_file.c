@@ -23,13 +23,13 @@
 #if defined(MBEDTLS_PSA_ITS_FILE_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#define mbedtls_snprintf   snprintf
+    #define mbedtls_snprintf   snprintf
 #endif
 
 #if defined(_WIN32)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include "psa_crypto_its.h"
@@ -40,7 +40,7 @@
 #include <string.h>
 
 #if !defined(PSA_ITS_STORAGE_PREFIX)
-#define PSA_ITS_STORAGE_PREFIX ""
+    #define PSA_ITS_STORAGE_PREFIX ""
 #endif
 
 #define PSA_ITS_STORAGE_FILENAME_PATTERN "%08x%08x"
@@ -146,21 +146,21 @@ psa_status_t psa_its_get( psa_storage_uid_t uid,
     status = PSA_ERROR_INVALID_ARGUMENT;
     if( data_offset + data_length < data_offset )
         goto exit;
-    #if SIZE_MAX < 0xffffffff
+#if SIZE_MAX < 0xffffffff
     if( data_offset + data_length > SIZE_MAX )
         goto exit;
-    #endif
+#endif
     if( data_offset + data_length > info.size )
         goto exit;
     status = PSA_ERROR_STORAGE_FAILURE;
-    #if LONG_MAX < 0xffffffff
+#if LONG_MAX < 0xffffffff
     while( data_offset > LONG_MAX )
     {
         if( fseek( stream, LONG_MAX, SEEK_CUR ) != 0 )
             goto exit;
         data_offset -= LONG_MAX;
     }
-    #endif
+#endif
     if( fseek( stream, data_offset, SEEK_CUR ) != 0 )
         goto exit;
     n = fread( p_data, 1, data_length, stream );

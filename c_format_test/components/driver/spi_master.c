@@ -186,13 +186,13 @@ static esp_err_t spi_master_deinit_driver(void* arg);
 static inline bool is_valid_host(spi_host_device_t host)
 {
 //SPI1 can be used as GPSPI only on ESP32
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     return host >= SPI1_HOST && host <= SPI3_HOST;
-    #elif (SOC_SPI_PERIPH_NUM == 2)
+#elif (SOC_SPI_PERIPH_NUM == 2)
     return host == SPI2_HOST;
-    #elif (SOC_SPI_PERIPH_NUM == 3)
+#elif (SOC_SPI_PERIPH_NUM == 3)
     return host >= SPI2_HOST && host <= SPI3_HOST;
-    #endif
+#endif
 }
 
 // Should be called before any devices are actually registered or used.
@@ -324,12 +324,12 @@ esp_err_t spi_bus_add_device(spi_host_device_t host_id, const spi_device_interfa
     uint32_t apb_clk_freq_hz = esp_clk_apb_freq();
     assert((apb_clk_freq_hz == 80 * 1000 * 1000) || (apb_clk_freq_hz == 40 * 1000 * 1000) || (apb_clk_freq_hz == 48 * 1000 * 1000));
     SPI_CHECK((dev_config->clock_speed_hz > 0) && (dev_config->clock_speed_hz <= apb_clk_freq_hz), "invalid sclk speed", ESP_ERR_INVALID_ARG);
-    #ifdef CONFIG_IDF_TARGET_ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32
     //The hardware looks like it would support this, but actually setting cs_ena_pretrans when transferring in full
     //duplex mode does absolutely nothing on the ESP32.
     SPI_CHECK(dev_config->cs_ena_pretrans <= 1 || (dev_config->address_bits == 0 && dev_config->command_bits == 0) ||
               (dev_config->flags & SPI_DEVICE_HALFDUPLEX), "In full-duplex mode, only support cs pretrans delay = 1 and without address_bits and command_bits", ESP_ERR_INVALID_ARG);
-    #endif
+#endif
     uint32_t lock_flag = ((dev_config->spics_io_num != -1) ? SPI_BUS_LOCK_DEV_FLAG_CS_REQUIRED : 0);
     spi_bus_lock_dev_config_t lock_config =
     {
@@ -408,9 +408,9 @@ esp_err_t spi_bus_add_device(spi_host_device_t host_id, const spi_device_interfa
     hal_dev->tx_lsbfirst = dev_config->flags & SPI_DEVICE_TXBIT_LSBFIRST ? 1 : 0;
     hal_dev->rx_lsbfirst = dev_config->flags & SPI_DEVICE_RXBIT_LSBFIRST ? 1 : 0;
     hal_dev->no_compensate = dev_config->flags & SPI_DEVICE_NO_DUMMY ? 1 : 0;
-    #if SOC_SPI_AS_CS_SUPPORTED
+#if SOC_SPI_AS_CS_SUPPORTED
     hal_dev->as_cs = dev_config->flags & SPI_DEVICE_CLK_AS_CS ? 1 : 0;
-    #endif
+#endif
     hal_dev->positive_cs = dev_config->flags & SPI_DEVICE_POSITIVE_CS ? 1 : 0;
     *handle = dev;
     ESP_LOGD(SPI_TAG, "SPI%d: New device added to CS%d, effective clock: %dkHz", host_id + 1, freecs, freq / 1000);
@@ -521,12 +521,12 @@ static void SPI_MASTER_ISR_ATTR spi_new_trans(spi_device_t *dev, spi_trans_priv_
     //Set up OIO/QIO/DIO if needed
     hal_trans.line_mode.data_lines = (trans->flags & SPI_TRANS_MODE_DIO) ? 2 :
                                      (trans->flags & SPI_TRANS_MODE_QIO) ? 4 : 1;
-    #if SOC_SPI_SUPPORT_OCT
+#if SOC_SPI_SUPPORT_OCT
     if (trans->flags & SPI_TRANS_MODE_OCT)
     {
         hal_trans.line_mode.data_lines = 8;
     }
-    #endif
+#endif
     hal_trans.line_mode.addr_lines = (trans->flags & SPI_TRANS_MULTILINE_ADDR) ? hal_trans.line_mode.data_lines : 1;
     hal_trans.line_mode.cmd_lines = (trans->flags & SPI_TRANS_MULTILINE_CMD) ? hal_trans.line_mode.data_lines : 1;
     if (trans->flags & SPI_TRANS_VARIABLE_CMD)
@@ -595,22 +595,22 @@ static void SPI_MASTER_ISR_ATTR spi_intr(void *arg)
         //Okay, transaction is done.
         const int cs = host->cur_cs;
         //Tell common code DMA workaround that our DMA channel is idle. If needed, the code will do a DMA reset.
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         if (bus_attr->dma_enabled)
         {
             //This workaround is only for esp32, where tx_dma_chan and rx_dma_chan are always same
             spicommon_dmaworkaround_idle(bus_attr->tx_dma_chan);
         }
-        #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
         //cur_cs is changed to DEV_NUM_MAX here
         spi_post_trans(host);
         // spi_bus_lock_bg_pause(bus_attr->lock);
         //Return transaction descriptor.
         xQueueSendFromISR(host->device[cs]->ret_queue, &host->cur_trans_buf, &do_yield);
-        #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
         //Release APB frequency lock
         esp_pm_lock_release(bus_attr->pm_lock);
-        #endif
+#endif
     }
     /*------------ new transaction starts here ------------------*/
     assert(host->cur_cs == DEV_NUM_MAX);
@@ -650,14 +650,14 @@ static void SPI_MASTER_ISR_ATTR spi_intr(void *arg)
         if (trans_found)
         {
             spi_trans_priv_t *const cur_trans_buf = &host->cur_trans_buf;
-            #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
             if (bus_attr->dma_enabled && (cur_trans_buf->buffer_to_rcv || cur_trans_buf->buffer_to_send))
             {
                 //mark channel as active, so that the DMA will not be reset by the slave
                 //This workaround is only for esp32, where tx_dma_chan and rx_dma_chan are always same
                 spicommon_dmaworkaround_transfer_active(bus_attr->tx_dma_chan);
             }
-            #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
             spi_new_trans(device_to_send, cur_trans_buf);
         }
         // Exit of the ISR, handle interrupt re-enable (if sending transaction), retry (if there's coming BG),
@@ -685,19 +685,19 @@ static SPI_MASTER_ISR_ATTR esp_err_t check_trans_valid(spi_device_handle_t handl
     SPI_CHECK(trans_desc->rxlength <= bus_attr->max_transfer_sz * 8, "rxdata transfer > host maximum", ESP_ERR_INVALID_ARG);
     SPI_CHECK(is_half_duplex || trans_desc->rxlength <= trans_desc->length, "rx length > tx length in full duplex mode", ESP_ERR_INVALID_ARG);
     //check working mode
-    #if SOC_SPI_SUPPORT_OCT
+#if SOC_SPI_SUPPORT_OCT
     SPI_CHECK(!(host->id == SPI3_HOST && trans_desc->flags & SPI_TRANS_MODE_OCT), "SPI3 does not support octal mode", ESP_ERR_INVALID_ARG);
     SPI_CHECK(!((trans_desc->flags & SPI_TRANS_MODE_OCT) && (handle->cfg.flags & SPI_DEVICE_3WIRE)), "Incompatible when setting to both Octal mode and 3-wire-mode", ESP_ERR_INVALID_ARG);
     SPI_CHECK(!((trans_desc->flags & SPI_TRANS_MODE_OCT) && !is_half_duplex), "Incompatible when setting to both Octal mode and half duplex mode", ESP_ERR_INVALID_ARG);
-    #endif
+#endif
     SPI_CHECK(!((trans_desc->flags & (SPI_TRANS_MODE_DIO | SPI_TRANS_MODE_QIO)) && (handle->cfg.flags & SPI_DEVICE_3WIRE)), "Incompatible when setting to both multi-line mode and 3-wire-mode", ESP_ERR_INVALID_ARG);
     SPI_CHECK(!((trans_desc->flags & (SPI_TRANS_MODE_DIO | SPI_TRANS_MODE_QIO)) && !is_half_duplex), "Incompatible when setting to both multi-line mode and half duplex mode", ESP_ERR_INVALID_ARG);
-    #ifdef CONFIG_IDF_TARGET_ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32
     SPI_CHECK(!is_half_duplex || !bus_attr->dma_enabled || !rx_enabled || !tx_enabled, "SPI half duplex mode does not support using DMA with both MOSI and MISO phases.", ESP_ERR_INVALID_ARG );
-    #endif
-    #if !SOC_SPI_HD_BOTH_INOUT_SUPPORTED
+#endif
+#if !SOC_SPI_HD_BOTH_INOUT_SUPPORTED
     SPI_CHECK(!is_half_duplex || !tx_enabled || !rx_enabled, "SPI half duplex mode is not supported when both MOSI and MISO phases are enabled.", ESP_ERR_INVALID_ARG);
-    #endif
+#endif
     //MOSI phase is skipped only when both tx_buffer and SPI_TRANS_USE_TXDATA are not set.
     SPI_CHECK(trans_desc->length != 0 || !tx_enabled, "trans tx_buffer should be NULL and SPI_TRANS_USE_TXDATA should be cleared to skip MOSI phase.", ESP_ERR_INVALID_ARG);
     //MISO phase is skipped only when both rx_buffer and SPI_TRANS_USE_RXDATA are not set.
@@ -806,18 +806,18 @@ esp_err_t SPI_MASTER_ATTR spi_device_queue_trans(spi_device_handle_t handle, spi
     spi_trans_priv_t trans_buf;
     ret = setup_priv_desc(trans_desc, &trans_buf, (host->bus_attr->dma_enabled));
     if (ret != ESP_OK) return ret;
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_acquire(host->bus_attr->pm_lock);
-    #endif
+#endif
     //Send to queue and invoke the ISR.
     BaseType_t r = xQueueSend(handle->trans_queue, (void *)&trans_buf, ticks_to_wait);
     if (!r)
     {
         ret = ESP_ERR_TIMEOUT;
-        #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
         //Release APB frequency lock
         esp_pm_lock_release(host->bus_attr->pm_lock);
-        #endif
+#endif
         goto clean_up;
     }
     // The ISR will be invoked at correct time by the lock with `spi_bus_intr_enable`.
@@ -878,21 +878,21 @@ esp_err_t SPI_MASTER_ISR_ATTR spi_device_acquire_bus(spi_device_t *device, TickT
     }
     host->device_acquiring_lock = device;
     ESP_LOGD(SPI_TAG, "device%d locked the bus", device->id);
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     // though we don't suggest to block the task before ``release_bus``, still allow doing so.
     // this keeps the spi clock at 80MHz even if all tasks are blocked
     esp_pm_lock_acquire(host->bus_attr->pm_lock);
-    #endif
+#endif
     //configure the device ahead so that we don't need to do it again in the following transactions
     spi_setup_device(host->device[device->id]);
     //the DMA is also occupied by the device, all the slave devices that using DMA should wait until bus released.
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     if (host->bus_attr->dma_enabled)
     {
         //This workaround is only for esp32, where tx_dma_chan and rx_dma_chan are always same
         spicommon_dmaworkaround_transfer_active(host->bus_attr->tx_dma_chan);
     }
-    #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
     return ESP_OK;
 }
 
@@ -905,19 +905,19 @@ void SPI_MASTER_ISR_ATTR spi_device_release_bus(spi_device_t *dev)
         ESP_EARLY_LOGE(SPI_TAG, "Cannot release bus when a polling transaction is in progress.");
         assert(0);
     }
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     if (host->bus_attr->dma_enabled)
     {
         //This workaround is only for esp32, where tx_dma_chan and rx_dma_chan are always same
         spicommon_dmaworkaround_idle(host->bus_attr->tx_dma_chan);
     }
     //Tell common code DMA workaround that our DMA channel is idle. If needed, the code will do a DMA reset.
-    #endif  //#if CONFIG_IDF_TARGET_ESP32
+#endif  //#if CONFIG_IDF_TARGET_ESP32
     //allow clock to be lower than 80MHz when all tasks blocked
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     //Release APB frequency lock
     esp_pm_lock_release(host->bus_attr->pm_lock);
-    #endif
+#endif
     ESP_LOGD(SPI_TAG, "device%d release bus", dev->id);
     host->device_acquiring_lock = NULL;
     esp_err_t ret = spi_bus_lock_acquire_end(dev->dev_lock);

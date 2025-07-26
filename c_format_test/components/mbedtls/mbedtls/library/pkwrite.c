@@ -30,33 +30,33 @@
 #include <string.h>
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+    #include "mbedtls/rsa.h"
 #endif
 #if defined(MBEDTLS_ECP_C)
-#include "mbedtls/bignum.h"
-#include "mbedtls/ecp.h"
-#include "mbedtls/platform_util.h"
+    #include "mbedtls/bignum.h"
+    #include "mbedtls/ecp.h"
+    #include "mbedtls/platform_util.h"
 #endif
 #if defined(MBEDTLS_RSA_C) || defined(MBEDTLS_ECP_C)
-#include "pkwrite.h"
+    #include "pkwrite.h"
 #endif
 #if defined(MBEDTLS_ECDSA_C)
-#include "mbedtls/ecdsa.h"
+    #include "mbedtls/ecdsa.h"
 #endif
 #if defined(MBEDTLS_PEM_WRITE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
-#include "mbedtls/psa_util.h"
+    #include "psa/crypto.h"
+    #include "mbedtls/psa_util.h"
 #endif
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc    calloc
-#define mbedtls_free       free
+    #include <stdlib.h>
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free       free
 #endif
 
 /* Parameter validation macros based on platform_util.h */
@@ -169,17 +169,17 @@ int mbedtls_pk_write_pubkey( unsigned char **p, unsigned char *start,
     PK_VALIDATE_RET( *p != NULL );
     PK_VALIDATE_RET( start != NULL );
     PK_VALIDATE_RET( key != NULL );
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_RSA )
         MBEDTLS_ASN1_CHK_ADD( len, pk_write_rsa_pubkey( p, start, mbedtls_pk_rsa( *key ) ) );
     else
-    #endif
-    #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
         if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_ECKEY )
             MBEDTLS_ASN1_CHK_ADD( len, pk_write_ec_pubkey( p, start, mbedtls_pk_ec( *key ) ) );
         else
-    #endif
-        #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#endif
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
             if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_OPAQUE )
             {
                 size_t buffer_size;
@@ -199,7 +199,7 @@ int mbedtls_pk_write_pubkey( unsigned char **p, unsigned char *start,
                 }
             }
             else
-        #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
                 return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
     return( (int) len );
 }
@@ -229,13 +229,13 @@ int mbedtls_pk_write_pubkey_der( const mbedtls_pk_context *key, unsigned char *b
     MBEDTLS_ASN1_CHK_ADD( len, mbedtls_asn1_write_len( &c, buf, len ) );
     MBEDTLS_ASN1_CHK_ADD( len, mbedtls_asn1_write_tag( &c, buf, MBEDTLS_ASN1_BIT_STRING ) );
     pk_type = mbedtls_pk_get_type( key );
-    #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
     if( pk_type == MBEDTLS_PK_ECKEY )
     {
         MBEDTLS_ASN1_CHK_ADD( par_len, pk_write_ec_param( &c, buf, mbedtls_pk_ec( *key ) ) );
     }
-    #endif
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#endif
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     if( pk_type == MBEDTLS_PK_OPAQUE )
     {
         psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
@@ -276,7 +276,7 @@ int mbedtls_pk_write_pubkey_der( const mbedtls_pk_context *key, unsigned char *b
             return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
         }
     }
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     if( ( ret = mbedtls_oid_get_oid_by_pk_alg( pk_type, &oid,
                 &oid_len ) ) != 0 )
     {
@@ -300,7 +300,7 @@ int mbedtls_pk_write_key_der( const mbedtls_pk_context *key, unsigned char *buf,
         return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
     PK_VALIDATE_RET( buf != NULL );
     c = buf + size;
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_RSA )
     {
         mbedtls_mpi T; /* Temporary holding the exported parameters */
@@ -365,8 +365,8 @@ int mbedtls_pk_write_key_der( const mbedtls_pk_context *key, unsigned char *buf,
                               MBEDTLS_ASN1_SEQUENCE ) );
     }
     else
-    #endif /* MBEDTLS_RSA_C */
-    #if defined(MBEDTLS_ECP_C)
+#endif /* MBEDTLS_RSA_C */
+#if defined(MBEDTLS_ECP_C)
         if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_ECKEY )
         {
             mbedtls_ecp_keypair *ec = mbedtls_pk_ec( *key );
@@ -408,7 +408,7 @@ int mbedtls_pk_write_key_der( const mbedtls_pk_context *key, unsigned char *buf,
                                   MBEDTLS_ASN1_SEQUENCE ) );
         }
         else
-    #endif /* MBEDTLS_ECP_C */
+#endif /* MBEDTLS_ECP_C */
             return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
     return( (int) len );
 }
@@ -461,22 +461,22 @@ int mbedtls_pk_write_key_pem( const mbedtls_pk_context *key, unsigned char *buf,
     PK_VALIDATE_RET( buf != NULL || size == 0 );
     if( ( ret = mbedtls_pk_write_key_der( key, output_buf, sizeof(output_buf) ) ) < 0 )
         return( ret );
-    #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
     if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_RSA )
     {
         begin = PEM_BEGIN_PRIVATE_KEY_RSA;
         end = PEM_END_PRIVATE_KEY_RSA;
     }
     else
-    #endif
-    #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
         if( mbedtls_pk_get_type( key ) == MBEDTLS_PK_ECKEY )
         {
             begin = PEM_BEGIN_PRIVATE_KEY_EC;
             end = PEM_END_PRIVATE_KEY_EC;
         }
         else
-    #endif
+#endif
             return( MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE );
     if( ( ret = mbedtls_pem_write_buffer( begin, end,
                                           output_buf + sizeof(output_buf) - ret,

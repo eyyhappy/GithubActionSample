@@ -439,10 +439,10 @@ TEST_CASE("mbedtls AES GCM performance, start, update, ret", "[aes-gcm]")
     // bytes/usec = MB/sec
     float mb_sec = CALL_SZ / elapsed_usec;
     printf("GCM encryption rate %.3fMB/sec\n", mb_sec);
-    #ifdef CONFIG_MBEDTLS_HARDWARE_GCM
+#ifdef CONFIG_MBEDTLS_HARDWARE_GCM
     // Don't put a hard limit on software AES performance
     TEST_PERFORMANCE_GREATER_THAN(AES_GCM_UPDATE_THROUGHPUT_MBSEC, "%.3fMB/sec", mb_sec);
-    #endif
+#endif
 }
 
 
@@ -487,10 +487,10 @@ TEST_CASE("mbedtls AES GCM performance, crypt-and-tag", "[aes-gcm]")
     // bytes/usec = MB/sec
     float mb_sec = CALL_SZ / elapsed_usec;
     printf("GCM encryption rate %.3fMB/sec\n", mb_sec);
-    #ifdef CONFIG_MBEDTLS_HARDWARE_GCM
+#ifdef CONFIG_MBEDTLS_HARDWARE_GCM
     // Don't put a hard limit on software AES performance
     TEST_PERFORMANCE_GREATER_THAN(AES_GCM_CRYPT_TAG_THROUGHPUT_MBSEC, "%.3fMB/sec", mb_sec);
-    #endif
+#endif
 }
 
 TEST_CASE("mbedtls AES GCM - Combine different IV/Key/Plaintext/AAD lengths", "[aes-gcm]")

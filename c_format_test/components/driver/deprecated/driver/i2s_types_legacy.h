@@ -51,7 +51,7 @@ typedef enum
 {
     I2S_CHANNEL_MONO        = 1,  /*!< I2S channel (mono), one channel activated. In this mode, you only need to send one channel data but the fifo will copy same data for the other unactivated channels automatically, then both channels will transmit same data. */
     I2S_CHANNEL_STEREO      = 2,  /*!< I2S channel (stereo), two (or more) channels activated. In this mode, these channels will transmit different data. */
-    #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
     // Bit map of activated chan.
     // There are 16 channels in TDM mode.
     // For TX module, only the activated channel send the audio data, the unactivated channel send a constant(configurable) or will be skiped if 'skip_msk' is set.
@@ -74,7 +74,7 @@ typedef enum
     I2S_TDM_ACTIVE_CH13 = (0x1 << 29),              /*!< I2S channel 13 activated */
     I2S_TDM_ACTIVE_CH14 = (0x1 << 30),              /*!< I2S channel 14 activated */
     I2S_TDM_ACTIVE_CH15 = (0x1 << 31),              /*!< I2S channel 15 activated */
-    #endif
+#endif
 } i2s_channel_t;
 
 /**
@@ -107,10 +107,10 @@ typedef enum
     I2S_CHANNEL_FMT_ALL_LEFT,           /*!< Load left channel data in both two channels */
     I2S_CHANNEL_FMT_ONLY_RIGHT,         /*!< Only load data in right channel (mono mode) */
     I2S_CHANNEL_FMT_ONLY_LEFT,          /*!< Only load data in left channel (mono mode) */
-    #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
     // Multiple channels are available with TDM feature
     I2S_CHANNEL_FMT_MULTIPLE,           /*!< More than two channels are used */
-    #endif
+#endif
 }  i2s_channel_fmt_t;
 
 /**
@@ -122,13 +122,13 @@ typedef enum
     I2S_MODE_SLAVE        = (0x1 << 1),       /*!< Slave mode*/
     I2S_MODE_TX           = (0x1 << 2),       /*!< TX mode*/
     I2S_MODE_RX           = (0x1 << 3),       /*!< RX mode*/
-    #if SOC_I2S_SUPPORTS_DAC
+#if SOC_I2S_SUPPORTS_DAC
     //built-in DAC functions are only supported on I2S0 for ESP32 chip.
     I2S_MODE_DAC_BUILT_IN = (0x1 << 4),       /*!< Output I2S data to built-in DAC, no matter the data format is 16bit or 32 bit, the DAC module will only take the 8bits from MSB*/
-    #endif // SOC_I2S_SUPPORTS_DAC
-    #if SOC_I2S_SUPPORTS_ADC
+#endif // SOC_I2S_SUPPORTS_DAC
+#if SOC_I2S_SUPPORTS_ADC
     I2S_MODE_ADC_BUILT_IN = (0x1 << 5),       /*!< Input I2S data from built-in ADC, each data can be 12-bit width at most*/
-    #endif // SOC_I2S_SUPPORTS_ADC
+#endif // SOC_I2S_SUPPORTS_ADC
     // PDM functions are only supported on I2S0 (all chips).
     I2S_MODE_PDM          = (0x1 << 6),       /*!< I2S PDM mode*/
 } i2s_mode_t;
@@ -249,14 +249,14 @@ typedef struct
     i2s_mclk_multiple_t     mclk_multiple;              /*!< The multiple of I2S master clock(MCLK) to sample rate */
     i2s_bits_per_chan_t     bits_per_chan;              /*!< I2S total bits in one channel， only take effect when larger than 'bits_per_sample', default '0' means equal to 'bits_per_sample' */
 
-    #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
     i2s_channel_t           chan_mask;                  /*!< I2S active channel bit mask, set value in `i2s_channel_t` to enable specific channel, the bit map of active channel can not exceed (0x1<<total_chan). */
     uint32_t                total_chan;                 /*!< I2S Total number of channels. If it is smaller than the biggest active channel number, it will be set to this number automatically. */
     bool                    left_align;                 /*!< Set to enable left alignment */
     bool                    big_edin;                   /*!< Set to enable big endian */
     bool                    bit_order_msb;              /*!< Set to enable msb order */
     bool                    skip_msk;                   /*!< Set to enable skip mask. If it is enabled, only the data of the enabled channels will be sent, otherwise all data stored in DMA TX buffer will be sent */
-    #endif // SOC_I2S_SUPPORTS_TDM
+#endif // SOC_I2S_SUPPORTS_TDM
 
 } i2s_driver_config_t;
 

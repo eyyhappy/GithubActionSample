@@ -9,9 +9,9 @@
 #include <string.h>
 #include "sdkconfig.h"
 #if CONFIG_TEMP_SENSOR_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "esp_log.h"
 #include "sys/lock.h"
@@ -82,9 +82,9 @@ static esp_err_t temperature_sensor_choose_best_range(temperature_sensor_handle_
 
 esp_err_t temperature_sensor_install(const temperature_sensor_config_t *tsens_config, temperature_sensor_handle_t *ret_tsens)
 {
-    #if CONFIG_TEMP_SENSOR_ENABLE_DEBUG_LOG
+#if CONFIG_TEMP_SENSOR_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     ESP_RETURN_ON_FALSE((tsens_config && ret_tsens), ESP_ERR_INVALID_ARG, TAG, "Invalid argument");
     ESP_RETURN_ON_FALSE((s_tsens_attribute_copy == NULL), ESP_ERR_INVALID_STATE, TAG, "Already installed");
@@ -130,12 +130,12 @@ esp_err_t temperature_sensor_enable(temperature_sensor_handle_t tsens)
 {
     ESP_RETURN_ON_FALSE((tsens != NULL), ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(tsens->fsm == TEMP_SENSOR_FSM_INIT, ESP_ERR_INVALID_STATE, TAG, "tsens not in init state");
-    #if SOC_TEMPERATURE_SENSOR_SUPPORT_FAST_RC
+#if SOC_TEMPERATURE_SENSOR_SUPPORT_FAST_RC
     if (tsens->clk_src == TEMPERATURE_SENSOR_CLK_SRC_RC_FAST)
     {
         periph_rtc_dig_clk8m_enable();
     }
-    #endif
+#endif
     temperature_sensor_ll_clk_enable(true);
     temperature_sensor_ll_clk_sel(tsens->clk_src);
     temperature_sensor_ll_enable(true);
@@ -148,12 +148,12 @@ esp_err_t temperature_sensor_disable(temperature_sensor_handle_t tsens)
     ESP_RETURN_ON_FALSE(tsens, ESP_ERR_INVALID_ARG, TAG, "invalid argument");
     ESP_RETURN_ON_FALSE(tsens->fsm == TEMP_SENSOR_FSM_ENABLE, ESP_ERR_INVALID_STATE, TAG, "tsens not enabled yet");
     temperature_sensor_ll_enable(false);
-    #if SOC_TEMPERATURE_SENSOR_SUPPORT_FAST_RC
+#if SOC_TEMPERATURE_SENSOR_SUPPORT_FAST_RC
     if (tsens->clk_src == TEMPERATURE_SENSOR_CLK_SRC_RC_FAST)
     {
         periph_rtc_dig_clk8m_disable();
     }
-    #endif
+#endif
     tsens->fsm = TEMP_SENSOR_FSM_INIT;
     return ESP_OK;
 }

@@ -40,11 +40,11 @@ _Static_assert(MCPWM_UNIT_MAX == SOC_MCPWM_GROUPS, "MCPWM unit number not equal 
 #define MCPWM_CAP_EXIST_ERROR   "MCPWM USER CAP INT SERVICE ALREADY EXISTS"
 
 #ifdef CONFIG_MCPWM_ISR_IRAM_SAFE
-#define MCPWM_ISR_ATTR     IRAM_ATTR
-#define MCPWM_INTR_FLAG    ESP_INTR_FLAG_IRAM
+    #define MCPWM_ISR_ATTR     IRAM_ATTR
+    #define MCPWM_INTR_FLAG    ESP_INTR_FLAG_IRAM
 #else
-#define MCPWM_ISR_ATTR
-#define MCPWM_INTR_FLAG  0
+    #define MCPWM_ISR_ATTR
+    #define MCPWM_INTR_FLAG  0
 #endif
 
 #define MCPWM_GROUP_CLK_SRC_HZ 160000000
@@ -106,7 +106,7 @@ static mcpwm_context_t context[SOC_MCPWM_GROUPS] =
         .mcpwm_intr_handle = NULL,
         .cap_isr_func = {[0 ... SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER - 1] = {NULL, NULL}},
     },
-    #if SOC_MCPWM_GROUPS > 1
+#if SOC_MCPWM_GROUPS > 1
     [1] = {
         .hal = {MCPWM_LL_GET_HW(1)},
         .spinlock = portMUX_INITIALIZER_UNLOCKED,
@@ -119,7 +119,7 @@ static mcpwm_context_t context[SOC_MCPWM_GROUPS] =
         .mcpwm_intr_handle = NULL,
         .cap_isr_func = {[0 ... SOC_MCPWM_CAPTURE_CHANNELS_PER_TIMER - 1] = {NULL, NULL}},
     }
-    #endif
+#endif
 };
 
 typedef void (*mcpwm_ll_gen_set_event_action_t)(mcpwm_dev_t *mcpwm, int op, int gen, int action);

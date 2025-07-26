@@ -69,10 +69,10 @@ extern "C"
 typedef enum
 {
     SPI_DMA_DISABLED = 0,     ///< Do not enable DMA for SPI
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     SPI_DMA_CH1      = 1,     ///< Enable DMA, select DMA Channel 1
     SPI_DMA_CH2      = 2,     ///< Enable DMA, select DMA Channel 2
-    #endif
+#endif
     SPI_DMA_CH_AUTO  = 3,     ///< Enable DMA, channel is automatically selected by driver
 } spi_common_dma_t;
 

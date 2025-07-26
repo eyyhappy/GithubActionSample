@@ -22,14 +22,14 @@
 #if defined(MBEDTLS_DEBUG_C)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#define mbedtls_calloc      calloc
-#define mbedtls_free        free
-#define mbedtls_time_t      time_t
-#define mbedtls_snprintf    snprintf
-#define mbedtls_vsnprintf   vsnprintf
+    #include <stdlib.h>
+    #define mbedtls_calloc      calloc
+    #define mbedtls_free        free
+    #define mbedtls_time_t      time_t
+    #define mbedtls_snprintf    snprintf
+    #define mbedtls_vsnprintf   vsnprintf
 #endif
 
 #include "mbedtls/debug.h"
@@ -40,8 +40,8 @@
 #include <string.h>
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
-!defined(inline) && !defined(__cplusplus)
-#define inline __inline
+    !defined(inline) && !defined(__cplusplus)
+    #define inline __inline
 #endif
 
 #define DEBUG_BUF_SIZE      512
@@ -65,13 +65,13 @@ static inline void debug_send_line( const mbedtls_ssl_context *ssl, int level,
      * Since there is no portable way to get one, use the address of the ssl
      * context instead, as it shouldn't be shared between threads.
      */
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     char idstr[20 + DEBUG_BUF_SIZE]; /* 0x + 16 nibbles + ': ' */
     mbedtls_snprintf( idstr, sizeof( idstr ), "%p: %s", (void*)ssl, str );
     ssl->conf->f_dbg( ssl->conf->p_dbg, level, file, line, idstr );
-    #else
+#else
     ssl->conf->f_dbg( ssl->conf->p_dbg, level, file, line, str );
-    #endif
+#endif
 }
 
 MBEDTLS_PRINTF_ATTRIBUTE(5, 6)
@@ -271,11 +271,11 @@ static void debug_print_pk( const mbedtls_ssl_context *ssl, int level,
         if( items[i].type == MBEDTLS_PK_DEBUG_MPI )
             mbedtls_debug_print_mpi( ssl, level, file, line, name, items[i].value );
         else
-        #if defined(MBEDTLS_ECP_C)
+#if defined(MBEDTLS_ECP_C)
             if( items[i].type == MBEDTLS_PK_DEBUG_ECP )
                 mbedtls_debug_print_ecp( ssl, level, file, line, name, items[i].value );
             else
-        #endif
+#endif
                 debug_send_line( ssl, level, file, line,
                                  "should not happen\n" );
     }
@@ -336,11 +336,11 @@ static void mbedtls_debug_printf_ecdh_internal( const mbedtls_ssl_context *ssl,
         const mbedtls_ecdh_context *ecdh,
         mbedtls_debug_ecdh_attr attr )
 {
-    #if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
+#if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
     const mbedtls_ecdh_context* ctx = ecdh;
-    #else
+#else
     const mbedtls_ecdh_context_mbed* ctx = &ecdh->ctx.mbed_ecdh;
-    #endif
+#endif
     switch( attr )
     {
         case MBEDTLS_DEBUG_ECDH_Q:
@@ -365,16 +365,16 @@ void mbedtls_debug_printf_ecdh( const mbedtls_ssl_context *ssl, int level,
                                 const mbedtls_ecdh_context *ecdh,
                                 mbedtls_debug_ecdh_attr attr )
 {
-    #if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
+#if defined(MBEDTLS_ECDH_LEGACY_CONTEXT)
     mbedtls_debug_printf_ecdh_internal( ssl, level, file, line, ecdh, attr );
-    #else
+#else
     switch( ecdh->var )
     {
         default:
             mbedtls_debug_printf_ecdh_internal( ssl, level, file, line, ecdh,
                                                 attr );
     }
-    #endif
+#endif
 }
 #endif /* MBEDTLS_ECDH_C */
 

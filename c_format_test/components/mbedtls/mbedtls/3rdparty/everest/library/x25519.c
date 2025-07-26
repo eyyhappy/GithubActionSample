@@ -26,7 +26,7 @@
 #include <mbedtls/ecdh.h>
 
 #if !(defined(__SIZEOF_INT128__) && (__SIZEOF_INT128__ == 16))
-#define KRML_VERIFIED_UINT128
+    #define KRML_VERIFIED_UINT128
 #endif
 
 #include <Hacl_Curve25519.h>

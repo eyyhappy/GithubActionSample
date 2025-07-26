@@ -9,7 +9,7 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #ifndef CONFIG_FREERTOS_UNICORE
-#include "esp_ipc.h"
+    #include "esp_ipc.h"
 #endif
 
 #include "unity.h"
@@ -54,7 +54,7 @@ TEST_CASE("starting and stopping works", "[test_utils][ccomp_timer]")
     // Stopping a non started timer
     t = ccomp_timer_stop();
     TEST_ASSERT_EQUAL(-1, t);
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     /*
     * Test on different task on same core
     */
@@ -84,7 +84,7 @@ TEST_CASE("starting and stopping works", "[test_utils][ccomp_timer]")
     TEST_ASSERT_GREATER_OR_EQUAL(0, t);
     esp_ipc_call_blocking(xPortGetCoreID() == 0 ? 1 : 0, stop_timer, &t);
     TEST_ASSERT_GREATER_OR_EQUAL(0, t);
-    #endif
+#endif
 }
 
 TEST_CASE("getting the time works", "[test_utils][ccomp_timer]")

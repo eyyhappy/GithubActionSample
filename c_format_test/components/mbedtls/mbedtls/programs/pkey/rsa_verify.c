@@ -20,15 +20,15 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_snprintf        snprintf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_snprintf        snprintf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_RSA_C) ||  \
@@ -65,9 +65,9 @@ int main( int argc, char *argv[] )
     if( argc != 2 )
     {
         mbedtls_printf( "usage: rsa_verify <filename>\n" );
-        #if defined(_WIN32)
+#if defined(_WIN32)
         mbedtls_printf( "\n" );
-        #endif
+#endif
         goto exit;
     }
     mbedtls_printf( "\n  . Reading public key from rsa_pub.txt" );

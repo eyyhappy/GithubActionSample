@@ -146,7 +146,7 @@ esp_err_t touch_pad_set_fsm_mode(touch_fsm_mode_t mode)
     TOUCH_ENTER_CRITICAL();
     touch_hal_set_fsm_mode(mode);
     TOUCH_EXIT_CRITICAL();
-    #ifdef CONFIG_IDF_TARGET_ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32
     if (mode == TOUCH_FSM_MODE_TIMER)
     {
         touch_pad_fsm_start();
@@ -155,7 +155,7 @@ esp_err_t touch_pad_set_fsm_mode(touch_fsm_mode_t mode)
     {
         touch_pad_fsm_stop();
     }
-    #endif
+#endif
     return ESP_OK;
 }
 

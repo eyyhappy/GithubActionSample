@@ -31,48 +31,48 @@
 #include "mbedtls/error.h"
 
 #if defined(_MSC_VER) || defined(__WATCOMC__)
-#define UL64(x) x##ui64
+    #define UL64(x) x##ui64
 #else
-#define UL64(x) x##ULL
+    #define UL64(x) x##ULL
 #endif
 
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf printf
-#define mbedtls_calloc    calloc
-#define mbedtls_free       free
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #include <stdlib.h>
+        #define mbedtls_printf printf
+        #define mbedtls_calloc    calloc
+        #define mbedtls_free       free
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 #if defined(__aarch64__)
-#  if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT) || \
-defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
-#    include <arm_neon.h>
-#  endif
-#  if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
-#    if defined(__unix__)
-#      if defined(__linux__)
-/* Our preferred method of detection is getauxval() */
-#        include <sys/auxv.h>
-#      endif
-/* Use SIGILL on Unix, and fall back to it on Linux */
-#      include <signal.h>
-#    endif
-#  endif
+    #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT) || \
+        defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
+        #include <arm_neon.h>
+    #endif
+    #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
+        #if defined(__unix__)
+            #if defined(__linux__)
+                /* Our preferred method of detection is getauxval() */
+                #include <sys/auxv.h>
+            #endif
+            /* Use SIGILL on Unix, and fall back to it on Linux */
+            #include <signal.h>
+        #endif
+    #endif
 #elif defined(_M_ARM64)
-#  if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT) || \
-defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
-#    include <arm64_neon.h>
-#  endif
+    #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT) || \
+        defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
+        #include <arm64_neon.h>
+    #endif
 #else
-#  undef MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
-#  undef MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT
+    #undef MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY
+    #undef MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT
 #endif
 
 #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
@@ -104,9 +104,9 @@ static int mbedtls_a64_crypto_sha512_determine_support( void )
  * SHA-512 support. So we fall back to the C code only.
  */
 #if defined(_MSC_VER)
-#pragma message "No mechanism to detect A64_CRYPTO found, using C code only"
+    #pragma message "No mechanism to detect A64_CRYPTO found, using C code only"
 #else
-#warning "No mechanism to detect A64_CRYPTO found, using C code only"
+    #warning "No mechanism to detect A64_CRYPTO found, using C code only"
 #endif
 #elif defined(__unix__) && defined(SIG_SETMASK)
 /* Detection with SIGILL, setjmp() and longjmp() */
@@ -114,7 +114,7 @@ static int mbedtls_a64_crypto_sha512_determine_support( void )
 #include <setjmp.h>
 
 #ifndef asm
-#define asm __asm__
+    #define asm __asm__
 #endif
 
 static jmp_buf return_from_sigill;
@@ -200,11 +200,11 @@ void mbedtls_sha512_clone( mbedtls_sha512_context *dst,
 int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
 {
     SHA512_VALIDATE_RET( ctx != NULL );
-    #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
     SHA512_VALIDATE_RET( is384 == 0 || is384 == 1 );
-    #else
+#else
     SHA512_VALIDATE_RET( is384 == 0 );
-    #endif
+#endif
     ctx->total[0] = 0;
     ctx->total[1] = 0;
     if( is384 == 0 )
@@ -221,9 +221,9 @@ int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
     }
     else
     {
-        #if !defined(MBEDTLS_SHA384_C)
+#if !defined(MBEDTLS_SHA384_C)
         return( MBEDTLS_ERR_SHA512_BAD_INPUT_DATA );
-        #else
+#else
         /* SHA-384 */
         ctx->state[0] = UL64(0xCBBB9D5DC1059ED8);
         ctx->state[1] = UL64(0x629A292A367CD507);
@@ -233,11 +233,11 @@ int mbedtls_sha512_starts( mbedtls_sha512_context *ctx, int is384 )
         ctx->state[5] = UL64(0x8EB44A8768581511);
         ctx->state[6] = UL64(0xDB0C2E0D64F98FA7);
         ctx->state[7] = UL64(0x47B5481DBEFA4FA4);
-        #endif /* MBEDTLS_SHA384_C */
+#endif /* MBEDTLS_SHA384_C */
     }
-    #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
     ctx->is384 = is384;
-    #endif
+#endif
     return( 0 );
 }
 
@@ -295,12 +295,12 @@ static const uint64_t K[80] =
 defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
 
 #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
-#  define mbedtls_internal_sha512_process_many_a64_crypto mbedtls_internal_sha512_process_many
-#  define mbedtls_internal_sha512_process_a64_crypto      mbedtls_internal_sha512_process
+    #define mbedtls_internal_sha512_process_many_a64_crypto mbedtls_internal_sha512_process_many
+    #define mbedtls_internal_sha512_process_a64_crypto      mbedtls_internal_sha512_process
 #endif
 
 #ifndef asm
-#define asm __asm__
+    #define asm __asm__
 #endif
 
 /* Accelerated SHA-512 implementation originally written by Simon Tatham for PuTTY,
@@ -359,7 +359,7 @@ static size_t mbedtls_internal_sha512_process_many_a64_crypto(
         uint64x2_t s5 = (uint64x2_t) vld1q_u8( msg + 16 * 5 );
         uint64x2_t s6 = (uint64x2_t) vld1q_u8( msg + 16 * 6 );
         uint64x2_t s7 = (uint64x2_t) vld1q_u8( msg + 16 * 7 );
-        #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__  /* assume LE if these not defined; untested on BE */
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__  /* assume LE if these not defined; untested on BE */
         s0 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s0 ) ) );
         s1 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s1 ) ) );
         s2 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s2 ) ) );
@@ -368,7 +368,7 @@ static size_t mbedtls_internal_sha512_process_many_a64_crypto(
         s5 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s5 ) ) );
         s6 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s6 ) ) );
         s7 = vreinterpretq_u64_u8( vrev64q_u8( vreinterpretq_u8_u64( s7 ) ) );
-        #endif
+#endif
         /* Rounds 0 and 1 */
         initial_sum = vaddq_u64( s0, vld1q_u64( &K[0] ) );
         sum = vaddq_u64( vextq_u64( initial_sum, initial_sum, 1 ), gh );
@@ -489,11 +489,11 @@ static size_t mbedtls_internal_sha512_process_many_a64_crypto(
 }
 
 #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
-/*
- * This function is for internal use only if we are building both C and A64
- * versions, otherwise it is renamed to be the public mbedtls_internal_sha512_process()
- */
-static
+    /*
+    * This function is for internal use only if we are building both C and A64
+    * versions, otherwise it is renamed to be the public mbedtls_internal_sha512_process()
+    */
+    static
 #endif
 int mbedtls_internal_sha512_process_a64_crypto( mbedtls_sha512_context *ctx,
         const unsigned char data[SHA512_BLOCK_SIZE] )
@@ -506,19 +506,19 @@ int mbedtls_internal_sha512_process_a64_crypto( mbedtls_sha512_context *ctx,
 
 
 #if !defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
-#define mbedtls_internal_sha512_process_many_c mbedtls_internal_sha512_process_many
-#define mbedtls_internal_sha512_process_c      mbedtls_internal_sha512_process
+    #define mbedtls_internal_sha512_process_many_c mbedtls_internal_sha512_process_many
+    #define mbedtls_internal_sha512_process_c      mbedtls_internal_sha512_process
 #endif
 
 
 #if !defined(MBEDTLS_SHA512_PROCESS_ALT) && !defined(MBEDTLS_SHA512_USE_A64_CRYPTO_ONLY)
 
 #if defined(MBEDTLS_SHA512_USE_A64_CRYPTO_IF_PRESENT)
-/*
- * This function is for internal use only if we are building both C and A64
- * versions, otherwise it is renamed to be the public mbedtls_internal_sha512_process()
- */
-static
+    /*
+    * This function is for internal use only if we are building both C and A64
+    * versions, otherwise it is renamed to be the public mbedtls_internal_sha512_process()
+    */
+    static
 #endif
 int mbedtls_internal_sha512_process_c( mbedtls_sha512_context *ctx,
                                        const unsigned char data[SHA512_BLOCK_SIZE] )
@@ -548,7 +548,7 @@ int mbedtls_internal_sha512_process_c( mbedtls_sha512_context *ctx,
     } while( 0 )
     for( i = 0; i < 8; i++ )
         local.A[i] = ctx->state[i];
-    #if defined(MBEDTLS_SHA512_SMALLER)
+#if defined(MBEDTLS_SHA512_SMALLER)
     for( i = 0; i < 80; i++ )
     {
         if( i < 16 )
@@ -572,7 +572,7 @@ int mbedtls_internal_sha512_process_c( mbedtls_sha512_context *ctx,
         local.A[1] = local.A[0];
         local.A[0] = local.temp1;
     }
-    #else /* MBEDTLS_SHA512_SMALLER */
+#else /* MBEDTLS_SHA512_SMALLER */
     for( i = 0; i < 16; i++ )
     {
         local.W[i] = MBEDTLS_GET_UINT64_BE( data, i << 3 );
@@ -611,7 +611,7 @@ int mbedtls_internal_sha512_process_c( mbedtls_sha512_context *ctx,
         i++;
     }
     while( i < 80 );
-    #endif /* MBEDTLS_SHA512_SMALLER */
+#endif /* MBEDTLS_SHA512_SMALLER */
     for( i = 0; i < 8; i++ )
         ctx->state[i] += local.A[i];
     /* Zeroise buffers and variables to clear sensitive data from memory. */
@@ -766,9 +766,9 @@ int mbedtls_sha512_finish( mbedtls_sha512_context *ctx,
     sha512_put_uint64_be( ctx->state[3], output, 24 );
     sha512_put_uint64_be( ctx->state[4], output, 32 );
     sha512_put_uint64_be( ctx->state[5], output, 40 );
-    #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
     if( ctx->is384 == 0 )
-    #endif
+#endif
     {
         sha512_put_uint64_be( ctx->state[6], output, 48 );
         sha512_put_uint64_be( ctx->state[7], output, 56 );
@@ -788,11 +788,11 @@ int mbedtls_sha512( const unsigned char *input,
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     mbedtls_sha512_context ctx;
-    #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
     SHA512_VALIDATE_RET( is384 == 0 || is384 == 1 );
-    #else
+#else
     SHA512_VALIDATE_RET( is384 == 0 );
-    #endif
+#endif
     SHA512_VALIDATE_RET( ilen == 0 || input != NULL );
     SHA512_VALIDATE_RET( (unsigned char *)output != NULL );
     mbedtls_sha512_init( &ctx );
@@ -826,7 +826,7 @@ static const size_t sha512_test_buflen[3] =
 
 static const unsigned char sha512_test_sum[][64] =
 {
-    #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
     /*
      * SHA-384 test vectors
      */
@@ -854,7 +854,7 @@ static const unsigned char sha512_test_sum[][64] =
         0x07, 0xB8, 0xB3, 0xDC, 0x38, 0xEC, 0xC4, 0xEB,
         0xAE, 0x97, 0xDD, 0xD8, 0x7F, 0x3D, 0x89, 0x85
     },
-    #endif /* MBEDTLS_SHA384_C */
+#endif /* MBEDTLS_SHA384_C */
 
     /*
      * SHA-512 test vectors
@@ -913,11 +913,11 @@ int mbedtls_sha512_self_test( int verbose )
     for( i = 0; i < (int) ARRAY_LENGTH(sha512_test_sum); i++ )
     {
         j = i % 3;
-        #if defined(MBEDTLS_SHA384_C)
+#if defined(MBEDTLS_SHA384_C)
         k = i < 3;
-        #else
+#else
         k = 0;
-        #endif
+#endif
         if( verbose != 0 )
             mbedtls_printf( "  SHA-%d test #%d: ", 512 - k * 128, j + 1 );
         if( ( ret = mbedtls_sha512_starts( &ctx, k ) ) != 0 )

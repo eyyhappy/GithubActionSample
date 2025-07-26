@@ -188,9 +188,9 @@ typedef struct
 {
     uint8_t *MBEDTLS_PRIVATE(info);
     size_t MBEDTLS_PRIVATE(info_length);
-    #if PSA_HASH_MAX_SIZE > 0xff
+#if PSA_HASH_MAX_SIZE > 0xff
 #error "PSA_HASH_MAX_SIZE does not fit in uint8_t"
-    #endif
+#endif
     uint8_t MBEDTLS_PRIVATE(offset_in_block);
     uint8_t MBEDTLS_PRIVATE(block_number);
     unsigned int MBEDTLS_PRIVATE(state) : 2;
@@ -217,9 +217,9 @@ typedef enum
 
 typedef struct psa_tls12_prf_key_derivation_s
 {
-    #if PSA_HASH_MAX_SIZE > 0xff
+#if PSA_HASH_MAX_SIZE > 0xff
 #error "PSA_HASH_MAX_SIZE does not fit in uint8_t"
-    #endif
+#endif
 
     /* Indicates how many bytes in the current HMAC block have
      * not yet been read by the user. */
@@ -236,10 +236,10 @@ typedef struct psa_tls12_prf_key_derivation_s
     size_t MBEDTLS_PRIVATE(seed_length);
     uint8_t *MBEDTLS_PRIVATE(label);
     size_t MBEDTLS_PRIVATE(label_length);
-    #if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
     uint8_t *MBEDTLS_PRIVATE(other_secret);
     size_t MBEDTLS_PRIVATE(other_secret_length);
-    #endif /* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
+#endif /* MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS */
 
     uint8_t MBEDTLS_PRIVATE(Ai)[PSA_HASH_MAX_SIZE];
 
@@ -258,15 +258,15 @@ struct psa_key_derivation_s
     {
         /* Make the union non-empty even with no supported algorithms. */
         uint8_t MBEDTLS_PRIVATE(dummy);
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF) || \
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXTRACT) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_HKDF_EXPAND)
         psa_hkdf_key_derivation_t MBEDTLS_PRIVATE(hkdf);
-        #endif
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) || \
+#endif
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PRF) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_TLS12_PSK_TO_MS)
         psa_tls12_prf_key_derivation_t MBEDTLS_PRIVATE(tls12_prf);
-        #endif
+#endif
     } MBEDTLS_PRIVATE(ctx);
 };
 
@@ -348,9 +348,9 @@ typedef struct
 struct psa_key_attributes_s
 {
     psa_core_key_attributes_t MBEDTLS_PRIVATE(core);
-    #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
+#if defined(MBEDTLS_PSA_CRYPTO_SE_C)
     psa_key_slot_number_t MBEDTLS_PRIVATE(slot_number);
-    #endif /* MBEDTLS_PSA_CRYPTO_SE_C */
+#endif /* MBEDTLS_PSA_CRYPTO_SE_C */
     void *MBEDTLS_PRIVATE(domain_parameters);
     size_t MBEDTLS_PRIVATE(domain_parameters_size);
 };
@@ -401,11 +401,11 @@ static inline void psa_set_key_lifetime( psa_key_attributes_t *attributes,
     attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(lifetime) = lifetime;
     if( PSA_KEY_LIFETIME_IS_VOLATILE( lifetime ) )
     {
-        #ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
+#ifdef MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id).MBEDTLS_PRIVATE(key_id) = 0;
-        #else
+#else
         attributes->MBEDTLS_PRIVATE(core).MBEDTLS_PRIVATE(id) = 0;
-        #endif
+#endif
     }
 }
 

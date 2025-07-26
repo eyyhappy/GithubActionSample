@@ -1234,13 +1234,13 @@ esp_err_t test_touch_filter_parameter_reset(int reset_cnt)
       But on S3, it track the smooth data. And due to the latency of the smooth data,
       the benchmark will be updated to the last smooth data. Thus we have to read smooth data here
       but read benchmark after one measurement step. */
-    #if CONFIG_IDF_TARGET_ESP32S3
+#if CONFIG_IDF_TARGET_ESP32S3
     uint32_t smooth_data[TEST_TOUCH_CHANNEL] = {0};
     for (int i = 0; i < TEST_TOUCH_CHANNEL; i++)
     {
         TEST_ESP_OK( touch_pad_filter_read_smooth(touch_list[i], &(smooth_data[i])) );
     }
-    #endif
+#endif
     /* Run 1 time measurement, the benchmark will update after finishing the channel scan*/
     test_touch_measure_step(1);
     printf_touch_hw_read("[raw ] cnt+1:");
@@ -1249,16 +1249,16 @@ esp_err_t test_touch_filter_parameter_reset(int reset_cnt)
     for (int i = 0; i < TEST_TOUCH_CHANNEL; i++)
     {
         TEST_ESP_OK( touch_pad_read_benchmark(touch_list[i], &base_value) );
-        #if CONFIG_IDF_TARGET_ESP32S2
+#if CONFIG_IDF_TARGET_ESP32S2
         /* In ESP32S3, benchmark will update to the raw data. */
         TEST_ESP_OK( touch_pad_read_raw_data(touch_list[i], &touch_value) );
         /* Here we compare the benchmark with raw data directly */
         TEST_ASSERT_EQUAL_UINT32(base_value, touch_value);
-        #elif CONFIG_IDF_TARGET_ESP32S3
+#elif CONFIG_IDF_TARGET_ESP32S3
         /* In ESP32S3, benchmark will update to the smooth data. Smooth data is filtered from raw data by IIR.
            Here we compare the benchmark with the previous smooth data*/
         TEST_ASSERT_EQUAL_UINT32(base_value, smooth_data[i]);
-        #endif
+#endif
     }
     int test_cnt = 2;
     while (test_cnt--)
@@ -2080,9 +2080,9 @@ static void test_deep_sleep_init(void)
 TEST_CASE("Touch Sensor sleep pad wakeup deep sleep test", "[touch][ignore]")
 {
 //TODO: IDF-5218
-    #if TEMPORARY_DISABLED_FOR_TARGETS(ESP32S2)
+#if TEMPORARY_DISABLED_FOR_TARGETS(ESP32S2)
     abort();
-    #endif //TEMPORARY_DISABLED_FOR_TARGETS(..)
+#endif //TEMPORARY_DISABLED_FOR_TARGETS(..)
     test_deep_sleep_init();
     /* Change the work duty of touch sensor to reduce current. */
     touch_pad_set_measurement_interval(100);
@@ -2167,7 +2167,7 @@ void test_touch_slope_debug(int pad_num)
     float scope_temp[SCOPE_DEBUG_CHANNEL_MAX] = {0};  // max scope channel is 10.
     uint32_t scope_data[SCOPE_DEBUG_CHANNEL_MAX] = {0};  // max scope channel is 10.
     test_tp_scope_debug_init(0, -1, -1, SCOPE_UART_BUADRATE);
-    #if SCOPE_DEBUG_TYPE == 0
+#if SCOPE_DEBUG_TYPE == 0
     while (1)
     {
         for (int i = 0; i < TEST_TOUCH_CHANNEL; i++)
@@ -2180,7 +2180,7 @@ void test_touch_slope_debug(int pad_num)
         test_tp_print_to_scope(scope_temp, TEST_TOUCH_CHANNEL);
         vTaskDelay(SCOPE_DEBUG_FREQ_MS / portTICK_PERIOD_MS);
     }
-    #elif SCOPE_DEBUG_TYPE == 1
+#elif SCOPE_DEBUG_TYPE == 1
     while (1)
     {
         int cnt = 0;
@@ -2197,7 +2197,7 @@ void test_touch_slope_debug(int pad_num)
         test_tp_print_to_scope(scope_temp, SCOPE_DEBUG_CHANNEL_MAX);
         vTaskDelay(SCOPE_DEBUG_FREQ_MS / portTICK_PERIOD_MS);
     }
-    #elif SCOPE_DEBUG_TYPE == 2
+#elif SCOPE_DEBUG_TYPE == 2
     uint32_t status;
     touch_pad_read_benchmark(pad_num, &status);
     while (1)
@@ -2233,7 +2233,7 @@ void test_touch_slope_debug(int pad_num)
         }
         test_tp_print_to_scope(scope_temp, 9);
     }
-    #elif SCOPE_DEBUG_TYPE == 3
+#elif SCOPE_DEBUG_TYPE == 3
     while (1)
     {
         test_touch_push_all();
@@ -2244,7 +2244,7 @@ void test_touch_slope_debug(int pad_num)
         TEST_ESP_OK( test_touch_check_ch_released(TEST_TOUCH_CHANNEL, TOUCH_EXCEED_TIME_MS) );
         printf_touch_hw_read("release");
     }
-    #endif
+#endif
     TEST_ESP_OK( touch_pad_deinit() );
 }
 

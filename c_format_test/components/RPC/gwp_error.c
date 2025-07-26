@@ -5,7 +5,7 @@
 
 #if defined(NRF52840_XXAA)
 
-#include "nrf_log.h"
+    #include "nrf_log.h"
 
 #elif defined(STM32WB55xx)
 
@@ -13,7 +13,7 @@
 
 #else
 
-//#error "Architecture not set."
+    //#error "Architecture not set."
 
 #endif
 
@@ -22,8 +22,8 @@
 
 
 #ifdef FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
+    #include "FreeRTOS.h"
+    #include "task.h"
 #endif
 
 #include "gwp_error_common.h"

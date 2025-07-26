@@ -36,21 +36,21 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
-#include "mbedtls/asn1.h"
+    #include "mbedtls/asn1.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#include <stdio.h>
-#define mbedtls_printf     printf
-#define mbedtls_calloc    calloc
-#define mbedtls_free       free
+    #include <stdlib.h>
+    #include <stdio.h>
+    #define mbedtls_printf     printf
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free       free
 #endif
 
 #if !defined(MBEDTLS_DHM_ALT)
@@ -454,12 +454,12 @@ int mbedtls_dhm_parse_dhm( mbedtls_dhm_context *dhm, const unsigned char *dhmin,
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     size_t len;
     unsigned char *p, *end;
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     mbedtls_pem_context pem;
-    #endif /* MBEDTLS_PEM_PARSE_C */
+#endif /* MBEDTLS_PEM_PARSE_C */
     DHM_VALIDATE_RET( dhm != NULL );
     DHM_VALIDATE_RET( dhmin != NULL );
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     mbedtls_pem_init( &pem );
     /* Avoid calling mbedtls_pem_read_buffer() on non-null-terminated string */
     if( dhminlen == 0 || dhmin[dhminlen - 1] != '\0' )
@@ -479,9 +479,9 @@ int mbedtls_dhm_parse_dhm( mbedtls_dhm_context *dhm, const unsigned char *dhmin,
     else if( ret != MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT )
         goto exit;
     p = ( ret == 0 ) ? pem.buf : (unsigned char *) dhmin;
-    #else
+#else
     p = (unsigned char *) dhmin;
-    #endif /* MBEDTLS_PEM_PARSE_C */
+#endif /* MBEDTLS_PEM_PARSE_C */
     end = p + dhminlen;
     /*
      *  DHParams ::= SEQUENCE {
@@ -525,9 +525,9 @@ int mbedtls_dhm_parse_dhm( mbedtls_dhm_context *dhm, const unsigned char *dhmin,
     }
     ret = 0;
 exit:
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     mbedtls_pem_free( &pem );
-    #endif
+#endif
     if( ret != 0 )
         mbedtls_dhm_free( dhm );
     return( ret );

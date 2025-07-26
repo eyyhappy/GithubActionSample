@@ -21,14 +21,14 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif
 
 /*
@@ -42,7 +42,7 @@
  * goal of minimizing use of the libc functions on full-blown OSes.
  */
 #if defined(unix) || defined(__unix__) || defined(__unix) || defined(__APPLE__)
-#define UNIX
+    #define UNIX
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_C) || !defined(MBEDTLS_ENTROPY_C) || \
@@ -168,9 +168,9 @@ int main( void )
     int ret = exit_ok;
     mbedtls_net_context server_fd;
     struct sockaddr_in addr;
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt ca;
-    #endif
+#endif
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_ssl_context ssl;
@@ -182,9 +182,9 @@ int main( void )
     mbedtls_net_init( &server_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt_init( &ca );
-    #endif
+#endif
     mbedtls_entropy_init( &entropy );
     if( mbedtls_ctr_drbg_seed( &ctr_drbg, mbedtls_entropy_func, &entropy,
                                (const unsigned char *) pers, strlen( pers ) ) != 0 )
@@ -201,11 +201,11 @@ int main( void )
         goto exit;
     }
     mbedtls_ssl_conf_rng( &conf, mbedtls_ctr_drbg_random, &ctr_drbg );
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
     mbedtls_ssl_conf_psk( &conf, psk, sizeof( psk ),
                           (const unsigned char *) psk_id, sizeof( psk_id ) - 1 );
-    #endif
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#endif
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( mbedtls_x509_crt_parse_der( &ca, ca_cert, sizeof( ca_cert ) ) != 0 )
     {
         ret = x509_crt_parse_failed;
@@ -213,19 +213,19 @@ int main( void )
     }
     mbedtls_ssl_conf_ca_chain( &conf, &ca, NULL );
     mbedtls_ssl_conf_authmode( &conf, MBEDTLS_SSL_VERIFY_REQUIRED );
-    #endif
+#endif
     if( mbedtls_ssl_setup( &ssl, &conf ) != 0 )
     {
         ret = ssl_setup_failed;
         goto exit;
     }
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     if( mbedtls_ssl_set_hostname( &ssl, HOSTNAME ) != 0 )
     {
         ret = hostname_failed;
         goto exit;
     }
-    #endif
+#endif
     /*
      * 1. Start the connection
      */
@@ -268,9 +268,9 @@ exit:
     mbedtls_ssl_config_free( &conf );
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_x509_crt_free( &ca );
-    #endif
+#endif
     mbedtls_exit( ret );
 }
 #endif

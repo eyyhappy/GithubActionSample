@@ -223,13 +223,13 @@ typedef struct
     uint32_t                ws_width;           /*!< WS signal width (i.e. the number of bclk ticks that ws signal is high) */
     bool                    ws_pol;             /*!< WS signal polarity, set true to enable high lever first */
     bool                    bit_shift;          /*!< Set to enable bit shift in Philips mode */
-    #if SOC_I2S_HW_VERSION_1    // For esp32/esp32-s2
+#if SOC_I2S_HW_VERSION_1    // For esp32/esp32-s2
     bool                    msb_right;          /*!< Set to place right channel data at the MSB in the FIFO */
-    #else
+#else
     bool                    left_align;         /*!< Set to enable left alignment */
     bool                    big_endian;         /*!< Set to enable big endian */
     bool                    bit_order_lsb;      /*!< Set to enable lsb first */
-    #endif
+#endif
 } i2s_std_slot_config_t;
 
 /**

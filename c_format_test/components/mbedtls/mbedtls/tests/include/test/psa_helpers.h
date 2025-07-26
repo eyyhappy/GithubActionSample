@@ -22,7 +22,7 @@
 #define PSA_HELPERS_H
 
 #if defined(MBEDTLS_PSA_CRYPTO_SPM)
-#include "spm/psa_defs.h"
+    #include "spm/psa_defs.h"
 #endif
 
 /** Evaluate an expression and fail the test case if it returns an error.

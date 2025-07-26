@@ -21,7 +21,7 @@
 #include "esp_attr.h"
 #include "esp_intr_alloc.h"
 #if CONFIG_PM_ENABLE
-#include "esp_pm.h"
+    #include "esp_pm.h"
 #endif
 
 #include "freertos/FreeRTOS.h"
@@ -58,8 +58,8 @@ static const __attribute__((unused)) char *TAG = "bignum";
 #if defined(CONFIG_MBEDTLS_MPI_USE_INTERRUPT)
 static SemaphoreHandle_t op_complete_sem;
 #if defined(CONFIG_PM_ENABLE)
-static esp_pm_lock_handle_t s_pm_cpu_lock;
-static esp_pm_lock_handle_t s_pm_sleep_lock;
+    static esp_pm_lock_handle_t s_pm_cpu_lock;
+    static esp_pm_lock_handle_t s_pm_sleep_lock;
 #endif
 
 static IRAM_ATTR void esp_mpi_complete_isr(void *arg)
@@ -89,7 +89,7 @@ static esp_err_t esp_mpi_isr_initialise(void)
         esp_intr_alloc(ETS_RSA_INTR_SOURCE, 0, esp_mpi_complete_isr, NULL, NULL);
     }
     /* MPI is clocked proportionally to CPU clock, take power management lock */
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     if (s_pm_cpu_lock == NULL)
     {
         if (esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "mpi_sleep", &s_pm_sleep_lock) != ESP_OK)
@@ -105,7 +105,7 @@ static esp_err_t esp_mpi_isr_initialise(void)
     }
     esp_pm_lock_acquire(s_pm_cpu_lock);
     esp_pm_lock_acquire(s_pm_sleep_lock);
-    #endif
+#endif
     return ESP_OK;
 }
 
@@ -116,10 +116,10 @@ static int esp_mpi_wait_intr(void)
         ESP_LOGE("MPI", "Timed out waiting for completion of MPI Interrupt");
         return -1;
     }
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_release(s_pm_cpu_lock);
     esp_pm_lock_release(s_pm_sleep_lock);
-    #endif  // CONFIG_PM_ENABLE
+#endif  // CONFIG_PM_ENABLE
     esp_mpi_interrupt_enable(false);
     return 0;
 }
@@ -379,19 +379,19 @@ static int esp_mpi_exp_mod( mbedtls_mpi *Z, const mbedtls_mpi *X, const mbedtls_
     }
     Mprime = modular_inverse(M);
     // Montgomery exponentiation: Z = X ^ Y mod M  (HAC 14.94)
-    #ifdef ESP_MPI_USE_MONT_EXP
+#ifdef ESP_MPI_USE_MONT_EXP
     ret = mpi_montgomery_exp_calc(Z, X, Y, M, Rinv, num_words, Mprime) ;
     MBEDTLS_MPI_CHK(ret);
-    #else
+#else
     esp_mpi_enable_hardware_hw_op();
-    #if defined (CONFIG_MBEDTLS_MPI_USE_INTERRUPT)
+#if defined (CONFIG_MBEDTLS_MPI_USE_INTERRUPT)
     if (esp_mpi_isr_initialise() == ESP_FAIL)
     {
         ret = -1;
         esp_mpi_disable_hardware_hw_op();
         goto cleanup;
     }
-    #endif
+#endif
     esp_mpi_exp_mpi_mod_hw_op(X, Y, M, Rinv, Mprime, num_words);
     ret = mbedtls_mpi_grow(Z, m_words);
     if (ret != 0)
@@ -399,17 +399,17 @@ static int esp_mpi_exp_mod( mbedtls_mpi *Z, const mbedtls_mpi *X, const mbedtls_
         esp_mpi_disable_hardware_hw_op();
         goto cleanup;
     }
-    #if defined(CONFIG_MBEDTLS_MPI_USE_INTERRUPT)
+#if defined(CONFIG_MBEDTLS_MPI_USE_INTERRUPT)
     ret = esp_mpi_wait_intr();
     if (ret != 0)
     {
         esp_mpi_disable_hardware_hw_op();
         goto cleanup;
     }
-    #endif //CONFIG_MBEDTLS_MPI_USE_INTERRUPT
+#endif //CONFIG_MBEDTLS_MPI_USE_INTERRUPT
     esp_mpi_read_result_hw_op(Z, m_words);
     esp_mpi_disable_hardware_hw_op();
-    #endif
+#endif
     // Compensate for negative X
     if (X->MBEDTLS_PRIVATE(s) == -1 && (Y->MBEDTLS_PRIVATE(p[0]) & 1) != 0)
     {
@@ -438,17 +438,17 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A,
                          mbedtls_mpi *_RR )
 {
     int ret;
-    #if defined(MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK)
+#if defined(MBEDTLS_MPI_EXP_MOD_ALT_FALLBACK)
     /* Try hardware API first and then fallback to software */
     ret = esp_mpi_exp_mod( X, A, E, N, _RR );
     if( ret == MBEDTLS_ERR_MPI_NOT_ACCEPTABLE )
     {
         ret = mbedtls_mpi_exp_mod_soft( X, A, E, N, _RR );
     }
-    #else
+#else
     /* Hardware approach */
     ret = esp_mpi_exp_mod( X, A, E, N, _RR );
-    #endif
+#endif
     /* Note: For software only approach, it gets handled in mbedTLS library.
     This file is not part of build objects for that case */
     return ret;

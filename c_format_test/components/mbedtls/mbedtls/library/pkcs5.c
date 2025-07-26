@@ -35,18 +35,18 @@
 #include "mbedtls/error.h"
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
-#include "mbedtls/asn1.h"
-#include "mbedtls/cipher.h"
-#include "mbedtls/oid.h"
+    #include "mbedtls/asn1.h"
+    #include "mbedtls/cipher.h"
+    #include "mbedtls/oid.h"
 #endif /* MBEDTLS_ASN1_PARSE_C */
 
 #include <string.h>
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#define mbedtls_printf printf
+    #include <stdio.h>
+    #define mbedtls_printf printf
 #endif
 
 #if defined(MBEDTLS_ASN1_PARSE_C)
@@ -202,10 +202,10 @@ int mbedtls_pkcs5_pbkdf2_hmac( mbedtls_md_context_t *ctx,
     unsigned char counter[4];
     memset( counter, 0, 4 );
     counter[3] = 1;
-    #if UINT_MAX > 0xFFFFFFFF
+#if UINT_MAX > 0xFFFFFFFF
     if( iteration_count > 0xFFFFFFFF )
         return( MBEDTLS_ERR_PKCS5_BAD_INPUT_DATA );
-    #endif
+#endif
     if( ( ret = mbedtls_md_hmac_starts( ctx, password, plen ) ) != 0 )
         return( ret );
     while( key_length )

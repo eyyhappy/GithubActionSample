@@ -246,7 +246,7 @@ int mbedtls_rsa_validate_params( const mbedtls_mpi *N, const mbedtls_mpi *P,
     /*
      * Step 1: If PRNG provided, check that P and Q are prime
      */
-    #if defined(MBEDTLS_GENPRIME)
+#if defined(MBEDTLS_GENPRIME)
     /*
      * When generating keys, the strongest security we support aims for an error
      * rate of at most 2^-100 and we are aiming for the same certainty here as
@@ -264,10 +264,10 @@ int mbedtls_rsa_validate_params( const mbedtls_mpi *N, const mbedtls_mpi *P,
         ret = MBEDTLS_ERR_RSA_KEY_CHECK_FAILED;
         goto cleanup;
     }
-    #else
+#else
     ((void) f_rng);
     ((void) p_rng);
-    #endif /* MBEDTLS_GENPRIME */
+#endif /* MBEDTLS_GENPRIME */
     /*
      * Step 2: Check that 1 < N = P * Q
      */

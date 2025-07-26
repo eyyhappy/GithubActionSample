@@ -12,7 +12,7 @@
 #include "driver/mcpwm_types_legacy.h"
 
 #if !CONFIG_MCPWM_SUPPRESS_DEPRECATE_WARN
-#warning "legacy MCPWM driver is deprecated, please migrate to the new driver (include driver/mcpwm_prelude.h)"
+    #warning "legacy MCPWM driver is deprecated, please migrate to the new driver (include driver/mcpwm_prelude.h)"
 #endif
 
 #ifdef __cplusplus

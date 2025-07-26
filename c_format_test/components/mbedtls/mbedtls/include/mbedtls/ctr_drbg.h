@@ -47,7 +47,7 @@
 #include "mbedtls/aes.h"
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+    #include "mbedtls/threading.h"
 #endif
 
 /** The entropy source failed. */
@@ -62,19 +62,19 @@
 #define MBEDTLS_CTR_DRBG_BLOCKSIZE          16 /**< The block size used by the cipher. */
 
 #if defined(MBEDTLS_CTR_DRBG_USE_128_BIT_KEY)
-#define MBEDTLS_CTR_DRBG_KEYSIZE            16
-/**< The key size in bytes used by the cipher.
- *
- * Compile-time choice: 16 bytes (128 bits)
- * because #MBEDTLS_CTR_DRBG_USE_128_BIT_KEY is enabled.
- */
+    #define MBEDTLS_CTR_DRBG_KEYSIZE            16
+    /**< The key size in bytes used by the cipher.
+    *
+    * Compile-time choice: 16 bytes (128 bits)
+    * because #MBEDTLS_CTR_DRBG_USE_128_BIT_KEY is enabled.
+    */
 #else
-#define MBEDTLS_CTR_DRBG_KEYSIZE            32
-/**< The key size in bytes used by the cipher.
- *
- * Compile-time choice: 32 bytes (256 bits)
- * because \c MBEDTLS_CTR_DRBG_USE_128_BIT_KEY is disabled.
- */
+    #define MBEDTLS_CTR_DRBG_KEYSIZE            32
+    /**< The key size in bytes used by the cipher.
+    *
+    * Compile-time choice: 32 bytes (256 bits)
+    * because \c MBEDTLS_CTR_DRBG_USE_128_BIT_KEY is disabled.
+    */
 #endif
 
 #define MBEDTLS_CTR_DRBG_KEYBITS            ( MBEDTLS_CTR_DRBG_KEYSIZE * 8 ) /**< The key size for the DRBG operation, in bits. */
@@ -94,45 +94,45 @@
  * \brief The amount of entropy used per seed by default, in bytes.
  */
 #if !defined(MBEDTLS_CTR_DRBG_ENTROPY_LEN)
-#if defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256)
-/** This is 48 bytes because the entropy module uses SHA-512
- * (\c MBEDTLS_ENTROPY_FORCE_SHA256 is disabled).
- */
-#define MBEDTLS_CTR_DRBG_ENTROPY_LEN        48
+    #if defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256)
+        /** This is 48 bytes because the entropy module uses SHA-512
+        * (\c MBEDTLS_ENTROPY_FORCE_SHA256 is disabled).
+        */
+        #define MBEDTLS_CTR_DRBG_ENTROPY_LEN        48
 
-#else /* defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256) */
+    #else /* defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256) */
 
-/** This is 32 bytes because the entropy module uses SHA-256
- * (the SHA512 module is disabled or
- * \c MBEDTLS_ENTROPY_FORCE_SHA256 is enabled).
- */
-#if !defined(MBEDTLS_CTR_DRBG_USE_128_BIT_KEY)
-/** \warning To achieve a 256-bit security strength, you must pass a nonce
- *           to mbedtls_ctr_drbg_seed().
- */
-#endif /* !defined(MBEDTLS_CTR_DRBG_USE_128_BIT_KEY) */
-#define MBEDTLS_CTR_DRBG_ENTROPY_LEN        32
-#endif /* defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256) */
+        /** This is 32 bytes because the entropy module uses SHA-256
+        * (the SHA512 module is disabled or
+        * \c MBEDTLS_ENTROPY_FORCE_SHA256 is enabled).
+        */
+        #if !defined(MBEDTLS_CTR_DRBG_USE_128_BIT_KEY)
+            /** \warning To achieve a 256-bit security strength, you must pass a nonce
+            *           to mbedtls_ctr_drbg_seed().
+            */
+        #endif /* !defined(MBEDTLS_CTR_DRBG_USE_128_BIT_KEY) */
+        #define MBEDTLS_CTR_DRBG_ENTROPY_LEN        32
+    #endif /* defined(MBEDTLS_SHA512_C) && !defined(MBEDTLS_ENTROPY_FORCE_SHA256) */
 #endif /* !defined(MBEDTLS_CTR_DRBG_ENTROPY_LEN) */
 
 #if !defined(MBEDTLS_CTR_DRBG_RESEED_INTERVAL)
-#define MBEDTLS_CTR_DRBG_RESEED_INTERVAL    10000
-/**< The interval before reseed is performed by default. */
+    #define MBEDTLS_CTR_DRBG_RESEED_INTERVAL    10000
+    /**< The interval before reseed is performed by default. */
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_MAX_INPUT)
-#define MBEDTLS_CTR_DRBG_MAX_INPUT          256
-/**< The maximum number of additional input Bytes. */
+    #define MBEDTLS_CTR_DRBG_MAX_INPUT          256
+    /**< The maximum number of additional input Bytes. */
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_MAX_REQUEST)
-#define MBEDTLS_CTR_DRBG_MAX_REQUEST        1024
-/**< The maximum number of requested Bytes per call. */
+    #define MBEDTLS_CTR_DRBG_MAX_REQUEST        1024
+    /**< The maximum number of requested Bytes per call. */
 #endif
 
 #if !defined(MBEDTLS_CTR_DRBG_MAX_SEED_INPUT)
-#define MBEDTLS_CTR_DRBG_MAX_SEED_INPUT     384
-/**< The maximum size of seed or reseed buffer in bytes. */
+    #define MBEDTLS_CTR_DRBG_MAX_SEED_INPUT     384
+    /**< The maximum size of seed or reseed buffer in bytes. */
 #endif
 
 /** \} name SECTION: Module settings */
@@ -200,7 +200,7 @@ typedef struct mbedtls_ctr_drbg_context
 
     void *MBEDTLS_PRIVATE(p_entropy);            /*!< The context for the entropy function. */
 
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     /* Invariant: the mutex is initialized if and only if f_entropy != NULL.
      * This means that the mutex is initialized during the initial seeding
      * in mbedtls_ctr_drbg_seed() and freed in mbedtls_ctr_drbg_free().
@@ -209,7 +209,7 @@ typedef struct mbedtls_ctr_drbg_context
      * and do not access the mutex directly in application code.
      */
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);
-    #endif
+#endif
 }
 mbedtls_ctr_drbg_context;
 

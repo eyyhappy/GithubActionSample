@@ -13,7 +13,7 @@
 #include "driver/timer_types_legacy.h"
 
 #if !CONFIG_GPTIMER_SUPPRESS_DEPRECATE_WARN
-#warning "legacy timer group driver is deprecated, please migrate to driver/gptimer.h"
+    #warning "legacy timer group driver is deprecated, please migrate to driver/gptimer.h"
 #endif
 
 #ifdef __cplusplus

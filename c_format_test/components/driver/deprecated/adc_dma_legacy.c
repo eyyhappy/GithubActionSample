@@ -30,20 +30,20 @@
 
 //For calibration
 #if CONFIG_IDF_TARGET_ESP32S2
-#include "esp_efuse_rtc_table.h"
+    #include "esp_efuse_rtc_table.h"
 #elif SOC_ADC_CALIBRATION_V1_SUPPORTED
-#include "esp_efuse_rtc_calib.h"
+    #include "esp_efuse_rtc_calib.h"
 #endif
 //For DMA
 #if SOC_GDMA_SUPPORTED
-#include "esp_private/gdma.h"
+    #include "esp_private/gdma.h"
 #elif CONFIG_IDF_TARGET_ESP32S2
-#include "hal/spi_types.h"
-#include "esp_private/spi_common_internal.h"
+    #include "hal/spi_types.h"
+    #include "esp_private/spi_common_internal.h"
 #elif CONFIG_IDF_TARGET_ESP32
-#include "driver/i2s_types.h"
-#include "soc/i2s_periph.h"
-#include "esp_private/i2s_platform.h"
+    #include "driver/i2s_types.h"
+    #include "soc/i2s_periph.h"
+    #include "esp_private/i2s_platform.h"
 #endif
 
 static const char *ADC_TAG = "ADC";
@@ -63,15 +63,15 @@ typedef struct adc_digi_context_t
 {
     uint8_t                         *rx_dma_buf;                //dma buffer
     adc_hal_dma_ctx_t               hal;                        //hal context
-    #if SOC_GDMA_SUPPORTED
+#if SOC_GDMA_SUPPORTED
     gdma_channel_handle_t           rx_dma_channel;             //dma rx channel handle
-    #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
     spi_host_device_t               spi_host;                   //ADC uses this SPI DMA
     intr_handle_t                   intr_hdl;                   //Interrupt handler
-    #elif CONFIG_IDF_TARGET_ESP32
+#elif CONFIG_IDF_TARGET_ESP32
     i2s_port_t                      i2s_host;                   //ADC uses this I2S DMA
     intr_handle_t                   intr_hdl;                   //Interrupt handler
-    #endif
+#endif
     RingbufHandle_t                 ringbuf_hdl;                //RX ringbuffer handler
     intptr_t                        rx_eof_desc_addr;           //eof descriptor address of RX channel
     bool                            ringbuf_overflow_flag;      //1: ringbuffer overflow
@@ -86,8 +86,8 @@ typedef struct adc_digi_context_t
 
 static adc_digi_context_t *s_adc_digi_ctx = NULL;
 #ifdef CONFIG_PM_ENABLE
-//Only for deprecated API
-extern esp_pm_lock_handle_t adc_digi_arbiter_lock;
+    //Only for deprecated API
+    extern esp_pm_lock_handle_t adc_digi_arbiter_lock;
 #endif  //CONFIG_PM_ENABLE
 
 /*---------------------------------------------------------------
@@ -97,9 +97,9 @@ extern esp_pm_lock_handle_t adc_digi_arbiter_lock;
 static bool s_adc_dma_intr(adc_digi_context_t *adc_digi_ctx);
 
 #if SOC_GDMA_SUPPORTED
-static bool adc_dma_in_suc_eof_callback(gdma_channel_handle_t dma_chan, gdma_event_data_t *event_data, void *user_data);
+    static bool adc_dma_in_suc_eof_callback(gdma_channel_handle_t dma_chan, gdma_event_data_t *event_data, void *user_data);
 #else
-static void adc_dma_intr_handler(void *arg);
+    static void adc_dma_intr_handler(void *arg);
 #endif
 
 static int8_t adc_digi_get_io_num(adc_unit_t adc_unit, uint8_t adc_channel)
@@ -154,26 +154,26 @@ esp_err_t adc_digi_deinitialize(void)
         vRingbufferDelete(s_adc_digi_ctx->ringbuf_hdl);
         s_adc_digi_ctx->ringbuf_hdl = NULL;
     }
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     if (s_adc_digi_ctx->pm_lock)
     {
         esp_pm_lock_delete(s_adc_digi_ctx->pm_lock);
     }
-    #endif  //CONFIG_PM_ENABLE
+#endif  //CONFIG_PM_ENABLE
     free(s_adc_digi_ctx->rx_dma_buf);
     free(s_adc_digi_ctx->hal.rx_desc);
     free(s_adc_digi_ctx->hal_digi_ctrlr_cfg.adc_pattern);
-    #if SOC_GDMA_SUPPORTED
+#if SOC_GDMA_SUPPORTED
     gdma_disconnect(s_adc_digi_ctx->rx_dma_channel);
     gdma_del_channel(s_adc_digi_ctx->rx_dma_channel);
-    #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
     esp_intr_free(s_adc_digi_ctx->intr_hdl);
     spicommon_dma_chan_free(s_adc_digi_ctx->spi_host);
     spicommon_periph_free(s_adc_digi_ctx->spi_host);
-    #elif CONFIG_IDF_TARGET_ESP32
+#elif CONFIG_IDF_TARGET_ESP32
     esp_intr_free(s_adc_digi_ctx->intr_hdl);
     i2s_platform_release_occupation(s_adc_digi_ctx->i2s_host);
-    #endif
+#endif
     free(s_adc_digi_ctx);
     s_adc_digi_ctx = NULL;
     periph_module_disable(PERIPH_SARADC_MODULE);
@@ -218,13 +218,13 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
         ret = ESP_ERR_NO_MEM;
         goto cleanup;
     }
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     ret = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "adc_dma", &s_adc_digi_ctx->pm_lock);
     if (ret != ESP_OK)
     {
         goto cleanup;
     }
-    #endif //CONFIG_PM_ENABLE
+#endif //CONFIG_PM_ENABLE
     //init gpio pins
     if (init_config->adc1_chan_mask)
     {
@@ -242,7 +242,7 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
             goto cleanup;
         }
     }
-    #if SOC_GDMA_SUPPORTED
+#if SOC_GDMA_SUPPORTED
     //alloc rx gdma channel
     gdma_channel_alloc_config_t rx_alloc_config =
     {
@@ -267,7 +267,7 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
     gdma_register_rx_event_callbacks(s_adc_digi_ctx->rx_dma_channel, &cbs, s_adc_digi_ctx);
     int dma_chan;
     gdma_get_channel_id(s_adc_digi_ctx->rx_dma_channel, &dma_chan);
-    #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
     //ADC utilises SPI3 DMA on ESP32S2
     bool spi_success = false;
     uint32_t dma_chan = 0;
@@ -287,7 +287,7 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
     {
         goto cleanup;
     }
-    #elif CONFIG_IDF_TARGET_ESP32
+#elif CONFIG_IDF_TARGET_ESP32
     //ADC utilises I2S0 DMA on ESP32
     uint32_t dma_chan = 0;
     ret = i2s_platform_acquire_occupation(I2S_NUM_0, "adc");
@@ -302,16 +302,16 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
     {
         goto cleanup;
     }
-    #endif
+#endif
     adc_hal_dma_config_t config =
     {
-        #if SOC_GDMA_SUPPORTED
+#if SOC_GDMA_SUPPORTED
         .dev = (void *)GDMA_LL_GET_HW(0),
-        #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
         .dev = (void *)SPI_LL_GET_HW(s_adc_digi_ctx->spi_host),
-        #elif CONFIG_IDF_TARGET_ESP32
+#elif CONFIG_IDF_TARGET_ESP32
         .dev = (void *)I2S_LL_GET_HW(s_adc_digi_ctx->i2s_host),
-        #endif
+#endif
         .desc_max_num = INTERNAL_BUF_NUM,
         .dma_chan = dma_chan,
         .eof_num = init_config->conv_num_each_intr / SOC_ADC_DIGI_DATA_BYTES_PER_CONV
@@ -321,10 +321,10 @@ esp_err_t adc_digi_initialize(const adc_digi_init_config_t *init_config)
     periph_module_enable(PERIPH_SARADC_MODULE);
     //reset ADC digital part
     periph_module_reset(PERIPH_SARADC_MODULE);
-    #if SOC_ADC_CALIBRATION_V1_SUPPORTED
+#if SOC_ADC_CALIBRATION_V1_SUPPORTED
     adc_hal_calibration_init(ADC_UNIT_1);
     adc_hal_calibration_init(ADC_UNIT_2);
-    #endif  //#if SOC_ADC_CALIBRATION_V1_SUPPORTED
+#endif  //#if SOC_ADC_CALIBRATION_V1_SUPPORTED
     return ret;
 cleanup:
     adc_digi_deinitialize();
@@ -405,11 +405,11 @@ esp_err_t adc_digi_start(void)
     {
         adc_lock_acquire(ADC_UNIT_2);
     }
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     // Lock APB frequency while ADC driver is in use
     esp_pm_lock_acquire(s_adc_digi_ctx->pm_lock);
-    #endif
-    #if SOC_ADC_CALIBRATION_V1_SUPPORTED
+#endif
+#if SOC_ADC_CALIBRATION_V1_SUPPORTED
     if (s_adc_digi_ctx->use_adc1)
     {
         adc_set_hw_calibration_code(ADC_UNIT_1, s_adc_digi_ctx->adc1_atten);
@@ -418,11 +418,11 @@ esp_err_t adc_digi_start(void)
     {
         adc_set_hw_calibration_code(ADC_UNIT_2, s_adc_digi_ctx->adc2_atten);
     }
-    #endif  //#if SOC_ADC_CALIBRATION_V1_SUPPORTED
-    #if SOC_ADC_ARBITER_SUPPORTED
+#endif  //#if SOC_ADC_CALIBRATION_V1_SUPPORTED
+#if SOC_ADC_ARBITER_SUPPORTED
     adc_arbiter_t config = ADC_ARBITER_CONFIG_DEFAULT();
     adc_hal_arbiter_config(&config);
-    #endif  //#if SOC_ADC_ARBITER_SUPPORTED
+#endif  //#if SOC_ADC_ARBITER_SUPPORTED
     adc_hal_set_controller(ADC_UNIT_1, ADC_HAL_CONTINUOUS_READ_MODE);
     adc_hal_set_controller(ADC_UNIT_2, ADC_HAL_CONTINUOUS_READ_MODE);
     adc_hal_digi_init(&s_adc_digi_ctx->hal);
@@ -447,12 +447,12 @@ esp_err_t adc_digi_stop(void)
     //stop ADC
     adc_hal_digi_stop(&s_adc_digi_ctx->hal);
     adc_hal_digi_deinit(&s_adc_digi_ctx->hal);
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     if (s_adc_digi_ctx->pm_lock)
     {
         esp_pm_lock_release(s_adc_digi_ctx->pm_lock);
     }
-    #endif  //CONFIG_PM_ENABLE
+#endif  //CONFIG_PM_ENABLE
     if (s_adc_digi_ctx->use_adc2)
     {
         adc_lock_release(ADC_UNIT_2);
@@ -506,22 +506,22 @@ esp_err_t adc_digi_controller_configure(const adc_digi_configuration_t *config)
     }
     //Pattern related check
     ESP_RETURN_ON_FALSE(config->pattern_num <= SOC_ADC_PATT_LEN_MAX, ESP_ERR_INVALID_ARG, ADC_TAG, "Max pattern num is %d", SOC_ADC_PATT_LEN_MAX);
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     for (int i = 0; i < config->pattern_num; i++)
     {
         ESP_RETURN_ON_FALSE((config->adc_pattern[i].bit_width >= SOC_ADC_DIGI_MIN_BITWIDTH && config->adc_pattern->bit_width <= SOC_ADC_DIGI_MAX_BITWIDTH), ESP_ERR_INVALID_ARG, ADC_TAG, "ADC bitwidth not supported");
         ESP_RETURN_ON_FALSE(config->adc_pattern[i].unit == 0, ESP_ERR_INVALID_ARG, ADC_TAG, "Only support using ADC1 DMA mode");
     }
-    #else
+#else
     for (int i = 0; i < config->pattern_num; i++)
     {
         ESP_RETURN_ON_FALSE((config->adc_pattern[i].bit_width == SOC_ADC_DIGI_MAX_BITWIDTH), ESP_ERR_INVALID_ARG, ADC_TAG, "ADC bitwidth not supported");
     }
-    #endif
+#endif
     ESP_RETURN_ON_FALSE(config->sample_freq_hz <= SOC_ADC_SAMPLE_FREQ_THRES_HIGH && config->sample_freq_hz >= SOC_ADC_SAMPLE_FREQ_THRES_LOW, ESP_ERR_INVALID_ARG, ADC_TAG, "ADC sampling frequency out of range");
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     ESP_RETURN_ON_FALSE(config->format == ADC_DIGI_OUTPUT_FORMAT_TYPE1, ESP_ERR_INVALID_ARG, ADC_TAG, "Please use type1");
-    #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
     if (config->conv_mode == ADC_CONV_BOTH_UNIT || config->conv_mode == ADC_CONV_ALTER_UNIT)
     {
         ESP_RETURN_ON_FALSE(config->format == ADC_DIGI_OUTPUT_FORMAT_TYPE2, ESP_ERR_INVALID_ARG, ADC_TAG, "Please use type2");
@@ -530,9 +530,9 @@ esp_err_t adc_digi_controller_configure(const adc_digi_configuration_t *config)
     {
         ESP_RETURN_ON_FALSE(config->format == ADC_DIGI_OUTPUT_FORMAT_TYPE1, ESP_ERR_INVALID_ARG, ADC_TAG, "Please use type1");
     }
-    #else
+#else
     ESP_RETURN_ON_FALSE(config->format == ADC_DIGI_OUTPUT_FORMAT_TYPE2, ESP_ERR_INVALID_ARG, ADC_TAG, "Please use type2");
-    #endif
+#endif
     s_adc_digi_ctx->hal_digi_ctrlr_cfg.adc_pattern_len = config->pattern_num;
     s_adc_digi_ctx->hal_digi_ctrlr_cfg.sample_freq_hz = config->sample_freq_hz;
     s_adc_digi_ctx->hal_digi_ctrlr_cfg.conv_mode = config->conv_mode;

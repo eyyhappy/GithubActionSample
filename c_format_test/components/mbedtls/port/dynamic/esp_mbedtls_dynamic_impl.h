@@ -82,17 +82,17 @@ int esp_mbedtls_free_rx_buffer(mbedtls_ssl_context *ssl);
 size_t esp_mbedtls_get_crt_size(mbedtls_x509_crt *cert, size_t *num);
 
 #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
-void esp_mbedtls_free_dhm(mbedtls_ssl_context *ssl);
+    void esp_mbedtls_free_dhm(mbedtls_ssl_context *ssl);
 
-void esp_mbedtls_free_keycert(mbedtls_ssl_context *ssl);
+    void esp_mbedtls_free_keycert(mbedtls_ssl_context *ssl);
 
-void esp_mbedtls_free_keycert_cert(mbedtls_ssl_context *ssl);
+    void esp_mbedtls_free_keycert_cert(mbedtls_ssl_context *ssl);
 
-void esp_mbedtls_free_keycert_key(mbedtls_ssl_context *ssl);
+    void esp_mbedtls_free_keycert_key(mbedtls_ssl_context *ssl);
 #endif
 
 #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
-void esp_mbedtls_free_cacert(mbedtls_ssl_context *ssl);
+    void esp_mbedtls_free_cacert(mbedtls_ssl_context *ssl);
 #endif
 
 #endif /* _DYNAMIC_IMPL_H_ */

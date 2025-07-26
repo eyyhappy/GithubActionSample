@@ -34,16 +34,16 @@ int snprintf( char *s, size_t n, const char *fmt, ... )
     if( s == NULL || n == 0 || fmt == NULL )
         return( -1 );
     va_start( argp, fmt );
-    #if defined(_TRUNCATE) && !defined(__MINGW32__)
+#if defined(_TRUNCATE) && !defined(__MINGW32__)
     ret = _vsnprintf_s( s, n, _TRUNCATE, fmt, argp );
-    #else
+#else
     ret = _vsnprintf( s, n, fmt, argp );
     if( ret < 0 || (size_t) ret == n )
     {
         s[n - 1] = '\0';
         ret = -1;
     }
-    #endif
+#endif
     va_end( argp );
     return( ret );
 }

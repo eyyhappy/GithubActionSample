@@ -83,7 +83,7 @@
 #if defined(MBEDTLS_HAVE_ASM)
 
 #ifndef asm
-#define asm __asm
+    #define asm __asm
 #endif
 
 /* armcc5 --gnu defines __GNUC__ but doesn't support GNU's extended asm */
@@ -647,7 +647,7 @@
  * the build error and is pretty reasonable anyway.
  */
 #if defined(__GNUC__) && !defined(__OPTIMIZE__)
-#define MULADDC_CANNOT_USE_R7
+    #define MULADDC_CANNOT_USE_R7
 #endif
 
 #if defined(__arm__) && !defined(MULADDC_CANNOT_USE_R7)
@@ -1028,21 +1028,21 @@ defined (__ARM_FEATURE_DSP) && (__ARM_FEATURE_DSP == 1)
 #endif /* C (generic)  */
 
 #if !defined(MULADDC_X2_CORE)
-#define MULADDC_X2_INIT MULADDC_X1_INIT
-#define MULADDC_X2_STOP MULADDC_X1_STOP
-#define MULADDC_X2_CORE MULADDC_X1_CORE MULADDC_X1_CORE
+    #define MULADDC_X2_INIT MULADDC_X1_INIT
+    #define MULADDC_X2_STOP MULADDC_X1_STOP
+    #define MULADDC_X2_CORE MULADDC_X1_CORE MULADDC_X1_CORE
 #endif /* MULADDC_X2_CORE */
 
 #if !defined(MULADDC_X4_CORE)
-#define MULADDC_X4_INIT MULADDC_X2_INIT
-#define MULADDC_X4_STOP MULADDC_X2_STOP
-#define MULADDC_X4_CORE MULADDC_X2_CORE MULADDC_X2_CORE
+    #define MULADDC_X4_INIT MULADDC_X2_INIT
+    #define MULADDC_X4_STOP MULADDC_X2_STOP
+    #define MULADDC_X4_CORE MULADDC_X2_CORE MULADDC_X2_CORE
 #endif /* MULADDC_X4_CORE */
 
 #if !defined(MULADDC_X8_CORE)
-#define MULADDC_X8_INIT MULADDC_X4_INIT
-#define MULADDC_X8_STOP MULADDC_X4_STOP
-#define MULADDC_X8_CORE MULADDC_X4_CORE MULADDC_X4_CORE
+    #define MULADDC_X8_INIT MULADDC_X4_INIT
+    #define MULADDC_X8_STOP MULADDC_X4_STOP
+    #define MULADDC_X8_CORE MULADDC_X4_CORE MULADDC_X4_CORE
 #endif /* MULADDC_X8_CORE */
 
 #endif /* bn_mul.h */

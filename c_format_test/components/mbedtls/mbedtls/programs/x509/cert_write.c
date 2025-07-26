@@ -20,14 +20,14 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_X509_CRT_WRITE_C) || \
@@ -215,10 +215,10 @@ int main( int argc, char *argv[] )
     char issuer_name[256];
     int i;
     char *p, *q, *r;
-    #if defined(MBEDTLS_X509_CSR_PARSE_C)
+#if defined(MBEDTLS_X509_CSR_PARSE_C)
     char subject_name[256];
     mbedtls_x509_csr csr;
-    #endif
+#endif
     mbedtls_x509write_cert crt;
     mbedtls_mpi serial;
     mbedtls_entropy_context entropy;
@@ -233,9 +233,9 @@ int main( int argc, char *argv[] )
     mbedtls_mpi_init( &serial );
     mbedtls_ctr_drbg_init( &ctr_drbg );
     mbedtls_entropy_init( &entropy );
-    #if defined(MBEDTLS_X509_CSR_PARSE_C)
+#if defined(MBEDTLS_X509_CSR_PARSE_C)
     mbedtls_x509_csr_init( &csr );
-    #endif
+#endif
     mbedtls_x509_crt_init( &issuer_crt );
     memset( buf, 0, 1024 );
     if( argc == 0 )
@@ -499,7 +499,7 @@ int main( int argc, char *argv[] )
         opt.issuer_name = issuer_name;
         mbedtls_printf( " ok\n" );
     }
-    #if defined(MBEDTLS_X509_CSR_PARSE_C)
+#if defined(MBEDTLS_X509_CSR_PARSE_C)
     // Parse certificate request if present
     //
     if( !opt.selfsign && strlen( opt.request_file ) )
@@ -529,7 +529,7 @@ int main( int argc, char *argv[] )
         subject_key = &csr.pk;
         mbedtls_printf( " ok\n" );
     }
-    #endif /* MBEDTLS_X509_CSR_PARSE_C */
+#endif /* MBEDTLS_X509_CSR_PARSE_C */
     /*
      * 1.1. Load the keys
      */
@@ -633,7 +633,7 @@ int main( int argc, char *argv[] )
         }
         mbedtls_printf( " ok\n" );
     }
-    #if defined(MBEDTLS_SHA1_C)
+#if defined(MBEDTLS_SHA1_C)
     if( opt.version == MBEDTLS_X509_CRT_VERSION_3 &&
         opt.subject_identifier != 0 )
     {
@@ -666,7 +666,7 @@ int main( int argc, char *argv[] )
         }
         mbedtls_printf( " ok\n" );
     }
-    #endif /* MBEDTLS_SHA1_C */
+#endif /* MBEDTLS_SHA1_C */
     if( opt.version == MBEDTLS_X509_CRT_VERSION_3 &&
         opt.key_usage != 0 )
     {
@@ -713,9 +713,9 @@ int main( int argc, char *argv[] )
     mbedtls_printf( " ok\n" );
     exit_code = MBEDTLS_EXIT_SUCCESS;
 exit:
-    #if defined(MBEDTLS_X509_CSR_PARSE_C)
+#if defined(MBEDTLS_X509_CSR_PARSE_C)
     mbedtls_x509_csr_free( &csr );
-    #endif /* MBEDTLS_X509_CSR_PARSE_C */
+#endif /* MBEDTLS_X509_CSR_PARSE_C */
     mbedtls_x509_crt_free( &issuer_crt );
     mbedtls_x509write_crt_free( &crt );
     mbedtls_pk_free( &loaded_subject_key );

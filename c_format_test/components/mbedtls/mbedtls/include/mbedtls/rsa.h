@@ -35,7 +35,7 @@
 #include "mbedtls/md.h"
 
 #if defined(MBEDTLS_THREADING_C)
-#include "mbedtls/threading.h"
+    #include "mbedtls/threading.h"
 #endif
 
 /*
@@ -122,10 +122,10 @@ typedef struct mbedtls_rsa_context
                                      as specified in md.h for use in the MGF
                                      mask generating function used in the
                                      EME-OAEP and EMSA-PSS encodings. */
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     /* Invariant: the mutex is initialized iff ver != 0. */
     mbedtls_threading_mutex_t MBEDTLS_PRIVATE(mutex);    /*!<  Thread-safety mutex. */
-    #endif
+#endif
 }
 mbedtls_rsa_context;
 

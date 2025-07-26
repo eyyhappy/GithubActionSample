@@ -109,29 +109,29 @@ static void mbedtls_sha256_task(void *pvParameters)
 
 TEST_CASE("Test shared using AES SHA512 SHA256", "[hw_crypto]")
 {
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     const int max_tasks = 6;
-    #else
+#else
     const int max_tasks = 3;
-    #endif
+#endif
     SemaphoreHandle_t exit_sema[max_tasks];
     for (int i = 0; i < max_tasks; ++i)
     {
         exit_sema[i] = xSemaphoreCreateBinary();
     }
     exit_flag = false;
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     xTaskCreatePinnedToCore(&aes_task,            "aes_task",            TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
     xTaskCreatePinnedToCore(&aes_task,            "aes_task",            TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
     xTaskCreatePinnedToCore(&sha_task,            "sha_task",            TASK_STACK_SIZE, &exit_sema[2], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
     xTaskCreatePinnedToCore(&sha_task,            "sha_task",            TASK_STACK_SIZE, &exit_sema[3], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
     xTaskCreatePinnedToCore(&mbedtls_sha256_task, "mbedtls_sha256_task", TASK_STACK_SIZE, &exit_sema[4], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
     xTaskCreatePinnedToCore(&mbedtls_sha256_task, "mbedtls_sha256_task", TASK_STACK_SIZE, &exit_sema[5], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
-    #else
+#else
     xTaskCreate(&aes_task,            "aes_task",            TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&sha_task,            "sha_task",            TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&mbedtls_sha256_task, "mbedtls_sha256_task", TASK_STACK_SIZE, &exit_sema[2], UNITY_FREERTOS_PRIORITY - 1, NULL);
-    #endif
+#endif
     ESP_LOGI(TAG, "Waiting for 10s ...");
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     // set exit flag to let thread exit
@@ -160,24 +160,24 @@ static void rsa_task(void *pvParameters)
 
 TEST_CASE("Test shared using AES RSA", "[hw_crypto]")
 {
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     const int max_tasks = 2;
-    #else
+#else
     const int max_tasks = 2;
-    #endif
+#endif
     SemaphoreHandle_t exit_sema[max_tasks];
     for (int i = 0; i < max_tasks; ++i)
     {
         exit_sema[i] = xSemaphoreCreateBinary();
     }
     exit_flag = false;
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     xTaskCreatePinnedToCore(&aes_task, "aes_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
     xTaskCreatePinnedToCore(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
-    #else
+#else
     xTaskCreate(&aes_task, "aes_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL);
-    #endif
+#endif
     ESP_LOGI(TAG, "Waiting for 10s ...");
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     // set exit flag to let thread exit
@@ -194,24 +194,24 @@ TEST_CASE("Test shared using AES RSA", "[hw_crypto]")
 
 TEST_CASE("Test shared using SHA512 RSA", "[hw_crypto]")
 {
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     const int max_tasks = 2;
-    #else
+#else
     const int max_tasks = 2;
-    #endif
+#endif
     SemaphoreHandle_t exit_sema[max_tasks];
     for (int i = 0; i < max_tasks; ++i)
     {
         exit_sema[i] = xSemaphoreCreateBinary();
     }
     exit_flag = false;
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     xTaskCreatePinnedToCore(&sha_task, "sha_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 2, NULL, 1);
     xTaskCreatePinnedToCore(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
-    #else
+#else
     xTaskCreate(&sha_task, "sha_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL);
-    #endif
+#endif
     ESP_LOGI(TAG, "Waiting for 10s ...");
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     // set exit flag to let thread exit
@@ -228,24 +228,24 @@ TEST_CASE("Test shared using SHA512 RSA", "[hw_crypto]")
 
 TEST_CASE("Test shared using SHA256 RSA", "[hw_crypto]")
 {
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     const int max_tasks = 2;
-    #else
+#else
     const int max_tasks = 2;
-    #endif
+#endif
     SemaphoreHandle_t exit_sema[max_tasks];
     for (int i = 0; i < max_tasks; ++i)
     {
         exit_sema[i] = xSemaphoreCreateBinary();
     }
     exit_flag = false;
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     xTaskCreatePinnedToCore(&mbedtls_sha256_task, "mbedtls_sha256_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
     xTaskCreatePinnedToCore(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
-    #else
+#else
     xTaskCreate(&mbedtls_sha256_task, "mbedtls_sha256_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&rsa_task,            "rsa_task",            TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL);
-    #endif
+#endif
     ESP_LOGI(TAG, "Waiting for 10s ...");
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     // set exit flag to let thread exit
@@ -262,26 +262,26 @@ TEST_CASE("Test shared using SHA256 RSA", "[hw_crypto]")
 
 TEST_CASE("Test shared using AES SHA RSA", "[hw_crypto]")
 {
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     const int max_tasks = 3;
-    #else
+#else
     const int max_tasks = 3;
-    #endif
+#endif
     SemaphoreHandle_t exit_sema[max_tasks];
     for (int i = 0; i < max_tasks; ++i)
     {
         exit_sema[i] = xSemaphoreCreateBinary();
     }
     exit_flag = false;
-    #ifndef CONFIG_FREERTOS_UNICORE
+#ifndef CONFIG_FREERTOS_UNICORE
     xTaskCreatePinnedToCore(&aes_task, "aes_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
     xTaskCreatePinnedToCore(&sha_task, "sha_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL, 0);
     xTaskCreatePinnedToCore(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[2], UNITY_FREERTOS_PRIORITY - 1, NULL, 1);
-    #else
+#else
     xTaskCreate(&aes_task, "aes_task", TASK_STACK_SIZE, &exit_sema[0], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&sha_task, "sha_task", TASK_STACK_SIZE, &exit_sema[1], UNITY_FREERTOS_PRIORITY - 1, NULL);
     xTaskCreate(&rsa_task, "rsa_task", TASK_STACK_SIZE, &exit_sema[2], UNITY_FREERTOS_PRIORITY - 1, NULL);
-    #endif
+#endif
     ESP_LOGI(TAG, "Waiting for 10s ...");
     vTaskDelay(10000 / portTICK_PERIOD_MS);
     // set exit flag to let thread exit

@@ -403,7 +403,7 @@ TEST_CASE("spi bus setting with different pin configs", "[spi]")
     TEST_ASSERT_EQUAL_HEX32( flags_expected, flags_o );
     TEST_ESP_OK(spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_SLAVE, &flags_o));
     TEST_ASSERT_EQUAL_HEX32( flags_expected, flags_o );
-    #if TEST_SOC_HAS_INPUT_ONLY_PINS  //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
+#if TEST_SOC_HAS_INPUT_ONLY_PINS  //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
     ESP_LOGI(TAG, "test master 5 output pins and MOSI on input-only pin...");
     flags_expected = SPICOMMON_BUSFLAG_SCLK | SPICOMMON_BUSFLAG_MOSI | SPICOMMON_BUSFLAG_MISO | SPICOMMON_BUSFLAG_WPHD | SPICOMMON_BUSFLAG_GPIO_PINS;
     cfg = (spi_bus_config_t)
@@ -441,7 +441,7 @@ TEST_CASE("spi bus setting with different pin configs", "[spi]")
     TEST_ESP_OK(spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_SLAVE, &flags_o));
     TEST_ASSERT_EQUAL_HEX32( flags_expected, flags_o );
 //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
-    #endif //#if TEST_SOC_HAS_INPUT_ONLY_PINS
+#endif //#if TEST_SOC_HAS_INPUT_ONLY_PINS
     ESP_LOGI(TAG, "check native flag for 6 output pins...");
     flags_expected = SPICOMMON_BUSFLAG_IOMUX_PINS;
     //swap MOSI and MISO
@@ -462,7 +462,7 @@ TEST_CASE("spi bus setting with different pin configs", "[spi]")
     };
     TEST_ASSERT_EQUAL(ESP_ERR_INVALID_ARG, spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_MASTER, &flags_o));
     TEST_ASSERT_EQUAL(ESP_ERR_INVALID_ARG, spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_SLAVE, &flags_o));
-    #if TEST_SOC_HAS_INPUT_ONLY_PINS  //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
+#if TEST_SOC_HAS_INPUT_ONLY_PINS  //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
     ESP_LOGI(TAG, "check dual flag for master 5 output pins and MISO/MOSI on input-only pin...");
     flags_expected = SPICOMMON_BUSFLAG_DUAL | SPICOMMON_BUSFLAG_GPIO_PINS;
     cfg = (spi_bus_config_t)
@@ -496,7 +496,7 @@ TEST_CASE("spi bus setting with different pin configs", "[spi]")
     TEST_ASSERT_EQUAL(ESP_ERR_INVALID_ARG, spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_MASTER, &flags_o));
     TEST_ASSERT_EQUAL(ESP_ERR_INVALID_ARG, spicommon_bus_initialize_io(TEST_SPI_HOST, &cfg, flags_expected | SPICOMMON_BUSFLAG_SLAVE, &flags_o));
 //There is no input-only pin on esp32c3 and esp32s3, so this test could be ignored.
-    #endif //#if TEST_SOC_HAS_INPUT_ONLY_PINS
+#endif //#if TEST_SOC_HAS_INPUT_ONLY_PINS
     ESP_LOGI(TAG, "check sclk flag...");
     flags_expected = SPICOMMON_BUSFLAG_SCLK;
     cfg = (spi_bus_config_t)
@@ -610,32 +610,32 @@ static const uint8_t data_drom[320 + 3] =
 
 TEST_CASE("SPI Master DMA test, TX and RX in different regions", "[spi]")
 {
-    #ifdef CONFIG_SPIRAM
+#ifdef CONFIG_SPIRAM
     //test psram if enabled
     ESP_LOGI(TAG, "testing PSRAM...");
     uint32_t *data_malloc = (uint32_t *)heap_caps_malloc(324, MALLOC_CAP_SPIRAM);
     TEST_ASSERT(esp_ptr_external_ram(data_malloc));
-    #else
+#else
     uint32_t *data_malloc = (uint32_t *)heap_caps_malloc(324, MALLOC_CAP_DMA);
     TEST_ASSERT(esp_ptr_in_dram(data_malloc));
-    #endif
+#endif
     TEST_ASSERT(data_malloc != NULL);
     TEST_ASSERT(esp_ptr_in_dram(data_dram));
     TEST_ASSERT(esp_ptr_in_drom(data_drom));
     ESP_LOGI(TAG, "dram: %p", data_dram);
     ESP_LOGI(TAG, "drom: %p, malloc: %p", data_drom, data_malloc);
-    #ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
+#ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
     uint32_t *data_iram = (uint32_t *)heap_caps_malloc(324, MALLOC_CAP_EXEC);
     TEST_ASSERT(data_iram != NULL);
     TEST_ASSERT(esp_ptr_executable(data_iram) || esp_ptr_in_iram(data_iram) || esp_ptr_in_diram_iram(data_iram));
     ESP_LOGI(TAG, "iram: %p", data_iram);
-    #endif
+#endif
     srand(52);
     for (int i = 0; i < 320 / 4; i++)
     {
-        #ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
+#ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
         data_iram[i] = rand();
-        #endif
+#endif
         data_dram[i] = rand();
         data_malloc[i] = rand();
     }
@@ -654,7 +654,7 @@ TEST_CASE("SPI Master DMA test, TX and RX in different regions", "[spi]")
     static spi_transaction_t trans[TEST_REGION_SIZE];
     int x;
     memset(trans, 0, sizeof(trans));
-    #ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
+#ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
     trans[0].length = 320 * 8,
             trans[0].tx_buffer = data_iram;
     trans[0].rx_buffer = data_malloc + 1;
@@ -664,7 +664,7 @@ TEST_CASE("SPI Master DMA test, TX and RX in different regions", "[spi]")
     trans[2].length = 320 * 8,
             trans[2].tx_buffer = data_drom;
     trans[2].rx_buffer = data_iram;
-    #endif
+#endif
     trans[3].length = 320 * 8,
             trans[3].tx_buffer = data_malloc + 2;
     trans[3].rx_buffer = data_dram;
@@ -675,13 +675,13 @@ TEST_CASE("SPI Master DMA test, TX and RX in different regions", "[spi]")
     ptr = (uint32_t *)trans[4].tx_data;
     *ptr = 0xbc124960;
     //Queue all transactions.
-    #ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
+#ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
     for (x = 0; x < TEST_REGION_SIZE; x++)
     {
-    #else
+#else
     for (x = 3; x < TEST_REGION_SIZE; x++)
     {
-    #endif
+#endif
         ESP_LOGI(TAG, "transmitting %d...", x);
         ret = spi_device_transmit(spi, &trans[x]);
         TEST_ASSERT(ret == ESP_OK);
@@ -697,9 +697,9 @@ TEST_CASE("SPI Master DMA test, TX and RX in different regions", "[spi]")
     TEST_ASSERT(spi_bus_remove_device(spi) == ESP_OK);
     TEST_ASSERT(spi_bus_free(TEST_SPI_HOST) == ESP_OK);
     free(data_malloc);
-    #ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
+#ifndef CONFIG_ESP_SYSTEM_MEMPROT_FEATURE
     free(data_iram);
-    #endif
+#endif
 }
 #endif //!TEMPORARY_DISABLED_FOR_TARGETS(ESP32C2)
 
@@ -830,12 +830,12 @@ void test_cmd_addr(spi_slave_task_context_t *slave_context, bool lsb_first)
         //prepare master tx data
         int cmd_bits = (i + 1) * 2;
         int addr_bits =
-            #ifdef CONFIG_IDF_TARGET_ESP32
+#ifdef CONFIG_IDF_TARGET_ESP32
             56 - 8 * i;
-            #elif CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
+#elif CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
             //ESP32S2 only supportes up to 32 bits address
             28 - 4 * i;
-            #endif
+#endif
         int round_up = (cmd_bits + addr_bits + 7) / 8 * 8;
         addr_bits = round_up - cmd_bits;
         spi_transaction_ext_t trans = (spi_transaction_ext_t)
@@ -1337,9 +1337,9 @@ TEST_CASE("spi_speed", "[spi]")
     {
         ESP_LOGI(TAG, "%.2lf", GET_US_BY_CCOUNT(t_flight_sorted[i]));
     }
-    #ifndef CONFIG_SPIRAM
+#ifndef CONFIG_SPIRAM
     TEST_PERFORMANCE_LESS_THAN(SPI_PER_TRANS_NO_POLLING, "%d us", (int)GET_US_BY_CCOUNT(t_flight_sorted[(TEST_TIMES + 1) / 2]));
-    #endif
+#endif
     //acquire the bus to send polling transactions faster
     ret = spi_device_acquire_bus(spi, portMAX_DELAY);
     TEST_ESP_OK(ret);
@@ -1354,9 +1354,9 @@ TEST_CASE("spi_speed", "[spi]")
     {
         ESP_LOGI(TAG, "%.2lf", GET_US_BY_CCOUNT(t_flight_sorted[i]));
     }
-    #ifndef CONFIG_SPIRAM
+#ifndef CONFIG_SPIRAM
     TEST_PERFORMANCE_LESS_THAN(SPI_PER_TRANS_POLLING, "%d us", (int)GET_US_BY_CCOUNT(t_flight_sorted[(TEST_TIMES + 1) / 2]));
-    #endif
+#endif
     //release the bus
     spi_device_release_bus(spi);
     master_free_device_bus(spi);
@@ -1372,9 +1372,9 @@ TEST_CASE("spi_speed", "[spi]")
     {
         ESP_LOGI(TAG, "%.2lf", GET_US_BY_CCOUNT(t_flight_sorted[i]));
     }
-    #ifndef CONFIG_SPIRAM
+#ifndef CONFIG_SPIRAM
     TEST_PERFORMANCE_LESS_THAN(SPI_PER_TRANS_NO_POLLING_NO_DMA, "%d us", (int)GET_US_BY_CCOUNT(t_flight_sorted[(TEST_TIMES + 1) / 2]));
-    #endif
+#endif
     //acquire the bus to send polling transactions faster
     ret = spi_device_acquire_bus(spi, portMAX_DELAY);
     TEST_ESP_OK(ret);
@@ -1389,9 +1389,9 @@ TEST_CASE("spi_speed", "[spi]")
     {
         ESP_LOGI(TAG, "%.2lf", GET_US_BY_CCOUNT(t_flight_sorted[i]));
     }
-    #ifndef CONFIG_SPIRAM
+#ifndef CONFIG_SPIRAM
     TEST_PERFORMANCE_LESS_THAN(SPI_PER_TRANS_POLLING_NO_DMA, "%d us", (int)GET_US_BY_CCOUNT(t_flight_sorted[(TEST_TIMES + 1) / 2]));
-    #endif
+#endif
     //release the bus
     spi_device_release_bus(spi);
     master_free_device_bus(spi);

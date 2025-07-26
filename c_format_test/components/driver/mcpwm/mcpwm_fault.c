@@ -9,9 +9,9 @@
 #include <sys/cdefs.h>
 #include "sdkconfig.h"
 #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -89,9 +89,9 @@ static esp_err_t mcpwm_gpio_fault_destory(mcpwm_gpio_fault_t *fault)
 
 esp_err_t mcpwm_new_gpio_fault(const mcpwm_gpio_fault_config_t *config, mcpwm_fault_handle_t *ret_fault)
 {
-    #if CONFIG_MCPWM_ENABLE_DEBUG_LOG
+#if CONFIG_MCPWM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     mcpwm_gpio_fault_t *fault = NULL;
     ESP_GOTO_ON_FALSE(config && ret_fault, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -221,7 +221,7 @@ esp_err_t mcpwm_fault_register_event_callbacks(mcpwm_fault_handle_t fault, const
     int group_id = group->group_id;
     mcpwm_hal_context_t *hal = &group->hal;
     int fault_id = gpio_fault->fault_id;
-    #if CONFIG_MCWPM_ISR_IRAM_SAFE
+#if CONFIG_MCWPM_ISR_IRAM_SAFE
     if (cbs->on_fault_enter)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_fault_enter), ESP_ERR_INVALID_ARG, TAG, "on_fault_enter callback not in IRAM");
@@ -234,7 +234,7 @@ esp_err_t mcpwm_fault_register_event_callbacks(mcpwm_fault_handle_t fault, const
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!gpio_fault->intr)
     {

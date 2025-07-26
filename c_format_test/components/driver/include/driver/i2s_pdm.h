@@ -250,21 +250,21 @@ typedef struct
                                                  *   Stereo means the data buffer contains two slots data
                                                  */
     /* Particular fields */
-    #if SOC_I2S_HW_VERSION_1
+#if SOC_I2S_HW_VERSION_1
     i2s_pdm_slot_mask_t     slot_mask;          /*!< Slot mask to choose left or right slot */
-    #endif
+#endif
     uint32_t                sd_prescale;        /*!< Sigma-delta filter prescale */
     i2s_pdm_sig_scale_t     sd_scale;           /*!< Sigma-delta filter scaling value */
     i2s_pdm_sig_scale_t     hp_scale;           /*!< High pass filter scaling value */
     i2s_pdm_sig_scale_t     lp_scale;           /*!< Low pass filter scaling value */
     i2s_pdm_sig_scale_t     sinc_scale;         /*!< Sinc filter scaling value */
-    #if SOC_I2S_HW_VERSION_2
+#if SOC_I2S_HW_VERSION_2
     i2s_pdm_tx_line_mode_t  line_mode;          /*!< PDM TX line mode, on-line codec, one-line dac, two-line dac mode can be selected */
     bool                    hp_en;              /*!< High pass filter enable */
     float                   hp_cut_off_freq_hz; /*!< High pass filter cut-off frequency, range 23.3Hz ~ 185Hz, see cut-off frequency sheet above */
     uint32_t                sd_dither;          /*!< Sigma-delta filter dither */
     uint32_t                sd_dither2;         /*!< Sigma-delta filter dither2 */
-    #endif // SOC_I2S_HW_VERSION_2
+#endif // SOC_I2S_HW_VERSION_2
 } i2s_pdm_tx_slot_config_t;
 
 /**
@@ -288,11 +288,11 @@ typedef struct
 {
     gpio_num_t clk;                /*!< PDM clk pin, output */
     gpio_num_t dout;               /*!< DATA pin, output */
-    #if SOC_I2S_HW_VERSION_2
+#if SOC_I2S_HW_VERSION_2
     gpio_num_t dout2;              /*!< The second data pin for the DAC dual-line mode,
                                     *   only take effect when the line mode is `I2S_PDM_TX_TWO_LINE_DAC`
                                     */
-    #endif
+#endif
     struct
     {
         uint32_t   clk_inv: 1;     /*!< Set 1 to invert the clk output */

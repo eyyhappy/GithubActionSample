@@ -31,13 +31,13 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
     }
     /* Change state now, so that it is right in mbedtls_ssl_read_record(), used
      * by DTLS for dropping out-of-sequence ChangeCipherSpec records */
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     if( ssl->state == MBEDTLS_SSL_SERVER_CHANGE_CIPHER_SPEC &&
         ssl->handshake->new_session_ticket != 0 )
     {
         ssl->state = MBEDTLS_SSL_SERVER_NEW_SESSION_TICKET;
     }
-    #endif
+#endif
     switch (state)
     {
         case MBEDTLS_SSL_HELLO_REQUEST:
@@ -67,9 +67,9 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             else
             {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
                 esp_mbedtls_free_cacert(ssl);
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_SERVER_KEY_EXCHANGE:
@@ -145,11 +145,11 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             }
             else
             {
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 esp_mbedtls_free_dhm(ssl);
                 esp_mbedtls_free_keycert_key(ssl);
                 esp_mbedtls_free_keycert(ssl);
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_CLIENT_CHANGE_CIPHER_SPEC:
@@ -166,7 +166,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
                 CHECK_OK(esp_mbedtls_add_tx_buffer(ssl, buffer_len));
             }
             break;
-            #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
         case MBEDTLS_SSL_SERVER_NEW_SESSION_TICKET:
             if (add)
             {
@@ -177,7 +177,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
             }
             break;
-            #endif
+#endif
         case MBEDTLS_SSL_SERVER_CHANGE_CIPHER_SPEC:
             if (add)
             {

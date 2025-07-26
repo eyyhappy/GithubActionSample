@@ -186,7 +186,7 @@ typedef size_t mbedtls_mps_size_t;
 #define MBEDTLS_MPS_SIZE_MAX  ( (mbedtls_mps_size_t) -1 )
 
 #if MBEDTLS_MPS_STORED_SIZE_MAX > MBEDTLS_MPS_SIZE_MAX
-#error "Misconfiguration of mbedtls_mps_size_t and mbedtls_mps_stored_size_t."
+    #error "Misconfiguration of mbedtls_mps_size_t and mbedtls_mps_stored_size_t."
 #endif
 
 /* \} SECTION: Common types */

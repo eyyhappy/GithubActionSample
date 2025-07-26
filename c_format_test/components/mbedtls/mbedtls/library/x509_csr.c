@@ -39,21 +39,21 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-#include "mbedtls/pem.h"
+    #include "mbedtls/pem.h"
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdlib.h>
-#include <stdio.h>
-#define mbedtls_free       free
-#define mbedtls_calloc    calloc
-#define mbedtls_snprintf   snprintf
+    #include <stdlib.h>
+    #include <stdio.h>
+    #define mbedtls_free       free
+    #define mbedtls_calloc    calloc
+    #define mbedtls_snprintf   snprintf
 #endif
 
 #if defined(MBEDTLS_FS_IO) || defined(EFIX64) || defined(EFI32)
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 /*
@@ -225,17 +225,17 @@ int mbedtls_x509_csr_parse_der( mbedtls_x509_csr *csr,
  */
 int mbedtls_x509_csr_parse( mbedtls_x509_csr *csr, const unsigned char *buf, size_t buflen )
 {
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     size_t use_len;
     mbedtls_pem_context pem;
-    #endif
+#endif
     /*
      * Check for valid input
      */
     if( csr == NULL || buf == NULL || buflen == 0 )
         return( MBEDTLS_ERR_X509_BAD_INPUT_DATA );
-    #if defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_PEM_PARSE_C)
     /* Avoid calling mbedtls_pem_read_buffer() on non-null-terminated string */
     if( buf[buflen - 1] == '\0' )
     {
@@ -262,7 +262,7 @@ int mbedtls_x509_csr_parse( mbedtls_x509_csr *csr, const unsigned char *buf, siz
         if( ret != MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT )
             return( ret );
     }
-    #endif /* MBEDTLS_PEM_PARSE_C */
+#endif /* MBEDTLS_PEM_PARSE_C */
     return( mbedtls_x509_csr_parse_der( csr, buf, buflen ) );
 }
 
@@ -341,9 +341,9 @@ void mbedtls_x509_csr_free( mbedtls_x509_csr *csr )
     if( csr == NULL )
         return;
     mbedtls_pk_free( &csr->pk );
-    #if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
+#if defined(MBEDTLS_X509_RSASSA_PSS_SUPPORT)
     mbedtls_free( csr->sig_opts );
-    #endif
+#endif
     name_cur = csr->subject.next;
     while( name_cur != NULL )
     {

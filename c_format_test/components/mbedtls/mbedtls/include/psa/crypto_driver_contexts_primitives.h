@@ -42,7 +42,7 @@
  * declared during the autogeneration process. */
 
 #if defined(MBEDTLS_TEST_LIBTESTDRIVER1)
-#include <libtestdriver1/include/psa/crypto.h>
+    #include <libtestdriver1/include/psa/crypto.h>
 #endif
 
 #if defined(PSA_CRYPTO_DRIVER_TEST)
@@ -101,19 +101,19 @@ typedef union
 {
     unsigned dummy; /* Make sure this union is always non-empty */
     mbedtls_psa_hash_operation_t mbedtls_ctx;
-    #if defined(PSA_CRYPTO_DRIVER_TEST)
+#if defined(PSA_CRYPTO_DRIVER_TEST)
     mbedtls_transparent_test_driver_hash_operation_t test_driver_ctx;
-    #endif
+#endif
 } psa_driver_hash_context_t;
 
 typedef union
 {
     unsigned dummy; /* Make sure this union is always non-empty */
     mbedtls_psa_cipher_operation_t mbedtls_ctx;
-    #if defined(PSA_CRYPTO_DRIVER_TEST)
+#if defined(PSA_CRYPTO_DRIVER_TEST)
     mbedtls_transparent_test_driver_cipher_operation_t transparent_test_driver_ctx;
     mbedtls_opaque_test_driver_cipher_operation_t opaque_test_driver_ctx;
-    #endif
+#endif
 } psa_driver_cipher_context_t;
 
 #endif /* PSA_CRYPTO_DRIVER_CONTEXTS_PRIMITIVES_H */

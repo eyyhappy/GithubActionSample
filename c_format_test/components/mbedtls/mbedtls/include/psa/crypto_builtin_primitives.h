@@ -47,13 +47,13 @@
 #include "mbedtls/sha512.h"
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_MD5) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_RIPEMD160) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_1) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_224) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_256) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_384) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_512)
-#define MBEDTLS_PSA_BUILTIN_HASH
+    defined(MBEDTLS_PSA_BUILTIN_ALG_RIPEMD160) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_1) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_224) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_256) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_384) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_512)
+    #define MBEDTLS_PSA_BUILTIN_HASH
 #endif
 
 typedef struct
@@ -62,23 +62,23 @@ typedef struct
     union
     {
         unsigned dummy; /* Make the union non-empty even with no supported algorithms. */
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_MD5)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_MD5)
         mbedtls_md5_context md5;
-        #endif
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_RIPEMD160)
+#endif
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_RIPEMD160)
         mbedtls_ripemd160_context ripemd160;
-        #endif
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_1)
+#endif
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_1)
         mbedtls_sha1_context sha1;
-        #endif
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_256) || \
+#endif
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_256) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_224)
         mbedtls_sha256_context sha256;
-        #endif
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_512) || \
+#endif
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_512) || \
         defined(MBEDTLS_PSA_BUILTIN_ALG_SHA_384)
         mbedtls_sha512_context sha512;
-        #endif
+#endif
     } MBEDTLS_PRIVATE(ctx);
 } mbedtls_psa_hash_operation_t;
 
@@ -91,13 +91,13 @@ typedef struct
 #include "mbedtls/cipher.h"
 
 #if defined(MBEDTLS_PSA_BUILTIN_ALG_STREAM_CIPHER) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CTR) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CFB) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_OFB) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_NO_PADDING) || \
-defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_PKCS7)
-#define MBEDTLS_PSA_BUILTIN_CIPHER  1
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CTR) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CFB) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_OFB) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_ECB_NO_PADDING) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_NO_PADDING) || \
+    defined(MBEDTLS_PSA_BUILTIN_ALG_CBC_PKCS7)
+    #define MBEDTLS_PSA_BUILTIN_CIPHER  1
 #endif
 
 typedef struct

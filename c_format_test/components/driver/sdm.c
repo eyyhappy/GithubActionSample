@@ -8,9 +8,9 @@
 #include <sys/lock.h>
 #include "sdkconfig.h"
 #if CONFIG_SDM_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_attr.h"
@@ -28,9 +28,9 @@
 #include "esp_private/esp_clk.h"
 
 #if CONFIG_SDM_CTRL_FUNC_IN_IRAM
-#define SDM_MEM_ALLOC_CAPS      (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
+    #define SDM_MEM_ALLOC_CAPS      (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
 #else
-#define SDM_MEM_ALLOC_CAPS      MALLOC_CAP_DEFAULT
+    #define SDM_MEM_ALLOC_CAPS      MALLOC_CAP_DEFAULT
 #endif
 
 #define SDM_PM_LOCK_NAME_LEN_MAX 16
@@ -72,9 +72,9 @@ struct sdm_channel_t
     portMUX_TYPE spinlock;           // to protect per-channels resources concurrently accessed by task and ISR handler
     esp_pm_lock_handle_t pm_lock;    // PM lock, for glitch filter, as that module can only be functional under APB
     sdm_fsm_t fsm;              // FSM state
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     char pm_lock_name[SDM_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-    #endif
+#endif
 };
 
 // sdm driver platform, it's always a singleton
@@ -205,9 +205,9 @@ static esp_err_t sdm_destory(sdm_channel_t *chan)
 
 esp_err_t sdm_new_channel(const sdm_config_t *config, sdm_channel_handle_t *ret_chan)
 {
-    #if CONFIG_SDM_ENABLE_DEBUG_LOG
+#if CONFIG_SDM_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     sdm_channel_t *chan = NULL;
     ESP_GOTO_ON_FALSE(config && ret_chan, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -225,11 +225,11 @@ esp_err_t sdm_new_channel(const sdm_config_t *config, sdm_channel_handle_t *ret_
     {
         case SDM_CLK_SRC_APB:
             src_clk_hz = esp_clk_apb_freq();
-            #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
             sprintf(chan->pm_lock_name, "sdm_%d_%d", group->group_id, chan_id); // e.g. sdm_0_0
             ret  = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, chan->pm_lock_name, &chan->pm_lock);
             ESP_RETURN_ON_ERROR(ret, TAG, "create APB_FREQ_MAX lock failed");
-            #endif
+#endif
             break;
         default:
             ESP_GOTO_ON_FALSE(false, ESP_ERR_NOT_SUPPORTED, err, TAG, "clock source %d is not support", config->clk_src);

@@ -33,16 +33,16 @@
 #include <string.h>
 
 #if defined(MBEDTLS_FS_IO)
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 #if defined(MBEDTLS_SELF_TEST)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST */
 
 /*
@@ -65,11 +65,11 @@ void mbedtls_ctr_drbg_free( mbedtls_ctr_drbg_context *ctx )
 {
     if( ctx == NULL )
         return;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     /* The mutex is initialized iff f_entropy is set. */
     if( ctx->f_entropy != NULL )
         mbedtls_mutex_free( &ctx->mutex );
-    #endif
+#endif
     mbedtls_aes_free( &ctx->aes_ctx );
     mbedtls_platform_zeroize( ctx, sizeof( mbedtls_ctr_drbg_context ) );
     ctx->reseed_interval = MBEDTLS_CTR_DRBG_RESEED_INTERVAL;
@@ -97,13 +97,13 @@ int mbedtls_ctr_drbg_set_nonce_len( mbedtls_ctr_drbg_context *ctx,
         return( MBEDTLS_ERR_CTR_DRBG_ENTROPY_SOURCE_FAILED );
     if( len > MBEDTLS_CTR_DRBG_MAX_SEED_INPUT )
         return( MBEDTLS_ERR_CTR_DRBG_INPUT_TOO_BIG );
-    #if SIZE_MAX > INT_MAX
+#if SIZE_MAX > INT_MAX
     /* This shouldn't be an issue because
      * MBEDTLS_CTR_DRBG_MAX_SEED_INPUT < INT_MAX in any sensible
      * configuration, but make sure anyway. */
     if( len > INT_MAX )
         return( MBEDTLS_ERR_CTR_DRBG_INPUT_TOO_BIG );
-    #endif
+#endif
     /* For backward compatibility with Mbed TLS <= 2.19, store the
      * entropy nonce length in a field that already exists, but isn't
      * used until after the initial seeding. */
@@ -405,9 +405,9 @@ int mbedtls_ctr_drbg_seed( mbedtls_ctr_drbg_context *ctx,
     size_t nonce_len;
     memset( key, 0, MBEDTLS_CTR_DRBG_KEYSIZE );
     /* The mutex is initialized iff f_entropy is set. */
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_init( &ctx->mutex );
-    #endif
+#endif
     mbedtls_aes_init( &ctx->aes_ctx );
     ctx->f_entropy = f_entropy;
     ctx->p_entropy = p_entropy;
@@ -525,15 +525,15 @@ int mbedtls_ctr_drbg_random( void *p_rng, unsigned char *output,
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
     mbedtls_ctr_drbg_context *ctx = (mbedtls_ctr_drbg_context *) p_rng;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( ( ret = mbedtls_mutex_lock( &ctx->mutex ) ) != 0 )
         return( ret );
-    #endif
+#endif
     ret = mbedtls_ctr_drbg_random_with_add( ctx, output, output_len, NULL, 0 );
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &ctx->mutex ) != 0 )
         return( MBEDTLS_ERR_THREADING_MUTEX_ERROR );
-    #endif
+#endif
     return( ret );
 }
 

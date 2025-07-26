@@ -37,7 +37,7 @@
 #include "esp_memory_utils.h"
 #include "sys/param.h"
 #if CONFIG_PM_ENABLE
-#include "esp_pm.h"
+    #include "esp_pm.h"
 #endif
 #include "esp_crypto_lock.h"
 #include "hal/aes_hal.h"
@@ -45,24 +45,24 @@
 #include "esp_aes_dma_priv.h"
 
 #if CONFIG_IDF_TARGET_ESP32S2
-#include "esp32s2/rom/cache.h"
+    #include "esp32s2/rom/cache.h"
 #elif CONFIG_IDF_TARGET_ESP32S3
-#include "esp32s3/rom/cache.h"
+    #include "esp32s3/rom/cache.h"
 #endif
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
 
 #if SOC_AES_SUPPORT_GCM
-#include "aes/esp_aes_gcm.h"
+    #include "aes/esp_aes_gcm.h"
 #endif
 
 #if SOC_AES_GDMA
-#define AES_LOCK() esp_crypto_sha_aes_lock_acquire()
-#define AES_RELEASE() esp_crypto_sha_aes_lock_release()
+    #define AES_LOCK() esp_crypto_sha_aes_lock_acquire()
+    #define AES_RELEASE() esp_crypto_sha_aes_lock_release()
 #elif SOC_AES_CRYPTO_DMA
-#define AES_LOCK() esp_crypto_dma_lock_acquire()
-#define AES_RELEASE() esp_crypto_dma_lock_release()
+    #define AES_LOCK() esp_crypto_dma_lock_acquire()
+    #define AES_RELEASE() esp_crypto_dma_lock_release()
 #endif
 
 /* Max size of each chunk to process when output buffer is in unaligned external ram
@@ -76,22 +76,22 @@
 
 
 #if defined(CONFIG_MBEDTLS_AES_USE_INTERRUPT)
-static SemaphoreHandle_t op_complete_sem;
-#if defined(CONFIG_PM_ENABLE)
-static esp_pm_lock_handle_t s_pm_cpu_lock;
-static esp_pm_lock_handle_t s_pm_sleep_lock;
-#endif
+    static SemaphoreHandle_t op_complete_sem;
+    #if defined(CONFIG_PM_ENABLE)
+        static esp_pm_lock_handle_t s_pm_cpu_lock;
+        static esp_pm_lock_handle_t s_pm_sleep_lock;
+    #endif
 #endif
 
 #if SOC_PSRAM_DMA_CAPABLE
 
-#if (CONFIG_ESP32S2_DATA_CACHE_LINE_16B || CONFIG_ESP32S3_DATA_CACHE_LINE_16B)
-#define DCACHE_LINE_SIZE 16
-#elif (CONFIG_ESP32S2_DATA_CACHE_LINE_32B || CONFIG_ESP32S3_DATA_CACHE_LINE_32B)
-#define DCACHE_LINE_SIZE 32
-#elif CONFIG_ESP32S3_DATA_CACHE_LINE_64B
-#define DCACHE_LINE_SIZE 64
-#endif //(CONFIG_ESP32S2_DATA_CACHE_LINE_16B || CONFIG_ESP32S3_DATA_CACHE_LINE_16B)
+    #if (CONFIG_ESP32S2_DATA_CACHE_LINE_16B || CONFIG_ESP32S3_DATA_CACHE_LINE_16B)
+        #define DCACHE_LINE_SIZE 16
+    #elif (CONFIG_ESP32S2_DATA_CACHE_LINE_32B || CONFIG_ESP32S3_DATA_CACHE_LINE_32B)
+        #define DCACHE_LINE_SIZE 32
+    #elif CONFIG_ESP32S3_DATA_CACHE_LINE_64B
+        #define DCACHE_LINE_SIZE 64
+    #endif //(CONFIG_ESP32S2_DATA_CACHE_LINE_16B || CONFIG_ESP32S3_DATA_CACHE_LINE_16B)
 
 #endif //SOC_PSRAM_DMA_CAPABLE
 
@@ -142,22 +142,22 @@ void esp_aes_acquire_hardware( void )
     /* Released by esp_aes_release_hardware()*/
     AES_LOCK();
     /* Enable AES and DMA hardware */
-    #if SOC_AES_CRYPTO_DMA
+#if SOC_AES_CRYPTO_DMA
     periph_module_enable(PERIPH_AES_DMA_MODULE);
-    #elif SOC_AES_GDMA
+#elif SOC_AES_GDMA
     periph_module_enable(PERIPH_AES_MODULE);
-    #endif
+#endif
 }
 
 /* Function to disable AES and Crypto DMA clocks and release locks */
 void esp_aes_release_hardware( void )
 {
     /* Disable AES and DMA hardware */
-    #if SOC_AES_CRYPTO_DMA
+#if SOC_AES_CRYPTO_DMA
     periph_module_disable(PERIPH_AES_DMA_MODULE);
-    #elif SOC_AES_GDMA
+#elif SOC_AES_GDMA
     periph_module_disable(PERIPH_AES_MODULE);
-    #endif
+#endif
     AES_RELEASE();
 }
 
@@ -189,7 +189,7 @@ static esp_err_t esp_aes_isr_initialise( void )
         esp_intr_alloc(ETS_AES_INTR_SOURCE, 0, esp_aes_complete_isr, NULL, NULL);
     }
     /* AES is clocked proportionally to CPU clock, take power management lock */
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     if (s_pm_cpu_lock == NULL)
     {
         if (esp_pm_lock_create(ESP_PM_NO_LIGHT_SLEEP, 0, "aes_sleep", &s_pm_sleep_lock) != ESP_OK)
@@ -205,7 +205,7 @@ static esp_err_t esp_aes_isr_initialise( void )
     }
     esp_pm_lock_acquire(s_pm_cpu_lock);
     esp_pm_lock_acquire(s_pm_sleep_lock);
-    #endif
+#endif
     return ESP_OK;
 }
 #endif // CONFIG_MBEDTLS_AES_USE_INTERRUPT
@@ -213,7 +213,7 @@ static esp_err_t esp_aes_isr_initialise( void )
 /* Wait for AES hardware block operation to complete */
 static void esp_aes_dma_wait_complete(bool use_intr, lldesc_t *output_desc)
 {
-    #if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
+#if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
     if (use_intr)
     {
         if (!xSemaphoreTake(op_complete_sem, 2000 / portTICK_PERIOD_MS))
@@ -222,12 +222,12 @@ static void esp_aes_dma_wait_complete(bool use_intr, lldesc_t *output_desc)
             ESP_LOGE("AES", "Timed out waiting for completion of AES Interrupt");
             abort();
         }
-        #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
         esp_pm_lock_release(s_pm_cpu_lock);
         esp_pm_lock_release(s_pm_sleep_lock);
-        #endif  // CONFIG_PM_ENABLE
+#endif  // CONFIG_PM_ENABLE
     }
-    #endif
+#endif
     /* Checking this if interrupt is used also, to avoid
        issues with AES fault injection
     */
@@ -347,7 +347,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
     if (block_bytes > 0)
     {
         /* Flush cache if input in external ram */
-        #if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
+#if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
         if (esp_ptr_external_ram(input))
         {
             Cache_WriteBack_Addr((uint32_t)input, len);
@@ -360,7 +360,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
                 output_needs_realloc = true;
             }
         }
-        #endif
+#endif
         /* DMA cannot access memory in the iCache range, copy input to internal ram */
         if (!s_check_dma_capable(input))
         {
@@ -413,7 +413,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
     // block buffers are sent to DMA first, unless there aren't any
     in_desc_head =  (block_bytes > 0) ? block_in_desc : &s_stream_in_desc;
     out_desc_head = (block_bytes > 0) ? block_out_desc : &s_stream_out_desc;
-    #if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
+#if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
     /* Only use interrupt for long AES operations */
     if (len > AES_DMA_INTR_TRIG_LEN)
     {
@@ -425,7 +425,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
         }
     }
     else
-    #endif
+#endif
     {
         aes_hal_interrupt_enable(false);
     }
@@ -437,7 +437,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
     }
     aes_hal_transform_dma_start(blocks);
     esp_aes_dma_wait_complete(use_intr, out_desc_tail);
-    #if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
+#if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
     if (block_bytes > 0)
     {
         if (esp_ptr_external_ram(output))
@@ -445,7 +445,7 @@ static int esp_aes_process_dma(esp_aes_context *ctx, const unsigned char *input,
             Cache_Invalidate_Addr((uint32_t)output, block_bytes);
         }
     }
-    #endif
+#endif
     aes_hal_transform_dma_finish();
     if (stream_bytes > 0)
     {
@@ -526,7 +526,7 @@ int esp_aes_process_dma_gcm(esp_aes_context *ctx, const unsigned char *input, un
     len_desc->eof = 1;
     len_desc->buf = (uint8_t *)len_buf;
     lldesc_append(&in_desc_head, len_desc);
-    #if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
+#if defined (CONFIG_MBEDTLS_AES_USE_INTERRUPT)
     /* Only use interrupt for long AES operations */
     if (len > AES_DMA_INTR_TRIG_LEN)
     {
@@ -538,7 +538,7 @@ int esp_aes_process_dma_gcm(esp_aes_context *ctx, const unsigned char *input, un
         }
     }
     else
-    #endif
+#endif
     {
         aes_hal_interrupt_enable(false);
     }
@@ -1013,9 +1013,9 @@ int esp_aes_crypt_ctr(esp_aes_context *ctx,
 static bool s_check_dma_capable(const void *p)
 {
     bool is_capable = false;
-    #if CONFIG_SPIRAM
+#if CONFIG_SPIRAM
     is_capable |= esp_ptr_dma_ext_capable(p);
-    #endif
+#endif
     is_capable |= esp_ptr_dma_capable(p);
     return is_capable;
 }

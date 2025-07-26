@@ -238,12 +238,12 @@ int esp_aes_gcm_setkey( esp_gcm_context *ctx,
                         const unsigned char *key,
                         unsigned int keybits )
 {
-    #if !SOC_AES_SUPPORT_AES_192
+#if !SOC_AES_SUPPORT_AES_192
     if (keybits == 192)
     {
         return MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED;
     }
-    #endif
+#endif
     if (keybits != 128 && keybits != 192 && keybits != 256)
     {
         return MBEDTLS_ERR_AES_INVALID_KEY_LENGTH;
@@ -347,16 +347,16 @@ int esp_aes_gcm_starts( esp_gcm_context *ctx,
     if (ctx->gcm_state == ESP_AES_GCM_STATE_INIT)
     {
         /* Lock the AES engine to calculate ghash key H in hardware */
-        #if SOC_AES_SUPPORT_GCM
+#if SOC_AES_SUPPORT_GCM
         esp_aes_acquire_hardware();
         ctx->aes_ctx.key_in_hardware = aes_hal_setkey(ctx->aes_ctx.key, ctx->aes_ctx.key_bytes, mode);
         aes_hal_mode_init(ESP_AES_BLOCK_MODE_GCM);
         aes_hal_gcm_calc_hash(ctx->H);
         esp_aes_release_hardware();
-        #else
+#else
         memset(ctx->H, 0, sizeof(ctx->H));
         esp_aes_crypt_ecb(&ctx->aes_ctx, MBEDTLS_AES_ENCRYPT, ctx->H, ctx->H);
-        #endif
+#endif
         gcm_gen_table(ctx);
     }
     /* Once H is obtained we need to derive J0 (Initial Counter Block) */
@@ -576,7 +576,7 @@ int esp_aes_gcm_crypt_and_tag( esp_gcm_context *ctx,
                                size_t tag_len,
                                unsigned char *tag )
 {
-    #if SOC_AES_SUPPORT_GCM
+#if SOC_AES_SUPPORT_GCM
     int ret;
     lldesc_t aad_desc[2] = {};
     lldesc_t *aad_head_desc = NULL;
@@ -666,9 +666,9 @@ int esp_aes_gcm_crypt_and_tag( esp_gcm_context *ctx,
     aes_hal_gcm_read_tag(tag, tag_len);
     esp_aes_release_hardware();
     return ( ret );
-    #else
+#else
     return esp_aes_gcm_crypt_and_tag_partial_hw(ctx, mode, length, iv, iv_len, aad, aad_len, input, output, tag_len, tag);
-    #endif
+#endif
 }
 
 

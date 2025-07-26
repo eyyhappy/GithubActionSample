@@ -46,8 +46,8 @@
 #include <stdint.h>
 
 #if ( defined(__ARMCC_VERSION) || defined(_MSC_VER) ) && \
-!defined(inline) && !defined(__cplusplus)
-#define inline __inline
+    !defined(inline) && !defined(__cplusplus)
+    #define inline __inline
 #endif
 
 #if defined(MBEDTLS_PSA_CRYPTO_KEY_ID_ENCODES_OWNER)
@@ -86,8 +86,8 @@ static inline int mbedtls_key_owner_id_equal( mbedtls_key_owner_id_t id1,
  * included.
  */
 #if defined(MBEDTLS_PSA_CRYPTO_SPM)
-#define PSA_CRYPTO_SECURE 1
-#include "crypto_spe.h"
+    #define PSA_CRYPTO_SECURE 1
+    #include "crypto_spe.h"
 #endif // MBEDTLS_PSA_CRYPTO_SPM
 
 #if defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG)

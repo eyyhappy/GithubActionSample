@@ -32,8 +32,8 @@
 #include <string.h>
 #include "mbedtls/platform.h"
 #if !defined(MBEDTLS_PLATFORM_C)
-#define mbedtls_calloc calloc
-#define mbedtls_free   free
+    #define mbedtls_calloc calloc
+    #define mbedtls_free   free
 #endif
 
 #include <mbedtls/ecdsa.h>
@@ -328,7 +328,7 @@ psa_status_t mbedtls_psa_ecdsa_sign_hash(
     }
     if( PSA_ALG_ECDSA_IS_DETERMINISTIC( alg ) )
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
+#if defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA)
         psa_algorithm_t hash_alg = PSA_ALG_SIGN_GET_HASH( alg );
         const mbedtls_md_info_t *md_info = mbedtls_md_info_from_psa( hash_alg );
         mbedtls_md_type_t md_alg = mbedtls_md_get_type( md_info );
@@ -338,10 +338,10 @@ psa_status_t mbedtls_psa_ecdsa_sign_hash(
                              hash_length, md_alg,
                              mbedtls_psa_get_random,
                              MBEDTLS_PSA_RANDOM_STATE ) );
-        #else
+#else
         ret = MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE;
         goto cleanup;
-        #endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) */
+#endif /* defined(MBEDTLS_PSA_BUILTIN_ALG_DETERMINISTIC_ECDSA) */
     }
     else
     {

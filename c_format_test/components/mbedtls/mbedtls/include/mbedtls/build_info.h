@@ -50,13 +50,13 @@
 #define MBEDTLS_VERSION_STRING_FULL    "mbed TLS 3.2.1"
 
 #if defined(_MSC_VER) && !defined(_CRT_SECURE_NO_DEPRECATE)
-#define _CRT_SECURE_NO_DEPRECATE 1
+    #define _CRT_SECURE_NO_DEPRECATE 1
 #endif
 
 #if !defined(MBEDTLS_CONFIG_FILE)
-#include "mbedtls/mbedtls_config.h"
+    #include "mbedtls/mbedtls_config.h"
 #else
-#include MBEDTLS_CONFIG_FILE
+    #include MBEDTLS_CONFIG_FILE
 #endif
 
 #if defined(MBEDTLS_CONFIG_VERSION) && ( \
@@ -71,14 +71,14 @@ MBEDTLS_CONFIG_VERSION > MBEDTLS_VERSION_NUMBER )
  *
  */
 #if defined(MBEDTLS_USER_CONFIG_FILE)
-#include MBEDTLS_USER_CONFIG_FILE
+    #include MBEDTLS_USER_CONFIG_FILE
 #endif
 
 #if defined(MBEDTLS_PK_C) && defined(MBEDTLS_USE_PSA_CRYPTO)
-#define MBEDTLS_PK_WRITE_C
+    #define MBEDTLS_PK_WRITE_C
 #endif
 #if defined(MBEDTLS_PSA_CRYPTO_CONFIG)
-#include "mbedtls/config_psa.h"
+    #include "mbedtls/config_psa.h"
 #endif
 
 #include "mbedtls/check_config.h"

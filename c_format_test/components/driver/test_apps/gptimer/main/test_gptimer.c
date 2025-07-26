@@ -14,9 +14,9 @@
 #include "esp_attr.h"
 
 #if CONFIG_GPTIMER_ISR_IRAM_SAFE
-#define TEST_ALARM_CALLBACK_ATTR IRAM_ATTR
+    #define TEST_ALARM_CALLBACK_ATTR IRAM_ATTR
 #else
-#define TEST_ALARM_CALLBACK_ATTR
+    #define TEST_ALARM_CALLBACK_ATTR
 #endif // CONFIG_GPTIMER_ISR_IRAM_SAFE
 
 TEST_CASE("gptimer_set_get_raw_count", "[gptimer]")
@@ -499,11 +499,11 @@ TEST_CASE("gptimer_overflow", "[gptimer]")
     {
         TEST_ESP_OK(gptimer_new_timer(&timer_config, &timers[i]));
     }
-    #if SOC_TIMER_GROUP_COUNTER_BIT_WIDTH == 64
+#if SOC_TIMER_GROUP_COUNTER_BIT_WIDTH == 64
     uint64_t reload_at = UINT64_MAX - 100000;
-    #else
+#else
     uint64_t reload_at = (1ULL << SOC_TIMER_GROUP_COUNTER_BIT_WIDTH) - 100000;
-    #endif
+#endif
     gptimer_event_callbacks_t cbs =
     {
         .on_alarm = test_gptimer_overflow_reload_callback,

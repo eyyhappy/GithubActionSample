@@ -27,7 +27,7 @@
 #include "driver/rmt_tx.h"
 
 #if !CONFIG_IDF_TARGET_ESP32
-#error "RMT+PCNT timestamp workaround is only for ESP32"
+    #error "RMT+PCNT timestamp workaround is only for ESP32"
 #endif
 
 #define REF_CLOCK_GPIO         0  // GPIO used to combine RMT out signal with PCNT input signal

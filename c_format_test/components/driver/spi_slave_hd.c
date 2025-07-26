@@ -17,9 +17,9 @@
 
 
 #if (SOC_SPI_PERIPH_NUM == 2)
-#define VALID_HOST(x) ((x) == SPI2_HOST)
+    #define VALID_HOST(x) ((x) == SPI2_HOST)
 #elif (SOC_SPI_PERIPH_NUM == 3)
-#define VALID_HOST(x) ((x) >= SPI2_HOST && (x) <= SPI3_HOST)
+    #define VALID_HOST(x) ((x) >= SPI2_HOST && (x) <= SPI3_HOST)
 #endif
 #define SPIHD_CHECK(cond,warn,ret) do{if(!(cond)){ESP_LOGE(TAG, warn); return ret;}} while(0)
 
@@ -44,9 +44,9 @@ typedef struct
 
     spi_slave_hd_data_t* tx_desc;
     spi_slave_hd_data_t* rx_desc;
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_handle_t pm_lock;
-    #endif
+#endif
 } spi_slave_hd_slot_t;
 
 static spi_slave_hd_slot_t *spihost[SOC_SPI_PERIPH_NUM];
@@ -54,8 +54,8 @@ static const char TAG[] = "slave_hd";
 
 static void spi_slave_hd_intr_segment(void *arg);
 #if CONFIG_IDF_TARGET_ESP32S2
-//Append mode is only supported on ESP32S2 now
-static void spi_slave_hd_intr_append(void *arg);
+    //Append mode is only supported on ESP32S2 now
+    static void spi_slave_hd_intr_append(void *arg);
 #endif
 
 esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *bus_config,
@@ -67,15 +67,15 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
     uint32_t actual_rx_dma_chan = 0;
     esp_err_t ret = ESP_OK;
     SPIHD_CHECK(VALID_HOST(host_id), "invalid host", ESP_ERR_INVALID_ARG);
-    #if CONFIG_IDF_TARGET_ESP32S2
+#if CONFIG_IDF_TARGET_ESP32S2
     SPIHD_CHECK(config->dma_chan == SPI_DMA_DISABLED || config->dma_chan == (int)host_id || config->dma_chan == SPI_DMA_CH_AUTO, "invalid dma channel", ESP_ERR_INVALID_ARG);
-    #elif SOC_GDMA_SUPPORTED
+#elif SOC_GDMA_SUPPORTED
     SPIHD_CHECK(config->dma_chan == SPI_DMA_DISABLED || config->dma_chan == SPI_DMA_CH_AUTO, "invalid dma channel, chip only support spi dma channel auto-alloc", ESP_ERR_INVALID_ARG);
-    #endif
-    #if !CONFIG_IDF_TARGET_ESP32S2
+#endif
+#if !CONFIG_IDF_TARGET_ESP32S2
 //Append mode is only supported on ESP32S2 now
     SPIHD_CHECK(append_mode == 0, "Append mode is only supported on ESP32S2 now", ESP_ERR_INVALID_ARG);
-    #endif
+#endif
     spi_chan_claimed = spicommon_periph_claim(host_id, "slave_hd");
     SPIHD_CHECK(spi_chan_claimed, "host already in use", ESP_ERR_INVALID_STATE);
     spi_slave_hd_slot_t* host = calloc(1, sizeof(spi_slave_hd_slot_t));
@@ -138,7 +138,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
     }
     //Init the hal according to the hal_config set above
     spi_slave_hd_hal_init(&host->hal, &hal_config);
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     ret = esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, "spi_slave", &host->pm_lock);
     if (ret != ESP_OK)
     {
@@ -146,7 +146,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
     }
     // Lock APB frequency while SPI slave driver is in use
     esp_pm_lock_acquire(host->pm_lock);
-    #endif //CONFIG_PM_ENABLE
+#endif //CONFIG_PM_ENABLE
     //Create Queues and Semaphores
     host->tx_ret_queue = xQueueCreate(config->queue_size, sizeof(spi_slave_hd_data_t *));
     host->rx_ret_queue = xQueueCreate(config->queue_size, sizeof(spi_slave_hd_data_t *));
@@ -160,7 +160,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
             goto cleanup;
         }
     }
-    #if CONFIG_IDF_TARGET_ESP32S2
+#if CONFIG_IDF_TARGET_ESP32S2
 //Append mode is only supported on ESP32S2 now
     else
     {
@@ -172,7 +172,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
             goto cleanup;
         }
     }
-    #endif  //#if CONFIG_IDF_TARGET_ESP32S2
+#endif  //#if CONFIG_IDF_TARGET_ESP32S2
     //Alloc intr
     if (!host->append_mode)
     {
@@ -189,7 +189,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
             goto cleanup;
         }
     }
-    #if CONFIG_IDF_TARGET_ESP32S2
+#if CONFIG_IDF_TARGET_ESP32S2
 //Append mode is only supported on ESP32S2 now
     else
     {
@@ -206,7 +206,7 @@ esp_err_t spi_slave_hd_init(spi_host_device_t host_id, const spi_bus_config_t *b
             goto cleanup;
         }
     }
-    #endif  //#if CONFIG_IDF_TARGET_ESP32S2
+#endif  //#if CONFIG_IDF_TARGET_ESP32S2
     //Init callbacks
     memcpy((uint8_t*)&host->callback, (uint8_t*)&config->cb_config, sizeof(spi_slave_hd_callback_config_t));
     spi_event_t event = 0;
@@ -238,13 +238,13 @@ esp_err_t spi_slave_hd_deinit(spi_host_device_t host_id)
         free(host->hal.dmadesc_rx);
         esp_intr_free(host->intr);
         esp_intr_free(host->intr_dma);
-        #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
         if (host->pm_lock)
         {
             esp_pm_lock_release(host->pm_lock);
             esp_pm_lock_delete(host->pm_lock);
         }
-        #endif
+#endif
     }
     spicommon_periph_free(host_id);
     if (host->dma_enabled)

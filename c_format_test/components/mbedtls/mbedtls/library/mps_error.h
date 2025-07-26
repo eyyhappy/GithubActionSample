@@ -45,7 +45,7 @@
  */
 
 #ifndef MBEDTLS_MPS_ERR_BASE
-#define MBEDTLS_MPS_ERR_BASE ( 0 )
+    #define MBEDTLS_MPS_ERR_BASE ( 0 )
 #endif
 
 #define MBEDTLS_MPS_MAKE_ERROR(code) \
@@ -63,7 +63,7 @@
  */
 
 #ifndef MBEDTLS_MPS_READER_ERR_BASE
-#define MBEDTLS_MPS_READER_ERR_BASE ( 1 << 8 )
+    #define MBEDTLS_MPS_READER_ERR_BASE ( 1 << 8 )
 #endif
 
 #define MBEDTLS_MPS_READER_MAKE_ERROR(code) \

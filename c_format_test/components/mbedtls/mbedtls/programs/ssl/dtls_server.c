@@ -20,25 +20,25 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf     printf
-#define mbedtls_fprintf    fprintf
-#define mbedtls_time_t     time_t
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf     printf
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_time_t     time_t
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif
 
 /* Uncomment out the following line to default to IPv4 and disable IPv6 */
 //#define FORCE_IPV4
 
 #ifdef FORCE_IPV4
-#define BIND_IP     "0.0.0.0"     /* Forces IPv4 */
+    #define BIND_IP     "0.0.0.0"     /* Forces IPv4 */
 #else
-#define BIND_IP     "::"
+    #define BIND_IP     "::"
 #endif
 
 #if !defined(MBEDTLS_SSL_SRV_C) || !defined(MBEDTLS_SSL_PROTO_DTLS) ||    \
@@ -59,7 +59,7 @@ int main( void )
 #else
 
 #if defined(_WIN32)
-#include <windows.h>
+    #include <windows.h>
 #endif
 
 #include <string.h>
@@ -79,7 +79,7 @@ int main( void )
 #include "test/certs.h"
 
 #if defined(MBEDTLS_SSL_CACHE_C)
-#include "mbedtls/ssl_cache.h"
+    #include "mbedtls/ssl_cache.h"
 #endif
 
 #define READ_TIMEOUT_MS 10000   /* 10 seconds */
@@ -111,24 +111,24 @@ int main( void )
     mbedtls_x509_crt srvcert;
     mbedtls_pk_context pkey;
     mbedtls_timing_delay_context timer;
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_context cache;
-    #endif
+#endif
     mbedtls_net_init( &listen_fd );
     mbedtls_net_init( &client_fd );
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
     mbedtls_ssl_cookie_init( &cookie_ctx );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_init( &cache );
-    #endif
+#endif
     mbedtls_x509_crt_init( &srvcert );
     mbedtls_pk_init( &pkey );
     mbedtls_entropy_init( &entropy );
     mbedtls_ctr_drbg_init( &ctr_drbg );
-    #if defined(MBEDTLS_DEBUG_C)
+#if defined(MBEDTLS_DEBUG_C)
     mbedtls_debug_set_threshold( DEBUG_LEVEL );
-    #endif
+#endif
     /*
      * 1. Seed the RNG
      */
@@ -201,11 +201,11 @@ int main( void )
     mbedtls_ssl_conf_rng( &conf, mbedtls_ctr_drbg_random, &ctr_drbg );
     mbedtls_ssl_conf_dbg( &conf, my_debug, stdout );
     mbedtls_ssl_conf_read_timeout( &conf, READ_TIMEOUT_MS );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_conf_session_cache( &conf, &cache,
                                     mbedtls_ssl_cache_get,
                                     mbedtls_ssl_cache_set );
-    #endif
+#endif
     mbedtls_ssl_conf_ca_chain( &conf, srvcert.next, NULL );
     if( ( ret = mbedtls_ssl_conf_own_cert( &conf, &srvcert, &pkey ) ) != 0 )
     {
@@ -229,14 +229,14 @@ int main( void )
                               mbedtls_timing_get_delay );
     printf( " ok\n" );
 reset:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
         printf("Last error was: %d - %s\n\n", ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( &client_fd );
     mbedtls_ssl_session_reset( &ssl );
     /*
@@ -339,14 +339,14 @@ close_notify:
      * Final clean-ups and exit
      */
 exit:
-    #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
     if( ret != 0 )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
         printf( "Last error was: %d - %s\n\n", ret, error_buf );
     }
-    #endif
+#endif
     mbedtls_net_free( &client_fd );
     mbedtls_net_free( &listen_fd );
     mbedtls_x509_crt_free( &srvcert );
@@ -354,9 +354,9 @@ exit:
     mbedtls_ssl_free( &ssl );
     mbedtls_ssl_config_free( &conf );
     mbedtls_ssl_cookie_free( &cookie_ctx );
-    #if defined(MBEDTLS_SSL_CACHE_C)
+#if defined(MBEDTLS_SSL_CACHE_C)
     mbedtls_ssl_cache_free( &cache );
-    #endif
+#endif
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
     /* Shell can not handle large exit numbers -> 1 for errors */

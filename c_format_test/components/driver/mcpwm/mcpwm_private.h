@@ -65,9 +65,9 @@ struct mcpwm_group_t
     mcpwm_oper_t *operators[SOC_MCPWM_OPERATORS_PER_GROUP]; // mcpwm operator array
     mcpwm_gpio_fault_t *gpio_faults[SOC_MCPWM_GPIO_FAULTS_PER_GROUP]; // mcpwm fault detectors array
     mcpwm_gpio_sync_src_t *gpio_sync_srcs[SOC_MCPWM_GPIO_SYNCHROS_PER_GROUP];  // mcpwm gpio sync array
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     char pm_lock_name[MCPWM_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-    #endif
+#endif
 };
 
 typedef enum

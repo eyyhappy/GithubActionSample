@@ -20,20 +20,20 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_BIGNUM_C) && defined(MBEDTLS_FS_IO)
-#include "mbedtls/bignum.h"
+    #include "mbedtls/bignum.h"
 
-#include <stdio.h>
+    #include <stdio.h>
 #endif
 
 #if !defined(MBEDTLS_BIGNUM_C) || !defined(MBEDTLS_FS_IO)
@@ -69,16 +69,16 @@ int main( void )
     mbedtls_printf( "\n  Private key:\n\n" );
     MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "  P = ", &P, 10, NULL ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "  Q = ", &Q, 10, NULL ) );
-    #if defined(MBEDTLS_GENPRIME)
+#if defined(MBEDTLS_GENPRIME)
     MBEDTLS_MPI_CHK( mbedtls_mpi_sub_int( &P, &P, 1 ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_sub_int( &Q, &Q, 1 ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_mul_mpi( &H, &P, &Q ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_inv_mod( &D, &E, &H ) );
     mbedtls_mpi_write_file( "  D = E^-1 mod (P-1)*(Q-1) = ",
                             &D, 10, NULL );
-    #else
+#else
     mbedtls_printf("\nTest skipped (MBEDTLS_GENPRIME not defined).\n\n");
-    #endif
+#endif
     MBEDTLS_MPI_CHK( mbedtls_mpi_read_string( &X, 10, "55555" ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_exp_mod( &Y, &X, &E, &N, NULL ) );
     MBEDTLS_MPI_CHK( mbedtls_mpi_exp_mod( &Z, &Y, &D, &N, NULL ) );

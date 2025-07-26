@@ -23,7 +23,7 @@
  * mbedtls_config.h, which pulls in glibc's features.h. Harmless on other platforms.
  */
 #if !defined(_POSIX_C_SOURCE)
-#define _POSIX_C_SOURCE 200112L
+    #define _POSIX_C_SOURCE 200112L
 #endif
 
 #include "common.h"
@@ -93,8 +93,8 @@ defined(__unix) || defined(__unix__) || (defined(__APPLE__) && \
  * we keep it private by only defining it in this file
  */
 #if ! ( defined(_WIN32) && !defined(EFIX64) && !defined(EFI32) ) || \
-( defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR) )
-#define PLATFORM_UTIL_USE_GMTIME
+    ( defined(__MINGW32__) && !defined(__MINGW64_VERSION_MAJOR) )
+    #define PLATFORM_UTIL_USE_GMTIME
 #endif
 
 #endif /* !( ( defined(_POSIX_VERSION) && _POSIX_VERSION >= 200809L ) ||     \
@@ -104,36 +104,36 @@ defined(__unix) || defined(__unix__) || (defined(__APPLE__) && \
 struct tm *mbedtls_platform_gmtime_r( const mbedtls_time_t *tt,
                                       struct tm *tm_buf )
 {
-    #if defined(_WIN32) && !defined(PLATFORM_UTIL_USE_GMTIME)
-    #if defined(__STDC_LIB_EXT1__)
+#if defined(_WIN32) && !defined(PLATFORM_UTIL_USE_GMTIME)
+#if defined(__STDC_LIB_EXT1__)
     return( ( gmtime_s( tt, tm_buf ) == 0 ) ? NULL : tm_buf );
-    #else
+#else
     /* MSVC and mingw64 argument order and return value are inconsistent with the C11 standard */
     return( ( gmtime_s( tm_buf, tt ) == 0 ) ? tm_buf : NULL );
-    #endif
-    #elif !defined(PLATFORM_UTIL_USE_GMTIME)
+#endif
+#elif !defined(PLATFORM_UTIL_USE_GMTIME)
     return( gmtime_r( tt, tm_buf ) );
-    #else
+#else
     struct tm *lt;
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_lock( &mbedtls_threading_gmtime_mutex ) != 0 )
         return( NULL );
-    #endif /* MBEDTLS_THREADING_C */
+#endif /* MBEDTLS_THREADING_C */
     lt = gmtime( tt );
     if( lt != NULL )
     {
         memcpy( tm_buf, lt, sizeof( struct tm ) );
     }
-    #if defined(MBEDTLS_THREADING_C)
+#if defined(MBEDTLS_THREADING_C)
     if( mbedtls_mutex_unlock( &mbedtls_threading_gmtime_mutex ) != 0 )
         return( NULL );
-    #endif /* MBEDTLS_THREADING_C */
+#endif /* MBEDTLS_THREADING_C */
     return( ( lt == NULL ) ? NULL : tm_buf );
-    #endif /* _WIN32 && !EFIX64 && !EFI32 */
+#endif /* _WIN32 && !EFIX64 && !EFI32 */
 }
 #endif /* MBEDTLS_HAVE_TIME_DATE && MBEDTLS_PLATFORM_GMTIME_R_ALT */
 
 #if defined(MBEDTLS_TEST_HOOKS)
-void (*mbedtls_test_hook_test_fail)( const char *, int, const char *);
+    void (*mbedtls_test_hook_test_fail)( const char *, int, const char *);
 #endif /* MBEDTLS_TEST_HOOKS */
 

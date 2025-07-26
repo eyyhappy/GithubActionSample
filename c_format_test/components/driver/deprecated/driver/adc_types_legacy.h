@@ -17,16 +17,16 @@ extern "C" {
  */
 typedef enum
 {
-    #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
     ADC_WIDTH_BIT_9  = 9, /*!< ADC capture width is 9Bit. */
     ADC_WIDTH_BIT_10 = 10, /*!< ADC capture width is 10Bit. */
     ADC_WIDTH_BIT_11 = 11, /*!< ADC capture width is 11Bit. */
     ADC_WIDTH_BIT_12 = 12, /*!< ADC capture width is 12Bit. */
-    #elif SOC_ADC_RTC_MAX_BITWIDTH == 12
+#elif SOC_ADC_RTC_MAX_BITWIDTH == 12
     ADC_WIDTH_BIT_12 = 12, /*!< ADC capture width is 12Bit. */
-    #elif SOC_ADC_RTC_MAX_BITWIDTH == 13
+#elif SOC_ADC_RTC_MAX_BITWIDTH == 13
     ADC_WIDTH_BIT_13 = 13, /*!< ADC capture width is 13Bit. */
-    #endif
+#endif
     ADC_WIDTH_MAX,
 } adc_bits_width_t;
 

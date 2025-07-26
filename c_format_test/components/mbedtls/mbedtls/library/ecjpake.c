@@ -713,10 +713,10 @@ cleanup:
 #if defined(MBEDTLS_SELF_TEST)
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#define mbedtls_printf     printf
+    #include <stdio.h>
+    #define mbedtls_printf     printf
 #endif
 
 #if !defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED) || \
@@ -982,7 +982,7 @@ int mbedtls_ecjpake_self_test( int verbose )
     TEST_ASSERT( memcmp( buf, pms, len ) == 0 );
     if( verbose != 0 )
         mbedtls_printf( "passed\n" );
-    #if !defined(MBEDTLS_ECJPAKE_ALT)
+#if !defined(MBEDTLS_ECJPAKE_ALT)
     /* 'reference handshake' tests can only be run against implementations
      * for which we have 100% control over how the random ephemeral keys
      * are generated. This is only the case for the internal mbed TLS
@@ -1024,7 +1024,7 @@ int mbedtls_ecjpake_self_test( int verbose )
     TEST_ASSERT( memcmp( buf, ecjpake_test_pms, len ) == 0 );
     if( verbose != 0 )
         mbedtls_printf( "passed\n" );
-    #endif /* ! MBEDTLS_ECJPAKE_ALT */
+#endif /* ! MBEDTLS_ECJPAKE_ALT */
 cleanup:
     mbedtls_ecjpake_free( &cli );
     mbedtls_ecjpake_free( &srv );

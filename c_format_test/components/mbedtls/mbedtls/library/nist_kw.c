@@ -40,12 +40,12 @@
 #include <string.h>
 
 #if defined(MBEDTLS_SELF_TEST) && defined(MBEDTLS_AES_C)
-#if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
-#else
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #if defined(MBEDTLS_PLATFORM_C)
+        #include "mbedtls/platform.h"
+    #else
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST && MBEDTLS_AES_C */
 
 #if !defined(MBEDTLS_NIST_KW_ALT)
@@ -158,9 +158,9 @@ int mbedtls_nist_kw_wrap( mbedtls_nist_kw_context *ctx,
          * must be between 2 to 2^54-1 semiblocks inclusive.
          */
         if( in_len < 16 ||
-        #if SIZE_MAX > 0x1FFFFFFFFFFFFF8
+#if SIZE_MAX > 0x1FFFFFFFFFFFFF8
             in_len > 0x1FFFFFFFFFFFFF8 ||
-        #endif
+#endif
             in_len % KW_SEMIBLOCK_LENGTH != 0 )
         {
             return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
@@ -183,9 +183,9 @@ int mbedtls_nist_kw_wrap( mbedtls_nist_kw_context *ctx,
          * must be between 1 and 2^32-1 octets inclusive.
          */
         if( in_len < 1
-        #if SIZE_MAX > 0xFFFFFFFF
+#if SIZE_MAX > 0xFFFFFFFF
             || in_len > 0xFFFFFFFF
-        #endif
+#endif
           )
         {
             return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
@@ -327,9 +327,9 @@ int mbedtls_nist_kw_unwrap( mbedtls_nist_kw_context *ctx,
          * must be between 3 to 2^54 semiblocks inclusive.
          */
         if( in_len < 24 ||
-        #if SIZE_MAX > 0x200000000000000
+#if SIZE_MAX > 0x200000000000000
             in_len > 0x200000000000000 ||
-        #endif
+#endif
             in_len % KW_SEMIBLOCK_LENGTH != 0 )
         {
             return( MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );
@@ -355,9 +355,9 @@ int mbedtls_nist_kw_unwrap( mbedtls_nist_kw_context *ctx,
          * must be between 2 to 2^29 semiblocks inclusive.
          */
         if( in_len < KW_SEMIBLOCK_LENGTH * 2 ||
-        #if SIZE_MAX > 0x100000000
+#if SIZE_MAX > 0x100000000
             in_len > 0x100000000 ||
-        #endif
+#endif
             in_len % KW_SEMIBLOCK_LENGTH != 0 )
         {
             return(  MBEDTLS_ERR_CIPHER_BAD_INPUT_DATA );

@@ -29,16 +29,16 @@
 #include "psa_crypto_slot_management.h"
 #include "psa_crypto_storage.h"
 #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
-#include "psa_crypto_se.h"
+    #include "psa_crypto_se.h"
 #endif
 
 #include <stdlib.h>
 #include <string.h>
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#define mbedtls_calloc calloc
-#define mbedtls_free   free
+    #define mbedtls_calloc calloc
+    #define mbedtls_free   free
 #endif
 
 #define ARRAY_LENGTH( array ) ( sizeof( array ) / sizeof( *( array ) ) )
@@ -225,7 +225,7 @@ static psa_status_t psa_load_persistent_key_into_slot( psa_key_slot_t *slot )
                                       &key_data, &key_data_length );
     if( status != PSA_SUCCESS )
         goto exit;
-    #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
+#if defined(MBEDTLS_PSA_CRYPTO_SE_C)
     /* Special handling is required for loading keys associated with a
      * dynamically registered SE interface. */
     const psa_drv_se_t *drv;
@@ -243,7 +243,7 @@ static psa_status_t psa_load_persistent_key_into_slot( psa_key_slot_t *slot )
                      slot, data->slot_number, sizeof( data->slot_number ) );
         goto exit;
     }
-    #endif /* MBEDTLS_PSA_CRYPTO_SE_C */
+#endif /* MBEDTLS_PSA_CRYPTO_SE_C */
     status = psa_copy_key_material_into_slot( slot, key_data, key_data_length );
 exit:
     psa_free_persistent_key_data( key_data, key_data_length );
@@ -328,7 +328,7 @@ psa_status_t psa_get_and_lock_key_slot( mbedtls_svc_key_id_t key,
     if( status != PSA_ERROR_DOES_NOT_EXIST )
         return( status );
     /* Loading keys from storage requires support for such a mechanism */
-    #if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) || \
+#if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) || \
     defined(MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS)
     psa_key_id_t volatile_key_id;
     status = psa_get_empty_key_slot( &volatile_key_id, p_slot );
@@ -337,14 +337,14 @@ psa_status_t psa_get_and_lock_key_slot( mbedtls_svc_key_id_t key,
     (*p_slot)->attr.id = key;
     (*p_slot)->attr.lifetime = PSA_KEY_LIFETIME_PERSISTENT;
     status = PSA_ERROR_DOES_NOT_EXIST;
-    #if defined(MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS)
+#if defined(MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS)
     /* Load keys in the 'builtin' range through their own interface */
     status = psa_load_builtin_key_into_slot( *p_slot );
-    #endif /* MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
-    #if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C)
+#endif /* MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
+#if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C)
     if( status == PSA_ERROR_DOES_NOT_EXIST )
         status = psa_load_persistent_key_into_slot( *p_slot );
-    #endif /* defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) */
+#endif /* defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) */
     if( status != PSA_SUCCESS )
     {
         psa_wipe_key_slot( *p_slot );
@@ -355,9 +355,9 @@ psa_status_t psa_get_and_lock_key_slot( mbedtls_svc_key_id_t key,
         /* Add implicit usage flags. */
         psa_extend_key_usage_flags( &(*p_slot)->attr.policy.usage );
     return( status );
-    #else /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
+#else /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
     return( PSA_ERROR_INVALID_HANDLE );
-    #endif /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
+#endif /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
 }
 
 psa_status_t psa_unlock_key_slot( psa_key_slot_t *slot )
@@ -386,7 +386,7 @@ psa_status_t psa_validate_key_location( psa_key_lifetime_t lifetime,
 {
     if ( psa_key_lifetime_is_external( lifetime ) )
     {
-        #if defined(MBEDTLS_PSA_CRYPTO_SE_C)
+#if defined(MBEDTLS_PSA_CRYPTO_SE_C)
         /* Check whether a driver is registered against this lifetime */
         psa_se_drv_table_entry_t *driver = psa_get_se_driver_entry( lifetime );
         if( driver != NULL )
@@ -395,17 +395,17 @@ psa_status_t psa_validate_key_location( psa_key_lifetime_t lifetime,
                 *p_drv = driver;
             return( PSA_SUCCESS );
         }
-        #else /* MBEDTLS_PSA_CRYPTO_SE_C */
+#else /* MBEDTLS_PSA_CRYPTO_SE_C */
         (void) p_drv;
-        #endif /* MBEDTLS_PSA_CRYPTO_SE_C */
-        #if defined(MBEDTLS_PSA_CRYPTO_DRIVERS)
+#endif /* MBEDTLS_PSA_CRYPTO_SE_C */
+#if defined(MBEDTLS_PSA_CRYPTO_DRIVERS)
         /* Key location for external keys gets checked by the wrapper */
         return( PSA_SUCCESS );
-        #else /* MBEDTLS_PSA_CRYPTO_DRIVERS */
+#else /* MBEDTLS_PSA_CRYPTO_DRIVERS */
         /* No support for external lifetimes at all, or dynamic interface
          * did not find driver for requested lifetime. */
         return( PSA_ERROR_INVALID_ARGUMENT );
-        #endif /* MBEDTLS_PSA_CRYPTO_DRIVERS */
+#endif /* MBEDTLS_PSA_CRYPTO_DRIVERS */
     }
     else
         /* Local/internal keys are always valid */
@@ -422,20 +422,20 @@ psa_status_t psa_validate_key_persistence( psa_key_lifetime_t lifetime )
     else
     {
         /* Persistent keys require storage support */
-        #if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C)
+#if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C)
         if( PSA_KEY_LIFETIME_IS_READ_ONLY( lifetime ) )
             return( PSA_ERROR_INVALID_ARGUMENT );
         else
             return( PSA_SUCCESS );
-        #else /* MBEDTLS_PSA_CRYPTO_STORAGE_C */
+#else /* MBEDTLS_PSA_CRYPTO_STORAGE_C */
         return( PSA_ERROR_NOT_SUPPORTED );
-        #endif /* !MBEDTLS_PSA_CRYPTO_STORAGE_C */
+#endif /* !MBEDTLS_PSA_CRYPTO_STORAGE_C */
     }
 }
 
 psa_status_t psa_open_key( mbedtls_svc_key_id_t key, psa_key_handle_t *handle )
 {
-    #if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) || \
+#if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C) || \
     defined(MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS)
     psa_status_t status;
     psa_key_slot_t *slot;
@@ -449,11 +449,11 @@ psa_status_t psa_open_key( mbedtls_svc_key_id_t key, psa_key_handle_t *handle )
     }
     *handle = key;
     return( psa_unlock_key_slot( slot ) );
-    #else /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
+#else /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
     (void) key;
     *handle = PSA_KEY_HANDLE_INIT;
     return( PSA_ERROR_NOT_SUPPORTED );
-    #endif /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
+#endif /* MBEDTLS_PSA_CRYPTO_STORAGE_C || MBEDTLS_PSA_CRYPTO_BUILTIN_KEYS */
 }
 
 psa_status_t psa_close_key( psa_key_handle_t handle )

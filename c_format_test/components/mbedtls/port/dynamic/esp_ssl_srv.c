@@ -84,7 +84,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             }
             else
             {
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 /**
                  * Not free keycert->cert until MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
                  * For ssl server will use keycert->cert to parse client key exchange.
@@ -93,7 +93,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
                 {
                     esp_mbedtls_free_keycert_cert(ssl);
                 }
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_SERVER_KEY_EXCHANGE:
@@ -104,7 +104,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             }
             else
             {
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 esp_mbedtls_free_dhm(ssl);
                 /**
                  * Not free keycert->key and keycert until MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
@@ -115,7 +115,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
                     esp_mbedtls_free_keycert_key(ssl);
                     esp_mbedtls_free_keycert(ssl);
                 }
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_CERTIFICATE_REQUEST:
@@ -140,9 +140,9 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             else
             {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CA_CERT
                 esp_mbedtls_free_cacert(ssl);
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_CLIENT_KEY_EXCHANGE:
@@ -153,7 +153,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
             else
             {
                 CHECK_OK(esp_mbedtls_free_rx_buffer(ssl));
-                #ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
+#ifdef CONFIG_MBEDTLS_DYNAMIC_FREE_CONFIG_DATA
                 /**
                  * Free keycert after MBEDTLS_SSL_CLIENT_KEY_EXCHANGE for rsa key exchange methods.
                  * For ssl server will use keycert->cert and keycert->key to parse client key exchange.
@@ -164,7 +164,7 @@ static int manage_resource(mbedtls_ssl_context *ssl, bool add)
                     esp_mbedtls_free_keycert_key(ssl);
                     esp_mbedtls_free_keycert(ssl);
                 }
-                #endif
+#endif
             }
             break;
         case MBEDTLS_SSL_CERTIFICATE_VERIFY:

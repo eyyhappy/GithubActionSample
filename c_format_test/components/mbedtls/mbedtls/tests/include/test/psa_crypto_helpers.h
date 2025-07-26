@@ -30,7 +30,7 @@
 #include <psa/crypto.h>
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "mbedtls/psa_util.h"
+    #include "mbedtls/psa_util.h"
 #endif
 
 #if defined(MBEDTLS_PSA_CRYPTO_STORAGE_C)
@@ -213,11 +213,11 @@ psa_key_usage_t mbedtls_test_update_key_usage_flags( psa_key_usage_t usage_flags
  *  \param key_bits  Key length in number of bits.
  */
 #if defined(MBEDTLS_AES_ALT) || \
-defined(MBEDTLS_AES_SETKEY_ENC_ALT) || \
-defined(MBEDTLS_PSA_ACCEL_KEY_TYPE_AES)
-#define MBEDTLS_TEST_HAVE_ALT_AES 1
+    defined(MBEDTLS_AES_SETKEY_ENC_ALT) || \
+    defined(MBEDTLS_PSA_ACCEL_KEY_TYPE_AES)
+    #define MBEDTLS_TEST_HAVE_ALT_AES 1
 #else
-#define MBEDTLS_TEST_HAVE_ALT_AES 0
+    #define MBEDTLS_TEST_HAVE_ALT_AES 0
 #endif
 
 #define MBEDTLS_TEST_PSA_SKIP_IF_ALT_AES_192( key_type, key_bits )        \
@@ -256,10 +256,10 @@ defined(MBEDTLS_PSA_ACCEL_KEY_TYPE_AES)
  *  \param  nonce_length    The nonce length in number of bytes.
  */
 #if defined(MBEDTLS_GCM_ALT) || \
-defined(MBEDTLS_PSA_ACCEL_ALG_GCM)
-#define MBEDTLS_TEST_HAVE_ALT_GCM  1
+    defined(MBEDTLS_PSA_ACCEL_ALG_GCM)
+    #define MBEDTLS_TEST_HAVE_ALT_GCM  1
 #else
-#define MBEDTLS_TEST_HAVE_ALT_GCM  0
+    #define MBEDTLS_TEST_HAVE_ALT_GCM  0
 #endif
 
 #define MBEDTLS_TEST_PSA_SKIP_IF_ALT_GCM_NOT_12BYTES_NONCE( alg,           \
@@ -295,14 +295,14 @@ defined(MBEDTLS_PSA_ACCEL_ALG_GCM)
  * #MBEDTLS_USE_PSA_CRYPTO is disabled.
  */
 #if defined(MBEDTLS_USE_PSA_CRYPTO) || defined(MBEDTLS_SSL_PROTO_TLS1_3)
-#define USE_PSA_INIT( ) PSA_INIT( )
-#define USE_PSA_DONE( ) PSA_DONE( )
+    #define USE_PSA_INIT( ) PSA_INIT( )
+    #define USE_PSA_DONE( ) PSA_DONE( )
 #else /* MBEDTLS_USE_PSA_CRYPTO || MBEDTLS_SSL_PROTO_TLS1_3 */
-/* Define empty macros so that we can use them in the preamble and teardown
- * of every test function that uses PSA conditionally based on
- * MBEDTLS_USE_PSA_CRYPTO. */
-#define USE_PSA_INIT( ) ( (void) 0 )
-#define USE_PSA_DONE( ) ( (void) 0 )
+    /* Define empty macros so that we can use them in the preamble and teardown
+    * of every test function that uses PSA conditionally based on
+    * MBEDTLS_USE_PSA_CRYPTO. */
+    #define USE_PSA_INIT( ) ( (void) 0 )
+    #define USE_PSA_DONE( ) ( (void) 0 )
 #endif /* !MBEDTLS_USE_PSA_CRYPTO && !MBEDTLS_SSL_PROTO_TLS1_3 */
 
 #endif /* PSA_CRYPTO_HELPERS_H */

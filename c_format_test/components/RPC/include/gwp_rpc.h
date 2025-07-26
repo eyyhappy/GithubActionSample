@@ -175,7 +175,7 @@ typedef enum
 
 #if defined(NRF52840_XXAA)
 
-#define     SUCCESS                             0
+    #define     SUCCESS                             0
 
 #elif defined(STM32WB55xx)
 
@@ -184,7 +184,7 @@ typedef enum
 
 #else
 
-#error "Architecture not set."
+    #error "Architecture not set."
 
 #endif
 

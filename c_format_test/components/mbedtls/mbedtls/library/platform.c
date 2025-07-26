@@ -128,16 +128,16 @@ int mbedtls_platform_win32_vsnprintf( char *s, size_t n, const char *fmt, va_lis
     /* Avoid calling the invalid parameter handler by checking ourselves */
     if( s == NULL || n == 0 || fmt == NULL )
         return( -1 );
-    #if defined(_TRUNCATE)
+#if defined(_TRUNCATE)
     ret = vsnprintf_s( s, n, _TRUNCATE, fmt, arg );
-    #else
+#else
     ret = vsnprintf( s, n, fmt, arg );
     if( ret < 0 || (size_t) ret == n )
     {
         s[n - 1] = '\0';
         ret = -1;
     }
-    #endif
+#endif
     return( ret );
 }
 #endif

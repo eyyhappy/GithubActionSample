@@ -115,9 +115,9 @@ struct rmt_channel_t
     rmt_symbol_word_t *dma_mem_base;   // base address of RMT channel DMA buffer
     gdma_channel_handle_t dma_chan;    // DMA channel
     esp_pm_lock_handle_t pm_lock;      // power management lock
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     char pm_lock_name[RMT_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-    #endif
+#endif
     // RMT channel common interface
     // The following IO functions will have per-implementation for TX and RX channel
     esp_err_t (*del)(rmt_channel_t *channel);

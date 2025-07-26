@@ -29,7 +29,7 @@
 #include "mbedtls/pk.h"
 
 #if defined(MBEDTLS_RSA_C)
-#include "mbedtls/rsa.h"
+    #include "mbedtls/rsa.h"
 #endif
 
 /**
@@ -38,15 +38,15 @@
  */
 
 #if !defined(MBEDTLS_X509_MAX_INTERMEDIATE_CA)
-/**
- * Maximum number of intermediate CAs in a verification chain.
- * That is, maximum length of the chain, excluding the end-entity certificate
- * and the trusted root certificate.
- *
- * Set this to a low value to prevent an adversary from making you waste
- * resources verifying an overlong certificate chain.
- */
-#define MBEDTLS_X509_MAX_INTERMEDIATE_CA   8
+    /**
+    * Maximum number of intermediate CAs in a verification chain.
+    * That is, maximum length of the chain, excluding the end-entity certificate
+    * and the trusted root certificate.
+    *
+    * Set this to a low value to prevent an adversary from making you waste
+    * resources verifying an overlong certificate chain.
+    */
+    #define MBEDTLS_X509_MAX_INTERMEDIATE_CA   8
 #endif
 
 /**

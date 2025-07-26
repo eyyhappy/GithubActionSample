@@ -48,13 +48,13 @@
 #include <string.h>
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf     printf
-#define mbedtls_calloc    calloc
-#define mbedtls_free       free
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf     printf
+    #define mbedtls_calloc    calloc
+    #define mbedtls_free       free
 #endif
 
 #if !defined(MBEDTLS_BIGNUM_ALT)
@@ -623,25 +623,25 @@ static mbedtls_mpi_uint mpi_uint_bigendian_to_host_c( mbedtls_mpi_uint x )
 
 static mbedtls_mpi_uint mpi_uint_bigendian_to_host( mbedtls_mpi_uint x )
 {
-    #if defined(__BYTE_ORDER__)
+#if defined(__BYTE_ORDER__)
     /* Nothing to do on bigendian systems. */
-    #if ( __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ )
+#if ( __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ )
     return( x );
-    #endif /* __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ */
-    #if ( __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ )
+#endif /* __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__ */
+#if ( __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ )
     /* For GCC and Clang, have builtins for byte swapping. */
-    #if defined(__GNUC__) && defined(__GNUC_PREREQ)
-    #if __GNUC_PREREQ(4,3)
+#if defined(__GNUC__) && defined(__GNUC_PREREQ)
+#if __GNUC_PREREQ(4,3)
 #define have_bswap
-    #endif
-    #endif
-    #if defined(__clang__) && defined(__has_builtin)
-    #if __has_builtin(__builtin_bswap32)  &&                 \
+#endif
+#endif
+#if defined(__clang__) && defined(__has_builtin)
+#if __has_builtin(__builtin_bswap32)  &&                 \
     __has_builtin(__builtin_bswap64)
 #define have_bswap
-    #endif
-    #endif
-    #if defined(have_bswap)
+#endif
+#endif
+#if defined(have_bswap)
     /* The compiler is hopefully able to statically evaluate this! */
     switch( sizeof(mbedtls_mpi_uint) )
     {
@@ -650,9 +650,9 @@ static mbedtls_mpi_uint mpi_uint_bigendian_to_host( mbedtls_mpi_uint x )
         case 8:
             return( __builtin_bswap64(x) );
     }
-    #endif
-    #endif /* __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ */
-    #endif /* __BYTE_ORDER__ */
+#endif
+#endif /* __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__ */
+#endif /* __BYTE_ORDER__ */
     /* Fall back to C-based reordering if we don't know the byte order
      * or we couldn't use a compiler-specific builtin. */
     return( mpi_uint_bigendian_to_host_c( x ) );
@@ -1333,15 +1333,15 @@ cleanup:
 static mbedtls_mpi_uint mbedtls_int_div_int( mbedtls_mpi_uint u1,
         mbedtls_mpi_uint u0, mbedtls_mpi_uint d, mbedtls_mpi_uint *r )
 {
-    #if defined(MBEDTLS_HAVE_UDBL)
+#if defined(MBEDTLS_HAVE_UDBL)
     mbedtls_t_udbl dividend, quotient;
-    #else
+#else
     const mbedtls_mpi_uint radix = (mbedtls_mpi_uint) 1 << biH;
     const mbedtls_mpi_uint uint_halfword_mask = ( (mbedtls_mpi_uint) 1 << biH ) - 1;
     mbedtls_mpi_uint d0, d1, q0, q1, rAX, r0, quotient;
     mbedtls_mpi_uint u0_msw, u0_lsw;
     size_t s;
-    #endif
+#endif
     /*
      * Check for overflow
      */
@@ -1350,7 +1350,7 @@ static mbedtls_mpi_uint mbedtls_int_div_int( mbedtls_mpi_uint u1,
         if (r != NULL) *r = ~0;
         return ( ~0 );
     }
-    #if defined(MBEDTLS_HAVE_UDBL)
+#if defined(MBEDTLS_HAVE_UDBL)
     dividend  = (mbedtls_t_udbl) u1 << biL;
     dividend |= (mbedtls_t_udbl) u0;
     quotient = dividend / d;
@@ -1359,7 +1359,7 @@ static mbedtls_mpi_uint mbedtls_int_div_int( mbedtls_mpi_uint u1,
     if( r != NULL )
         *r = (mbedtls_mpi_uint)( dividend - (quotient * d ) );
     return (mbedtls_mpi_uint) quotient;
-    #else
+#else
     /*
      * Algorithm D, Section 4.3.1 - The Art of Computer Programming
      *   Vol. 2 - Seminumerical Algorithms, Knuth
@@ -1400,7 +1400,7 @@ static mbedtls_mpi_uint mbedtls_int_div_int( mbedtls_mpi_uint u1,
         *r = ( rAX * radix + u0_lsw - q0 * d ) >> s;
     quotient = q1 * radix + q0;
     return quotient;
-    #endif
+#endif
 }
 
 /*
@@ -1770,10 +1770,10 @@ int mbedtls_mpi_exp_mod_soft( mbedtls_mpi *X, const mbedtls_mpi *A,
     i = mbedtls_mpi_bitlen( E );
     wsize = ( i > 671 ) ? 6 : ( i > 239 ) ? 5 :
             ( i >  79 ) ? 4 : ( i >  23 ) ? 3 : 1;
-    #if( MBEDTLS_MPI_WINDOW_SIZE < 6 )
+#if( MBEDTLS_MPI_WINDOW_SIZE < 6 )
     if( wsize > MBEDTLS_MPI_WINDOW_SIZE )
         wsize = MBEDTLS_MPI_WINDOW_SIZE;
-    #endif
+#endif
     j = N->n + 1;
     /* All W[i] and X must have at least N->n limbs for the mpi_montmul()
      * and mpi_montred() calls later. Here we ensure that W[1] and X are
@@ -2418,13 +2418,13 @@ int mbedtls_mpi_gen_prime( mbedtls_mpi *X, size_t nbits, int flags,
                            int (*f_rng)(void *, unsigned char *, size_t),
                            void *p_rng )
 {
-    #ifdef MBEDTLS_HAVE_INT64
+#ifdef MBEDTLS_HAVE_INT64
 // ceil(2^63.5)
 #define CEIL_MAXUINT_DIV_SQRT2 0xb504f333f9de6485ULL
-    #else
+#else
 // ceil(2^31.5)
 #define CEIL_MAXUINT_DIV_SQRT2 0xb504f334U
-    #endif
+#endif
     int ret = MBEDTLS_ERR_MPI_NOT_ACCEPTABLE;
     size_t k, n;
     int rounds;

@@ -111,10 +111,10 @@ static void ssl_tls13_hkdf_encode_label(
     /* Add the size of the expanded key material.
      * We're hardcoding the high byte to 0 here assuming that we never use
      * TLS 1.3 HKDF key expansion to more than 255 Bytes. */
-    #if MBEDTLS_SSL_TLS1_3_KEY_SCHEDULE_MAX_EXPANSION_LEN > 255
+#if MBEDTLS_SSL_TLS1_3_KEY_SCHEDULE_MAX_EXPANSION_LEN > 255
 #error "The implementation of ssl_tls13_hkdf_encode_label() is not fit for the \
 value of MBEDTLS_SSL_TLS1_3_KEY_SCHEDULE_MAX_EXPANSION_LEN"
-    #endif
+#endif
     *p++ = 0;
     *p++ = MBEDTLS_BYTE_0( desired_length );
     /* Add label incl. prefix */
@@ -703,10 +703,10 @@ int mbedtls_ssl_tls13_create_psk_binder( mbedtls_ssl_context *ssl,
     unsigned char early_secret[PSA_MAC_MAX_SIZE];
     size_t const hash_len = PSA_HASH_LENGTH( hash_alg );
     size_t actual_len;
-    #if !defined(MBEDTLS_DEBUG_C)
+#if !defined(MBEDTLS_DEBUG_C)
     ssl = NULL; /* make sure we don't use it except for debug */
     ((void) ssl);
-    #endif
+#endif
     /* We should never call this function with an unknown hash,
      * but add an assertion anyway. */
     if( ! PSA_ALG_IS_HASH( hash_alg ) )
@@ -774,26 +774,26 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
         mbedtls_ssl_key_set const *traffic_keys,
         mbedtls_ssl_context *ssl /* DEBUG ONLY */ )
 {
-    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
+#if !defined(MBEDTLS_USE_PSA_CRYPTO)
     int ret;
     mbedtls_cipher_info_t const *cipher_info;
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     const mbedtls_ssl_ciphersuite_t *ciphersuite_info;
     unsigned char const *key_enc;
     unsigned char const *iv_enc;
     unsigned char const *key_dec;
     unsigned char const *iv_dec;
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     psa_key_type_t key_type;
     psa_key_attributes_t attributes = PSA_KEY_ATTRIBUTES_INIT;
     psa_algorithm_t alg;
     size_t key_bits;
     psa_status_t status = PSA_SUCCESS;
-    #endif
-    #if !defined(MBEDTLS_DEBUG_C)
+#endif
+#if !defined(MBEDTLS_DEBUG_C)
     ssl = NULL; /* make sure we don't use it except for those cases */
     (void) ssl;
-    #endif
+#endif
     ciphersuite_info = mbedtls_ssl_ciphersuite_from_id( ciphersuite );
     if( ciphersuite_info == NULL )
     {
@@ -801,7 +801,7 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
                                     ciphersuite ) );
         return( MBEDTLS_ERR_SSL_BAD_INPUT_DATA );
     }
-    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
+#if !defined(MBEDTLS_USE_PSA_CRYPTO)
     cipher_info = mbedtls_cipher_info_from_type( ciphersuite_info->cipher );
     if( cipher_info == NULL )
     {
@@ -824,8 +824,8 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
         MBEDTLS_SSL_DEBUG_RET( 1, "mbedtls_cipher_setup", ret );
         return( ret );
     }
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
-    #if defined(MBEDTLS_SSL_SRV_C)
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
+#if defined(MBEDTLS_SSL_SRV_C)
     if( endpoint == MBEDTLS_SSL_IS_SERVER )
     {
         key_enc = traffic_keys->server_write_key;
@@ -834,8 +834,8 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
         iv_dec = traffic_keys->client_write_iv;
     }
     else
-    #endif /* MBEDTLS_SSL_SRV_C */
-    #if defined(MBEDTLS_SSL_CLI_C)
+#endif /* MBEDTLS_SSL_SRV_C */
+#if defined(MBEDTLS_SSL_CLI_C)
         if( endpoint == MBEDTLS_SSL_IS_CLIENT )
         {
             key_enc = traffic_keys->client_write_key;
@@ -844,14 +844,14 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
             iv_dec = traffic_keys->server_write_iv;
         }
         else
-    #endif /* MBEDTLS_SSL_CLI_C */
+#endif /* MBEDTLS_SSL_CLI_C */
         {
             /* should not happen */
             return( MBEDTLS_ERR_SSL_INTERNAL_ERROR );
         }
     memcpy( transform->iv_enc, iv_enc, traffic_keys->iv_len );
     memcpy( transform->iv_dec, iv_dec, traffic_keys->iv_len );
-    #if !defined(MBEDTLS_USE_PSA_CRYPTO)
+#if !defined(MBEDTLS_USE_PSA_CRYPTO)
     if( ( ret = mbedtls_cipher_setkey( &transform->cipher_ctx_enc,
                                        key_enc, cipher_info->key_bitlen,
                                        MBEDTLS_ENCRYPT ) ) != 0 )
@@ -866,7 +866,7 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
         MBEDTLS_SSL_DEBUG_RET( 1, "mbedtls_cipher_setkey", ret );
         return( ret );
     }
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     /*
      * Setup other fields in SSL transform
      */
@@ -884,7 +884,7 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
      * granularity. */
     transform->minlen =
         transform->taglen + MBEDTLS_SSL_CID_TLS1_3_PADDING_GRANULARITY;
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     /*
      * Setup psa keys and alg
      */
@@ -921,7 +921,7 @@ int mbedtls_ssl_tls13_populate_transform( mbedtls_ssl_transform *transform,
             return( psa_ssl_status_to_mbedtls( status ) );
         }
     }
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     return( 0 );
 }
 
@@ -1071,13 +1071,13 @@ exit:
 int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl )
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED) && defined(MBEDTLS_ECDH_C)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED) && defined(MBEDTLS_ECDH_C)
     psa_status_t status = PSA_ERROR_GENERIC_ERROR;
-    #endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED && MBEDTLS_ECDH_C */
+#endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED && MBEDTLS_ECDH_C */
     mbedtls_ssl_handshake_params *handshake = ssl->handshake;
     psa_algorithm_t const hash_alg = mbedtls_psa_translate_md(
                                          handshake->ciphersuite_info->mac );
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED)
     /*
      * Compute ECDHE secret used to compute the handshake secret from which
      * client_handshake_traffic_secret and server_handshake_traffic_secret
@@ -1087,7 +1087,7 @@ int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl )
     {
         if( mbedtls_ssl_tls13_named_group_is_ecdhe( handshake->offered_group_id ) )
         {
-            #if defined(MBEDTLS_ECDH_C)
+#if defined(MBEDTLS_ECDH_C)
             /* Compute ECDH shared secret. */
             status = psa_raw_key_agreement(
                          PSA_ALG_ECDH, handshake->ecdh_psa_privkey,
@@ -1108,7 +1108,7 @@ int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl )
                 return( ret );
             }
             handshake->ecdh_psa_privkey = MBEDTLS_SVC_KEY_ID_INIT;
-            #endif /* MBEDTLS_ECDH_C */
+#endif /* MBEDTLS_ECDH_C */
         }
         else if( mbedtls_ssl_tls13_named_group_is_dhe( handshake->offered_group_id ) )
         {
@@ -1116,9 +1116,9 @@ int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl )
             return( MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE );
         }
     }
-    #else
+#else
     return( MBEDTLS_ERR_ECP_FEATURE_UNAVAILABLE );
-    #endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED */
+#endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED */
     /*
      * Compute the Handshake Secret
      */
@@ -1134,9 +1134,9 @@ int mbedtls_ssl_tls13_key_schedule_stage_handshake( mbedtls_ssl_context *ssl )
     MBEDTLS_SSL_DEBUG_BUF( 4, "Handshake secret",
                            handshake->tls13_master_secrets.handshake,
                            PSA_HASH_LENGTH( hash_alg ) );
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED)
     mbedtls_platform_zeroize( handshake->premaster, sizeof( handshake->premaster ) );
-    #endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED */
+#endif /* MBEDTLS_KEY_EXCHANGE_SOME_ECDHE_ENABLED */
     return( 0 );
 }
 

@@ -32,12 +32,12 @@
 #include "mbedtls/ssl_ciphersuites.h"
 
 #if defined(MBEDTLS_X509_CRT_PARSE_C)
-#include "mbedtls/x509_crt.h"
-#include "mbedtls/x509_crl.h"
+    #include "mbedtls/x509_crt.h"
+    #include "mbedtls/x509_crl.h"
 #endif
 
 #if defined(MBEDTLS_DHM_C)
-#include "mbedtls/dhm.h"
+    #include "mbedtls/dhm.h"
 #endif
 
 /* Adding guard for MBEDTLS_ECDSA_C to ensure no compile errors due
@@ -45,15 +45,15 @@
  * ecdh_ctx structure is needed for MBEDTLS_ECDSA_C which does not seem correct.
  */
 #if defined(MBEDTLS_ECDH_C) || defined(MBEDTLS_ECDSA_C)
-#include "mbedtls/ecdh.h"
+    #include "mbedtls/ecdh.h"
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+    #include "mbedtls/platform_time.h"
 #endif
 
 #if defined(MBEDTLS_USE_PSA_CRYPTO)
-#include "psa/crypto.h"
+    #include "psa/crypto.h"
 #endif /* MBEDTLS_USE_PSA_CRYPTO */
 
 /*
@@ -244,13 +244,13 @@
  */
 
 #if !defined(MBEDTLS_DEPRECATED_REMOVED)
-/* These are the high an low bytes of ProtocolVersion as defined by:
- * - RFC 5246: ProtocolVersion version = { 3, 3 };     // TLS v1.2
- * - RFC 8446: see section 4.2.1
- */
-#define MBEDTLS_SSL_MAJOR_VERSION_3             3
-#define MBEDTLS_SSL_MINOR_VERSION_3             3   /*!< TLS v1.2 */
-#define MBEDTLS_SSL_MINOR_VERSION_4             4   /*!< TLS v1.3 */
+    /* These are the high an low bytes of ProtocolVersion as defined by:
+    * - RFC 5246: ProtocolVersion version = { 3, 3 };     // TLS v1.2
+    * - RFC 8446: see section 4.2.1
+    */
+    #define MBEDTLS_SSL_MAJOR_VERSION_3             3
+    #define MBEDTLS_SSL_MINOR_VERSION_3             3   /*!< TLS v1.2 */
+    #define MBEDTLS_SSL_MINOR_VERSION_4             4   /*!< TLS v1.3 */
 #endif /* MBEDTLS_DEPRECATED_REMOVED */
 
 #define MBEDTLS_SSL_TRANSPORT_STREAM            0   /*!< TLS      */
@@ -351,11 +351,11 @@
  * peers are using it too!
  */
 #if !defined(MBEDTLS_SSL_IN_CONTENT_LEN)
-#define MBEDTLS_SSL_IN_CONTENT_LEN 16384
+    #define MBEDTLS_SSL_IN_CONTENT_LEN 16384
 #endif
 
 #if !defined(MBEDTLS_SSL_OUT_CONTENT_LEN)
-#define MBEDTLS_SSL_OUT_CONTENT_LEN 16384
+    #define MBEDTLS_SSL_OUT_CONTENT_LEN 16384
 #endif
 
 /*
@@ -363,22 +363,22 @@
  * DTLS handshake message reassembly and future message buffering.
  */
 #if !defined(MBEDTLS_SSL_DTLS_MAX_BUFFERING)
-#define MBEDTLS_SSL_DTLS_MAX_BUFFERING 32768
+    #define MBEDTLS_SSL_DTLS_MAX_BUFFERING 32768
 #endif
 
 /*
  * Maximum length of CIDs for incoming and outgoing messages.
  */
 #if !defined(MBEDTLS_SSL_CID_IN_LEN_MAX)
-#define MBEDTLS_SSL_CID_IN_LEN_MAX          32
+    #define MBEDTLS_SSL_CID_IN_LEN_MAX          32
 #endif
 
 #if !defined(MBEDTLS_SSL_CID_OUT_LEN_MAX)
-#define MBEDTLS_SSL_CID_OUT_LEN_MAX         32
+    #define MBEDTLS_SSL_CID_OUT_LEN_MAX         32
 #endif
 
 #if !defined(MBEDTLS_SSL_CID_TLS1_3_PADDING_GRANULARITY)
-#define MBEDTLS_SSL_CID_TLS1_3_PADDING_GRANULARITY 16
+    #define MBEDTLS_SSL_CID_TLS1_3_PADDING_GRANULARITY 16
 #endif
 
 /** \} name SECTION: Module settings */
@@ -559,7 +559,7 @@
  * this option to match evolving standards and usage.
  */
 #if !defined(MBEDTLS_TLS_EXT_CID)
-#define MBEDTLS_TLS_EXT_CID                        254 /* TBD */
+    #define MBEDTLS_TLS_EXT_CID                        254 /* TBD */
 #endif
 
 #define MBEDTLS_TLS_EXT_ECJPAKE_KKPP               256 /* experimental */
@@ -570,41 +570,41 @@
  * Size defines
  */
 #if !defined(MBEDTLS_PSK_MAX_LEN)
-#define MBEDTLS_PSK_MAX_LEN            32 /* 256 bits */
+    #define MBEDTLS_PSK_MAX_LEN            32 /* 256 bits */
 #endif
 
 /* Dummy type used only for its size */
 union mbedtls_ssl_premaster_secret
 {
-    #if defined(MBEDTLS_KEY_EXCHANGE_RSA_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_RSA_ENABLED)
     unsigned char _pms_rsa[48];                         /* RFC 5246 8.1.1 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_DHE_RSA_ENABLED)
     unsigned char _pms_dhm[MBEDTLS_MPI_MAX_SIZE];      /* RFC 5246 8.1.2 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED)    || \
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_ECDHE_RSA_ENABLED)    || \
     defined(MBEDTLS_KEY_EXCHANGE_ECDHE_ECDSA_ENABLED)  || \
     defined(MBEDTLS_KEY_EXCHANGE_ECDH_RSA_ENABLED)     || \
     defined(MBEDTLS_KEY_EXCHANGE_ECDH_ECDSA_ENABLED)
     unsigned char _pms_ecdh[MBEDTLS_ECP_MAX_BYTES];    /* RFC 4492 5.10 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_PSK_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_PSK_ENABLED)
     unsigned char _pms_psk[4 + 2 * MBEDTLS_PSK_MAX_LEN];       /* RFC 4279 2 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_DHE_PSK_ENABLED)
     unsigned char _pms_dhe_psk[4 + MBEDTLS_MPI_MAX_SIZE
                                  + MBEDTLS_PSK_MAX_LEN];       /* RFC 4279 3 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_RSA_PSK_ENABLED)
     unsigned char _pms_rsa_psk[52 + MBEDTLS_PSK_MAX_LEN];      /* RFC 4279 4 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_ECDHE_PSK_ENABLED)
     unsigned char _pms_ecdhe_psk[4 + MBEDTLS_ECP_MAX_BYTES
                                    + MBEDTLS_PSK_MAX_LEN];     /* RFC 5489 2 */
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_ECJPAKE_ENABLED)
     unsigned char _pms_ecjpake[32];     /* Thread spec: SHA-256 output */
-    #endif
+#endif
 };
 
 #define MBEDTLS_PREMASTER_SIZE     sizeof( union mbedtls_ssl_premaster_secret )
@@ -1123,9 +1123,9 @@ typedef enum
  */
 struct mbedtls_ssl_session
 {
-    #if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
+#if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
     unsigned char MBEDTLS_PRIVATE(mfl_code);     /*!< MaxFragmentLength negotiated by peer */
-    #endif /* MBEDTLS_SSL_MAX_FRAGMENT_LENGTH */
+#endif /* MBEDTLS_SSL_MAX_FRAGMENT_LENGTH */
 
     unsigned char MBEDTLS_PRIVATE(exported);
 
@@ -1134,41 +1134,41 @@ struct mbedtls_ssl_session
      */
     mbedtls_ssl_protocol_version MBEDTLS_PRIVATE(tls_version);
 
-    #if defined(MBEDTLS_HAVE_TIME)
+#if defined(MBEDTLS_HAVE_TIME)
     mbedtls_time_t MBEDTLS_PRIVATE(start);       /*!< starting time      */
-    #endif
+#endif
     int MBEDTLS_PRIVATE(ciphersuite);            /*!< chosen ciphersuite */
     int MBEDTLS_PRIVATE(compression);            /*!< chosen compression */
     size_t MBEDTLS_PRIVATE(id_len);              /*!< session id length  */
     unsigned char MBEDTLS_PRIVATE(id)[32];       /*!< session identifier */
     unsigned char MBEDTLS_PRIVATE(master)[48];   /*!< the master secret  */
 
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
-    #if defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_SSL_KEEP_PEER_CERTIFICATE)
     mbedtls_x509_crt *MBEDTLS_PRIVATE(peer_cert);       /*!< peer X.509 cert chain */
-    #else /* MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
+#else /* MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
     /*! The digest of the peer's end-CRT. This must be kept to detect CRT
      *  changes during renegotiation, mitigating the triple handshake attack. */
     unsigned char *MBEDTLS_PRIVATE(peer_cert_digest);
     size_t MBEDTLS_PRIVATE(peer_cert_digest_len);
     mbedtls_md_type_t MBEDTLS_PRIVATE(peer_cert_digest_type);
-    #endif /* !MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
-    #endif /* MBEDTLS_X509_CRT_PARSE_C */
+#endif /* !MBEDTLS_SSL_KEEP_PEER_CERTIFICATE */
+#endif /* MBEDTLS_X509_CRT_PARSE_C */
     uint32_t MBEDTLS_PRIVATE(verify_result);          /*!<  verification result     */
 
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_CLI_C)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_CLI_C)
     unsigned char *MBEDTLS_PRIVATE(ticket);      /*!< RFC 5077 session ticket */
     size_t MBEDTLS_PRIVATE(ticket_len);          /*!< session ticket length   */
     uint32_t MBEDTLS_PRIVATE(ticket_lifetime);   /*!< ticket lifetime hint    */
-    #endif /* MBEDTLS_SSL_SESSION_TICKETS && MBEDTLS_SSL_CLI_C */
+#endif /* MBEDTLS_SSL_SESSION_TICKETS && MBEDTLS_SSL_CLI_C */
 
-    #if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
+#if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
     int MBEDTLS_PRIVATE(encrypt_then_mac);       /*!< flag for EtM activation                */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_SSL_PROTO_TLS1_3)
+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
     mbedtls_ssl_tls13_application_secrets MBEDTLS_PRIVATE(app_secrets);
-    #endif
+#endif
 };
 
 /*
@@ -1187,14 +1187,14 @@ mbedtls_tls_prf_types;
 typedef enum
 {
     MBEDTLS_SSL_KEY_EXPORT_TLS12_MASTER_SECRET = 0,
-    #if defined(MBEDTLS_SSL_PROTO_TLS1_3)
+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_CLIENT_EARLY_SECRET,
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_EARLY_EXPORTER_SECRET,
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_CLIENT_HANDSHAKE_TRAFFIC_SECRET,
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_SERVER_HANDSHAKE_TRAFFIC_SECRET,
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_CLIENT_APPLICATION_TRAFFIC_SECRET,
     MBEDTLS_SSL_KEY_EXPORT_TLS1_3_SERVER_APPLICATION_TRAFFIC_SECRET,
-    #endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
+#endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
 } mbedtls_ssl_key_export_type;
 
 /**
@@ -1275,41 +1275,41 @@ struct mbedtls_ssl_config
     uint8_t MBEDTLS_PRIVATE(authmode);      /*!< MBEDTLS_SSL_VERIFY_XXX             */
     /* needed even with renego disabled for LEGACY_BREAK_HANDSHAKE          */
     uint8_t MBEDTLS_PRIVATE(allow_legacy_renegotiation); /*!< MBEDTLS_LEGACY_XXX   */
-    #if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
+#if defined(MBEDTLS_SSL_MAX_FRAGMENT_LENGTH)
     uint8_t MBEDTLS_PRIVATE(mfl_code);      /*!< desired fragment length indicator
                                                  (MBEDTLS_SSL_MAX_FRAG_LEN_XXX) */
-    #endif
-    #if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
+#endif
+#if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
     uint8_t MBEDTLS_PRIVATE(encrypt_then_mac); /*!< negotiate encrypt-then-mac?    */
-    #endif
-    #if defined(MBEDTLS_SSL_EXTENDED_MASTER_SECRET)
+#endif
+#if defined(MBEDTLS_SSL_EXTENDED_MASTER_SECRET)
     uint8_t MBEDTLS_PRIVATE(extended_ms);   /*!< negotiate extended master secret?  */
-    #endif
-    #if defined(MBEDTLS_SSL_DTLS_ANTI_REPLAY)
+#endif
+#if defined(MBEDTLS_SSL_DTLS_ANTI_REPLAY)
     uint8_t MBEDTLS_PRIVATE(anti_replay);   /*!< detect and prevent replay?         */
-    #endif
-    #if defined(MBEDTLS_SSL_RENEGOTIATION)
+#endif
+#if defined(MBEDTLS_SSL_RENEGOTIATION)
     uint8_t MBEDTLS_PRIVATE(disable_renegotiation); /*!< disable renegotiation?     */
-    #endif
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#endif
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     uint8_t MBEDTLS_PRIVATE(session_tickets);   /*!< use session tickets?           */
-    #endif
-    #if defined(MBEDTLS_SSL_SRV_C)
+#endif
+#if defined(MBEDTLS_SSL_SRV_C)
     uint8_t MBEDTLS_PRIVATE(cert_req_ca_list);  /*!< enable sending CA list in
                                                      Certificate Request messages? */
     uint8_t MBEDTLS_PRIVATE(respect_cli_pref);  /*!< pick the ciphersuite according to
                                                      the client's preferences rather
                                                      than ours? */
-    #endif
-    #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#endif
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
     uint8_t MBEDTLS_PRIVATE(ignore_unexpected_cid); /*!< Should DTLS record with
                                                      *   unexpected CID
                                                      *   lead to failure? */
-    #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
-    #if defined(MBEDTLS_SSL_DTLS_SRTP)
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#if defined(MBEDTLS_SSL_DTLS_SRTP)
     uint8_t MBEDTLS_PRIVATE(dtls_srtp_mki_support); /* support having mki_value
                                                        in the use_srtp extension? */
-    #endif
+#endif
 
     /*
      * Pointers
@@ -1318,10 +1318,10 @@ struct mbedtls_ssl_config
     /** Allowed ciphersuites for (D)TLS 1.2 (0-terminated)                  */
     const int *MBEDTLS_PRIVATE(ciphersuite_list);
 
-    #if defined(MBEDTLS_SSL_PROTO_TLS1_3)
+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
     /** Allowed TLS 1.3 key exchange modes.                                 */
     int MBEDTLS_PRIVATE(tls13_kex_modes);
-    #endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
+#endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
 
     /** Callback for printing debug output                                  */
     void (*MBEDTLS_PRIVATE(f_dbg))(void *, int, const char *, int, const char *);
@@ -1337,25 +1337,25 @@ struct mbedtls_ssl_config
     mbedtls_ssl_cache_set_t *MBEDTLS_PRIVATE(f_set_cache);
     void *MBEDTLS_PRIVATE(p_cache);                  /*!< context for cache callbacks        */
 
-    #if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
+#if defined(MBEDTLS_SSL_SERVER_NAME_INDICATION)
     /** Callback for setting cert according to SNI extension                */
     int (*MBEDTLS_PRIVATE(f_sni))(void *, mbedtls_ssl_context *, const unsigned char *, size_t);
     void *MBEDTLS_PRIVATE(p_sni);                    /*!< context for SNI callback           */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     /** Callback to customize X.509 certificate chain verification          */
     int (*MBEDTLS_PRIVATE(f_vrfy))(void *, mbedtls_x509_crt *, int, uint32_t *);
     void *MBEDTLS_PRIVATE(p_vrfy);                   /*!< context for X.509 verify calllback */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
     /** Callback to retrieve PSK key from identity                          */
     int (*MBEDTLS_PRIVATE(f_psk))(void *, mbedtls_ssl_context *, const unsigned char *, size_t);
     void *MBEDTLS_PRIVATE(p_psk);                    /*!< context for PSK callback           */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_SSL_DTLS_HELLO_VERIFY) && defined(MBEDTLS_SSL_SRV_C)
+#if defined(MBEDTLS_SSL_DTLS_HELLO_VERIFY) && defined(MBEDTLS_SSL_SRV_C)
     /** Callback to create & write a cookie for ClientHello verification    */
     int (*MBEDTLS_PRIVATE(f_cookie_write))( void *, unsigned char **, unsigned char *,
                                             const unsigned char *, size_t );
@@ -1363,70 +1363,70 @@ struct mbedtls_ssl_config
     int (*MBEDTLS_PRIVATE(f_cookie_check))( void *, const unsigned char *, size_t,
                                             const unsigned char *, size_t );
     void *MBEDTLS_PRIVATE(p_cookie);                 /*!< context for the cookie callbacks   */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_SRV_C)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS) && defined(MBEDTLS_SSL_SRV_C)
     /** Callback to create & write a session ticket                         */
     int (*MBEDTLS_PRIVATE(f_ticket_write))( void *, const mbedtls_ssl_session *,
                                             unsigned char *, const unsigned char *, size_t *, uint32_t * );
     /** Callback to parse a session ticket into a session structure         */
     int (*MBEDTLS_PRIVATE(f_ticket_parse))( void *, mbedtls_ssl_session *, unsigned char *, size_t);
     void *MBEDTLS_PRIVATE(p_ticket);                 /*!< context for the ticket callbacks   */
-    #endif /* MBEDTLS_SSL_SESSION_TICKETS && MBEDTLS_SSL_SRV_C */
-    #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#endif /* MBEDTLS_SSL_SESSION_TICKETS && MBEDTLS_SSL_SRV_C */
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
     size_t MBEDTLS_PRIVATE(cid_len); /*!< The length of CIDs for incoming DTLS records.      */
-    #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
 
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     const mbedtls_x509_crt_profile *MBEDTLS_PRIVATE(cert_profile); /*!< verification profile */
     mbedtls_ssl_key_cert *MBEDTLS_PRIVATE(key_cert); /*!< own certificate/key pair(s)        */
     mbedtls_x509_crt *MBEDTLS_PRIVATE(ca_chain);     /*!< trusted CAs                        */
     mbedtls_x509_crl *MBEDTLS_PRIVATE(ca_crl);       /*!< trusted CAs CRLs                   */
-    #if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
+#if defined(MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK)
     mbedtls_x509_crt_ca_cb_t MBEDTLS_PRIVATE(f_ca_cb);
     void *MBEDTLS_PRIVATE(p_ca_cb);
-    #endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
-    #endif /* MBEDTLS_X509_CRT_PARSE_C */
+#endif /* MBEDTLS_X509_TRUSTED_CERTIFICATE_CALLBACK */
+#endif /* MBEDTLS_X509_CRT_PARSE_C */
 
-    #if defined(MBEDTLS_SSL_ASYNC_PRIVATE)
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_SSL_ASYNC_PRIVATE)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     mbedtls_ssl_async_sign_t *MBEDTLS_PRIVATE(f_async_sign_start); /*!< start asynchronous signature operation */
     mbedtls_ssl_async_decrypt_t *MBEDTLS_PRIVATE(f_async_decrypt_start); /*!< start asynchronous decryption operation */
-    #endif /* MBEDTLS_X509_CRT_PARSE_C */
+#endif /* MBEDTLS_X509_CRT_PARSE_C */
     mbedtls_ssl_async_resume_t *MBEDTLS_PRIVATE(f_async_resume); /*!< resume asynchronous operation */
     mbedtls_ssl_async_cancel_t *MBEDTLS_PRIVATE(f_async_cancel); /*!< cancel asynchronous operation */
     void *MBEDTLS_PRIVATE(p_async_config_data); /*!< Configuration data set by mbedtls_ssl_conf_async_private_cb(). */
-    #endif /* MBEDTLS_SSL_ASYNC_PRIVATE */
+#endif /* MBEDTLS_SSL_ASYNC_PRIVATE */
 
-    #if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_WITH_CERT_ENABLED)
 
-    #if !defined(MBEDTLS_DEPRECATED_REMOVED)
+#if !defined(MBEDTLS_DEPRECATED_REMOVED)
     const int *MBEDTLS_PRIVATE(sig_hashes);         /*!< allowed signature hashes           */
-    #endif
+#endif
     const uint16_t *MBEDTLS_PRIVATE(sig_algs);      /*!< allowed signature algorithms       */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_ECP_C) && !defined(MBEDTLS_DEPRECATED_REMOVED)
+#if defined(MBEDTLS_ECP_C) && !defined(MBEDTLS_DEPRECATED_REMOVED)
     const mbedtls_ecp_group_id *MBEDTLS_PRIVATE(curve_list); /*!< allowed curves             */
-    #endif
+#endif
 
     const uint16_t *MBEDTLS_PRIVATE(group_list);     /*!< allowed IANA NamedGroups */
 
-    #if defined(MBEDTLS_DHM_C)
+#if defined(MBEDTLS_DHM_C)
     mbedtls_mpi MBEDTLS_PRIVATE(dhm_P);              /*!< prime modulus for DHM              */
     mbedtls_mpi MBEDTLS_PRIVATE(dhm_G);              /*!< generator for DHM                  */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
 
-    #if defined(MBEDTLS_USE_PSA_CRYPTO)
+#if defined(MBEDTLS_USE_PSA_CRYPTO)
     mbedtls_svc_key_id_t MBEDTLS_PRIVATE(psk_opaque); /*!< PSA key slot holding opaque PSK. This field
                               *   should only be set via
                               *   mbedtls_ssl_conf_psk_opaque().
                               *   If either no PSK or a raw PSK have been
                               *   configured, this has value \c 0.
                               */
-    #endif /* MBEDTLS_USE_PSA_CRYPTO */
+#endif /* MBEDTLS_USE_PSA_CRYPTO */
     unsigned char *MBEDTLS_PRIVATE(psk);      /*!< The raw pre-shared key. This field should
                               *   only be set via mbedtls_ssl_conf_psk().
                               *   If either no PSK or an opaque PSK
@@ -1448,18 +1448,18 @@ struct mbedtls_ssl_config
                                      *   Its value is non-zero if and only if
                                      *   \c psk is not \c NULL or \c psk_opaque
                                      *   is not \c 0. */
-    #endif /* MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED */
+#endif /* MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED */
 
-    #if defined(MBEDTLS_SSL_ALPN)
+#if defined(MBEDTLS_SSL_ALPN)
     const char **MBEDTLS_PRIVATE(alpn_list);         /*!< ordered list of protocols          */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_SSL_DTLS_SRTP)
+#if defined(MBEDTLS_SSL_DTLS_SRTP)
     /*! ordered list of supported srtp profile */
     const mbedtls_ssl_srtp_profile *MBEDTLS_PRIVATE(dtls_srtp_profile_list);
     /*! number of supported profiles */
     size_t MBEDTLS_PRIVATE(dtls_srtp_profile_list_len);
-    #endif /* MBEDTLS_SSL_DTLS_SRTP */
+#endif /* MBEDTLS_SSL_DTLS_SRTP */
 
     /*
      * Numerical settings (int)
@@ -1467,24 +1467,24 @@ struct mbedtls_ssl_config
 
     uint32_t MBEDTLS_PRIVATE(read_timeout);          /*!< timeout for mbedtls_ssl_read (ms)  */
 
-    #if defined(MBEDTLS_SSL_PROTO_DTLS)
+#if defined(MBEDTLS_SSL_PROTO_DTLS)
     uint32_t MBEDTLS_PRIVATE(hs_timeout_min);        /*!< initial value of the handshake
                                          retransmission timeout (ms)        */
     uint32_t MBEDTLS_PRIVATE(hs_timeout_max);        /*!< maximum value of the handshake
                                          retransmission timeout (ms)        */
-    #endif
+#endif
 
-    #if defined(MBEDTLS_SSL_RENEGOTIATION)
+#if defined(MBEDTLS_SSL_RENEGOTIATION)
     int MBEDTLS_PRIVATE(renego_max_records);         /*!< grace period for renegotiation     */
     unsigned char MBEDTLS_PRIVATE(renego_period)[8]; /*!< value of the record counters
                                          that triggers renegotiation        */
-    #endif
+#endif
 
     unsigned int MBEDTLS_PRIVATE(badmac_limit);      /*!< limit of records with a bad MAC    */
 
-    #if defined(MBEDTLS_DHM_C) && defined(MBEDTLS_SSL_CLI_C)
+#if defined(MBEDTLS_DHM_C) && defined(MBEDTLS_SSL_CLI_C)
     unsigned int MBEDTLS_PRIVATE(dhm_min_bitlen);    /*!< min. bit length of the DHM prime   */
-    #endif
+#endif
 
     /** User data pointer or handle.
      *
@@ -1493,13 +1493,13 @@ struct mbedtls_ssl_config
      */
     mbedtls_ssl_user_data_t MBEDTLS_PRIVATE(user_data);
 
-    #if defined(MBEDTLS_SSL_SRV_C)
+#if defined(MBEDTLS_SSL_SRV_C)
     mbedtls_ssl_hs_cb_t MBEDTLS_PRIVATE(f_cert_cb);  /*!< certificate selection callback */
-    #endif /* MBEDTLS_SSL_SRV_C */
+#endif /* MBEDTLS_SSL_SRV_C */
 
-    #if defined(MBEDTLS_KEY_EXCHANGE_CERT_REQ_ALLOWED_ENABLED)
+#if defined(MBEDTLS_KEY_EXCHANGE_CERT_REQ_ALLOWED_ENABLED)
     const mbedtls_x509_crt *MBEDTLS_PRIVATE(dn_hints);/*!< acceptable client cert issuers    */
-    #endif
+#endif
 };
 
 struct mbedtls_ssl_context
@@ -1510,12 +1510,12 @@ struct mbedtls_ssl_context
      * Miscellaneous
      */
     int MBEDTLS_PRIVATE(state);                  /*!< SSL handshake: current state     */
-    #if defined(MBEDTLS_SSL_RENEGOTIATION)
+#if defined(MBEDTLS_SSL_RENEGOTIATION)
     int MBEDTLS_PRIVATE(renego_status);          /*!< Initial, in progress, pending?   */
     int MBEDTLS_PRIVATE(renego_records_seen);    /*!< Records since renego request, or with DTLS,
                                   number of retransmissions of request if
                                   renego_max_records is < 0           */
-    #endif /* MBEDTLS_SSL_RENEGOTIATION */
+#endif /* MBEDTLS_SSL_RENEGOTIATION */
 
     /** Server: Negotiated TLS protocol version.
      *  Client: Maximum TLS version to be negotiated, then negotiated TLS
@@ -1535,11 +1535,11 @@ struct mbedtls_ssl_context
 
     unsigned MBEDTLS_PRIVATE(badmac_seen);       /*!< records with a bad MAC received    */
 
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     /** Callback to customize X.509 certificate chain verification          */
     int (*MBEDTLS_PRIVATE(f_vrfy))(void *, mbedtls_x509_crt *, int, uint32_t *);
     void *MBEDTLS_PRIVATE(p_vrfy);                   /*!< context for X.509 verify callback */
-    #endif
+#endif
 
     mbedtls_ssl_send_t *MBEDTLS_PRIVATE(f_send); /*!< Callback for network send */
     mbedtls_ssl_recv_t *MBEDTLS_PRIVATE(f_recv); /*!< Callback for network receive */
@@ -1575,11 +1575,11 @@ struct mbedtls_ssl_context
                                                                   *    This pointer owns the transform
                                                                   *    it references.                  */
 
-    #if defined(MBEDTLS_SSL_PROTO_TLS1_3)
+#if defined(MBEDTLS_SSL_PROTO_TLS1_3)
     /*! The application data transform in TLS 1.3.
      *  This pointer owns the transform it references. */
     mbedtls_ssl_transform *MBEDTLS_PRIVATE(transform_application);
-    #endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
+#endif /* MBEDTLS_SSL_PROTO_TLS1_3 */
 
     /*
      * Timers
@@ -1597,10 +1597,10 @@ struct mbedtls_ssl_context
                                      TLS: maintained by us
                                      DTLS: read from peer             */
     unsigned char *MBEDTLS_PRIVATE(in_hdr);      /*!< start of record header           */
-    #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
     unsigned char *MBEDTLS_PRIVATE(in_cid);      /*!< The start of the CID;
                                  *   (the end is marked by in_len).   */
-    #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
     unsigned char *MBEDTLS_PRIVATE(in_len);      /*!< two-bytes message length field   */
     unsigned char *MBEDTLS_PRIVATE(in_iv);       /*!< ivlen-byte IV                    */
     unsigned char *MBEDTLS_PRIVATE(in_msg);      /*!< message contents (in_iv+ivlen)   */
@@ -1609,18 +1609,18 @@ struct mbedtls_ssl_context
     int MBEDTLS_PRIVATE(in_msgtype);             /*!< record header: message type      */
     size_t MBEDTLS_PRIVATE(in_msglen);           /*!< record header: message length    */
     size_t MBEDTLS_PRIVATE(in_left);             /*!< amount of data read so far       */
-    #if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
+#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
     size_t MBEDTLS_PRIVATE(in_buf_len);          /*!< length of input buffer           */
-    #endif
-    #if defined(MBEDTLS_SSL_PROTO_DTLS)
+#endif
+#if defined(MBEDTLS_SSL_PROTO_DTLS)
     uint16_t MBEDTLS_PRIVATE(in_epoch);          /*!< DTLS epoch for incoming records  */
     size_t MBEDTLS_PRIVATE(next_record_offset);  /*!< offset of the next record in datagram
                                      (equal to in_left if none)       */
-    #endif /* MBEDTLS_SSL_PROTO_DTLS */
-    #if defined(MBEDTLS_SSL_DTLS_ANTI_REPLAY)
+#endif /* MBEDTLS_SSL_PROTO_DTLS */
+#if defined(MBEDTLS_SSL_DTLS_ANTI_REPLAY)
     uint64_t MBEDTLS_PRIVATE(in_window_top);     /*!< last validated record seq_num    */
     uint64_t MBEDTLS_PRIVATE(in_window);         /*!< bitmask for replay detection     */
-    #endif /* MBEDTLS_SSL_DTLS_ANTI_REPLAY */
+#endif /* MBEDTLS_SSL_DTLS_ANTI_REPLAY */
 
     size_t MBEDTLS_PRIVATE(in_hslen);            /*!< current handshake message length,
                                      including the handshake header   */
@@ -1642,10 +1642,10 @@ struct mbedtls_ssl_context
                                                  to the user once the fatal alert
                                                  has been sent. */
 
-    #if defined(MBEDTLS_SSL_PROTO_DTLS)
+#if defined(MBEDTLS_SSL_PROTO_DTLS)
     uint8_t MBEDTLS_PRIVATE(disable_datagram_packing);  /*!< Disable packing multiple records
                                         *   within a single datagram.  */
-    #endif /* MBEDTLS_SSL_PROTO_DTLS */
+#endif /* MBEDTLS_SSL_PROTO_DTLS */
 
     /*
      * Record layer (outgoing data)
@@ -1653,10 +1653,10 @@ struct mbedtls_ssl_context
     unsigned char *MBEDTLS_PRIVATE(out_buf);     /*!< output buffer                    */
     unsigned char *MBEDTLS_PRIVATE(out_ctr);     /*!< 64-bit outgoing message counter  */
     unsigned char *MBEDTLS_PRIVATE(out_hdr);     /*!< start of record header           */
-    #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
     unsigned char *MBEDTLS_PRIVATE(out_cid);     /*!< The start of the CID;
                                  *   (the end is marked by in_len).   */
-    #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
     unsigned char *MBEDTLS_PRIVATE(out_len);     /*!< two-bytes message length field   */
     unsigned char *MBEDTLS_PRIVATE(out_iv);      /*!< ivlen-byte IV                    */
     unsigned char *MBEDTLS_PRIVATE(out_msg);     /*!< message contents (out_iv+ivlen)  */
@@ -1664,42 +1664,42 @@ struct mbedtls_ssl_context
     int MBEDTLS_PRIVATE(out_msgtype);            /*!< record header: message type      */
     size_t MBEDTLS_PRIVATE(out_msglen);          /*!< record header: message length    */
     size_t MBEDTLS_PRIVATE(out_left);            /*!< amount of data not yet written   */
-    #if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
+#if defined(MBEDTLS_SSL_VARIABLE_BUFFER_LENGTH)
     size_t MBEDTLS_PRIVATE(out_buf_len);         /*!< length of output buffer          */
-    #endif
+#endif
 
     unsigned char MBEDTLS_PRIVATE(cur_out_ctr)[MBEDTLS_SSL_SEQUENCE_NUMBER_LEN]; /*!<  Outgoing record sequence  number. */
 
-    #if defined(MBEDTLS_SSL_PROTO_DTLS)
+#if defined(MBEDTLS_SSL_PROTO_DTLS)
     uint16_t MBEDTLS_PRIVATE(mtu);               /*!< path mtu, used to fragment outgoing messages */
-    #endif /* MBEDTLS_SSL_PROTO_DTLS */
+#endif /* MBEDTLS_SSL_PROTO_DTLS */
 
     /*
      * User settings
      */
-    #if defined(MBEDTLS_X509_CRT_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C)
     char *MBEDTLS_PRIVATE(hostname);             /*!< expected peer CN for verification
                                      (and SNI if available)                 */
-    #endif /* MBEDTLS_X509_CRT_PARSE_C */
+#endif /* MBEDTLS_X509_CRT_PARSE_C */
 
-    #if defined(MBEDTLS_SSL_ALPN)
+#if defined(MBEDTLS_SSL_ALPN)
     const char *MBEDTLS_PRIVATE(alpn_chosen);    /*!<  negotiated protocol                   */
-    #endif /* MBEDTLS_SSL_ALPN */
+#endif /* MBEDTLS_SSL_ALPN */
 
-    #if defined(MBEDTLS_SSL_DTLS_SRTP)
+#if defined(MBEDTLS_SSL_DTLS_SRTP)
     /*
      * use_srtp extension
      */
     mbedtls_dtls_srtp_info MBEDTLS_PRIVATE(dtls_srtp_info);
-    #endif /* MBEDTLS_SSL_DTLS_SRTP */
+#endif /* MBEDTLS_SSL_DTLS_SRTP */
 
     /*
      * Information for DTLS hello verify
      */
-    #if defined(MBEDTLS_SSL_DTLS_HELLO_VERIFY) && defined(MBEDTLS_SSL_SRV_C)
+#if defined(MBEDTLS_SSL_DTLS_HELLO_VERIFY) && defined(MBEDTLS_SSL_SRV_C)
     unsigned char  *MBEDTLS_PRIVATE(cli_id);         /*!<  transport-level ID of the client  */
     size_t          MBEDTLS_PRIVATE(cli_id_len);     /*!<  length of cli_id                  */
-    #endif /* MBEDTLS_SSL_DTLS_HELLO_VERIFY && MBEDTLS_SSL_SRV_C */
+#endif /* MBEDTLS_SSL_DTLS_HELLO_VERIFY && MBEDTLS_SSL_SRV_C */
 
     /*
      * Secure renegotiation
@@ -1707,13 +1707,13 @@ struct mbedtls_ssl_context
     /* needed to know when to send extension on server */
     int MBEDTLS_PRIVATE(secure_renegotiation);           /*!<  does peer support legacy or
                                               secure renegotiation           */
-    #if defined(MBEDTLS_SSL_RENEGOTIATION)
+#if defined(MBEDTLS_SSL_RENEGOTIATION)
     size_t MBEDTLS_PRIVATE(verify_data_len);             /*!<  length of verify data stored   */
     char MBEDTLS_PRIVATE(own_verify_data)[MBEDTLS_SSL_VERIFY_DATA_MAX_LEN]; /*!<  previous handshake verify data */
     char MBEDTLS_PRIVATE(peer_verify_data)[MBEDTLS_SSL_VERIFY_DATA_MAX_LEN]; /*!<  previous handshake verify data */
-    #endif /* MBEDTLS_SSL_RENEGOTIATION */
+#endif /* MBEDTLS_SSL_RENEGOTIATION */
 
-    #if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
+#if defined(MBEDTLS_SSL_DTLS_CONNECTION_ID)
     /* CID configuration to use in subsequent handshakes. */
 
     /*! The next incoming CID, chosen by the user and applying to
@@ -1726,7 +1726,7 @@ struct mbedtls_ssl_context
                             *   be negotiated in the next handshake or not.
                             *   Possible values are #MBEDTLS_SSL_CID_ENABLED
                             *   and #MBEDTLS_SSL_CID_DISABLED. */
-    #endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
+#endif /* MBEDTLS_SSL_DTLS_CONNECTION_ID */
 
     /** Callback to export key block and master secret                      */
     mbedtls_ssl_export_keys_t *MBEDTLS_PRIVATE(f_export_keys);

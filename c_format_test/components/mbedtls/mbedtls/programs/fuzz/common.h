@@ -1,7 +1,7 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+    #include "mbedtls/platform_time.h"
 #endif
 #include <stddef.h>
 #include <stdint.h>
@@ -14,7 +14,7 @@ typedef struct fuzzBufferOffset
 } fuzzBufferOffset_t;
 
 #if defined(MBEDTLS_HAVE_TIME)
-mbedtls_time_t dummy_constant_time( mbedtls_time_t* time );
+    mbedtls_time_t dummy_constant_time( mbedtls_time_t* time );
 #endif
 void dummy_init();
 

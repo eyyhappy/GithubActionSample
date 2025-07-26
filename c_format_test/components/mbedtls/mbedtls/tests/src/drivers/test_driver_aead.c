@@ -45,7 +45,7 @@ psa_status_t mbedtls_test_transparent_aead_encrypt(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_encrypt(
                 attributes, key_buffer, key_buffer_size,
@@ -54,7 +54,7 @@ psa_status_t mbedtls_test_transparent_aead_encrypt(
                 additional_data, additional_data_length,
                 plaintext, plaintext_length,
                 ciphertext, ciphertext_size, ciphertext_length );
-        #else
+#else
         (void) attributes;
         (void) key_buffer;
         (void) key_buffer_size;
@@ -69,7 +69,7 @@ psa_status_t mbedtls_test_transparent_aead_encrypt(
         (void) ciphertext_size;
         (void) ciphertext_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -91,7 +91,7 @@ psa_status_t mbedtls_test_transparent_aead_decrypt(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_decrypt(
                 attributes, key_buffer, key_buffer_size,
@@ -100,7 +100,7 @@ psa_status_t mbedtls_test_transparent_aead_decrypt(
                 additional_data, additional_data_length,
                 ciphertext, ciphertext_length,
                 plaintext, plaintext_size, plaintext_length );
-        #else
+#else
         (void) attributes;
         (void) key_buffer;
         (void) key_buffer_size;
@@ -115,7 +115,7 @@ psa_status_t mbedtls_test_transparent_aead_decrypt(
         (void) plaintext_size;
         (void) plaintext_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -134,18 +134,18 @@ psa_status_t mbedtls_test_transparent_aead_encrypt_setup(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_encrypt_setup( operation, attributes, key_buffer,
                                             key_buffer_size, alg );
-        #else
+#else
         (void) operation;
         (void) attributes;
         (void) key_buffer;
         (void) key_buffer_size;
         (void) alg;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -164,18 +164,18 @@ psa_status_t mbedtls_test_transparent_aead_decrypt_setup(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_decrypt_setup( operation, attributes, key_buffer,
                                             key_buffer_size, alg );
-        #else
+#else
         (void) operation;
         (void) attributes;
         (void) key_buffer;
         (void) key_buffer_size;
         (void) alg;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -193,15 +193,15 @@ psa_status_t mbedtls_test_transparent_aead_set_nonce(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_set_nonce( operation, nonce, nonce_length );
-        #else
+#else
         (void) operation;
         (void) nonce;
         (void) nonce_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -219,16 +219,16 @@ psa_status_t mbedtls_test_transparent_aead_set_lengths(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_set_lengths( operation, ad_length,
                                           plaintext_length );
-        #else
+#else
         (void) operation;
         (void) ad_length;
         (void) plaintext_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -246,15 +246,15 @@ psa_status_t mbedtls_test_transparent_aead_update_ad(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_update_ad( operation, input, input_length );
-        #else
+#else
         (void) operation;
         (void) input;
         (void) input_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -275,11 +275,11 @@ psa_status_t mbedtls_test_transparent_aead_update(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_update( operation, input, input_length, output,
                                      output_size, output_length );
-        #else
+#else
         (void) operation;
         (void) input;
         (void) input_length;
@@ -287,7 +287,7 @@ psa_status_t mbedtls_test_transparent_aead_update(
         (void) output_size;
         (void) output_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -309,12 +309,12 @@ psa_status_t mbedtls_test_transparent_aead_finish(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_finish( operation, ciphertext, ciphertext_size,
                                      ciphertext_length, tag, tag_size,
                                      tag_length );
-        #else
+#else
         (void) operation;
         (void) ciphertext;
         (void) ciphertext_size;
@@ -323,7 +323,7 @@ psa_status_t mbedtls_test_transparent_aead_finish(
         (void) tag_size;
         (void) tag_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }
@@ -346,7 +346,7 @@ psa_status_t mbedtls_test_transparent_aead_verify(
     {
         uint8_t check_tag[PSA_AEAD_TAG_MAX_SIZE];
         size_t check_tag_length;
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_finish( operation,
                                      plaintext,
@@ -355,13 +355,13 @@ psa_status_t mbedtls_test_transparent_aead_verify(
                                      check_tag,
                                      sizeof( check_tag ),
                                      &check_tag_length );
-        #else
+#else
         (void) operation;
         (void) plaintext;
         (void) plaintext_size;
         (void) plaintext_length;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
         if( mbedtls_test_driver_aead_hooks.driver_status == PSA_SUCCESS )
         {
             if( tag_length != check_tag_length ||
@@ -386,13 +386,13 @@ psa_status_t mbedtls_test_transparent_aead_abort(
     }
     else
     {
-        #if defined(MBEDTLS_PSA_BUILTIN_AEAD)
+#if defined(MBEDTLS_PSA_BUILTIN_AEAD)
         mbedtls_test_driver_aead_hooks.driver_status =
             mbedtls_psa_aead_abort( operation );
-        #else
+#else
         (void) operation;
         mbedtls_test_driver_aead_hooks.driver_status = PSA_ERROR_NOT_SUPPORTED;
-        #endif
+#endif
     }
     return( mbedtls_test_driver_aead_hooks.driver_status );
 }

@@ -20,32 +20,32 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_time_t          time_t
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_time_t          time_t
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_AES_C) && defined(MBEDTLS_DHM_C) && \
-defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_NET_C) && \
-defined(MBEDTLS_RSA_C) && defined(MBEDTLS_SHA256_C) && \
-defined(MBEDTLS_FS_IO) && defined(MBEDTLS_CTR_DRBG_C) && \
-defined(MBEDTLS_SHA1_C)
-#include "mbedtls/net_sockets.h"
-#include "mbedtls/aes.h"
-#include "mbedtls/dhm.h"
-#include "mbedtls/rsa.h"
-#include "mbedtls/sha1.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
+    defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_NET_C) && \
+    defined(MBEDTLS_RSA_C) && defined(MBEDTLS_SHA256_C) && \
+    defined(MBEDTLS_FS_IO) && defined(MBEDTLS_CTR_DRBG_C) && \
+    defined(MBEDTLS_SHA1_C)
+    #include "mbedtls/net_sockets.h"
+    #include "mbedtls/aes.h"
+    #include "mbedtls/dhm.h"
+    #include "mbedtls/rsa.h"
+    #include "mbedtls/sha1.h"
+    #include "mbedtls/entropy.h"
+    #include "mbedtls/ctr_drbg.h"
 
-#include <stdio.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <string.h>
 #endif
 
 #define SERVER_NAME "localhost"

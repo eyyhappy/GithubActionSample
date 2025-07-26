@@ -93,14 +93,14 @@ static int cmac_multiply_by_u( unsigned char *output,
      * using bit operations to avoid branches */
     /* MSVC has a warning about unary minus on unsigned, but this is
      * well-defined and precisely what we want to do here */
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( push )
 #pragma warning( disable : 4146 )
-    #endif
+#endif
     mask = - ( input[0] >> 7 );
-    #if defined(_MSC_VER)
+#if defined(_MSC_VER)
 #pragma warning( pop )
-    #endif
+#endif
     output[ blocksize - 1 ] ^= R_n & mask;
     return( 0 );
 }
@@ -863,7 +863,7 @@ static int test_aes128_cmac_prf( int verbose )
 int mbedtls_cmac_self_test( int verbose )
 {
     int ret = MBEDTLS_ERR_ERROR_CORRUPTION_DETECTED;
-    #if defined(MBEDTLS_AES_C)
+#if defined(MBEDTLS_AES_C)
     /* AES-128 */
     if( ( ret = cmac_test_subkeys( verbose,
                                    "AES 128",
@@ -939,8 +939,8 @@ int mbedtls_cmac_self_test( int verbose )
     {
         return( ret );
     }
-    #endif /* MBEDTLS_AES_C */
-    #if defined(MBEDTLS_DES_C)
+#endif /* MBEDTLS_AES_C */
+#if defined(MBEDTLS_DES_C)
     /* 3DES 2 key */
     if( ( ret = cmac_test_subkeys( verbose,
                                    "3DES 2 key",
@@ -991,11 +991,11 @@ int mbedtls_cmac_self_test( int verbose )
     {
         return( ret );
     }
-    #endif /* MBEDTLS_DES_C */
-    #if defined(MBEDTLS_AES_C)
+#endif /* MBEDTLS_DES_C */
+#if defined(MBEDTLS_AES_C)
     if( ( ret = test_aes128_cmac_prf( verbose ) ) != 0 )
         return( ret );
-    #endif /* MBEDTLS_AES_C */
+#endif /* MBEDTLS_AES_C */
     if( verbose != 0 )
         mbedtls_printf( "\n" );
     return( 0 );

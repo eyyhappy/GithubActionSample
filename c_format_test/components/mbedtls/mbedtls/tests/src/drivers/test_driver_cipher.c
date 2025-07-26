@@ -31,7 +31,7 @@
 #include "test/random.h"
 
 #if defined(MBEDTLS_TEST_LIBTESTDRIVER1)
-#include "libtestdriver1/library/psa_crypto_cipher.h"
+    #include "libtestdriver1/library/psa_crypto_cipher.h"
 #endif
 
 #include <string.h>
@@ -65,19 +65,19 @@ psa_status_t mbedtls_test_transparent_cipher_encrypt(
     }
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_encrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, iv, iv_length, input, input_length,
                 output, output_size, output_length ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_encrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, iv, iv_length, input, input_length,
                 output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -105,19 +105,19 @@ psa_status_t mbedtls_test_transparent_cipher_decrypt(
     }
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_decrypt(
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key_buffer, key_buffer_size,
                 alg, input, input_length,
                 output, output_size, output_length ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_decrypt(
                 attributes, key_buffer, key_buffer_size,
                 alg, input, input_length,
                 output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -135,16 +135,16 @@ psa_status_t mbedtls_test_transparent_cipher_encrypt_setup(
     memset( operation, 0, sizeof( *operation ) );
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_encrypt_setup(
                 operation,
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key, key_length, alg ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_encrypt_setup(
                 operation, attributes, key, key_length, alg ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -157,16 +157,16 @@ psa_status_t mbedtls_test_transparent_cipher_decrypt_setup(
     mbedtls_test_driver_cipher_hooks.hits++;
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_decrypt_setup(
                 operation,
                 (const libtestdriver1_psa_key_attributes_t *)attributes,
                 key, key_length, alg ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_decrypt_setup(
                 operation, attributes, key, key_length, alg ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -174,12 +174,12 @@ psa_status_t mbedtls_test_transparent_cipher_abort(
     mbedtls_transparent_test_driver_cipher_operation_t *operation)
 {
     mbedtls_test_driver_cipher_hooks.hits++;
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     libtestdriver1_mbedtls_psa_cipher_abort( operation );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     mbedtls_psa_cipher_abort( operation );
-    #endif
+#endif
     /* Wiping the entire struct here, instead of member-by-member. This is
      * useful for the test suite, since it gives a chance of catching memory
      * corruption errors should the core not have allocated (enough) memory for
@@ -196,13 +196,13 @@ psa_status_t mbedtls_test_transparent_cipher_set_iv(
     mbedtls_test_driver_cipher_hooks.hits++;
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_set_iv(
                 operation, iv, iv_length ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_set_iv( operation, iv, iv_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -227,16 +227,16 @@ psa_status_t mbedtls_test_transparent_cipher_update(
     }
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_update(
                 operation, input, input_length,
                 output, output_size, output_length ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_update(
                 operation, input, input_length,
                 output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 
@@ -259,14 +259,14 @@ psa_status_t mbedtls_test_transparent_cipher_finish(
     }
     if( mbedtls_test_driver_cipher_hooks.forced_status != PSA_SUCCESS )
         return( mbedtls_test_driver_cipher_hooks.forced_status );
-    #if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
+#if defined(MBEDTLS_TEST_LIBTESTDRIVER1) && \
     defined(LIBTESTDRIVER1_MBEDTLS_PSA_BUILTIN_CIPHER)
     return( libtestdriver1_mbedtls_psa_cipher_finish(
                 operation, output, output_size, output_length ) );
-    #elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
+#elif defined(MBEDTLS_PSA_BUILTIN_CIPHER)
     return( mbedtls_psa_cipher_finish(
                 operation, output, output_size, output_length ) );
-    #endif
+#endif
     return( PSA_ERROR_NOT_SUPPORTED );
 }
 

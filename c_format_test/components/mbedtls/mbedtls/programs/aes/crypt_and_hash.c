@@ -26,36 +26,36 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_fprintf         fprintf
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_fprintf         fprintf
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_MD_C) && \
-defined(MBEDTLS_FS_IO)
-#include "mbedtls/cipher.h"
-#include "mbedtls/md.h"
-#include "mbedtls/platform_util.h"
+    defined(MBEDTLS_FS_IO)
+    #include "mbedtls/cipher.h"
+    #include "mbedtls/md.h"
+    #include "mbedtls/platform_util.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
 #endif
 
 #if defined(_WIN32)
-#include <windows.h>
-#if !defined(_WIN32_WCE)
-#include <io.h>
-#endif
+    #include <windows.h>
+    #if !defined(_WIN32_WCE)
+        #include <io.h>
+    #endif
 #else
-#include <sys/types.h>
-#include <unistd.h>
+    #include <sys/types.h>
+    #include <unistd.h>
 #endif
 
 #define MODE_ENCRYPT    0
@@ -96,14 +96,14 @@ int main( int argc, char *argv[] )
     const mbedtls_md_info_t *md_info;
     mbedtls_cipher_context_t cipher_ctx;
     mbedtls_md_context_t md_ctx;
-    #if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)
     long filesize, offset;
-    #elif defined(_WIN32)
+#elif defined(_WIN32)
     LARGE_INTEGER li_size;
     __int64 filesize, offset;
-    #else
+#else
     off_t filesize, offset;
-    #endif
+#endif
     mbedtls_cipher_init( &cipher_ctx );
     mbedtls_md_init( &md_ctx );
     /*
@@ -209,10 +209,10 @@ int main( int argc, char *argv[] )
             memcpy( key, argv[6], keylen );
         }
     }
-    #if defined(_WIN32_WCE)
+#if defined(_WIN32_WCE)
     filesize = fseek( fin, 0L, SEEK_END );
-    #else
-    #if defined(_WIN32)
+#else
+#if defined(_WIN32)
     /*
      * Support large files (> 2Gb) on Win32
      */
@@ -226,14 +226,14 @@ int main( int argc, char *argv[] )
         goto exit;
     }
     filesize = li_size.QuadPart;
-    #else
+#else
     if( ( filesize = lseek( fileno( fin ), 0, SEEK_END ) ) < 0 )
     {
         perror( "lseek" );
         goto exit;
     }
-    #endif
-    #endif
+#endif
+#endif
     if( fseek( fin, 0, SEEK_SET ) < 0 )
     {
         mbedtls_fprintf( stderr, "fseek(0,SEEK_SET) failed\n" );

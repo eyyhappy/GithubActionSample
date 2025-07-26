@@ -12,9 +12,9 @@
 #include "esp_attr.h"
 
 #if CONFIG_RMT_ISR_IRAM_SAFE
-#define TEST_RMT_ENCODER_ATTR IRAM_ATTR
+    #define TEST_RMT_ENCODER_ATTR IRAM_ATTR
 #else
-#define TEST_RMT_ENCODER_ATTR
+    #define TEST_RMT_ENCODER_ATTR
 #endif
 
 typedef struct

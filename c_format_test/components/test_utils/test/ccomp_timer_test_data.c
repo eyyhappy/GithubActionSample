@@ -16,23 +16,23 @@
 
 
 #if CONFIG_IDF_TARGET_ESP32
-#define CACHE_WAYS              2
-#define CACHE_LINE_SIZE         32
-#define CACHE_SIZE              (1 << 15)
-// Only test half due to lack of memory
-#define TEST_SIZE               (CACHE_SIZE / 2)
+    #define CACHE_WAYS              2
+    #define CACHE_LINE_SIZE         32
+    #define CACHE_SIZE              (1 << 15)
+    // Only test half due to lack of memory
+    #define TEST_SIZE               (CACHE_SIZE / 2)
 #elif CONFIG_IDF_TARGET_ESP32S2 || CONFIG_IDF_TARGET_ESP32S3
-// Default cache configuration - no override specified on
-// test_utils config
-#define CACHE_WAYS              8
-#define CACHE_LINE_SIZE         32
-#define CACHE_SIZE              (1 << 13)
-#define TEST_SIZE               (CACHE_SIZE)
+    // Default cache configuration - no override specified on
+    // test_utils config
+    #define CACHE_WAYS              8
+    #define CACHE_LINE_SIZE         32
+    #define CACHE_SIZE              (1 << 13)
+    #define TEST_SIZE               (CACHE_SIZE)
 #elif CONFIG_IDF_TARGET_ESP32C3 || CONFIG_IDF_TARGET_ESP32C2
-#define CACHE_WAYS              8
-#define CACHE_LINE_SIZE         32
-#define CACHE_SIZE              (1 << 14)
-#define TEST_SIZE               (CACHE_SIZE)
+    #define CACHE_WAYS              8
+    #define CACHE_LINE_SIZE         32
+    #define CACHE_SIZE              (1 << 14)
+    #define TEST_SIZE               (CACHE_SIZE)
 #endif
 
 typedef struct
@@ -134,11 +134,11 @@ static ccomp_test_time_t perform_test_at_hit_rate(int hit_rate, const uint8_t *m
 
 static ccomp_test_time_t ccomp_test_ref_time(void)
 {
-    #if CONFIG_SPIRAM
+#if CONFIG_SPIRAM
     uint8_t *mem = heap_caps_malloc(2 * CACHE_SIZE, MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
-    #else
+#else
     uint8_t *mem = heap_caps_malloc(sizeof(flash_mem), MALLOC_CAP_INTERNAL | MALLOC_CAP_DEFAULT);
-    #endif
+#endif
     ccomp_test_time_t t = perform_test_at_hit_rate(0, mem);
     free(mem);
     return t;
@@ -148,9 +148,9 @@ TEST_CASE("data cache hit rate sweep", "[test_utils][ccomp_timer]")
 {
     ccomp_test_time_t t_ref;
     ccomp_test_time_t t_hr;
-    #if CONFIG_SPIRAM
+#if CONFIG_SPIRAM
     flash_mem = heap_caps_malloc(2 * CACHE_SIZE, MALLOC_CAP_8BIT | MALLOC_CAP_SPIRAM);
-    #endif
+#endif
     // Perform accesses on RAM. The time recorded here serves as
     // reference.
     t_ref = ccomp_test_ref_time();
@@ -165,9 +165,9 @@ TEST_CASE("data cache hit rate sweep", "[test_utils][ccomp_timer]")
         // reference.
         TEST_ASSERT(error <= 5.0f);
     }
-    #if CONFIG_SPIRAM
+#if CONFIG_SPIRAM
     free(flash_mem);
-    #endif
+#endif
 }
 #endif //!TEMPORARY_DISABLED_FOR_TARGETS(ESP32C2)
 #endif // !DISABLED_FOR_TARGETS(ESP32C3)

@@ -88,14 +88,14 @@ TEST_CASE("GPIO_config_parameters_test", "[gpio]")
     io_config.pin_bit_mask = ((uint64_t)1 << TEST_GPIO_EXT_OUT_IO);
     TEST_ESP_OK(gpio_config(&io_config));
     //This IO is just used for input, C3 and S3 doesn't have input only pin.
-    #if SOC_HAS_INPUT_ONLY_PIN
+#if SOC_HAS_INPUT_ONLY_PIN
     io_config.pin_bit_mask = ((uint64_t)1 << TEST_GPIO_INPUT_ONLY_PIN);
     io_config.mode = GPIO_MODE_INPUT;
     TEST_ESP_OK(gpio_config(&io_config));
     io_config.mode = GPIO_MODE_OUTPUT;
     // The pin is input only, once set as output should log something
     TEST_ASSERT(gpio_config(&io_config) == ESP_ERR_INVALID_ARG);
-    #endif // SOC_HAS_INPUT_ONLY_PIN
+#endif // SOC_HAS_INPUT_ONLY_PIN
 }
 
 // edge interrupt event
@@ -512,9 +512,9 @@ TEST_CASE("GPIO_set_output_level_get_input_level_test", "[gpio]")
     gpio_config_t input_io = test_init_io(TEST_GPIO_EXT_IN_IO);
     input_io.mode = GPIO_MODE_INPUT;
     gpio_config(&input_io);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, 0);
     vTaskDelay(100 / portTICK_PERIOD_MS);
     // tested voltage is around 0v
@@ -529,10 +529,10 @@ TEST_CASE("GPIO_set_output_level_get_input_level_test", "[gpio]")
 // 3.3v or GND pin
 TEST_CASE("GPIO_get_level_from_fixed_voltage_test", "[gpio]")
 {
-    #if !TEST_GPIO_INTERNAL_ROUTING
+#if !TEST_GPIO_INTERNAL_ROUTING
     // If TEST_GPIO_EXT_OUT_IO is connected to TEST_GPIO_EXT_IN_IO, prevent being affected
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_DISABLE);
-    #endif
+#endif
     gpio_config_t input_io = test_init_io(TEST_GPIO_EXT_IN_IO);
     input_io.mode = GPIO_MODE_INPUT;
     gpio_config(&input_io);
@@ -583,17 +583,17 @@ TEST_CASE("GPIO_mode_test", "[gpio]")
     // Disable mode
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_DISABLE);
     gpio_set_direction(TEST_GPIO_EXT_IN_IO, GPIO_MODE_OUTPUT);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, !level);
     TEST_ASSERT_EQUAL_INT_MESSAGE(level, gpio_get_level(TEST_GPIO_EXT_IN_IO), "direction GPIO_MODE_DISABLE set error, it can output");
     // Output mode
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_OUTPUT);
     gpio_set_direction(TEST_GPIO_EXT_IN_IO, GPIO_MODE_INPUT);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, 1);
     TEST_ASSERT_EQUAL_INT_MESSAGE(1, gpio_get_level(TEST_GPIO_EXT_IN_IO), "direction GPIO_MODE_OUTPUT set error, it can't output");
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, 0);
@@ -601,9 +601,9 @@ TEST_CASE("GPIO_mode_test", "[gpio]")
     // Open drain mode(output), can just output low level
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_OUTPUT_OD);
     gpio_set_direction(TEST_GPIO_EXT_IN_IO, GPIO_MODE_INPUT);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     // Outputs high level: w/ pull up, then must read high level; w/ pull down, then must read low level
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, 1);
     gpio_set_pull_mode(TEST_GPIO_EXT_OUT_IO, GPIO_PULLUP_ONLY);
@@ -617,9 +617,9 @@ TEST_CASE("GPIO_mode_test", "[gpio]")
     // Open drain mode(output and input), can just output low level
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_INPUT_OUTPUT_OD);
     gpio_set_direction(TEST_GPIO_EXT_IN_IO, GPIO_MODE_INPUT);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     // Outputs high level: w/ pull up, then must read high level; w/ pull down, then must read low level
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, 1);
     gpio_set_pull_mode(TEST_GPIO_EXT_OUT_IO, GPIO_PULLUP_ONLY);
@@ -634,9 +634,9 @@ TEST_CASE("GPIO_mode_test", "[gpio]")
     level = gpio_get_level(TEST_GPIO_EXT_IN_IO);
     gpio_set_direction(TEST_GPIO_EXT_OUT_IO, GPIO_MODE_INPUT_OUTPUT);
     gpio_set_direction(TEST_GPIO_EXT_IN_IO, GPIO_MODE_INPUT);
-    #if TEST_GPIO_INTERNAL_ROUTING
+#if TEST_GPIO_INTERNAL_ROUTING
     gpio_interconnect_input_output_pin(TEST_GPIO_EXT_IN_IO, TEST_GPIO_EXT_OUT_IO, TEST_GPIO_SIGNAL_IDX);
-    #endif
+#endif
     gpio_set_level(TEST_GPIO_EXT_OUT_IO, !level);
     TEST_ASSERT_EQUAL_INT_MESSAGE(!level, gpio_get_level(TEST_GPIO_EXT_IN_IO), "direction GPIO_MODE_INPUT_OUTPUT set error, it gives incorrect output");
 }

@@ -17,8 +17,8 @@ defined(MBEDTLS_CTR_DRBG_C)
 const char *pers = "fuzz_server";
 static int initialized = 0;
 #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
-static mbedtls_x509_crt srvcert;
-static mbedtls_pk_context pkey;
+    static mbedtls_x509_crt srvcert;
+    static mbedtls_pk_context pkey;
 #endif
 const char *alpn_list[3];
 
@@ -35,7 +35,7 @@ const char psk_id[] = "Client_identity";
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 {
-    #if defined(MBEDTLS_SSL_SRV_C) && \
+#if defined(MBEDTLS_SSL_SRV_C) && \
     defined(MBEDTLS_ENTROPY_C) && \
     defined(MBEDTLS_CTR_DRBG_C)
     int ret;
@@ -44,9 +44,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
     mbedtls_ssl_config conf;
     mbedtls_ctr_drbg_context ctr_drbg;
     mbedtls_entropy_context entropy;
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     mbedtls_ssl_ticket_context ticket_ctx;
-    #endif
+#endif
     unsigned char buf[4096];
     fuzzBufferOffset_t biomemfuzz;
     uint8_t options;
@@ -63,7 +63,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         return 1;
     if (initialized == 0)
     {
-        #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
         mbedtls_x509_crt_init( &srvcert );
         mbedtls_pk_init( &pkey );
         if (mbedtls_x509_crt_parse( &srvcert, (const unsigned char *) mbedtls_test_srv_crt,
@@ -76,7 +76,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
                                   mbedtls_test_srv_key_len, NULL, 0,
                                   dummy_random, &ctr_drbg ) != 0)
             return 1;
-        #endif
+#endif
         alpn_list[0] = "HTTP";
         alpn_list[1] = "fuzzalpn";
         alpn_list[2] = NULL;
@@ -85,9 +85,9 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
     }
     mbedtls_ssl_init( &ssl );
     mbedtls_ssl_config_init( &conf );
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     mbedtls_ssl_ticket_init( &ticket_ctx );
-    #endif
+#endif
     if( mbedtls_ssl_config_defaults( &conf,
                                      MBEDTLS_SSL_IS_SERVER,
                                      MBEDTLS_SSL_TRANSPORT_STREAM,
@@ -95,19 +95,19 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         goto exit;
     srand(1);
     mbedtls_ssl_conf_rng( &conf, dummy_random, &ctr_drbg );
-    #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
     mbedtls_ssl_conf_ca_chain( &conf, srvcert.next, NULL );
     if( mbedtls_ssl_conf_own_cert( &conf, &srvcert, &pkey ) != 0 )
         goto exit;
-    #endif
+#endif
     mbedtls_ssl_conf_cert_req_ca_list( &conf, (options & 0x1) ? MBEDTLS_SSL_CERT_REQ_CA_LIST_ENABLED : MBEDTLS_SSL_CERT_REQ_CA_LIST_DISABLED );
-    #if defined(MBEDTLS_SSL_ALPN)
+#if defined(MBEDTLS_SSL_ALPN)
     if (options & 0x2)
     {
         mbedtls_ssl_conf_alpn_protocols( &conf, alpn_list );
     }
-    #endif
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#endif
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     if( options & 0x4 )
     {
         if( mbedtls_ssl_ticket_setup( &ticket_ctx,
@@ -120,23 +120,23 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
                                              mbedtls_ssl_ticket_parse,
                                              &ticket_ctx );
     }
-    #endif
-    #if defined(MBEDTLS_SSL_EXTENDED_MASTER_SECRET)
+#endif
+#if defined(MBEDTLS_SSL_EXTENDED_MASTER_SECRET)
     mbedtls_ssl_conf_extended_master_secret( &conf, (options & 0x10) ? MBEDTLS_SSL_EXTENDED_MS_DISABLED : MBEDTLS_SSL_EXTENDED_MS_ENABLED);
-    #endif
-    #if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
+#endif
+#if defined(MBEDTLS_SSL_ENCRYPT_THEN_MAC)
     mbedtls_ssl_conf_encrypt_then_mac( &conf, (options & 0x20) ? MBEDTLS_SSL_ETM_ENABLED : MBEDTLS_SSL_ETM_DISABLED);
-    #endif
-    #if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
+#endif
+#if defined(MBEDTLS_KEY_EXCHANGE_SOME_PSK_ENABLED)
     if (options & 0x40)
     {
         mbedtls_ssl_conf_psk( &conf, psk, sizeof( psk ),
                               (const unsigned char *) psk_id, sizeof( psk_id ) - 1 );
     }
-    #endif
-    #if defined(MBEDTLS_SSL_RENEGOTIATION)
+#endif
+#if defined(MBEDTLS_SSL_RENEGOTIATION)
     mbedtls_ssl_conf_renegotiation( &conf, (options & 0x80) ? MBEDTLS_SSL_RENEGOTIATION_ENABLED : MBEDTLS_SSL_RENEGOTIATION_DISABLED );
-    #endif
+#endif
     if( mbedtls_ssl_setup( &ssl, &conf ) != 0 )
         goto exit;
     biomemfuzz.Data = Data;
@@ -161,16 +161,16 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         while( 1 );
     }
 exit:
-    #if defined(MBEDTLS_SSL_SESSION_TICKETS)
+#if defined(MBEDTLS_SSL_SESSION_TICKETS)
     mbedtls_ssl_ticket_free( &ticket_ctx );
-    #endif
+#endif
     mbedtls_entropy_free( &entropy );
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_ssl_config_free( &conf );
     mbedtls_ssl_free( &ssl );
-    #else
+#else
     (void) Data;
     (void) Size;
-    #endif /* MBEDTLS_SSL_SRV_C && MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C */
+#endif /* MBEDTLS_SSL_SRV_C && MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C */
     return 0;
 }

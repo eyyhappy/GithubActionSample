@@ -49,23 +49,23 @@
 #include "esp_sha_dma_priv.h"
 
 #if CONFIG_IDF_TARGET_ESP32S2
-#include "esp32s2/rom/cache.h"
+    #include "esp32s2/rom/cache.h"
 #elif CONFIG_IDF_TARGET_ESP32S3
-#include "esp32s3/rom/cache.h"
+    #include "esp32s3/rom/cache.h"
 #elif CONFIG_IDF_TARGET_ESP32C3
-#include "esp32s3/rom/cache.h"
+    #include "esp32s3/rom/cache.h"
 #elif CONFIG_IDF_TARGET_ESP32H2
-#include "esp32h2/rom/cache.h"
+    #include "esp32h2/rom/cache.h"
 #elif CONFIG_IDF_TARGET_ESP32C2
-#include "esp32c2/rom/cache.h"
+    #include "esp32c2/rom/cache.h"
 #endif
 
 #if SOC_SHA_GDMA
-#define SHA_LOCK() esp_crypto_sha_aes_lock_acquire()
-#define SHA_RELEASE() esp_crypto_sha_aes_lock_release()
+    #define SHA_LOCK() esp_crypto_sha_aes_lock_acquire()
+    #define SHA_RELEASE() esp_crypto_sha_aes_lock_release()
 #elif SOC_SHA_CRYPTO_DMA
-#define SHA_LOCK() esp_crypto_dma_lock_acquire()
-#define SHA_RELEASE() esp_crypto_dma_lock_release()
+    #define SHA_LOCK() esp_crypto_dma_lock_acquire()
+    #define SHA_RELEASE() esp_crypto_dma_lock_release()
 #endif
 
 const static char *TAG = "esp-sha";
@@ -97,17 +97,17 @@ inline static size_t block_length(esp_sha_type type)
         case SHA2_224:
         case SHA2_256:
             return 64;
-            #if SOC_SHA_SUPPORT_SHA384
+#if SOC_SHA_SUPPORT_SHA384
         case SHA2_384:
-            #endif
-            #if SOC_SHA_SUPPORT_SHA512
+#endif
+#if SOC_SHA_SUPPORT_SHA512
         case SHA2_512:
-            #endif
-            #if SOC_SHA_SUPPORT_SHA512_T
+#endif
+#if SOC_SHA_SUPPORT_SHA512_T
         case SHA2_512224:
         case SHA2_512256:
         case SHA2_512T:
-            #endif
+#endif
             return 128;
         default:
             return 0;
@@ -120,22 +120,22 @@ void esp_sha_acquire_hardware()
 {
     SHA_LOCK(); /* Released when releasing hw with esp_sha_release_hardware() */
     /* Enable SHA and DMA hardware */
-    #if SOC_SHA_CRYPTO_DMA
+#if SOC_SHA_CRYPTO_DMA
     periph_module_enable(PERIPH_SHA_DMA_MODULE);
-    #elif SOC_SHA_GDMA
+#elif SOC_SHA_GDMA
     periph_module_enable(PERIPH_SHA_MODULE);
-    #endif
+#endif
 }
 
 /* Disable SHA peripheral block and then release it */
 void esp_sha_release_hardware()
 {
     /* Disable SHA and DMA hardware */
-    #if SOC_SHA_CRYPTO_DMA
+#if SOC_SHA_CRYPTO_DMA
     periph_module_disable(PERIPH_SHA_DMA_MODULE);
-    #elif SOC_SHA_GDMA
+#elif SOC_SHA_GDMA
     periph_module_disable(PERIPH_SHA_MODULE);
-    #endif
+#endif
     SHA_RELEASE();
 }
 
@@ -233,7 +233,7 @@ int esp_sha_dma(esp_sha_type sha_type, const void *input, uint32_t ilen,
         esp_sha_block_mode(sha_type, input, ilen, buf, buf_len, is_first_block);
         return 0;
     }
-    #if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
+#if (CONFIG_SPIRAM && SOC_PSRAM_DMA_CAPABLE)
     if (esp_ptr_external_ram(input))
     {
         Cache_WriteBack_Addr((uint32_t)input, ilen);
@@ -242,7 +242,7 @@ int esp_sha_dma(esp_sha_type sha_type, const void *input, uint32_t ilen,
     {
         Cache_WriteBack_Addr((uint32_t)buf, buf_len);
     }
-    #endif
+#endif
     /* Copy to internal buf if buf is in non DMA capable memory */
     if (!s_check_dma_capable(buf) && (buf_len != 0))
     {
@@ -327,9 +327,9 @@ static esp_err_t esp_sha_dma_process(esp_sha_type sha_type, const void *input, u
 static bool s_check_dma_capable(const void *p)
 {
     bool is_capable = false;
-    #if CONFIG_SPIRAM
+#if CONFIG_SPIRAM
     is_capable |= esp_ptr_dma_ext_capable(p);
-    #endif
+#endif
     is_capable |= esp_ptr_dma_capable(p);
     return is_capable;
 }

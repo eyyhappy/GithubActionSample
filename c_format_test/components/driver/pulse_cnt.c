@@ -8,9 +8,9 @@
 #include <sys/lock.h>
 #include "sdkconfig.h"
 #if CONFIG_PCNT_ENABLE_DEBUG_LOG
-// The local log level must be defined before including esp_log.h
-// Set the maximum log level for this source file
-#define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
+    // The local log level must be defined before including esp_log.h
+    // Set the maximum log level for this source file
+    #define LOG_LOCAL_LEVEL ESP_LOG_DEBUG
 #endif
 #include "freertos/FreeRTOS.h"
 #include "esp_heap_caps.h"
@@ -35,15 +35,15 @@
 // If ISR handler is allowed to run whilst cache is disabled,
 // Make sure all the code and related variables used by the handler are in the SRAM
 #if CONFIG_PCNT_ISR_IRAM_SAFE || CONFIG_PCNT_CTRL_FUNC_IN_IRAM
-#define PCNT_MEM_ALLOC_CAPS   (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
+    #define PCNT_MEM_ALLOC_CAPS   (MALLOC_CAP_INTERNAL | MALLOC_CAP_8BIT)
 #else
-#define PCNT_MEM_ALLOC_CAPS   MALLOC_CAP_DEFAULT
+    #define PCNT_MEM_ALLOC_CAPS   MALLOC_CAP_DEFAULT
 #endif
 
 #if CONFIG_PCNT_ISR_IRAM_SAFE
-#define PCNT_INTR_ALLOC_FLAGS (ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_INTRDISABLED | ESP_INTR_FLAG_SHARED)
+    #define PCNT_INTR_ALLOC_FLAGS (ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_IRAM | ESP_INTR_FLAG_INTRDISABLED | ESP_INTR_FLAG_SHARED)
 #else
-#define PCNT_INTR_ALLOC_FLAGS (ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_INTRDISABLED | ESP_INTR_FLAG_SHARED)
+    #define PCNT_INTR_ALLOC_FLAGS (ESP_INTR_FLAG_LOWMED | ESP_INTR_FLAG_INTRDISABLED | ESP_INTR_FLAG_SHARED)
 #endif
 
 #define PCNT_PM_LOCK_NAME_LEN_MAX 16
@@ -94,9 +94,9 @@ struct pcnt_unit_t
     pcnt_watch_point_t watchers[PCNT_LL_WATCH_EVENT_MAX]; // array of PCNT watchers
     intr_handle_t intr;                                   // interrupt handle
     esp_pm_lock_handle_t pm_lock;                         // PM lock, for glitch filter, as that module can only be functional under APB
-    #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
     char pm_lock_name[PCNT_PM_LOCK_NAME_LEN_MAX]; // pm lock name
-    #endif
+#endif
     pcnt_unit_fsm_t fsm;      // record PCNT unit's driver state
     pcnt_watch_cb_t on_reach; // user registered callback function
     void *user_data;          // user data registered by user, which would be passed to the right callback function
@@ -188,9 +188,9 @@ static esp_err_t pcnt_destory(pcnt_unit_t *unit)
 
 esp_err_t pcnt_new_unit(const pcnt_unit_config_t *config, pcnt_unit_handle_t *ret_unit)
 {
-    #if CONFIG_PCNT_ENABLE_DEBUG_LOG
+#if CONFIG_PCNT_ENABLE_DEBUG_LOG
     esp_log_level_set(TAG, ESP_LOG_DEBUG);
-    #endif
+#endif
     esp_err_t ret = ESP_OK;
     pcnt_unit_t *unit = NULL;
     ESP_GOTO_ON_FALSE(config && ret_unit, ESP_ERR_INVALID_ARG, err, TAG, "invalid argument");
@@ -281,14 +281,14 @@ esp_err_t pcnt_unit_set_glitch_filter(pcnt_unit_handle_t unit, const pcnt_glitch
         glitch_filter_thres = esp_clk_apb_freq() / 1000000 * config->max_glitch_ns / 1000;
         ESP_RETURN_ON_FALSE(glitch_filter_thres <= PCNT_LL_MAX_GLITCH_WIDTH, ESP_ERR_INVALID_ARG, TAG, "glitch width out of range");
         // The filter module is working against APB clock, so lazy install PM lock
-        #if CONFIG_PM_ENABLE
+#if CONFIG_PM_ENABLE
         if (!unit->pm_lock)
         {
             sprintf(unit->pm_lock_name, "pcnt_%d_%d", group->group_id, unit->unit_id); // e.g. pcnt_0_0
             ESP_RETURN_ON_ERROR(esp_pm_lock_create(ESP_PM_APB_FREQ_MAX, 0, unit->pm_lock_name, &unit->pm_lock), TAG, "install pm lock failed");
             ESP_LOGD(TAG, "install APB_FREQ_MAX lock for unit (%d,%d)", group->group_id, unit->unit_id);
         }
-        #endif
+#endif
     }
     // filter control bit is mixed with other PCNT control bits in the same register
     portENTER_CRITICAL(&unit->spinlock);
@@ -400,7 +400,7 @@ esp_err_t pcnt_unit_register_event_callbacks(pcnt_unit_handle_t unit, const pcnt
     pcnt_group_t *group = unit->group;
     int group_id = group->group_id;
     int unit_id = unit->unit_id;
-    #if CONFIG_PCNT_ISR_IRAM_SAFE
+#if CONFIG_PCNT_ISR_IRAM_SAFE
     if (cbs->on_reach)
     {
         ESP_RETURN_ON_FALSE(esp_ptr_in_iram(cbs->on_reach), ESP_ERR_INVALID_ARG, TAG, "on_reach callback not in IRAM");
@@ -409,7 +409,7 @@ esp_err_t pcnt_unit_register_event_callbacks(pcnt_unit_handle_t unit, const pcnt
     {
         ESP_RETURN_ON_FALSE(esp_ptr_internal(user_data), ESP_ERR_INVALID_ARG, TAG, "user context not in internal RAM");
     }
-    #endif
+#endif
     // lazy install interrupt service
     if (!unit->intr)
     {

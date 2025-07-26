@@ -39,17 +39,17 @@ typedef struct
 
 static timer_info_t timer_info[] =
 {
-    #if SOC_TIMER_GROUP_TOTAL_TIMERS >= 4
+#if SOC_TIMER_GROUP_TOTAL_TIMERS >= 4
     TIMER_INFO_INIT(TIMER_GROUP_0, TIMER_0),
     TIMER_INFO_INIT(TIMER_GROUP_0, TIMER_1),
     TIMER_INFO_INIT(TIMER_GROUP_1, TIMER_0),
     TIMER_INFO_INIT(TIMER_GROUP_1, TIMER_1),
-    #elif SOC_TIMER_GROUP_TOTAL_TIMERS >= 2
+#elif SOC_TIMER_GROUP_TOTAL_TIMERS >= 2
     TIMER_INFO_INIT(TIMER_GROUP_0, TIMER_0),
     TIMER_INFO_INIT(TIMER_GROUP_1, TIMER_0),
-    #else
+#else
     TIMER_INFO_INIT(TIMER_GROUP_0, TIMER_0),
-    #endif
+#endif
 };
 
 static intr_handle_t timer_isr_handles[SOC_TIMER_GROUP_TOTAL_TIMERS];
@@ -618,7 +618,7 @@ TEST_CASE("Timer_enable_alarm", "[hw_timer]")
     TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_0, TIMER_0, TIMER_ALARM_DIS));
     vTaskDelay(2000 / portTICK_PERIOD_MS);
     TEST_ASSERT_EQUAL(false, alarm_flag);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     // enable alarm of tg1_timer0
     alarm_flag = false;
     TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_1, TIMER_0, TIMER_ALARM_EN));
@@ -631,7 +631,7 @@ TEST_CASE("Timer_enable_alarm", "[hw_timer]")
     TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_1, TIMER_0, TIMER_ALARM_DIS));
     vTaskDelay(2000 / portTICK_PERIOD_MS);
     TEST_ASSERT_EQUAL(false, alarm_flag);
-    #endif
+#endif
     all_timer_isr_unreg();
     all_timer_deinit();
 }
@@ -666,10 +666,10 @@ TEST_CASE("Timer_set_alarm_value", "[hw_timer]")
     // set interrupt read alarm value
     timer_intr_enable_and_start(TIMER_GROUP_0, TIMER_0, 2.4);
     timer_isr_check(TIMER_GROUP_0, TIMER_0, TIMER_AUTORELOAD_DIS, 2.4 * TEST_TIMER_RESOLUTION_HZ);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     timer_intr_enable_and_start(TIMER_GROUP_1, TIMER_0, 1.4);
     timer_isr_check(TIMER_GROUP_1, TIMER_0, TIMER_AUTORELOAD_DIS, 1.4 * TEST_TIMER_RESOLUTION_HZ);
-    #endif
+#endif
     all_timer_isr_unreg();
     all_timer_deinit();
 }
@@ -696,19 +696,19 @@ TEST_CASE("Timer_auto_reload", "[hw_timer]")
     // test disable auto_reload
     timer_intr_enable_and_start(TIMER_GROUP_0, TIMER_0, 1.14);
     timer_isr_check(TIMER_GROUP_0, TIMER_0, TIMER_AUTORELOAD_DIS, 1.14 * TEST_TIMER_RESOLUTION_HZ);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     timer_intr_enable_and_start(TIMER_GROUP_1, TIMER_0, 1.14);
     timer_isr_check(TIMER_GROUP_1, TIMER_0, TIMER_AUTORELOAD_DIS, 1.14 * TEST_TIMER_RESOLUTION_HZ);
-    #endif
+#endif
     //test enable auto_reload
     TEST_ESP_OK(timer_set_auto_reload(TIMER_GROUP_0, TIMER_0, TIMER_AUTORELOAD_EN));
     timer_intr_enable_and_start(TIMER_GROUP_0, TIMER_0, 1.4);
     timer_isr_check(TIMER_GROUP_0, TIMER_0, TIMER_AUTORELOAD_EN, 0);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     TEST_ESP_OK(timer_set_auto_reload(TIMER_GROUP_1, TIMER_0, TIMER_AUTORELOAD_EN));
     timer_intr_enable_and_start(TIMER_GROUP_1, TIMER_0, 1.4);
     timer_isr_check(TIMER_GROUP_1, TIMER_0, TIMER_AUTORELOAD_EN, 0);
-    #endif
+#endif
     all_timer_isr_unreg();
     all_timer_deinit();
 }
@@ -736,9 +736,9 @@ TEST_CASE("Timer_enable_timer_interrupt", "[hw_timer]")
     all_timer_set_counter_value(0);
     all_timer_isr_reg();
     timer_intr_enable_disable_test(TIMER_GROUP_0, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     timer_intr_enable_disable_test(TIMER_GROUP_1, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #endif
+#endif
     // enable interrupt of tg0_timer0 again
     alarm_flag = false;
     TEST_ESP_OK(timer_pause(TIMER_GROUP_0, TIMER_0));
@@ -823,18 +823,18 @@ TEST_CASE("Timer_interrupt_register", "[hw_timer]")
         }
         TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_0, TIMER_0, TIMER_ALARM_EN));
         timer_intr_enable_and_start(TIMER_GROUP_0, TIMER_0, 0.54);
-        #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
         TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_1, TIMER_0, TIMER_ALARM_EN));
         timer_intr_enable_and_start(TIMER_GROUP_1, TIMER_0, 0.34);
-        #endif
+#endif
         TEST_ESP_OK(timer_set_auto_reload(TIMER_GROUP_0, TIMER_0, TIMER_AUTORELOAD_EN));
         TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_0, TIMER_0, TIMER_ALARM_EN));
         timer_intr_enable_and_start(TIMER_GROUP_0, TIMER_0, 0.4);
-        #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
         TEST_ESP_OK(timer_set_auto_reload(TIMER_GROUP_1, TIMER_0, TIMER_AUTORELOAD_EN));
         TEST_ESP_OK(timer_set_alarm(TIMER_GROUP_1, TIMER_0, TIMER_ALARM_EN));
         timer_intr_enable_and_start(TIMER_GROUP_1, TIMER_0, 0.6);
-        #endif
+#endif
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         // ISR hanlde function should be free before next ISR register.
         for (uint32_t tg_idx = 0; tg_idx < TIMER_GROUP_MAX; tg_idx++)
@@ -873,9 +873,9 @@ TEST_CASE("Timer_clock_source", "[hw_timer]")
     all_timer_set_counter_value(0);
     all_timer_isr_reg();
     timer_intr_enable_disable_test(TIMER_GROUP_0, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     timer_intr_enable_disable_test(TIMER_GROUP_1, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #endif
+#endif
     // configure clock source as XTAL clock
     all_timer_pause();
     config.clk_src = TIMER_SRC_CLK_XTAL;
@@ -883,9 +883,9 @@ TEST_CASE("Timer_clock_source", "[hw_timer]")
     all_timer_init(&config, true);
     all_timer_set_alarm_value(1.2 * TEST_TIMER_RESOLUTION_HZ);
     timer_intr_enable_disable_test(TIMER_GROUP_0, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     timer_intr_enable_disable_test(TIMER_GROUP_1, TIMER_0, 1.2 * TEST_TIMER_RESOLUTION_HZ);
-    #endif
+#endif
     all_timer_isr_unreg();
     all_timer_deinit();
 }
@@ -928,7 +928,7 @@ TEST_CASE("Timer_ISR_callback", "[hw_timer]")
     TEST_ESP_OK(timer_start(TIMER_GROUP_0, TIMER_0));
     vTaskDelay(2000 / portTICK_PERIOD_MS);
     TEST_ASSERT_EQUAL(false, alarm_flag);
-    #if SOC_TIMER_GROUPS > 1
+#if SOC_TIMER_GROUPS > 1
     // add isr callback for tg1_timer0
     TEST_ESP_OK(timer_pause(TIMER_GROUP_1, TIMER_0));
     TEST_ESP_OK(timer_isr_callback_add(TIMER_GROUP_1, TIMER_0, test_timer_group_isr_cb,
@@ -945,7 +945,7 @@ TEST_CASE("Timer_ISR_callback", "[hw_timer]")
     TEST_ESP_OK(timer_start(TIMER_GROUP_1, TIMER_0));
     vTaskDelay(2000 / portTICK_PERIOD_MS);
     TEST_ASSERT_EQUAL(false, alarm_flag);
-    #endif
+#endif
     all_timer_deinit();
 }
 

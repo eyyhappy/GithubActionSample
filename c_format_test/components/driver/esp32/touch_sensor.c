@@ -24,8 +24,8 @@
 #include "esp_check.h"
 
 #ifndef NDEBUG
-// Enable built-in checks in queue.h in debug builds
-#define INVARIANTS
+    // Enable built-in checks in queue.h in debug builds
+    #define INVARIANTS
 #endif
 #include "sys/queue.h"
 #include "hal/touch_sensor_types.h"
@@ -317,10 +317,10 @@ esp_err_t touch_pad_config(touch_pad_t touch_num, uint16_t threshold)
 
 esp_err_t touch_pad_init(void)
 {
-    #ifdef CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
+#ifdef CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
     ESP_LOGE(TOUCH_TAG, "Touch Pad can't work because it provides current to external XTAL");
     return ESP_ERR_NOT_SUPPORTED;
-    #endif // CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
+#endif // CONFIG_RTC_EXT_CRYST_ADDIT_CURRENT_V2
     if (rtc_touch_mux == NULL)
     {
         rtc_touch_mux = xSemaphoreCreateMutex();

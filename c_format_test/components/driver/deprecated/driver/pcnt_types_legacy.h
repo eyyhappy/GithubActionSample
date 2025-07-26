@@ -39,12 +39,12 @@ typedef enum
     PCNT_UNIT_1, /*!< PCNT unit 1 */
     PCNT_UNIT_2, /*!< PCNT unit 2 */
     PCNT_UNIT_3, /*!< PCNT unit 3 */
-    #if SOC_PCNT_UNITS_PER_GROUP > 4
+#if SOC_PCNT_UNITS_PER_GROUP > 4
     PCNT_UNIT_4, /*!< PCNT unit 4 */
     PCNT_UNIT_5, /*!< PCNT unit 5 */
     PCNT_UNIT_6, /*!< PCNT unit 6 */
     PCNT_UNIT_7, /*!< PCNT unit 7 */
-    #endif
+#endif
     PCNT_UNIT_MAX,
 } pcnt_unit_t;
 

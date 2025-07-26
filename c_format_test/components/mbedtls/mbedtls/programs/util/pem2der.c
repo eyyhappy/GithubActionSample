@@ -20,25 +20,25 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_free            free
-#define mbedtls_calloc          calloc
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_free            free
+    #define mbedtls_calloc          calloc
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_BASE64_C) && defined(MBEDTLS_FS_IO)
-#include "mbedtls/error.h"
-#include "mbedtls/base64.h"
+    #include "mbedtls/error.h"
+    #include "mbedtls/base64.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+    #include <stdio.h>
+    #include <stdlib.h>
+    #include <string.h>
 #endif
 
 #define DFL_FILENAME            "file.pem"
@@ -200,9 +200,9 @@ int main( int argc, char *argv[] )
     ret = load_file( opt.filename, &pem_buffer, &pem_size );
     if( ret != 0 )
     {
-        #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-        #endif
+#endif
         mbedtls_printf( " failed\n  !  load_file returned %d - %s\n\n", ret, buf );
         goto exit;
     }
@@ -214,9 +214,9 @@ int main( int argc, char *argv[] )
     fflush( stdout );
     if( ( ret = convert_pem_to_der( pem_buffer, pem_size, der_buffer, &der_size ) ) != 0 )
     {
-        #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-        #endif
+#endif
         mbedtls_printf( " failed\n  !  convert_pem_to_der %d - %s\n\n", ret, buf );
         goto exit;
     }
@@ -229,9 +229,9 @@ int main( int argc, char *argv[] )
     ret = write_file( opt.output_file, der_buffer, der_size );
     if( ret != 0 )
     {
-        #ifdef MBEDTLS_ERROR_C
+#ifdef MBEDTLS_ERROR_C
         mbedtls_strerror( ret, buf, 1024 );
-        #endif
+#endif
         mbedtls_printf( " failed\n  !  write_file returned %d - %s\n\n", ret, buf );
         goto exit;
     }

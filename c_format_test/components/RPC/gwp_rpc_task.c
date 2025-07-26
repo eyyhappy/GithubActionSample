@@ -10,10 +10,10 @@
 #include "gwp_common.h"
 
 #ifdef FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
+    #include "FreeRTOS.h"
+    #include "task.h"
 #else
-#include "gwp_rpc_crypto.h"
+    #include "gwp_rpc_crypto.h"
 
 
 #endif
@@ -149,12 +149,12 @@ void test_secure_rpc_thread(void)
 ret_code_t secure_rpc_task(void)
 {
     ret_code_t ret_code = GWP_SUCCESS;
-    #ifdef FREERTOS
+#ifdef FREERTOS
     if (pdPASS != xTaskCreate(secure_rpc_thread, "RPC", 3436, NULL, 1, &pxRpcTask))   //5120
     {
         ret_code = GWP_ERROR_NO_MEM;
     }
-    #endif
+#endif
     return ret_code;
 }
 
@@ -180,10 +180,10 @@ GWP_TASK_DEFINE(gwp_tasks_t const secure_rpc) =
 #include "gwp_common.h"
 
 #ifdef FREERTOS
-#include "FreeRTOS.h"
-#include "task.h"
+    #include "FreeRTOS.h"
+    #include "task.h"
 #else
-#include "gwp_rpc_crypto.h"
+    #include "gwp_rpc_crypto.h"
 
 
 #endif
@@ -316,12 +316,12 @@ void test_secure_rpc_thread(void)
 ret_code_t secure_rpc_task(void)
 {
     ret_code_t ret_code = GWP_SUCCESS;
-    #ifdef FREERTOS
+#ifdef FREERTOS
     if (pdPASS != xTaskCreate(secure_rpc_thread, "RPC", 3436, NULL, 1, &pxRpcTask))   //5120
     {
         ret_code = GWP_ERROR_NO_MEM;
     }
-    #endif
+#endif
     return ret_code;
 }
 

@@ -56,11 +56,11 @@ int ecp_mul_restartable_internal( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
     int ret = MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
     if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1)
     {
-        #if defined(MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK)
+#if defined(MBEDTLS_ECP_MUL_ALT_SOFT_FALLBACK)
         return ecp_mul_restartable_internal_soft(grp, R, m, P, f_rng, p_rng, rs_ctx);
-        #else
+#else
         return ret;
-        #endif
+#endif
     }
     MBEDTLS_MPI_CHK( esp_mbedtls_ecp_point_multiply(grp, R, m, P) );
 cleanup:
@@ -78,11 +78,11 @@ int mbedtls_ecp_check_pubkey( const mbedtls_ecp_group *grp,
     ecc_point_t point;
     if (grp->id != MBEDTLS_ECP_DP_SECP192R1 && grp->id != MBEDTLS_ECP_DP_SECP256R1)
     {
-        #if defined(MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK)
+#if defined(MBEDTLS_ECP_VERIFY_ALT_SOFT_FALLBACK)
         return mbedtls_ecp_check_pubkey_soft(grp, pt);
-        #else
+#else
         return MBEDTLS_ERR_ECP_BAD_INPUT_DATA;
-        #endif
+#endif
     }
     ECP_VALIDATE_RET( grp != NULL );
     ECP_VALIDATE_RET( pt  != NULL );

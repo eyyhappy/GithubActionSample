@@ -27,11 +27,11 @@
 #include "math.h"
 #include "esp_rom_gpio.h"
 #if SOC_PCNT_SUPPORTED
-#include "driver/pulse_cnt.h"
-#include "soc/pcnt_periph.h"
+    #include "driver/pulse_cnt.h"
+    #include "soc/pcnt_periph.h"
 #endif
 #ifdef CONFIG_PM_ENABLE
-#include "esp_pm.h"
+    #include "esp_pm.h"
 #endif
 
 #include "../../test_inc/test_i2s.h"
@@ -55,7 +55,7 @@ static void i2s_test_io_config(int mode)
     gpio_set_direction(DATA_OUT_IO, GPIO_MODE_INPUT_OUTPUT);
     switch (mode)
     {
-            #if SOC_I2S_NUM > 1
+#if SOC_I2S_NUM > 1
         case I2S_TEST_MODE_SLAVE_TO_MASTER:
         {
             esp_rom_gpio_connect_out_signal(MASTER_BCK_IO, i2s_periph_signal[0].m_rx_bck_sig, 0, 0);
@@ -76,7 +76,7 @@ static void i2s_test_io_config(int mode)
             esp_rom_gpio_connect_in_signal(DATA_OUT_IO, i2s_periph_signal[1].data_in_sig, 0);
         }
         break;
-        #endif
+#endif
         case I2S_TEST_MODE_LOOPBACK:
         {
             esp_rom_gpio_connect_out_signal(DATA_OUT_IO, i2s_periph_signal[0].data_out_sig, 0, 0);
@@ -187,14 +187,14 @@ TEST_CASE("I2S_basic_driver_installation_uninstallation_and_settings_test", "[i2
         .dma_frame_num = 60,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     // normal  i2s
     i2s_pin_config_t pin_config =
@@ -270,14 +270,14 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t master_pin_config =
     {
@@ -291,11 +291,11 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
     TEST_ESP_OK(i2s_driver_install(I2S_NUM_0, &master_i2s_config, 0, NULL));
     TEST_ESP_OK(i2s_stop(I2S_NUM_0));
     /* Config TX as stereo channel directly, because legacy driver can't support config tx&rx separately */
-    #if SOC_I2S_HW_VERSION_1
+#if SOC_I2S_HW_VERSION_1
     i2s_ll_tx_select_std_slot(&I2S0, I2S_STD_SLOT_BOTH, false);
-    #else
+#else
     i2s_ll_tx_select_std_slot(&I2S0, I2S_STD_SLOT_BOTH);
-    #endif
+#endif
     i2s_ll_tx_enable_mono_mode(&I2S0, false);
     TEST_ESP_OK(i2s_set_pin(I2S_NUM_0, &master_pin_config));
     i2s_test_io_config(I2S_TEST_MODE_LOOPBACK);
@@ -317,7 +317,7 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
     for (retry = 0; retry < RETEY_TIMES; retry++)
     {
         TEST_ESP_OK(i2s_read(I2S_NUM_0, r_buf, READ_BUF_LEN, &r_bytes, portMAX_DELAY));
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         /* The data of tx/rx channels are flipped on ESP32 */
         for (int n = 0; n < READ_BUF_LEN / 2; n += 2)
         {
@@ -325,7 +325,7 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
             r_buf[n] = r_buf[n + 1];
             r_buf[n + 1] = temp;
         }
-        #endif
+#endif
         /* Expected: 1 3 5 7 9 ... 97 99 */
         if (whether_contains_exapected_data(r_buf, READ_BUF_LEN / 2, 1, 1, 2))
         {
@@ -386,11 +386,11 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
     master_i2s_config.channel_format = I2S_CHANNEL_FMT_ONLY_LEFT;
     TEST_ESP_OK(i2s_driver_install(I2S_NUM_0, &master_i2s_config, 0, NULL));
     TEST_ESP_OK(i2s_stop(I2S_NUM_0));
-    #if SOC_I2S_HW_VERSION_1
+#if SOC_I2S_HW_VERSION_1
     i2s_ll_tx_select_std_slot(&I2S0, I2S_STD_SLOT_BOTH, false);
-    #else
+#else
     i2s_ll_tx_select_std_slot(&I2S0, I2S_STD_SLOT_BOTH);
-    #endif
+#endif
     i2s_ll_tx_enable_mono_mode(&I2S0, false);
     TEST_ESP_OK(i2s_start(I2S_NUM_0));
     /* rx left mono test
@@ -400,7 +400,7 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
     for (retry = 0; retry < RETEY_TIMES; retry++)
     {
         TEST_ESP_OK(i2s_read(I2S_NUM_0, r_buf, READ_BUF_LEN, &r_bytes, portMAX_DELAY));
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         /* The data of tx/rx channels are flipped on ESP32 */
         for (int n = 0; n < READ_BUF_LEN / 2; n += 2)
         {
@@ -408,7 +408,7 @@ TEST_CASE("I2S_legacy_mono_stereo_loopback_test", "[i2s_legacy]")
             r_buf[n] = r_buf[n + 1];
             r_buf[n + 1] = temp;
         }
-        #endif
+#endif
         /* Expected: 2 4 6 8 10 ... 96 98 */
         if (whether_contains_exapected_data(r_buf, READ_BUF_LEN / 2, 1, 2, 2))
         {
@@ -528,14 +528,14 @@ TEST_CASE("I2S_write_and_read_test_with_master_tx_and_slave_rx", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t master_pin_config =
     {
@@ -560,14 +560,14 @@ TEST_CASE("I2S_write_and_read_test_with_master_tx_and_slave_rx", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t slave_pin_config =
     {
@@ -639,14 +639,14 @@ TEST_CASE("I2S_write_and_read_test_master_rx_and_slave_tx", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 1,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t master_pin_config =
     {
@@ -671,14 +671,14 @@ TEST_CASE("I2S_write_and_read_test_master_rx_and_slave_tx", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 1,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t slave_pin_config =
     {
@@ -751,14 +751,14 @@ TEST_CASE("I2S_memory_leaking_test", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t master_pin_config =
     {
@@ -822,14 +822,14 @@ TEST_CASE("I2S_APLL_clock_variation_test", "[i2s_legacy]")
         .dma_frame_num = 60,
         .use_apll = true,
         .intr_alloc_flags = 0,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     TEST_ESP_OK(i2s_driver_install(I2S_NUM_0, &i2s_config, 0, NULL));
     TEST_ESP_OK(i2s_set_pin(I2S_NUM_0, &pin_config));
@@ -918,12 +918,12 @@ static void i2s_test_common_sample_rate(i2s_port_t id)
                              };
     int real_pulse = 0;
     // Acquire the PM lock incase Dynamic Frequency Scaling(DFS) lower the frequency
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_handle_t pm_lock;
     esp_pm_lock_type_t pm_type = ESP_PM_APB_FREQ_MAX;
     TEST_ESP_OK(esp_pm_lock_create(pm_type, 0, "legacy_i2s_test", &pm_lock));
     esp_pm_lock_acquire(pm_lock);
-    #endif
+#endif
     for (int i = 0; i < 15; i++)
     {
         int expt_pulse = (int16_t)((float)test_freq[i] * (TEST_I2S_PERIOD_MS / 1000.0));
@@ -939,10 +939,10 @@ static void i2s_test_common_sample_rate(i2s_port_t id)
         // Check if the error between real pulse number and expected pulse number is within 1%
         TEST_ASSERT_INT_WITHIN(expt_pulse * 0.01, expt_pulse, real_pulse);
     }
-    #ifdef CONFIG_PM_ENABLE
+#ifdef CONFIG_PM_ENABLE
     esp_pm_lock_release(pm_lock);
     esp_pm_lock_delete(pm_lock);
-    #endif
+#endif
     TEST_ESP_OK(pcnt_del_channel(pcnt_chan));
     TEST_ESP_OK(pcnt_unit_stop(pcnt_unit));
     TEST_ESP_OK(pcnt_unit_disable(pcnt_unit));
@@ -963,14 +963,14 @@ TEST_CASE("I2S clock freqency test", "[i2s_legacy]")
         .dma_frame_num = 100,
         .use_apll = 0,
         .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
-        #if SOC_I2S_SUPPORTS_TDM
+#if SOC_I2S_SUPPORTS_TDM
         .chan_mask = I2S_TDM_ACTIVE_CH0 | I2S_TDM_ACTIVE_CH1,
         .total_chan = 2,
         .left_align = false,
         .big_edin = false,
         .bit_order_msb = false,
         .skip_msk = false
-        #endif
+#endif
     };
     i2s_pin_config_t master_pin_config =
     {
@@ -986,14 +986,14 @@ TEST_CASE("I2S clock freqency test", "[i2s_legacy]")
     i2s_test_common_sample_rate(I2S_NUM_0);
     TEST_ESP_OK(i2s_driver_uninstall(I2S_NUM_0));
     /* APLL test */
-    #if SOC_I2S_SUPPORTS_APLL
+#if SOC_I2S_SUPPORTS_APLL
     master_i2s_config.use_apll = true;
     master_i2s_config.mclk_multiple = I2S_MCLK_MULTIPLE_256;
     TEST_ESP_OK(i2s_driver_install(I2S_NUM_0, &master_i2s_config, 0, NULL));
     TEST_ESP_OK(i2s_set_pin(I2S_NUM_0, &master_pin_config));
     i2s_test_common_sample_rate(I2S_NUM_0);
     TEST_ESP_OK(i2s_driver_uninstall(I2S_NUM_0));
-    #endif
+#endif
 }
 
 #endif // SOC_PCNT_SUPPORTED

@@ -38,16 +38,16 @@
 #include <string.h>
 
 #if defined(MBEDTLS_AESNI_C)
-#include "aesni.h"
+    #include "aesni.h"
 #endif
 
 #if defined(MBEDTLS_SELF_TEST) && defined(MBEDTLS_AES_C)
-#include "mbedtls/aes.h"
-#include "mbedtls/platform.h"
-#if !defined(MBEDTLS_PLATFORM_C)
-#include <stdio.h>
-#define mbedtls_printf printf
-#endif /* MBEDTLS_PLATFORM_C */
+    #include "mbedtls/aes.h"
+    #include "mbedtls/platform.h"
+    #if !defined(MBEDTLS_PLATFORM_C)
+        #include <stdio.h>
+        #define mbedtls_printf printf
+    #endif /* MBEDTLS_PLATFORM_C */
 #endif /* MBEDTLS_SELF_TEST && MBEDTLS_AES_C */
 
 #if !defined(MBEDTLS_GCM_ALT)
@@ -95,11 +95,11 @@ static int gcm_gen_table( mbedtls_gcm_context *ctx )
     /* 8 = 1000 corresponds to 1 in GF(2^128) */
     ctx->HL[8] = vl;
     ctx->HH[8] = vh;
-    #if defined(MBEDTLS_AESNI_C) && defined(MBEDTLS_HAVE_X86_64)
+#if defined(MBEDTLS_AESNI_C) && defined(MBEDTLS_HAVE_X86_64)
     /* With CLMUL support, we need only h, not the rest of the table */
     if( mbedtls_aesni_has_support( MBEDTLS_AESNI_CLMUL ) )
         return( 0 );
-    #endif
+#endif
     /* 0 corresponds to 0 in GF(2^128) */
     ctx->HH[0] = 0;
     ctx->HL[0] = 0;
@@ -177,7 +177,7 @@ static void gcm_mult( mbedtls_gcm_context *ctx, const unsigned char x[16],
     int i = 0;
     unsigned char lo, hi, rem;
     uint64_t zh, zl;
-    #if defined(MBEDTLS_AESNI_C) && defined(MBEDTLS_HAVE_X86_64)
+#if defined(MBEDTLS_AESNI_C) && defined(MBEDTLS_HAVE_X86_64)
     if( mbedtls_aesni_has_support( MBEDTLS_AESNI_CLMUL ) )
     {
         unsigned char h[16];
@@ -188,7 +188,7 @@ static void gcm_mult( mbedtls_gcm_context *ctx, const unsigned char x[16],
         mbedtls_aesni_gcm_mult( output, x, h );
         return;
     }
-    #endif /* MBEDTLS_AESNI_C && MBEDTLS_HAVE_X86_64 */
+#endif /* MBEDTLS_AESNI_C && MBEDTLS_HAVE_X86_64 */
     lo = x[15] & 0xf;
     zh = ctx->HH[lo];
     zl = ctx->HL[lo];
@@ -913,7 +913,7 @@ int mbedtls_gcm_self_test( int verbose )
                                              add_len_test_data[i],
                                              pt_test_data[pt_index_test_data[i]],
                                              buf, 16, tag_buf );
-            #if defined(MBEDTLS_GCM_ALT)
+#if defined(MBEDTLS_GCM_ALT)
             /* Allow alternative implementations to only support 12-byte nonces. */
             if( ret == MBEDTLS_ERR_PLATFORM_FEATURE_UNSUPPORTED &&
                 iv_len_test_data[i] != 12 )
@@ -921,7 +921,7 @@ int mbedtls_gcm_self_test( int verbose )
                 mbedtls_printf( "skipped\n" );
                 break;
             }
-            #endif /* defined(MBEDTLS_GCM_ALT) */
+#endif /* defined(MBEDTLS_GCM_ALT) */
             if( ret != 0 )
                 goto exit;
             if ( memcmp( buf, ct_test_data[j * 6 + i],

@@ -26,18 +26,18 @@
 static const char *TAG = "test_dac";
 
 #ifdef CONFIG_IDF_TARGET_ESP32
-#define ADC_TEST_WIDTH         ADC_WIDTH_BIT_12
+    #define ADC_TEST_WIDTH         ADC_WIDTH_BIT_12
 #elif defined CONFIG_IDF_TARGET_ESP32S2
-#define ADC_TEST_WIDTH         ADC_WIDTH_BIT_13   //ESP32S2 only support 13 bit width
+    #define ADC_TEST_WIDTH         ADC_WIDTH_BIT_13   //ESP32S2 only support 13 bit width
 #endif
 #define ADC_TEST_ATTEN         ADC_ATTEN_DB_11
 
 #if CONFIG_IDF_TARGET_ESP32
-#define ADC_TEST_CHANNEL_NUM   ADC2_CHANNEL_8   // GPIO25
-#define DAC_TEST_CHANNEL_NUM   DAC_CHANNEL_1    // GPIO25
+    #define ADC_TEST_CHANNEL_NUM   ADC2_CHANNEL_8   // GPIO25
+    #define DAC_TEST_CHANNEL_NUM   DAC_CHANNEL_1    // GPIO25
 #elif CONFIG_IDF_TARGET_ESP32S2
-#define ADC_TEST_CHANNEL_NUM   ADC2_CHANNEL_6   // GPIO17
-#define DAC_TEST_CHANNEL_NUM   DAC_CHANNEL_1    // GPIO17
+    #define ADC_TEST_CHANNEL_NUM   ADC2_CHANNEL_6   // GPIO17
+    #define DAC_TEST_CHANNEL_NUM   DAC_CHANNEL_1    // GPIO17
 #endif
 
 #define DAC_OUT_MAX       (200)
@@ -90,11 +90,11 @@ TEST_CASE("DAC cw generator output (RTC) check by adc", "[dac]")
         .scale = DAC_CW_SCALE_2,
         .phase = DAC_CW_PHASE_0,
         .freq = 1000,
-        #if CONFIG_IDF_TARGET_ESP32
+#if CONFIG_IDF_TARGET_ESP32
         .offset = 64,
-        #elif CONFIG_IDF_TARGET_ESP32S2
+#elif CONFIG_IDF_TARGET_ESP32S2
         .offset = 16,
-        #endif
+#endif
     };
     TEST_ESP_OK( dac_cw_generator_config(&cw) );
     TEST_ESP_OK( dac_cw_generator_enable() );

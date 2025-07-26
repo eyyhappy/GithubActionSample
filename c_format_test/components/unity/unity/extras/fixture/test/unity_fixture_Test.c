@@ -325,11 +325,11 @@ TEST_GROUP(LeakDetection);
 
 TEST_SETUP(LeakDetection)
 {
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     UnityOutputCharSpy_Create(200);
-    #else
+#else
     UnityOutputCharSpy_Create(1000);
-    #endif
+#endif
 }
 
 TEST_TEAR_DOWN(LeakDetection)
@@ -352,30 +352,30 @@ TEST_TEAR_DOWN(LeakDetection)
 /* This tricky set of defines lets us see if we are using the Spy, returns 1 if true */
 #ifdef __STDC_VERSION__
 
-#if __STDC_VERSION__ >= 199901L
-#define USING_SPY_AS(a)                    EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
-#define ASSIGN_VALUE(a)                    VAL_##a
-#define VAL_UnityOutputCharSpy_OutputChar  0, 1
-#define EXPAND_AND_USE_2ND(a, b)           SECOND_PARAM(a, b, throwaway)
-#define SECOND_PARAM(a, b, ...)            b
-#if USING_SPY_AS(UNITY_OUTPUT_CHAR)
-#define USING_OUTPUT_SPY /* UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar */
-#endif
-#endif /* >= 199901 */
+    #if __STDC_VERSION__ >= 199901L
+        #define USING_SPY_AS(a)                    EXPAND_AND_USE_2ND(ASSIGN_VALUE(a), 0)
+        #define ASSIGN_VALUE(a)                    VAL_##a
+        #define VAL_UnityOutputCharSpy_OutputChar  0, 1
+        #define EXPAND_AND_USE_2ND(a, b)           SECOND_PARAM(a, b, throwaway)
+        #define SECOND_PARAM(a, b, ...)            b
+        #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
+            #define USING_OUTPUT_SPY /* UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar */
+        #endif
+    #endif /* >= 199901 */
 
 #else  /* __STDC_VERSION__ else */
-#define UnityOutputCharSpy_OutputChar 42
-#if UNITY_OUTPUT_CHAR == UnityOutputCharSpy_OutputChar /* Works if no -Wundef -Werror */
-#define USING_OUTPUT_SPY
-#endif
-#undef UnityOutputCharSpy_OutputChar
+    #define UnityOutputCharSpy_OutputChar 42
+    #if UNITY_OUTPUT_CHAR == UnityOutputCharSpy_OutputChar /* Works if no -Wundef -Werror */
+        #define USING_OUTPUT_SPY
+    #endif
+    #undef UnityOutputCharSpy_OutputChar
 #endif /* __STDC_VERSION__ */
 
 TEST(LeakDetection, DetectsLeak)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE_MESSAGE("Build with '-D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar' to enable tests");
-    #else
+#else
     void* m = malloc(10);
     TEST_ASSERT_NOT_NULL(m);
     UnityOutputCharSpy_Enable(1);
@@ -386,14 +386,14 @@ TEST(LeakDetection, DetectsLeak)
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
     free(m);
-    #endif
+#endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringFree)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -405,14 +405,14 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
-    #endif
+#endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -424,14 +424,14 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
-    #endif
+#endif
 }
 
 TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -444,14 +444,14 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
-    #endif
+#endif
 }
 
 TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -463,14 +463,14 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
-    #endif
+#endif
 }
 
 TEST(LeakDetection, PointerSettingMax)
 {
-    #ifndef USING_OUTPUT_SPY
+#ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-    #else
+#else
     int i;
     for (i = 0; i < UNITY_MAX_POINTERS; i++) UT_PTR_SET(pointer1, &int1);
     UnityOutputCharSpy_Enable(1);
@@ -480,7 +480,7 @@ TEST(LeakDetection, PointerSettingMax)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Too many pointers set"));
-    #endif
+#endif
 }
 
 /*------------------------------------------------------------ */
@@ -496,43 +496,43 @@ TEST_TEAR_DOWN(InternalMalloc) { }
 
 TEST(InternalMalloc, MallocPastBufferFails)
 {
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
     void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-    #endif
+#endif
 }
 
 TEST(InternalMalloc, CallocPastBufferFails)
 {
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
     void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-    #endif
+#endif
 }
 
 TEST(InternalMalloc, MallocThenReallocGrowsMemoryInPlace)
 {
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
     void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 9);
     free(n);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_EQUAL(m, n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-    #endif
+#endif
 }
 
 TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
 {
-    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     void* n1 = malloc(10);
     void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
@@ -544,5 +544,5 @@ TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
     TEST_ASSERT_NULL(out_of_mem);  /* The realloc should have failed */
     TEST_ASSERT_NOT_EQUAL(n2, n1); /* If n1 != n2 then realloc did not free n1 */
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n2);
-    #endif
+#endif
 }

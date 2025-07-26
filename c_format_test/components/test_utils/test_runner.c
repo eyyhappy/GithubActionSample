@@ -16,7 +16,7 @@
 #include "memory_checks.h"
 
 #ifdef CONFIG_HEAP_TRACING
-#include "esp_heap_trace.h"
+    #include "esp_heap_trace.h"
 #endif
 
 static void unity_task(void *pvParameters)
@@ -37,21 +37,21 @@ void test_main(void)
 void setUp(void)
 {
 // If heap tracing is enabled in kconfig, leak trace the test
-    #ifdef CONFIG_HEAP_TRACING
+#ifdef CONFIG_HEAP_TRACING
     setup_heap_record();
-    #endif
+#endif
     printf("%s", ""); /* sneakily lazy-allocate the reent structure for this test task */
-    #ifdef CONFIG_APP_BUILD_USE_FLASH_SECTIONS
+#ifdef CONFIG_APP_BUILD_USE_FLASH_SECTIONS
     /* TODO: add sufficient startup code in case of building an ELF file, so that
      * flash cache is initialized and can work in such mode.
      * For now this is disabled to allow running unit tests which don't require
      * flash cache related operations.
      */
     get_test_data_partition();  /* allocate persistent partition table structures */
-    #endif // CONFIG_APP_BUILD_USE_FLASH_SECTIONS
-    #ifdef CONFIG_HEAP_TRACING
+#endif // CONFIG_APP_BUILD_USE_FLASH_SECTIONS
+#ifdef CONFIG_HEAP_TRACING
     heap_trace_start(HEAP_TRACE_LEAKS);
-    #endif
+#endif
     test_utils_record_free_mem();
     test_utils_set_leak_level(CONFIG_UNITY_CRITICAL_LEAK_LEVEL_GENERAL, ESP_LEAK_TYPE_CRITICAL, ESP_COMP_LEAK_GENERAL);
     test_utils_set_leak_level(CONFIG_UNITY_WARN_LEAK_LEVEL_GENERAL, ESP_LEAK_TYPE_WARNING, ESP_COMP_LEAK_GENERAL);
@@ -106,10 +106,10 @@ void tearDown(void)
     /* check if unit test has caused heap corruption in any heap */
     TEST_ASSERT_MESSAGE( heap_caps_check_integrity(MALLOC_CAP_INVALID, true), "The test has corrupted the heap");
     /* check for leaks */
-    #ifdef CONFIG_HEAP_TRACING
+#ifdef CONFIG_HEAP_TRACING
     heap_trace_stop();
     heap_trace_dump();
-    #endif
+#endif
     size_t leak_threshold_critical = 0;
     size_t leak_threshold_warning = 0;
     leak_check_type_t check_type = leak_check_required(&leak_threshold_critical);

@@ -84,8 +84,8 @@
 #endif
 
 #if defined(PSA_WANT_KEY_TYPE_ECC_KEY_PAIR) && \
-!defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY)
-#error "PSA_WANT_KEY_TYPE_ECC_KEY_PAIR defined, but not all prerequisites"
+    !defined(PSA_WANT_KEY_TYPE_ECC_PUBLIC_KEY)
+    #error "PSA_WANT_KEY_TYPE_ECC_KEY_PAIR defined, but not all prerequisites"
 #endif
 
 #endif /* MBEDTLS_CHECK_CRYPTO_CONFIG_H */

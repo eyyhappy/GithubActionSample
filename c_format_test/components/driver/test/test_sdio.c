@@ -43,7 +43,7 @@
 #define TEST_RESET_DATA_LEN 10
 
 #ifndef MIN
-#define MIN(a, b)   ((a)<(b)? (a): (b))
+    #define MIN(a, b)   ((a)<(b)? (a): (b))
 #endif
 
 typedef enum
@@ -87,7 +87,7 @@ sdio_test_config_t test_cfg_array[] =
         .check_data = true,
     },
     //the performance test is only done when psram is not enabled
-    #if !CONFIG_SPIRAM && !CONFIG_FREERTOS_CHECK_PORT_CRITICAL_COMPLIANCE
+#if !CONFIG_SPIRAM && !CONFIG_FREERTOS_CHECK_PORT_CRITICAL_COMPLIANCE
     {
         .test_name = "HS4B (perf)",
         .sdio_mode = SDIO_4BIT,
@@ -103,7 +103,7 @@ sdio_test_config_t test_cfg_array[] =
         .sdio_mode = SDIO_SPI,
         .freq = SDMMC_FREQ_HIGHSPEED,
     },
-    #endif
+#endif
 };
 
 sdio_test_config_t packet_config =
@@ -723,10 +723,10 @@ TEST_CASE_MULTIPLE_DEVICES("sdio interrupt", "[sdio][test_env=UT_SDIO]", test_sd
 TEST_CASE_MULTIPLE_DEVICES("sdio register", "[sdio][test_env=UT_SDIO]", test_sdio_reg_master, test_sdio_interrupt_slave);
 
 #if !CONFIG_FREERTOS_UNICORE
-TEST_CASE_MULTIPLE_DEVICES("sdio reset", "[sdio][test_env=UT_SDIO]", test_sdio_reset_master, test_sdio_reset_slave);
+    TEST_CASE_MULTIPLE_DEVICES("sdio reset", "[sdio][test_env=UT_SDIO]", test_sdio_reset_master, test_sdio_reset_slave);
 #else
-//Currently there is weird issue on the runner, when tested with single core config, seems to relate to receiving
-TEST_CASE_MULTIPLE_DEVICES("sdio reset", "[sdio][test_env=UT_SDIO][ignore]", test_sdio_reset_master, test_sdio_reset_slave);
+    //Currently there is weird issue on the runner, when tested with single core config, seems to relate to receiving
+    TEST_CASE_MULTIPLE_DEVICES("sdio reset", "[sdio][test_env=UT_SDIO][ignore]", test_sdio_reset_master, test_sdio_reset_slave);
 #endif
 
 
@@ -776,10 +776,10 @@ ptest_func_t frhost_slave =
 PARAM_GROUP_DECLARE_TYPE(IO_MODE, sdio_test_config_t, test_cfg_array);
 
 #if !CONFIG_FREERTOS_UNICORE
-TEST_MASTER_SLAVE(SDIO_FRHOST, test_cfg_array, "[sdio][timeout=180][test_env=UT_SDIO]", &frhost_master, &frhost_slave);
+    TEST_MASTER_SLAVE(SDIO_FRHOST, test_cfg_array, "[sdio][timeout=180][test_env=UT_SDIO]", &frhost_master, &frhost_slave);
 #else
-//Currently there is weird issue on the runner, when tested with single core config, seems to relate to receiving
-TEST_MASTER_SLAVE(SDIO_FRHOST, test_cfg_array, "[sdio][timeout=180][test_env=UT_SDIO][ignore]", &frhost_master, &frhost_slave);
+    //Currently there is weird issue on the runner, when tested with single core config, seems to relate to receiving
+    TEST_MASTER_SLAVE(SDIO_FRHOST, test_cfg_array, "[sdio][timeout=180][test_env=UT_SDIO][ignore]", &frhost_master, &frhost_slave);
 #endif
 
 ptest_func_t tohost_master =

@@ -36,9 +36,9 @@
  *      Test SIO
  ********************************************************************************/
 #if CONFIG_IDF_TARGET_ESP32
-#define MASTER_DIN_SIGNAL    HSPID_IN_IDX
+    #define MASTER_DIN_SIGNAL    HSPID_IN_IDX
 #else
-#define MASTER_DIN_SIGNAL    FSPID_IN_IDX
+    #define MASTER_DIN_SIGNAL    FSPID_IN_IDX
 #endif
 static void inner_connect(spi_bus_config_t bus)
 {

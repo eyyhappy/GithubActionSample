@@ -33,30 +33,30 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_THREADING_C) && defined(MBEDTLS_THREADING_PTHREAD) && \
-defined(MBEDTLS_TEST_HOOKS)
-#define MBEDTLS_TEST_MUTEX_USAGE
+    defined(MBEDTLS_TEST_HOOKS)
+    #define MBEDTLS_TEST_MUTEX_USAGE
 #endif
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#define mbedtls_fprintf    fprintf
-#define mbedtls_snprintf   snprintf
-#define mbedtls_calloc     calloc
-#define mbedtls_free       free
-#define mbedtls_exit       exit
-#define mbedtls_time       time
-#define mbedtls_time_t     time_t
-#define MBEDTLS_EXIT_SUCCESS EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE EXIT_FAILURE
+    #include <stdio.h>
+    #define mbedtls_fprintf    fprintf
+    #define mbedtls_snprintf   snprintf
+    #define mbedtls_calloc     calloc
+    #define mbedtls_free       free
+    #define mbedtls_exit       exit
+    #define mbedtls_time       time
+    #define mbedtls_time_t     time_t
+    #define MBEDTLS_EXIT_SUCCESS EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE EXIT_FAILURE
 #endif
 
 #include <stddef.h>
 #include <stdint.h>
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+    #include "mbedtls/bignum.h"
 #endif
 
 typedef enum
@@ -75,9 +75,9 @@ typedef struct
     unsigned long step;
     char line1[76];
     char line2[76];
-    #if defined(MBEDTLS_TEST_MUTEX_USAGE)
+#if defined(MBEDTLS_TEST_MUTEX_USAGE)
     const char *mutex_usage_error;
-    #endif
+#endif
 }
 mbedtls_test_info_t;
 extern mbedtls_test_info_t mbedtls_test_info;
@@ -246,17 +246,17 @@ int mbedtls_test_hexcmp( uint8_t * a, uint8_t * b,
                          uint32_t a_len, uint32_t b_len );
 
 #if defined(MBEDTLS_PSA_CRYPTO_C) && defined(MBEDTLS_PSA_CRYPTO_EXTERNAL_RNG)
-#include "test/fake_external_rng_for_test.h"
+    #include "test/fake_external_rng_for_test.h"
 #endif
 
 #if defined(MBEDTLS_TEST_MUTEX_USAGE)
-/** Permanently activate the mutex usage verification framework. See
- * threading_helpers.c for information. */
-void mbedtls_test_mutex_usage_init( void );
+    /** Permanently activate the mutex usage verification framework. See
+    * threading_helpers.c for information. */
+    void mbedtls_test_mutex_usage_init( void );
 
-/** Call this function after executing a test case to check for mutex usage
- * errors. */
-void mbedtls_test_mutex_usage_check( void );
+    /** Call this function after executing a test case to check for mutex usage
+    * errors. */
+    void mbedtls_test_mutex_usage_check( void );
 #endif /* MBEDTLS_TEST_MUTEX_USAGE */
 
 #if defined(MBEDTLS_TEST_HOOKS)
@@ -276,24 +276,24 @@ void mbedtls_test_err_add_check( int high, int low,
 #endif
 
 #if defined(MBEDTLS_BIGNUM_C)
-/** Read an MPI from a string.
- *
- * Like mbedtls_mpi_read_string(), but size the resulting bignum based
- * on the number of digits in the string. In particular, construct a
- * bignum with 0 limbs for an empty string, and a bignum with leading 0
- * limbs if the string has sufficiently many leading 0 digits.
- *
- * This is important so that the "0 (null)" and "0 (1 limb)" and
- * "leading zeros" test cases do what they claim.
- *
- * \param[out] X        The MPI object to populate. It must be initialized.
- * \param radix         The radix (2 to 16).
- * \param[in] s         The null-terminated string to read from.
- *
- * \return \c 0 on success, an \c MBEDTLS_ERR_MPI_xxx error code otherwise.
- */
-/* Since the library has exactly the desired behavior, this is trivial. */
-int mbedtls_test_read_mpi( mbedtls_mpi *X, int radix, const char *s );
+    /** Read an MPI from a string.
+    *
+    * Like mbedtls_mpi_read_string(), but size the resulting bignum based
+    * on the number of digits in the string. In particular, construct a
+    * bignum with 0 limbs for an empty string, and a bignum with leading 0
+    * limbs if the string has sufficiently many leading 0 digits.
+    *
+    * This is important so that the "0 (null)" and "0 (1 limb)" and
+    * "leading zeros" test cases do what they claim.
+    *
+    * \param[out] X        The MPI object to populate. It must be initialized.
+    * \param radix         The radix (2 to 16).
+    * \param[in] s         The null-terminated string to read from.
+    *
+    * \return \c 0 on success, an \c MBEDTLS_ERR_MPI_xxx error code otherwise.
+    */
+    /* Since the library has exactly the desired behavior, this is trivial. */
+    int mbedtls_test_read_mpi( mbedtls_mpi *X, int radix, const char *s );
 #endif /* MBEDTLS_BIGNUM_C */
 
 #endif /* TEST_HELPERS_H */

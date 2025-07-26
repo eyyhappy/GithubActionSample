@@ -21,15 +21,15 @@ const char *pers = "fuzz_dtlsserver";
 const unsigned char client_ip[4] = {0x7F, 0, 0, 1};
 static int initialized = 0;
 #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
-static mbedtls_x509_crt srvcert;
-static mbedtls_pk_context pkey;
+    static mbedtls_x509_crt srvcert;
+    static mbedtls_pk_context pkey;
 #endif
 #endif
 #endif // MBEDTLS_SSL_PROTO_DTLS
 
 int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
 {
-    #if defined(MBEDTLS_SSL_PROTO_DTLS) && \
+#if defined(MBEDTLS_SSL_PROTO_DTLS) && \
     defined(MBEDTLS_SSL_SRV_C) && \
     defined(MBEDTLS_ENTROPY_C) && \
     defined(MBEDTLS_CTR_DRBG_C) && \
@@ -51,7 +51,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         goto exit;
     if (initialized == 0)
     {
-        #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
         mbedtls_x509_crt_init( &srvcert );
         mbedtls_pk_init( &pkey );
         if (mbedtls_x509_crt_parse( &srvcert, (const unsigned char *) mbedtls_test_srv_crt,
@@ -64,7 +64,7 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
                                   mbedtls_test_srv_key_len, NULL, 0,
                                   dummy_random, &ctr_drbg ) != 0)
             return 1;
-        #endif
+#endif
         dummy_init();
         initialized = 1;
     }
@@ -78,11 +78,11 @@ int LLVMFuzzerTestOneInput(const uint8_t *Data, size_t Size)
         goto exit;
     srand(1);
     mbedtls_ssl_conf_rng( &conf, dummy_random, &ctr_drbg );
-    #if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
+#if defined(MBEDTLS_X509_CRT_PARSE_C) && defined(MBEDTLS_PEM_PARSE_C)
     mbedtls_ssl_conf_ca_chain( &conf, srvcert.next, NULL );
     if( mbedtls_ssl_conf_own_cert( &conf, &srvcert, &pkey ) != 0 )
         goto exit;
-    #endif
+#endif
     if( mbedtls_ssl_cookie_setup( &cookie_ctx, dummy_random, &ctr_drbg ) != 0 )
         goto exit;
     mbedtls_ssl_conf_dtls_cookies( &conf, mbedtls_ssl_cookie_write, mbedtls_ssl_cookie_check, &cookie_ctx );
@@ -127,9 +127,9 @@ exit:
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_ssl_config_free( &conf );
     mbedtls_ssl_free( &ssl );
-    #else
+#else
     (void) Data;
     (void) Size;
-    #endif
+#endif
     return 0;
 }

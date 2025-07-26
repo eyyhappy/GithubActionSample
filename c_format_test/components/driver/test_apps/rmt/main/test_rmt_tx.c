@@ -15,9 +15,9 @@
 #include "test_util_rmt_encoders.h"
 
 #if CONFIG_RMT_ISR_IRAM_SAFE
-#define TEST_RMT_CALLBACK_ATTR IRAM_ATTR
+    #define TEST_RMT_CALLBACK_ATTR IRAM_ATTR
 #else
-#define TEST_RMT_CALLBACK_ATTR
+    #define TEST_RMT_CALLBACK_ATTR
 #endif
 
 static void test_rmt_channel_single_trans(size_t mem_block_symbols, bool with_dma)
@@ -354,7 +354,7 @@ TEST_CASE("rmt_infinite_loop_trans", "[rmt]")
     TEST_ESP_OK(rmt_disable(tx_channel));
     // the flush operation should return immediately, as there's not pending transactions and the TX machine has stopped
     TEST_ESP_OK(rmt_tx_wait_all_done(tx_channel, 0));
-    #if SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#if SOC_RMT_SUPPORT_TX_LOOP_COUNT
     printf("enable tx channel again\r\n");
     TEST_ESP_OK(rmt_enable(tx_channel));
     printf("finite loop transmission: spinning stepper motor with various number of loops\r\n");
@@ -381,7 +381,7 @@ TEST_CASE("rmt_infinite_loop_trans", "[rmt]")
     printf("disable tx channel\r\n");
     TEST_ESP_OK(rmt_disable(tx_channel));
 #undef TEST_RMT_LOOPS
-    #endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
+#endif // SOC_RMT_SUPPORT_TX_LOOP_COUNT
     printf("remove tx channel and motor encoder\r\n");
     TEST_ESP_OK(rmt_del_channel(tx_channel));
     TEST_ESP_OK(rmt_del_encoder(copy_encoder));
@@ -542,12 +542,12 @@ static void test_rmt_multi_channels_trans(size_t channel0_mem_block_symbols, siz
         .tx_channel_array = tx_channels,
         .array_size = TEST_RMT_CHANS,
     };
-    #if SOC_RMT_SUPPORT_TX_SYNCHRO
+#if SOC_RMT_SUPPORT_TX_SYNCHRO
     TEST_ESP_OK(rmt_new_sync_manager(&synchro_config, &synchro));
-    #else
+#else
     TEST_ASSERT_EQUAL(ESP_ERR_NOT_SUPPORTED, rmt_new_sync_manager(&synchro_config, &synchro));
-    #endif // SOC_RMT_SUPPORT_TX_SYNCHRO
-    #if SOC_RMT_SUPPORT_TX_SYNCHRO
+#endif // SOC_RMT_SUPPORT_TX_SYNCHRO
+#if SOC_RMT_SUPPORT_TX_SYNCHRO
     printf("transmit with synchronization\r\n");
     for (int i = 0; i < TEST_RMT_CHANS; i++)
     {
@@ -588,7 +588,7 @@ static void test_rmt_multi_channels_trans(size_t channel0_mem_block_symbols, siz
     TEST_ASSERT((record_stop_time[1] - record_stop_time[0]) < 10);
     printf("delete sync manager\r\n");
     TEST_ESP_OK(rmt_del_sync_manager(synchro));
-    #endif // SOC_RMT_SUPPORT_TX_SYNCHRO
+#endif // SOC_RMT_SUPPORT_TX_SYNCHRO
     printf("disable tx channels\r\n");
     for (int i = 0; i < TEST_RMT_CHANS; i++)
     {

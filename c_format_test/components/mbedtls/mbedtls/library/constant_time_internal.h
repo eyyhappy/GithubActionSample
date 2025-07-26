@@ -23,11 +23,11 @@
 #include "common.h"
 
 #if defined(MBEDTLS_BIGNUM_C)
-#include "mbedtls/bignum.h"
+    #include "mbedtls/bignum.h"
 #endif
 
 #if defined(MBEDTLS_SSL_TLS_C)
-#include "ssl_misc.h"
+    #include "ssl_misc.h"
 #endif
 
 #include <stddef.h>
@@ -48,35 +48,35 @@ unsigned mbedtls_ct_uint_mask( unsigned value );
 
 #if defined(MBEDTLS_SSL_SOME_SUITES_USE_TLS_CBC)
 
-/** Turn a value into a mask:
- * - if \p value == 0, return the all-bits 0 mask, aka 0
- * - otherwise, return the all-bits 1 mask, aka (size_t) -1
- *
- * This function can be used to write constant-time code by replacing branches
- * with bit operations using masks.
- *
- * \param value     The value to analyze.
- *
- * \return          Zero if \p value is zero, otherwise all-bits-one.
- */
-size_t mbedtls_ct_size_mask( size_t value );
+    /** Turn a value into a mask:
+    * - if \p value == 0, return the all-bits 0 mask, aka 0
+    * - otherwise, return the all-bits 1 mask, aka (size_t) -1
+    *
+    * This function can be used to write constant-time code by replacing branches
+    * with bit operations using masks.
+    *
+    * \param value     The value to analyze.
+    *
+    * \return          Zero if \p value is zero, otherwise all-bits-one.
+    */
+    size_t mbedtls_ct_size_mask( size_t value );
 
 #endif /* MBEDTLS_SSL_SOME_SUITES_USE_TLS_CBC */
 
 #if defined(MBEDTLS_BIGNUM_C)
 
-/** Turn a value into a mask:
- * - if \p value == 0, return the all-bits 0 mask, aka 0
- * - otherwise, return the all-bits 1 mask, aka (mbedtls_mpi_uint) -1
- *
- * This function can be used to write constant-time code by replacing branches
- * with bit operations using masks.
- *
- * \param value     The value to analyze.
- *
- * \return          Zero if \p value is zero, otherwise all-bits-one.
- */
-mbedtls_mpi_uint mbedtls_ct_mpi_uint_mask( mbedtls_mpi_uint value );
+    /** Turn a value into a mask:
+    * - if \p value == 0, return the all-bits 0 mask, aka 0
+    * - otherwise, return the all-bits 1 mask, aka (mbedtls_mpi_uint) -1
+    *
+    * This function can be used to write constant-time code by replacing branches
+    * with bit operations using masks.
+    *
+    * \param value     The value to analyze.
+    *
+    * \return          Zero if \p value is zero, otherwise all-bits-one.
+    */
+    mbedtls_mpi_uint mbedtls_ct_mpi_uint_mask( mbedtls_mpi_uint value );
 
 #endif /* MBEDTLS_BIGNUM_C */
 
@@ -169,30 +169,30 @@ void mbedtls_ct_mpi_uint_cond_assign( size_t n,
 
 #if defined(MBEDTLS_BASE64_C)
 
-/** Given a value in the range 0..63, return the corresponding Base64 digit.
- *
- * The implementation assumes that letters are consecutive (e.g. ASCII
- * but not EBCDIC).
- *
- * \param value     A value in the range 0..63.
- *
- * \return          A base64 digit converted from \p value.
- */
-unsigned char mbedtls_ct_base64_enc_char( unsigned char value );
+    /** Given a value in the range 0..63, return the corresponding Base64 digit.
+    *
+    * The implementation assumes that letters are consecutive (e.g. ASCII
+    * but not EBCDIC).
+    *
+    * \param value     A value in the range 0..63.
+    *
+    * \return          A base64 digit converted from \p value.
+    */
+    unsigned char mbedtls_ct_base64_enc_char( unsigned char value );
 
-/** Given a Base64 digit, return its value.
- *
- * If c is not a Base64 digit ('A'..'Z', 'a'..'z', '0'..'9', '+' or '/'),
- * return -1.
- *
- * The implementation assumes that letters are consecutive (e.g. ASCII
- * but not EBCDIC).
- *
- * \param c     A base64 digit.
- *
- * \return      The value of the base64 digit \p c.
- */
-signed char mbedtls_ct_base64_dec_value( unsigned char c );
+    /** Given a Base64 digit, return its value.
+    *
+    * If c is not a Base64 digit ('A'..'Z', 'a'..'z', '0'..'9', '+' or '/'),
+    * return -1.
+    *
+    * The implementation assumes that letters are consecutive (e.g. ASCII
+    * but not EBCDIC).
+    *
+    * \param c     A base64 digit.
+    *
+    * \return      The value of the base64 digit \p c.
+    */
+    signed char mbedtls_ct_base64_dec_value( unsigned char c );
 
 #endif /* MBEDTLS_BASE64_C */
 

@@ -20,24 +20,24 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_ECDSA_C) && \
-defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
-#include "mbedtls/ecdsa.h"
-#include "mbedtls/sha256.h"
+    defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
+    #include "mbedtls/entropy.h"
+    #include "mbedtls/ctr_drbg.h"
+    #include "mbedtls/ecdsa.h"
+    #include "mbedtls/sha256.h"
 
-#include <string.h>
+    #include <string.h>
 #endif
 
 /*
@@ -51,7 +51,7 @@ defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
 #define ECPARAMS    MBEDTLS_ECP_DP_SECP192R1
 
 #if !defined(ECPARAMS)
-#define ECPARAMS    mbedtls_ecp_curve_list()->grp_id
+    #define ECPARAMS    mbedtls_ecp_curve_list()->grp_id
 #endif
 
 #if !defined(MBEDTLS_ECDSA_C) || !defined(MBEDTLS_SHA256_C) || \
@@ -113,9 +113,9 @@ int main( int argc, char *argv[] )
     if( argc != 1 )
     {
         mbedtls_printf( "usage: ecdsa\n" );
-        #if defined(_WIN32)
+#if defined(_WIN32)
         mbedtls_printf( "\n" );
-        #endif
+#endif
         goto exit;
     }
     /*

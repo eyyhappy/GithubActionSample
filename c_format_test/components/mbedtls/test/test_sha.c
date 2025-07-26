@@ -22,7 +22,7 @@
 #include "mbedtls/sha256.h"
 
 #if SOC_SHA_SUPPORT_SHA512
-#include "mbedtls/sha512.h"
+    #include "mbedtls/sha512.h"
 #endif
 
 #include "sha/sha_parallel_engine.h"
@@ -39,10 +39,10 @@ TEST_CASE("Test esp_sha()", "[hw_crypto]")
     int64_t elapsed;
     uint32_t us_sha1;
     uint8_t sha1_result[20] = { 0 };
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     uint32_t us_sha512;
     uint8_t sha512_result[64] = { 0 };
-    #endif
+#endif
     void *buffer = heap_caps_malloc(BUFFER_SZ, MALLOC_CAP_8BIT | MALLOC_CAP_INTERNAL);
     TEST_ASSERT_NOT_NULL(buffer);
     memset(buffer, 0xEE, BUFFER_SZ);
@@ -50,7 +50,7 @@ TEST_CASE("Test esp_sha()", "[hw_crypto]")
                                         0x61, 0xf4, 0x50, 0xd5, 0xf5, 0x18, 0x44, 0xcc,
                                         0x7a, 0xb7, 0xa5, 0x4a
                                       };
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     const uint8_t sha512_expected[64] = { 0xc7, 0x7f, 0xda, 0x8c, 0xb3, 0x58, 0x14, 0x8a,
                                           0x52, 0x3b, 0x46, 0x04, 0xc0, 0x85, 0xc5, 0xf0,
                                           0x46, 0x64, 0x14, 0xd5, 0x96, 0x7a, 0xa2, 0x80,
@@ -60,26 +60,26 @@ TEST_CASE("Test esp_sha()", "[hw_crypto]")
                                           0x1e, 0x07, 0xc6, 0xa2, 0x9e, 0x3b, 0x65, 0x75,
                                           0x80, 0x7d, 0xe6, 0x6e, 0x47, 0x61, 0x2c, 0x94
                                         };
-    #endif
+#endif
     ccomp_timer_start();
     esp_sha(SHA1, buffer, BUFFER_SZ, sha1_result);
     elapsed = ccomp_timer_stop();
     TEST_ASSERT_EQUAL_HEX8_ARRAY(sha1_expected, sha1_result, sizeof(sha1_expected));
     us_sha1 = elapsed;
     ESP_LOGI(TAG, "esp_sha() 32KB SHA1 in %u us", us_sha1);
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     ccomp_timer_start();
     esp_sha(SHA2_512, buffer, BUFFER_SZ, sha512_result);
     elapsed = ccomp_timer_stop();
     TEST_ASSERT_EQUAL_HEX8_ARRAY(sha512_expected, sha512_result, sizeof(sha512_expected));
     us_sha512 = elapsed;
     ESP_LOGI(TAG, "esp_sha() 32KB SHA512 in %u us", us_sha512);
-    #endif
+#endif
     free(buffer);
     TEST_PERFORMANCE_CCOMP_LESS_THAN(TIME_SHA1_32KB, "%dus", us_sha1);
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     TEST_PERFORMANCE_CCOMP_LESS_THAN(TIME_SHA512_32KB, "%dus", us_sha512);
-    #endif
+#endif
 }
 
 
@@ -179,10 +179,10 @@ TEST_CASE("Test esp_sha() function with long input", "[hw_crypto]")
     uint8_t sha1_mbedtls[20] = { 0 };
     uint8_t sha256_espsha[32] = { 0 };
     uint8_t sha256_mbedtls[32] = { 0 };
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     uint8_t sha512_espsha[64] = { 0 };
     uint8_t sha512_mbedtls[64] = { 0 };
-    #endif
+#endif
     const size_t LEN = 1024 * 1024;
     /* mmap() 1MB of flash, we don't care what it is really */
     esp_err_t err = spi_flash_mmap(0x0, LEN, SPI_FLASH_MMAP_DATA, &ptr, &handle);
@@ -195,14 +195,14 @@ TEST_CASE("Test esp_sha() function with long input", "[hw_crypto]")
     esp_sha(SHA2_256, ptr, LEN, sha256_espsha);
     r = mbedtls_sha256(ptr, LEN, sha256_mbedtls, 0);
     TEST_ASSERT_EQUAL(0, r);
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     esp_sha(SHA2_512, ptr, LEN, sha512_espsha);
     r = mbedtls_sha512(ptr, LEN, sha512_mbedtls, 0);
     TEST_ASSERT_EQUAL(0, r);
-    #endif
+#endif
     TEST_ASSERT_EQUAL_MEMORY_MESSAGE(sha1_espsha, sha1_mbedtls, sizeof(sha1_espsha), "SHA1 results should match");
     TEST_ASSERT_EQUAL_MEMORY_MESSAGE(sha256_espsha, sha256_mbedtls, sizeof(sha256_espsha), "SHA256 results should match");
-    #if SOC_SHA_SUPPORT_SHA512
+#if SOC_SHA_SUPPORT_SHA512
     TEST_ASSERT_EQUAL_MEMORY_MESSAGE(sha512_espsha, sha512_mbedtls, sizeof(sha512_espsha), "SHA512 results should match");
-    #endif
+#endif
 }

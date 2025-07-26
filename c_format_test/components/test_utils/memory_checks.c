@@ -9,7 +9,7 @@
 #include "unity.h"
 #include "memory_checks.h"
 #ifdef CONFIG_HEAP_TRACING
-#include "esp_heap_trace.h"
+    #include "esp_heap_trace.h"
 #endif
 
 static size_t before_free_8bit;
@@ -59,7 +59,7 @@ void test_utils_record_free_mem(void)
 
 void setup_heap_record(void)
 {
-    #ifdef CONFIG_HEAP_TRACING
+#ifdef CONFIG_HEAP_TRACING
     const size_t num_heap_records = 80;
     static heap_trace_record_t *record_buffer;
     if (!record_buffer)
@@ -68,7 +68,7 @@ void setup_heap_record(void)
         assert(record_buffer);
         heap_trace_init_standalone(record_buffer, num_heap_records);
     }
-    #endif
+#endif
 }
 
 static void check_leak(size_t before_free,

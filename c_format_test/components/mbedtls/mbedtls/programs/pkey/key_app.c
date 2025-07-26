@@ -20,26 +20,26 @@
 #include "mbedtls/build_info.h"
 
 #if defined(MBEDTLS_PLATFORM_C)
-#include "mbedtls/platform.h"
+    #include "mbedtls/platform.h"
 #else
-#include <stdio.h>
-#include <stdlib.h>
-#define mbedtls_printf          printf
-#define mbedtls_exit            exit
-#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
-#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+    #include <stdio.h>
+    #include <stdlib.h>
+    #define mbedtls_printf          printf
+    #define mbedtls_exit            exit
+    #define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+    #define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
 #endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_BIGNUM_C) && \
-defined(MBEDTLS_PK_PARSE_C) && defined(MBEDTLS_FS_IO) && \
-defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
-#include "mbedtls/error.h"
-#include "mbedtls/rsa.h"
-#include "mbedtls/pk.h"
-#include "mbedtls/entropy.h"
-#include "mbedtls/ctr_drbg.h"
+    defined(MBEDTLS_PK_PARSE_C) && defined(MBEDTLS_FS_IO) && \
+    defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
+    #include "mbedtls/error.h"
+    #include "mbedtls/rsa.h"
+    #include "mbedtls/pk.h"
+    #include "mbedtls/entropy.h"
+    #include "mbedtls/ctr_drbg.h"
 
-#include <string.h>
+    #include <string.h>
 #endif
 
 #define MODE_NONE               0
@@ -198,7 +198,7 @@ int main( int argc, char *argv[] )
          * 1.2 Print the key
          */
         mbedtls_printf( "  . Key information    ...\n" );
-        #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_RSA )
         {
             mbedtls_rsa_context *rsa = mbedtls_pk_rsa( pk );
@@ -218,8 +218,8 @@ int main( int argc, char *argv[] )
             MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "QP:  ", &QP, 16, NULL ) );
         }
         else
-        #endif
-        #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
             if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_ECKEY )
             {
                 mbedtls_ecp_keypair *ecp = mbedtls_pk_ec( pk );
@@ -229,7 +229,7 @@ int main( int argc, char *argv[] )
                 MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "D   : ", &ecp->MBEDTLS_PRIVATE(d), 16, NULL ) );
             }
             else
-        #endif
+#endif
             {
                 mbedtls_printf("Do not know how to print key information for this type\n" );
                 goto cleanup;
@@ -250,7 +250,7 @@ int main( int argc, char *argv[] )
         }
         mbedtls_printf( " ok\n" );
         mbedtls_printf( "  . Key information    ...\n" );
-        #if defined(MBEDTLS_RSA_C)
+#if defined(MBEDTLS_RSA_C)
         if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_RSA )
         {
             mbedtls_rsa_context *rsa = mbedtls_pk_rsa( pk );
@@ -264,8 +264,8 @@ int main( int argc, char *argv[] )
             MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "E:  ", &E, 16, NULL ) );
         }
         else
-        #endif
-        #if defined(MBEDTLS_ECP_C)
+#endif
+#if defined(MBEDTLS_ECP_C)
             if( mbedtls_pk_get_type( &pk ) == MBEDTLS_PK_ECKEY )
             {
                 mbedtls_ecp_keypair *ecp = mbedtls_pk_ec( pk );
@@ -274,7 +274,7 @@ int main( int argc, char *argv[] )
                 MBEDTLS_MPI_CHK( mbedtls_mpi_write_file( "Q(Z): ", &ecp->MBEDTLS_PRIVATE(Q).MBEDTLS_PRIVATE(Z), 16, NULL ) );
             }
             else
-        #endif
+#endif
             {
                 mbedtls_printf("Do not know how to print key information for this type\n" );
                 goto cleanup;
@@ -284,13 +284,13 @@ int main( int argc, char *argv[] )
         goto usage;
     exit_code = MBEDTLS_EXIT_SUCCESS;
 cleanup:
-    #if defined(MBEDTLS_ERROR_C)
+#if defined(MBEDTLS_ERROR_C)
     if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         mbedtls_strerror( ret, buf, sizeof( buf ) );
         mbedtls_printf( "  !  Last error was: %s\n", buf );
     }
-    #endif
+#endif
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
     mbedtls_pk_free( &pk );
