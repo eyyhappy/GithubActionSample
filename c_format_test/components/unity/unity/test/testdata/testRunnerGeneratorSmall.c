@@ -15,7 +15,10 @@ TEST_FILE("some_file.c")
 #define TEST_CASE(a)
 
 /* Include Passthroughs for Linking Tests */
-void putcharSpy(int c) { (void)putchar(c);}
+void putcharSpy(int c)
+{
+    (void)putchar(c);
+}
 void flushSpy(void) {}
 
 /* Global Variables Used During These Tests */

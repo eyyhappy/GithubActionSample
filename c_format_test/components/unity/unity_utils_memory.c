@@ -16,22 +16,20 @@ void unity_utils_set_leak_level(size_t leak_level)
 }
 
 void unity_utils_check_leak(unsigned int before_free,
-        unsigned int after_free,
-        const char *type,
-        unsigned int threshold)
+                            unsigned int after_free,
+                            const char *type,
+                            unsigned int threshold)
 {
     int free_delta = (int)after_free - (int)before_free;
     printf("MALLOC_CAP_%s usage: Free memory delta: %d Leak threshold: -%u \n",
            type,
            free_delta,
            threshold);
-
-    if (free_delta > 0) {
+    if (free_delta > 0)
+    {
         return; // free memory went up somehow
     }
-
     unsigned int leaked = (size_t)(free_delta * -1);
-
     printf("MALLOC_CAP_%s %s leak: Before %u bytes free, After %u bytes free (delta %u)\n",
            type,
            leaked <= threshold ? "potential" : "critical",

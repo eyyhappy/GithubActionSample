@@ -23,7 +23,7 @@ void tearDown(void) { /*does nothing*/ }
 static void announceTestRun(unsigned int runNumber)
 {
     UnityPrint("Unity test run ");
-    UnityPrintNumberUnsigned(runNumber+1);
+    UnityPrintNumberUnsigned(runNumber + 1);
     UnityPrint(" of ");
     UnityPrintNumberUnsigned(UnityFixture.RepeatCount);
     UNITY_PRINT_EOL();
@@ -35,7 +35,6 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
     unsigned int r;
     if (result != 0)
         return result;
-
     for (r = 0; r < UnityFixture.RepeatCount; r++)
     {
         UnityBegin(argv[0]);
@@ -44,7 +43,6 @@ int UnityMain(int argc, const char* argv[], void (*runAllTests)(void))
         if (!UnityFixture.Verbose) UNITY_PRINT_EOL();
         UnityEnd();
     }
-
     return (int)Unity.TestFailures;
 }
 
@@ -84,17 +82,14 @@ void UnityTestRunner(unityfunction* setup,
         else
         {
             UnityPrint(printableName);
-        #ifndef UNITY_REPEAT_TEST_NAME
+            #ifndef UNITY_REPEAT_TEST_NAME
             Unity.CurrentTestName = NULL;
-        #endif
+            #endif
         }
-
         Unity.NumberOfTests++;
         UnityMalloc_StartTest();
         UnityPointer_Init();
-
         UNITY_EXEC_TIME_START();
-
         if (TEST_PROTECT())
         {
             setup();
@@ -185,16 +180,14 @@ void* unity_malloc(size_t size)
     char* mem;
     Guard* guard;
     size_t total_size = size + sizeof(Guard) + sizeof(end);
-
     if (malloc_fail_countdown != MALLOC_DONT_FAIL)
     {
         if (malloc_fail_countdown == 0)
             return NULL;
         malloc_fail_countdown--;
     }
-
     if (size == 0) return NULL;
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     if (heap_index + total_size > UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
         guard = NULL;
@@ -204,16 +197,15 @@ void* unity_malloc(size_t size)
         guard = (Guard*)&unity_heap[heap_index];
         heap_index += total_size;
     }
-#else
+    #else
     guard = (Guard*)UNITY_FIXTURE_MALLOC(total_size);
-#endif
+    #endif
     if (guard == NULL) return NULL;
     malloc_count++;
     guard->size = size;
     guard->guard_space = 0;
-    mem = (char*)&(guard[1]);
+    mem = (char*) & (guard[1]);
     memcpy(&mem[size], end, sizeof(end));
-
     return (void*)mem;
 }
 
@@ -222,7 +214,6 @@ static int isOverrun(void* mem)
     Guard* guard = (Guard*)mem;
     char* memAsChar = (char*)mem;
     guard--;
-
     return guard->guard_space != 0 || strcmp(&memAsChar[guard->size], end) != 0;
 }
 
@@ -230,27 +221,24 @@ static void release_memory(void* mem)
 {
     Guard* guard = (Guard*)mem;
     guard--;
-
     malloc_count--;
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     if (mem == unity_heap + heap_index - guard->size - sizeof(end))
     {
         heap_index -= (guard->size + sizeof(Guard) + sizeof(end));
     }
-#else
+    #else
     UNITY_FIXTURE_FREE(guard);
-#endif
+    #endif
 }
 
 void unity_free(void* mem)
 {
     int overrun;
-
     if (mem == NULL)
     {
         return;
     }
-
     overrun = isOverrun(mem);
     release_memory(mem);
     if (overrun)
@@ -271,32 +259,27 @@ void* unity_realloc(void* oldMem, size_t size)
 {
     Guard* guard = (Guard*)oldMem;
     void* newMem;
-
     if (oldMem == NULL) return unity_malloc(size);
-
     guard--;
     if (isOverrun(oldMem))
     {
         release_memory(oldMem);
         UNITY_TEST_FAIL(Unity.CurrentTestLineNumber, "Buffer overrun detected during realloc()");
     }
-
     if (size == 0)
     {
         release_memory(oldMem);
         return NULL;
     }
-
     if (guard->size >= size) return oldMem;
-
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC /* Optimization if memory is expandable */
     if (oldMem == unity_heap + heap_index - guard->size - sizeof(end) &&
         heap_index + size - guard->size <= UNITY_INTERNAL_HEAP_SIZE_BYTES)
     {
         release_memory(oldMem);    /* Not thread-safe, like unity_heap generally */
         return unity_malloc(size); /* No memcpy since data is in place */
     }
-#endif
+    #endif
     newMem = unity_malloc(size);
     if (newMem == NULL) return NULL; /* Do not release old memory */
     memcpy(newMem, oldMem, guard->size);
@@ -353,10 +336,8 @@ int UnityGetCommandLineOptions(int argc, const char* argv[])
     UnityFixture.GroupFilter = 0;
     UnityFixture.NameFilter = 0;
     UnityFixture.RepeatCount = 1;
-
     if (argc == 1)
         return 0;
-
     for (i = 1; i < argc; )
     {
         if (strcmp(argv[i], "-v") == 0)
@@ -430,7 +411,6 @@ void UnityConcludeFixtureTest(void)
         Unity.TestFailures++;
         UNITY_PRINT_EOL();
     }
-
     Unity.CurrentTestFailed = 0;
     Unity.CurrentTestIgnored = 0;
 }

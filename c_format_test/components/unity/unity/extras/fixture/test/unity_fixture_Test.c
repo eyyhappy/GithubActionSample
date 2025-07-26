@@ -120,7 +120,6 @@ TEST(UnityFixture, PointerSet)
     char newC2;
     p1 = &c1;
     p2 = &c2;
-
     UnityPointer_Init();
     UT_PTR_SET(p1, &newC1);
     UT_PTR_SET(p2, &newC2);
@@ -172,14 +171,15 @@ TEST_SETUP(UnityCommandOptions)
 TEST_TEAR_DOWN(UnityCommandOptions)
 {
     UnityFixture.Verbose = savedVerbose;
-    UnityFixture.RepeatCount= savedRepeat;
+    UnityFixture.RepeatCount = savedRepeat;
     UnityFixture.NameFilter = savedName;
     UnityFixture.GroupFilter = savedGroup;
 }
 
 
-static const char* noOptions[] = {
-        "testrunner.exe"
+static const char* noOptions[] =
+{
+    "testrunner.exe"
 };
 
 TEST(UnityCommandOptions, DefaultOptions)
@@ -191,9 +191,10 @@ TEST(UnityCommandOptions, DefaultOptions)
     TEST_ASSERT_EQUAL(1, UnityFixture.RepeatCount);
 }
 
-static const char* verbose[] = {
-        "testrunner.exe",
-        "-v"
+static const char* verbose[] =
+{
+    "testrunner.exe",
+    "-v"
 };
 
 TEST(UnityCommandOptions, OptionVerbose)
@@ -202,9 +203,10 @@ TEST(UnityCommandOptions, OptionVerbose)
     TEST_ASSERT_EQUAL(1, UnityFixture.Verbose);
 }
 
-static const char* group[] = {
-        "testrunner.exe",
-        "-g", "groupname"
+static const char* group[] =
+{
+    "testrunner.exe",
+    "-g", "groupname"
 };
 
 TEST(UnityCommandOptions, OptionSelectTestByGroup)
@@ -213,9 +215,10 @@ TEST(UnityCommandOptions, OptionSelectTestByGroup)
     STRCMP_EQUAL("groupname", UnityFixture.GroupFilter);
 }
 
-static const char* name[] = {
-        "testrunner.exe",
-        "-n", "testname"
+static const char* name[] =
+{
+    "testrunner.exe",
+    "-n", "testname"
 };
 
 TEST(UnityCommandOptions, OptionSelectTestByName)
@@ -224,9 +227,10 @@ TEST(UnityCommandOptions, OptionSelectTestByName)
     STRCMP_EQUAL("testname", UnityFixture.NameFilter);
 }
 
-static const char* repeat[] = {
-        "testrunner.exe",
-        "-r", "99"
+static const char* repeat[] =
+{
+    "testrunner.exe",
+    "-r", "99"
 };
 
 TEST(UnityCommandOptions, OptionSelectRepeatTestsDefaultCount)
@@ -241,12 +245,13 @@ TEST(UnityCommandOptions, OptionSelectRepeatTestsSpecificCount)
     TEST_ASSERT_EQUAL(99, UnityFixture.RepeatCount);
 }
 
-static const char* multiple[] = {
-        "testrunner.exe",
-        "-v",
-        "-g", "groupname",
-        "-n", "testname",
-        "-r", "98"
+static const char* multiple[] =
+{
+    "testrunner.exe",
+    "-v",
+    "-g", "groupname",
+    "-n", "testname",
+    "-r", "98"
 };
 
 TEST(UnityCommandOptions, MultipleOptions)
@@ -258,12 +263,13 @@ TEST(UnityCommandOptions, MultipleOptions)
     TEST_ASSERT_EQUAL(98, UnityFixture.RepeatCount);
 }
 
-static const char* dashRNotLast[] = {
-        "testrunner.exe",
-        "-v",
-        "-g", "gggg",
-        "-r",
-        "-n", "tttt",
+static const char* dashRNotLast[] =
+{
+    "testrunner.exe",
+    "-v",
+    "-g", "gggg",
+    "-r",
+    "-n", "tttt",
 };
 
 TEST(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified)
@@ -275,13 +281,14 @@ TEST(UnityCommandOptions, MultipleOptionsDashRNotLastAndNoValueSpecified)
     TEST_ASSERT_EQUAL(2, UnityFixture.RepeatCount);
 }
 
-static const char* unknownCommand[] = {
-        "testrunner.exe",
-        "-v",
-        "-g", "groupname",
-        "-n", "testname",
-        "-r", "98",
-        "-z"
+static const char* unknownCommand[] =
+{
+    "testrunner.exe",
+    "-v",
+    "-g", "groupname",
+    "-n", "testname",
+    "-r", "98",
+    "-z"
 };
 TEST(UnityCommandOptions, UnknownCommandIsIgnored)
 {
@@ -318,11 +325,11 @@ TEST_GROUP(LeakDetection);
 
 TEST_SETUP(LeakDetection)
 {
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
     UnityOutputCharSpy_Create(200);
-#else
+    #else
     UnityOutputCharSpy_Create(1000);
-#endif
+    #endif
 }
 
 TEST_TEAR_DOWN(LeakDetection)
@@ -352,23 +359,23 @@ TEST_TEAR_DOWN(LeakDetection)
 #define EXPAND_AND_USE_2ND(a, b)           SECOND_PARAM(a, b, throwaway)
 #define SECOND_PARAM(a, b, ...)            b
 #if USING_SPY_AS(UNITY_OUTPUT_CHAR)
-  #define USING_OUTPUT_SPY /* UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar */
+#define USING_OUTPUT_SPY /* UNITY_OUTPUT_CHAR = UnityOutputCharSpy_OutputChar */
 #endif
 #endif /* >= 199901 */
 
 #else  /* __STDC_VERSION__ else */
 #define UnityOutputCharSpy_OutputChar 42
 #if UNITY_OUTPUT_CHAR == UnityOutputCharSpy_OutputChar /* Works if no -Wundef -Werror */
-  #define USING_OUTPUT_SPY
+#define USING_OUTPUT_SPY
 #endif
 #undef UnityOutputCharSpy_OutputChar
 #endif /* __STDC_VERSION__ */
 
 TEST(LeakDetection, DetectsLeak)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE_MESSAGE("Build with '-D UNITY_OUTPUT_CHAR=UnityOutputCharSpy_OutputChar' to enable tests");
-#else
+    #else
     void* m = malloc(10);
     TEST_ASSERT_NOT_NULL(m);
     UnityOutputCharSpy_Enable(1);
@@ -379,14 +386,14 @@ TEST(LeakDetection, DetectsLeak)
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "This test leaks!"));
     free(m);
-#endif
+    #endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringFree)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-#else
+    #else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -398,14 +405,14 @@ TEST(LeakDetection, BufferOverrunFoundDuringFree)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
-#endif
+    #endif
 }
 
 TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-#else
+    #else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -417,14 +424,14 @@ TEST(LeakDetection, BufferOverrunFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
-#endif
+    #endif
 }
 
 TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-#else
+    #else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -437,14 +444,14 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringFree)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during free()"));
-#endif
+    #endif
 }
 
 TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-#else
+    #else
     void* m = malloc(10);
     char* s = (char*)m;
     TEST_ASSERT_NOT_NULL(m);
@@ -456,14 +463,14 @@ TEST(LeakDetection, BufferGuardWriteFoundDuringRealloc)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Buffer overrun detected during realloc()"));
-#endif
+    #endif
 }
 
 TEST(LeakDetection, PointerSettingMax)
 {
-#ifndef USING_OUTPUT_SPY
+    #ifndef USING_OUTPUT_SPY
     TEST_IGNORE();
-#else
+    #else
     int i;
     for (i = 0; i < UNITY_MAX_POINTERS; i++) UT_PTR_SET(pointer1, &int1);
     UnityOutputCharSpy_Enable(1);
@@ -473,7 +480,7 @@ TEST(LeakDetection, PointerSettingMax)
     UnityOutputCharSpy_Enable(0);
     Unity.CurrentTestFailed = 0;
     CHECK(strstr(UnityOutputCharSpy_Get(), "Too many pointers set"));
-#endif
+    #endif
 }
 
 /*------------------------------------------------------------ */
@@ -489,55 +496,53 @@ TEST_TEAR_DOWN(InternalMalloc) { }
 
 TEST(InternalMalloc, MallocPastBufferFails)
 {
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
+    void* n = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-#endif
+    #endif
 }
 
 TEST(InternalMalloc, CallocPastBufferFails)
 {
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
+    void* n = calloc(1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     free(m);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_NULL(n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-#endif
+    #endif
 }
 
 TEST(InternalMalloc, MallocThenReallocGrowsMemoryInPlace)
 {
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
-    void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 9);
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
+    void* n = realloc(m, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 9);
     free(n);
     TEST_ASSERT_NOT_NULL(m);
     TEST_ASSERT_EQUAL(m, n);
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n);
-#endif
+    #endif
 }
 
 TEST(InternalMalloc, ReallocFailDoesNotFreeMem)
 {
-#ifdef UNITY_EXCLUDE_STDLIB_MALLOC
-    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES/2);
+    #ifdef UNITY_EXCLUDE_STDLIB_MALLOC
+    void* m = malloc(UNITY_INTERNAL_HEAP_SIZE_BYTES / 2);
     void* n1 = malloc(10);
-    void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES/2 + 1);
+    void* out_of_mem = realloc(n1, UNITY_INTERNAL_HEAP_SIZE_BYTES / 2 + 1);
     void* n2 = malloc(10);
-
     free(n2);
     if (out_of_mem == NULL) free(n1);
     free(m);
-
     TEST_ASSERT_NOT_NULL(m);       /* Got a real memory location */
     TEST_ASSERT_NULL(out_of_mem);  /* The realloc should have failed */
     TEST_ASSERT_NOT_EQUAL(n2, n1); /* If n1 != n2 then realloc did not free n1 */
     TEST_ASSERT_MEMORY_ALL_FREE_LIFO_ORDER(m, n2);
-#endif
+    #endif
 }

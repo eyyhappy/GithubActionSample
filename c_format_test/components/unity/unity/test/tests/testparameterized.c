@@ -12,7 +12,10 @@
 #define TEST_CASE(...)
 
 /* Include Passthroughs for Linking Tests */
-void putcharSpy(int c) { (void)putchar(c);}
+void putcharSpy(int c)
+{
+    (void)putchar(c);
+}
 void flushSpy(void) {}
 
 #define EXPECT_ABORT_BEGIN \
@@ -49,24 +52,24 @@ int SetToOneMeanWeAlreadyCheckedThisGuy;
 
 void setUp(void)
 {
-  SetToOneToFailInTearDown = 0;
-  SetToOneMeanWeAlreadyCheckedThisGuy = 0;
+    SetToOneToFailInTearDown = 0;
+    SetToOneMeanWeAlreadyCheckedThisGuy = 0;
 }
 
 void tearDown(void)
 {
-  if (SetToOneToFailInTearDown == 1)
-    TEST_FAIL_MESSAGE("<= Failed in tearDown");
-  if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
-  {
-    UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
-    UNITY_OUTPUT_CHAR('\n');
-  }
+    if (SetToOneToFailInTearDown == 1)
+        TEST_FAIL_MESSAGE("<= Failed in tearDown");
+    if ((SetToOneMeanWeAlreadyCheckedThisGuy == 0) && (Unity.CurrentTestFailed > 0))
+    {
+        UnityPrint(": [[[[ Test Should Have Passed But Did Not ]]]]");
+        UNITY_OUTPUT_CHAR('\n');
+    }
 }
 
 TEST_CASE(0)
 TEST_CASE(44)
-TEST_CASE((90)+9)
+TEST_CASE((90) + 9)
 void test_TheseShouldAllPass(int Num)
 {
     TEST_ASSERT_TRUE(Num < 100);

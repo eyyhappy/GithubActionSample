@@ -15,11 +15,16 @@ static uint32_t s_test_start, s_test_stop;
 
 void unity_putc(int c)
 {
-    if (c == '\n') {
+    if (c == '\n')
+    {
         esp_rom_uart_tx_one_char('\r');
         esp_rom_uart_tx_one_char('\n');
-    } else if (c == '\r') {
-    } else {
+    }
+    else if (c == '\r')
+    {
+    }
+    else
+    {
         esp_rom_uart_tx_one_char(c);
     }
 }
@@ -35,26 +40,34 @@ static void esp_unity_readline(char* dst, size_t len)
 {
     /* Read line from console with support for echoing and backspaces */
     size_t write_index = 0;
-    for (;;) {
+    for (;;)
+    {
         char c = 0;
         bool got_char = esp_rom_uart_rx_one_char((uint8_t*)&c) == 0;
-        if (!got_char) {
-          continue;
+        if (!got_char)
+        {
+            continue;
         }
-        if (c == '\r' || c == '\n') {
+        if (c == '\r' || c == '\n')
+        {
             /* Add null terminator and return on newline */
             unity_putc('\n');
             dst[write_index] = '\0';
             return;
-        } else if (c == '\b') {
-            if (write_index > 0) {
+        }
+        else if (c == '\b')
+        {
+            if (write_index > 0)
+            {
                 /* Delete previously entered character */
                 write_index--;
                 esp_rom_uart_tx_one_char('\b');
                 esp_rom_uart_tx_one_char(' ');
                 esp_rom_uart_tx_one_char('\b');
             }
-        } else if (len > 0 && write_index < len - 1 && !iscontrol(c)) {
+        }
+        else if (len > 0 && write_index < len - 1 && !iscontrol(c))
+        {
             /* Write a max of len - 1 characters to allow for null terminator */
             unity_putc(c);
             dst[write_index++] = c;
@@ -74,7 +87,8 @@ char unity_input_from_gdb[64];
 void unity_gets(char *dst, size_t len)
 {
     size_t unity_input_from_gdb_len = strlen(unity_input_from_gdb);
-    if (unity_input_from_gdb_len > 0 && unity_input_from_gdb_len < len - 1) {
+    if (unity_input_from_gdb_len > 0 && unity_input_from_gdb_len < len - 1)
+    {
         memcpy(dst, unity_input_from_gdb, unity_input_from_gdb_len);
         dst[unity_input_from_gdb_len] = '\n';
         dst[unity_input_from_gdb_len + 1] = 0;

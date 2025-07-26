@@ -37,7 +37,7 @@ void UnityOutputCharSpy_OutputChar(int c)
 {
     if (spy_enable)
     {
-        if (count < (size-1))
+        if (count < (size - 1))
             buffer[count++] = (char)c;
     }
     else

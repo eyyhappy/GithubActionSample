@@ -43,9 +43,9 @@ void unity_utils_record_free_mem(void);
  * A summary of the leaked data will be printed in all cases.
  */
 void unity_utils_check_leak(unsigned int before_free,
-        unsigned int after_free,
-        const char *type,
-        unsigned int threshold);
+                            unsigned int after_free,
+                            const char *type,
+                            unsigned int threshold);
 
 /**
  * @brief Evaluate memory leak checking according to the provided thresholds.
