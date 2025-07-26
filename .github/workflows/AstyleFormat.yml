@@ -23,9 +23,7 @@ jobs:
             --indent=spaces=4 \
             --indent-switches \
             --indent-namespaces \
-            --pad-param \
-            --break-after-commas \
-            --align-pointer=name \
+            --pad-oper \
             --indent-labels \
             --min-conditional-indent=0 \
             --max-continuation-indent=40 \
