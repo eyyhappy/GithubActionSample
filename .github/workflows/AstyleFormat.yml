@@ -36,10 +36,12 @@ jobs:
             $IGNORE_LIST
 
       - name: 提交格式化后的代码
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "Auto format C code with astyle"
-          commit_user_name: "GitHub Actions Bot"
+          # commit_user_name: "GitHub Actions Bot"
+          commit_user_name: "My GitHub Actions Bot" # defaults to "github-actions[bot]"
+          commit_author: "Author <actions@github.com>" # defaults to "username <numeric_id+username@users.noreply.github.com>", where "numeric_id" and "username" belong to the author of the commit that triggered the run
           commit_user_email: "actions@github.com"
 
 # 本地调试建议：
