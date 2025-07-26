@@ -18,6 +18,7 @@ jobs:
 
       - name: 运行 astyle 自动格式化
         run: |
+          IGNORE_LIST="--exclude=gwp_rpc_init.c --exclude=unity"
           find . -name "*.c" -o -name "*.h" | xargs astyle \
             --style=allman \
             --indent=spaces=4 \
@@ -30,7 +31,8 @@ jobs:
             --convert-tabs \
             --indent-preproc-block \
             --delete-empty-lines \
-            --suffix=none
+            --suffix=none \
+            $IGNORE_LIST
 
       - name: 提交格式化后的代码
         uses: stefanzweifel/git-auto-commit-action@v5

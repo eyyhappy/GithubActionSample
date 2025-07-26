@@ -21,7 +21,7 @@ void unity_putc(int c)
 
 void unity_flush(void)
 {
-    fflush(stdout);
+       fflush(stdout);//derek
     fsync(fileno(stdout));
 }
 
